@@ -1,17 +1,16 @@
-# Try On Diffusion: A Tale of Two UNets Implementation
-### [Paper Link](https://arxiv.org/abs/2306.08276)
+# OpenTryOn: Open-source AI toolkit for fashion tech and virtual try-on
 
 ### [Click here](https://discord.gg/T5mPpZHxkY) to join our discord channel
 
-## Roadmap
-
+## TryOnDiffusion: Roadmap
+### [Paper Link](https://arxiv.org/abs/2306.08276)
 1. ~~Prepare initial implementation~~
 1. Test initial implementation with small dataset (VITON-HD)
 1. Gather sufficient data and compute resources
 1. Prepare and train final implementation
 1. Publicly release parameters
 
-## How to contribute to tryondiffusion
+## How to contribute to opentryon
 
 ### 1. Open an issue
 We recommend opening an issue (if one doesn't already exist) and discussing your intended changes before making any changes. 
@@ -35,4 +34,4 @@ For now, we are maintaining our documentation in a single file and we will add m
 
 ## License
 
-All material is made available under [Creative Commons BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). You can **use** the material for **non-commercial purposes**, as long as you give appropriate credit by **citing our original [github repo](https://github.com/kailashahirwar/tryondiffusion)** and **indicate any changes** that you've made to the code.
+All material is made available under [Creative Commons BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). You can **use** the material for **non-commercial purposes**, as long as you give appropriate credit by **citing our original [github repo](https://github.com/tryonlabs/opentryon)** and **indicate any changes** that you've made to the code.
