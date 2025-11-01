@@ -176,4 +176,6 @@ dependencies:
     - werkzeug==3.0.0
     - wrapt==1.14.1
     - zipp==3.19.2
+    - python-dotenv
+    - boto3==1.40.64
 prefix: /Users/apple/miniconda3/envs/opentryon

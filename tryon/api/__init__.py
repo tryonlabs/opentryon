@@ -1,0 +1,1 @@
+from .nova_canvas import AmazonNovaCanvasVTONAdapter

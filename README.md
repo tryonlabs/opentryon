@@ -7,7 +7,9 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 
 ## 🎯 Features
 
-- **Virtual Try-On**: Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
+- **Virtual Try-On**: 
+  - Amazon Nova Canvas virtual try-on using AWS Bedrock
+  - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
 - **Garment Preprocessing**: 
   - Garment segmentation using U2Net
   - Garment extraction and preprocessing
@@ -23,6 +25,8 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
+  - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
+  - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
 - [TryOnDiffusion Roadmap](#tryondiffusion-roadmap)
@@ -69,9 +73,17 @@ Create a `.env` file in the project root with the following variables:
 
 ```env
 U2NET_CLOTH_SEG_CHECKPOINT_PATH=cloth_segm.pth
+
+# AWS Credentials for Amazon Nova Canvas (optional, can use AWS CLI default profile)
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AMAZON_NOVA_REGION=us-east-1  # Optional: us-east-1, ap-northeast-1, eu-west-1
+AMAZON_NOVA_MODEL_ID=amazon.nova-canvas-v1:0  # Optional
 ```
 
-**Note**: Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation).
+**Notes**: 
+- Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation)
+- For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
 
 ## 🎮 Quick Start
 
@@ -119,6 +131,115 @@ python main.py --dataset data --action segment_human
 ```
 
 ## 📖 Usage
+
+### Virtual Try-On with Amazon Nova Canvas
+
+Generate realistic virtual try-on images using Amazon Nova Canvas through AWS Bedrock. This feature combines a source image (person/model) with a reference image (garment/product) to create realistic try-on results.
+
+#### Prerequisites
+
+1. **AWS Account Setup**: 
+   - Ensure you have an AWS account with access to Amazon Bedrock
+   - Enable Nova Canvas model access in the AWS Bedrock console (Model access section)
+   - Configure AWS credentials (via `.env` file or AWS CLI)
+
+2. **Image Requirements**:
+   - Maximum image size: 4.1M pixels (equivalent to 2,048 x 2,048)
+   - Supported formats: JPG, PNG
+   - Both source and reference images must meet size requirements
+
+#### Command Line Usage
+
+```bash
+# Basic usage with GARMENT mask (default)
+python vton.py --source data/person.jpg --reference data/garment.jpg
+
+# Specify garment class
+python vton.py --source person.jpg --reference garment.jpg --garment-class LOWER_BODY
+
+# Use IMAGE mask type with custom mask
+python vton.py --source person.jpg --reference garment.jpg --mask-type IMAGE --mask-image mask.png
+
+# Use different AWS region
+python vton.py --source person.jpg --reference garment.jpg --region ap-northeast-1
+
+# Save output to specific directory
+python vton.py --source person.jpg --reference garment.jpg --output-dir results/
+```
+
+#### Python API Usage
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api import AmazonNovaCanvasVTONAdapter
+from PIL import Image
+
+# Initialize adapter
+adapter = AmazonNovaCanvasVTONAdapter(region="us-east-1")
+
+# Generate virtual try-on images
+images = adapter.generate_and_decode(
+    source_image="data/person.jpg",
+    reference_image="data/garment.jpg",
+    mask_type="GARMENT",  # Options: "GARMENT", "IMAGE"
+    garment_class="UPPER_BODY"  # Options: "UPPER_BODY", "LOWER_BODY", "FULL_BODY", "FOOTWEAR"
+)
+
+# Save results
+for idx, image in enumerate(images):
+    image.save(f"outputs/vton_result_{idx}.png")
+```
+
+#### Mask Types
+
+1. **GARMENT** (Default): Automatically detects and masks garment area based on garment class
+   - `UPPER_BODY`: Tops, shirts, jackets, hoodies
+   - `LOWER_BODY`: Pants, skirts, shorts
+   - `FULL_BODY`: Dresses, jumpsuits
+   - `FOOTWEAR`: Shoes, boots
+
+2. **IMAGE**: Uses a custom black-and-white mask image
+   - Black areas = replaced with garment
+   - White areas = preserved from source image
+
+#### Supported AWS Regions
+
+- `us-east-1` (US East - N. Virginia) - Default
+- `ap-northeast-1` (Asia Pacific - Tokyo)
+- `eu-west-1` (Europe - Ireland)
+
+#### Example: Complete Workflow
+
+```python
+from tryon.api import AmazonNovaCanvasVTONAdapter
+
+# Initialize adapter
+adapter = AmazonNovaCanvasVTONAdapter(region="us-east-1")
+
+# Generate try-on for upper body garment
+images = adapter.generate_and_decode(
+    source_image="data/person.jpg",
+    reference_image="data/shirt.jpg",
+    mask_type="GARMENT",
+    garment_class="UPPER_BODY"
+)
+
+# Generate try-on for lower body garment
+images = adapter.generate_and_decode(
+    source_image="data/person.jpg",
+    reference_image="data/pants.jpg",
+    mask_type="GARMENT",
+    garment_class="LOWER_BODY"
+)
+
+# Save all results
+for idx, image in enumerate(images):
+    image.save(f"outputs/result_{idx}.png")
+```
+
+**Reference**: [Amazon Nova Canvas Virtual Try-On Documentation](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
 
 ### Preprocessing Functions
 
@@ -193,6 +314,8 @@ Each demo launches a web interface where you can interact with the models throug
 ```
 opentryon/
 ├── tryon/                    # Main try-on preprocessing module
+│   ├── api/                 # API adapters
+│   │   └── nova_canvas.py  # Amazon Nova Canvas VTON adapter
 │   ├── preprocessing/        # Preprocessing utilities
 │   │   ├── captioning/       # Image captioning
 │   │   ├── sam2/            # SAM2 segmentation
@@ -212,6 +335,7 @@ opentryon/
 │   └── outfit_generator/    # Outfit generator demo
 ├── scripts/                 # Installation scripts
 ├── main.py                  # Main CLI entry point
+├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas)
 ├── run_demo.py              # Demo launcher
 ├── requirements.txt         # Python dependencies
 └── environment.yml          # Conda environment
@@ -280,6 +404,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 ## 📚 Additional Resources
 
 - **TryOnDiffusion Paper**: [arXiv:2306.08276](https://arxiv.org/abs/2306.08276)
+- **Amazon Nova Canvas**: [AWS Blog Post](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 
