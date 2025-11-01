@@ -4,32 +4,44 @@ load_dotenv()
 import os
 import argparse
 from pathlib import Path
-from tryon.api import AmazonNovaCanvasVTONAdapter
+from tryon.api import AmazonNovaCanvasVTONAdapter, KlingAIVTONAdapter
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate virtual try-on images using Amazon Nova Canvas",
+        description="Generate virtual try-on images using Amazon Nova Canvas or Kling AI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Basic usage with GARMENT mask (default)
-  python vton.py --source data/original_human/model.jpg --reference data/original_cloth/model.jpg
+  # Amazon Nova Canvas - Basic usage with GARMENT mask (default)
+  python vton.py --provider nova --source data/original_human/model.jpg --reference data/original_cloth/model.jpg
   
-  # Specify garment class
-  python vton.py --source person.jpg --reference garment.jpg --garment-class LOWER_BODY
+  # Amazon Nova Canvas - Specify garment class
+  python vton.py --provider nova --source person.jpg --reference garment.jpg --garment-class LOWER_BODY
   
-  # Use IMAGE mask type
-  python vton.py --source person.jpg --reference garment.jpg --mask-type IMAGE --mask-image mask.png
+  # Amazon Nova Canvas - Use IMAGE mask type
+  python vton.py --provider nova --source person.jpg --reference garment.jpg --mask-type IMAGE --mask-image mask.png
+  
+  # Kling AI - Basic usage
+  python vton.py --provider kling --source person.jpg --reference garment.jpg
+  
+  # Kling AI - Specify model version
+  python vton.py --provider kling --source person.jpg --reference garment.jpg --model kolors-virtual-try-on-v1-5
   
   # Save output to specific directory
-  python vton.py --source person.jpg --reference garment.jpg --output-dir results/
+  python vton.py --provider nova --source person.jpg --reference garment.jpg --output-dir results/
   
-  # Use different AWS region
-  python vton.py --source person.jpg --reference garment.jpg --region ap-northeast-1
-  
-  # Use specific model ID
-  python vton.py --source person.jpg --reference garment.jpg --model-id amazon.nova-canvas-v1:0
+  # Use different AWS region (Nova Canvas only)
+  python vton.py --provider nova --source person.jpg --reference garment.jpg --region ap-northeast-1
         """
+    )
+    
+    # Provider selection
+    parser.add_argument(
+        '--provider',
+        type=str,
+        required=True,
+        choices=['nova', 'kling'],
+        help='Virtual try-on provider to use. Options: nova (Amazon Nova Canvas), kling (Kling AI)'
     )
     
     # Required arguments
@@ -47,13 +59,13 @@ Examples:
         help='Path to reference image (garment/product)'
     )
     
-    # Optional arguments
+    # Optional arguments for Nova Canvas
     parser.add_argument(
         '--mask-type',
         type=str,
         default='GARMENT',
         choices=['GARMENT', 'IMAGE'],
-        help='Type of mask to use. Options: GARMENT (default), IMAGE'
+        help='Type of mask to use (Nova Canvas only). Options: GARMENT (default), IMAGE'
     )
     
     parser.add_argument(
@@ -61,28 +73,43 @@ Examples:
         type=str,
         default='UPPER_BODY',
         choices=['UPPER_BODY', 'LOWER_BODY', 'FULL_BODY', 'FOOTWEAR'],
-        help='Garment class for GARMENT mask type. Required when mask-type is GARMENT. Default: UPPER_BODY'
+        help='Garment class for GARMENT mask type (Nova Canvas only). Required when mask-type is GARMENT. Default: UPPER_BODY'
     )
     
     parser.add_argument(
         '--mask-image',
         type=str,
         default=None,
-        help='Path to mask image for IMAGE mask type. Required when mask-type is IMAGE'
+        help='Path to mask image for IMAGE mask type (Nova Canvas only). Required when mask-type is IMAGE'
     )
     
     parser.add_argument(
         '--region',
         type=str,
         default=None,
-        help='AWS region name. Defaults to AMAZON_NOVA_REGION env var or us-east-1. Supported: us-east-1, ap-northeast-1, eu-west-1'
+        help='AWS region name (Nova Canvas only). Defaults to AMAZON_NOVA_REGION env var or us-east-1. Supported: us-east-1, ap-northeast-1, eu-west-1'
     )
     
     parser.add_argument(
         '--model-id',
         type=str,
         default=None,
-        help='Model ID to use. Defaults to AMAZON_NOVA_MODEL_ID env var or amazon.nova-canvas-v1:0'
+        help='Model ID to use (Nova Canvas only). Defaults to AMAZON_NOVA_MODEL_ID env var or amazon.nova-canvas-v1:0'
+    )
+    
+    # Optional arguments for Kling AI
+    parser.add_argument(
+        '--model',
+        type=str,
+        default=None,
+        help='Model version to use (Kling AI only). Examples: kolors-virtual-try-on-v1, kolors-virtual-try-on-v1-5'
+    )
+    
+    parser.add_argument(
+        '--base-url',
+        type=str,
+        default=None,
+        help='Base URL for API (Kling AI only). Defaults to KLING_AI_BASE_URL env var or https://api-singapore.klingai.com'
     )
     
     parser.add_argument(
@@ -107,81 +134,132 @@ Examples:
     if not os.path.exists(args.reference):
         raise FileNotFoundError(f"Reference image not found: {args.reference}")
     
-    if args.mask_type == 'IMAGE' and not args.mask_image:
-        raise ValueError("--mask-image is required when --mask-type is IMAGE")
-    
-    # Set model ID environment variable if provided
-    if args.model_id:
-        os.environ['AMAZON_NOVA_MODEL_ID'] = args.model_id
+    # Provider-specific validation
+    if args.provider == 'nova':
+        if args.mask_type == 'IMAGE' and not args.mask_image:
+            raise ValueError("--mask-image is required when --mask-type is IMAGE")
+    elif args.provider == 'kling':
+        # Kling AI doesn't use mask types, so no validation needed here
+        pass
     
     # Create output directory if it doesn't exist
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Initialize adapter
-    print(f"Initializing Amazon Nova Canvas adapter...")
-    if args.region:
-        print(f"  Region: {args.region}")
-    if args.model_id:
-        print(f"  Model ID: {args.model_id}")
-    adapter = AmazonNovaCanvasVTONAdapter(region=args.region)
-    
-    # Generate images
-    print(f"Generating virtual try-on image...")
-    print(f"  Source: {args.source}")
-    print(f"  Reference: {args.reference}")
-    print(f"  Mask type: {args.mask_type}")
-    
-    if args.mask_type == 'GARMENT':
-        print(f"  Garment class: {args.garment_class}")
-    elif args.mask_type == 'IMAGE':
-        print(f"  Mask image: {args.mask_image}")
-    
-    try:
-        import base64
-        from PIL import Image
-        import io
+    # Initialize adapter based on provider
+    if args.provider == 'nova':
+        print(f"Initializing Amazon Nova Canvas adapter...")
+        if args.region:
+            print(f"  Region: {args.region}")
+        if args.model_id:
+            print(f"  Model ID: {args.model_id}")
+            os.environ['AMAZON_NOVA_MODEL_ID'] = args.model_id
+        adapter = AmazonNovaCanvasVTONAdapter(region=args.region)
         
-        # Generate images (decode to PIL Image objects for saving)
-        print("Generating images...")
-        images_pil = adapter.generate_and_decode(
-            source_image=args.source,
-            reference_image=args.reference,
-            mask_type=args.mask_type,
-            garment_class=args.garment_class,
-            mask_image=args.mask_image
+        # Generate images
+        print(f"Generating virtual try-on image...")
+        print(f"  Source: {args.source}")
+        print(f"  Reference: {args.reference}")
+        print(f"  Mask type: {args.mask_type}")
+        
+        if args.mask_type == 'GARMENT':
+            print(f"  Garment class: {args.garment_class}")
+        elif args.mask_type == 'IMAGE':
+            print(f"  Mask image: {args.mask_image}")
+        
+        try:
+            import base64
+            from PIL import Image
+            import io
+            
+            # Generate images (decode to PIL Image objects for saving)
+            print("Generating images...")
+            images_pil = adapter.generate_and_decode(
+                source_image=args.source,
+                reference_image=args.reference,
+                mask_type=args.mask_type,
+                garment_class=args.garment_class,
+                mask_image=args.mask_image
+            )
+            
+        except ValueError as e:
+            print(f"\n✗ Error: {e}")
+            return 1
+        except Exception as e:
+            print(f"\n✗ Unexpected error: {e}")
+            return 1
+            
+    elif args.provider == 'kling':
+        print(f"Initializing Kling AI adapter...")
+        if args.base_url:
+            print(f"  Base URL: {args.base_url}")
+        if args.model:
+            print(f"  Model: {args.model}")
+        
+        # Check for required environment variables
+        api_key = os.getenv("KLING_AI_API_KEY")
+        secret_key = os.getenv("KLING_AI_SECRET_KEY")
+        
+        if not api_key or not secret_key:
+            print("\n✗ Error: Kling AI requires KLING_AI_API_KEY and KLING_AI_SECRET_KEY environment variables.")
+            print("   Please set them in your .env file or environment.")
+            return 1
+        
+        adapter = KlingAIVTONAdapter(
+            api_key=api_key,
+            secret_key=secret_key,
+            base_url=args.base_url
         )
         
-        # Save images as PNG
-        for idx, image in enumerate(images_pil):
-            output_path = output_dir / f"vton_result_{idx}.png"
-            image.save(output_path)
-            print(f"✓ Saved PNG image {idx + 1}: {output_path}")
+        # Generate images
+        print(f"Generating virtual try-on image...")
+        print(f"  Source: {args.source}")
+        print(f"  Reference: {args.reference}")
+        if args.model:
+            print(f"  Model: {args.model}")
         
-        # Optionally save Base64 strings
-        if args.save_base64:
-            print("\nSaving Base64 strings...")
-            for idx, image in enumerate(images_pil):
-                # Convert PIL Image to Base64
-                buffer = io.BytesIO()
-                image.save(buffer, format='PNG')
-                image_bytes = buffer.getvalue()
-                image_base64 = base64.b64encode(image_bytes).decode('utf-8')
-                
-                output_path = output_dir / f"vton_result_{idx}.txt"
-                with open(output_path, 'w') as f:
-                    f.write(image_base64)
-                print(f"✓ Saved Base64 string {idx + 1}: {output_path}")
-        
-        print(f"\n✓ Successfully generated {len(images_pil)} image(s)")
-        
-    except ValueError as e:
-        print(f"\n✗ Error: {e}")
-        return 1
-    except Exception as e:
-        print(f"\n✗ Unexpected error: {e}")
-        return 1
+        try:
+            import base64
+            from PIL import Image
+            import io
+            
+            # Generate images (decode to PIL Image objects for saving)
+            print("Generating images...")
+            images_pil = adapter.generate_and_decode(
+                source_image=args.source,
+                reference_image=args.reference,
+                model=args.model
+            )
+            
+        except ValueError as e:
+            print(f"\n✗ Error: {e}")
+            return 1
+        except Exception as e:
+            print(f"\n✗ Unexpected error: {e}")
+            return 1
     
+    # Save images as PNG
+    for idx, image in enumerate(images_pil):
+        output_path = output_dir / f"vton_result_{idx}.png"
+        image.save(output_path)
+        print(f"✓ Saved PNG image {idx + 1}: {output_path}")
+    
+    # Optionally save Base64 strings
+    if args.save_base64:
+        print("\nSaving Base64 strings...")
+        for idx, image in enumerate(images_pil):
+            # Convert PIL Image to Base64
+            buffer = io.BytesIO()
+            image.save(buffer, format='PNG')
+            image_bytes = buffer.getvalue()
+            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+            
+            output_path = output_dir / f"vton_result_{idx}.txt"
+            with open(output_path, 'w') as f:
+                f.write(image_base64)
+            print(f"✓ Saved Base64 string {idx + 1}: {output_path}")
+    
+    print(f"\n✓ Successfully generated {len(images_pil)} image(s)")
     return 0
 
 if __name__ == "__main__":

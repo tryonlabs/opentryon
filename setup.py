@@ -33,8 +33,9 @@ setup(
         "transformers==4.42.4",
         "gradio==4.44.1",
         "gradio-modal==0.0.3",
-        "python-dotenv",
         "boto3==1.40.64",
+        "requests>=2.31.0",
+        "PyJWT>=2.10.1",
     ],
     keywords=[
         "virtual try-on",

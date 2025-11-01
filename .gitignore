@@ -161,3 +161,6 @@ cython_debug/
 
 u2net_cloth_segm.pth
 u2net_segm.pth
+
+data
+outputs

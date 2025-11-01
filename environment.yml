@@ -178,4 +178,6 @@ dependencies:
     - zipp==3.19.2
     - python-dotenv
     - boto3==1.40.64
+    - requests>=2.31.0
+    - PyJWT>=2.10.1
 prefix: /Users/apple/miniconda3/envs/opentryon

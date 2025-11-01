@@ -9,6 +9,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 
 - **Virtual Try-On**: 
   - Amazon Nova Canvas virtual try-on using AWS Bedrock
+  - Kling AI virtual try-on using Kolors API
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
 - **Garment Preprocessing**: 
   - Garment segmentation using U2Net
@@ -26,6 +27,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - [Quick Start](#quick-start)
 - [Usage](#usage)
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
+  - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -79,11 +81,17 @@ AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AMAZON_NOVA_REGION=us-east-1  # Optional: us-east-1, ap-northeast-1, eu-west-1
 AMAZON_NOVA_MODEL_ID=amazon.nova-canvas-v1:0  # Optional
+
+# Kling AI Credentials (required for Kling AI virtual try-on)
+KLING_AI_API_KEY=your_kling_api_key
+KLING_AI_SECRET_KEY=your_kling_secret_key
+KLING_AI_BASE_URL=https://api-singapore.klingai.com  # Optional, defaults to Singapore endpoint
 ```
 
 **Notes**: 
 - Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation)
 - For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
+- For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 
 ## 🎮 Quick Start
 
@@ -151,20 +159,26 @@ Generate realistic virtual try-on images using Amazon Nova Canvas through AWS Be
 #### Command Line Usage
 
 ```bash
-# Basic usage with GARMENT mask (default)
-python vton.py --source data/person.jpg --reference data/garment.jpg
+# Basic usage with GARMENT mask (default) - Nova Canvas
+python vton.py --provider nova --source data/person.jpg --reference data/garment.jpg
 
-# Specify garment class
-python vton.py --source person.jpg --reference garment.jpg --garment-class LOWER_BODY
+# Specify garment class - Nova Canvas
+python vton.py --provider nova --source person.jpg --reference garment.jpg --garment-class LOWER_BODY
 
-# Use IMAGE mask type with custom mask
-python vton.py --source person.jpg --reference garment.jpg --mask-type IMAGE --mask-image mask.png
+# Use IMAGE mask type with custom mask - Nova Canvas
+python vton.py --provider nova --source person.jpg --reference garment.jpg --mask-type IMAGE --mask-image mask.png
 
-# Use different AWS region
-python vton.py --source person.jpg --reference garment.jpg --region ap-northeast-1
+# Use different AWS region - Nova Canvas
+python vton.py --provider nova --source person.jpg --reference garment.jpg --region ap-northeast-1
+
+# Basic usage - Kling AI
+python vton.py --provider kling --source person.jpg --reference garment.jpg
+
+# Specify model version - Kling AI
+python vton.py --provider kling --source person.jpg --reference garment.jpg --model kolors-virtual-try-on-v1-5
 
 # Save output to specific directory
-python vton.py --source person.jpg --reference garment.jpg --output-dir results/
+python vton.py --provider nova --source person.jpg --reference garment.jpg --output-dir results/
 ```
 
 #### Python API Usage
@@ -241,6 +255,135 @@ for idx, image in enumerate(images):
 
 **Reference**: [Amazon Nova Canvas Virtual Try-On Documentation](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
 
+### Virtual Try-On with Kling AI
+
+Generate realistic virtual try-on images using Kling AI's Kolors virtual try-on API. This feature combines a source image (person/model) with a reference image (garment/product) to create realistic try-on results with automatic task polling until completion.
+
+#### Prerequisites
+
+1. **Kling AI Account Setup**: 
+   - Sign up for a Kling AI account at [Kling AI Developer Portal](https://app.klingai.com/)
+   - Obtain your API key (access key) and secret key from the developer portal
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+2. **Image Requirements**:
+   - Maximum image size: 16M pixels (equivalent to 4,096 x 4,096)
+   - Maximum dimension: 4,096 pixels per side
+   - Supported formats: JPG, PNG
+   - Both source and reference images must meet size requirements
+
+#### Command Line Usage
+
+```bash
+# Basic usage
+python vton.py --provider kling --source person.jpg --reference garment.jpg
+
+# Specify model version
+python vton.py --provider kling --source person.jpg --reference garment.jpg --model kolors-virtual-try-on-v1-5
+
+# Use custom base URL
+python vton.py --provider kling --source person.jpg --reference garment.jpg --base-url https://api-singapore.klingai.com
+
+# Save output to specific directory
+python vton.py --provider kling --source person.jpg --reference garment.jpg --output-dir results/
+```
+
+#### Python API Usage
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api import KlingAIVTONAdapter
+from PIL import Image
+
+# Initialize adapter (uses environment variables by default)
+adapter = KlingAIVTONAdapter()
+
+# Or specify credentials directly
+adapter = KlingAIVTONAdapter(
+    api_key="your_api_key",
+    secret_key="your_secret_key",
+    base_url="https://api-singapore.klingai.com"  # Optional
+)
+
+# Generate virtual try-on images
+images = adapter.generate_and_decode(
+    source_image="data/person.jpg",
+    reference_image="data/garment.jpg",
+    model="kolors-virtual-try-on-v1-5"  # Optional, uses API default if not specified
+)
+
+# Save results
+for idx, image in enumerate(images):
+    image.save(f"outputs/vton_result_{idx}.png")
+```
+
+#### Model Versions
+
+Kling AI supports multiple model versions:
+- `kolors-virtual-try-on-v1`: Original model version
+- `kolors-virtual-try-on-v1-5`: Enhanced version
+
+If not specified, the API uses the default model version.
+
+#### Asynchronous Processing
+
+Kling AI processes virtual try-on requests asynchronously. The adapter automatically:
+1. Submits the request and receives a `task_id`
+2. Polls the task status endpoint until completion
+3. Returns image URLs when the task succeeds
+4. Raises errors if the task fails or times out (default timeout: 5 minutes)
+
+You can customize polling behavior:
+
+```python
+# Manual polling
+adapter = KlingAIVTONAdapter()
+
+# Submit task
+response = adapter.generate(
+    source_image="person.jpg",
+    reference_image="garment.jpg"
+)
+# This automatically polls until completion
+
+# Or poll manually with custom settings
+task_id = "your_task_id"
+image_urls = adapter.poll_task_until_complete(
+    task_id=task_id,
+    poll_interval=2,  # Check every 2 seconds
+    max_wait_time=600  # Maximum 10 minutes
+)
+```
+
+#### Example: Complete Workflow
+
+```python
+from tryon.api import KlingAIVTONAdapter
+
+# Initialize adapter
+adapter = KlingAIVTONAdapter()
+
+# Generate try-on
+images = adapter.generate_and_decode(
+    source_image="data/person.jpg",
+    reference_image="data/shirt.jpg",
+    model="kolors-virtual-try-on-v1-5"
+)
+
+# Save all results
+for idx, image in enumerate(images):
+    image.save(f"outputs/result_{idx}.png")
+```
+
+#### Supported Base URLs
+
+- `https://api-singapore.klingai.com` (Singapore) - Default
+- Other regional endpoints may be available (check Kling AI documentation)
+
+**Reference**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+
 ### Preprocessing Functions
 
 #### Segment Garment
@@ -315,7 +458,8 @@ Each demo launches a web interface where you can interact with the models throug
 opentryon/
 ├── tryon/                    # Main try-on preprocessing module
 │   ├── api/                 # API adapters
-│   │   └── nova_canvas.py  # Amazon Nova Canvas VTON adapter
+│   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
+│   │   └── kling_ai.py     # Kling AI VTON adapter
 │   ├── preprocessing/        # Preprocessing utilities
 │   │   ├── captioning/       # Image captioning
 │   │   ├── sam2/            # SAM2 segmentation
@@ -335,7 +479,7 @@ opentryon/
 │   └── outfit_generator/    # Outfit generator demo
 ├── scripts/                 # Installation scripts
 ├── main.py                  # Main CLI entry point
-├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas)
+├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas & Kling AI)
 ├── run_demo.py              # Demo launcher
 ├── requirements.txt         # Python dependencies
 └── environment.yml          # Conda environment
@@ -398,6 +542,10 @@ Key dependencies include:
 - scikit-image (== 0.22.0)
 - numpy (== 1.26.4)
 - einops (== 0.7.0)
+- requests (>= 2.31.0)
+- PyJWT (>= 2.10.1)
+- boto3 (== 1.40.64)
+- python-dotenv (== 1.0.1)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.
 
@@ -405,6 +553,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 
 - **TryOnDiffusion Paper**: [arXiv:2306.08276](https://arxiv.org/abs/2306.08276)
 - **Amazon Nova Canvas**: [AWS Blog Post](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
+- **Kling AI**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 
