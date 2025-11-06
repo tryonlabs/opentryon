@@ -1,0 +1,126 @@
+{
+    "nano_banana": [
+      {
+        "name": "Base Template",
+        "description": "General realistic portrait for any gender, pose, and outfit type.",
+        "template": "A high-quality realistic photo of a {age}-year-old {gender} fashion model with {complexion} skin, {hair_type} {hair_color} hair, {eye_color} eyes, {face_shape} face, posing in a {pose}. Wearing {outfit}. Captured in {lighting} with a {background}. Ultra-detailed, 8K, cinematic lighting, professional fashion photography."
+      },
+      {
+        "name": "Studio Portrait Template",
+        "description": "For close-up or mid-shot fashion portraits under studio light.",
+        "template": "A professional studio portrait of a {age}-year-old {gender} model with {complexion} complexion, {hair_type} {hair_color} hair, and {eye_color} eyes. The model has a {face_shape} face and is {pose}. Wearing {outfit}. Shot under {lighting} with a {background}. Hyperrealistic, soft shadows, fashion editorial photo."
+      },
+      {
+        "name": "Outdoor Fashion Editorial",
+        "description": "Best for lifestyle or natural lighting scenarios.",
+        "template": "A realistic outdoor fashion photo of a {age}-year-old {gender} with {complexion} skin, {hair_type} {hair_color} hair, {eye_color} eyes, and a {face_shape} face. The model is {pose}, wearing {outfit}. Captured in {lighting}, {background}. Ultra-detailed, vibrant colors, professional outdoor fashion shoot."
+      },
+      {
+        "name": "Runway Template",
+        "description": "For generating walking or motion-style fashion images.",
+        "template": "A runway fashion photo of a {age}-year-old {gender} model with {complexion} complexion, {hair_color} {hair_type} hair, and {eye_color} eyes. The model is {pose} down the runway wearing {outfit}. Captured with {lighting}, featuring a {background}. High-fashion atmosphere, motion realism, studio-grade lighting."
+      },
+      {
+        "name": "Full-Body Catalog Shot",
+        "description": "Perfect for clean e-commerce or lookbook photos.",
+        "template": "A full-body realistic image of a {age}-year-old {gender} with {complexion} skin, {hair_color} {hair_type} hair, {eye_color} eyes, {face_shape} face. Standing in {pose}, wearing {outfit}. Captured in {lighting} on a {background}. Sharp focus, product photography, detailed textures, 8K fashion catalog image."
+      },
+      {
+        "name": "Luxury Editorial Template",
+        "description": "For luxury, high-fashion, or magazine-cover aesthetics.",
+        "template": "A high-fashion editorial photo of a {age}-year-old {gender} with {complexion} skin, {hair_color} {hair_type} hair, {eye_color} eyes, {face_shape} face. The model is {pose}, wearing {outfit}. Captured in {lighting}, with a {background}. Vogue-style lighting, cinematic composition, ultra-detailed textures."
+      },
+      {
+        "name": "Streetwear Lifestyle",
+        "description": "Streetwear-oriented, youthful aesthetic with energy.",
+        "template": "A street-style fashion photo of a {age}-year-old {gender} with {complexion} complexion, {hair_type} {hair_color} hair, and {eye_color} eyes. The model is {pose}, wearing {outfit}. Captured in {lighting} in a {background}. Realistic lighting, street photography look, high-quality, natural tone balance."
+      },
+      {
+        "name": "Cultural/Traditional Template",
+        "description": "For traditional or ethnic wear fashion shots.",
+        "template": "A cultural fashion portrait of a {age}-year-old {gender} model with {complexion} complexion, {hair_type} {hair_color} hair, {eye_color} eyes, and {face_shape} face. The model is {pose}, wearing {outfit}. Captured in {lighting} with a {background}. Ultra-realistic traditional attire photography, fine detailing, professional lighting."
+      },
+      {
+        "name": "Close-up Beauty Portrait",
+        "description": "Best for makeup, accessories, or facial detail shots.",
+        "template": "A close-up portrait of a {age}-year-old {gender} with {complexion} complexion, {hair_color} {hair_type} hair, and {eye_color} eyes. The model has a {face_shape} face and is {pose}. Wearing {outfit}. Captured in {lighting} with a {background}. Sharp facial details, soft lighting, 8K ultra-detailed fashion photo."
+      },
+      {
+        "name": "Athletic / Sportswear Template",
+        "description": "For sports or fitness apparel photoshoots.",
+        "template": "A fitness fashion photo of a {age}-year-old {gender} model with {complexion} skin, {hair_color} {hair_type} hair, and {eye_color} eyes. The model is {pose}, wearing {outfit}. Captured in {lighting} in a {background}. Realistic lighting, muscular definition visible, high-energy, professional sportswear shoot."
+      },
+      {
+        "name": "Cinematic / Editorial Drama",
+        "description": "For cinematic, moody, or artistic compositions.",
+        "template": "A cinematic editorial shot of a {age}-year-old {gender} with {complexion} skin tone, {hair_color} {hair_type} hair, {eye_color} eyes, and {face_shape} face. The model is {pose}, wearing {outfit}. Captured under {lighting} in a {background}. Moody tones, dramatic lighting, highly detailed cinematic portrait."
+      },
+      {
+        "name": "Product-Focused Template",
+        "description": "Highlight outfit details for lookbooks and e-commerce.",
+        "template": "A detailed photo of a {age}-year-old {gender} model with {complexion} skin, {hair_color} {hair_type} hair, and {eye_color} eyes. The model is {pose}, wearing {outfit}. Captured under {lighting} in a {background}. The outfit is the focus, sharp fabric textures, color accuracy, fashion catalog style."
+      }
+    ],
+    "flux1_kontext_pro": [
+          {
+            "name": "Realistic Editorial Portrait",
+            "description": "High-end studio portrait optimized for skin tone, lighting realism, and fine fashion texture rendering.",
+            "template": "A highly detailed, ultra-realistic portrait of a {age}-year-old {gender} model with {complexion} complexion, {hair_color} {hair_type} hair, and {eye_color} eyes. The model has a {face_shape} face and is {pose}. Wearing {outfit} made of {fabric_description}. Captured in {lighting} with a {background}. Natural skin texture, cinematic tone mapping, editorial depth of field, rendered with photo-realistic precision."
+          },
+          {
+            "name": "Cinematic Fashion Editorial",
+            "description": "For dramatic, high-fashion campaign visuals with depth, emotion, and color tone precision.",
+            "template": "A cinematic fashion photo of a {age}-year-old {gender} with {complexion} skin, {hair_color} {hair_type} hair, and {eye_color} eyes. The model is {pose}, wearing {outfit}. Scene captured with {lighting} and a {background}. Volumetric light, dramatic contrast, glossy fabrics, natural expressions, ultra-detailed texture and composition, editorial-grade photography."
+          },
+          {
+            "name": "Full-Body Catalog Shot",
+            "description": "Balanced composition for lookbooks, e-commerce, or brand product images with accurate color calibration.",
+            "template": "A full-body photo of a {age}-year-old {gender} model with {complexion} complexion, {hair_type} {hair_color} hair, {eye_color} eyes, standing in {pose}. Wearing {outfit} with visible texture and fit details. Captured in {lighting} on a {background}. Sharp focus, natural posture, soft shadows, realistic proportions, commercial-grade fashion photography."
+          },
+          {
+            "name": "Luxury Fashion Campaign",
+            "description": "High-fashion, luxury brand aesthetics — elegant poses, clean color palette, dramatic lighting.",
+            "template": "A luxury fashion campaign image of a {age}-year-old {gender} with {complexion} skin, {hair_color} {hair_type} hair, {eye_color} eyes, {face_shape} face. The model is {pose}, wearing {outfit} featuring {fabric_description}. Captured under {lighting}, set in {background}. Cinematic tone mapping, depth-rich lighting, ultra-detailed fashion texture, editorial Vogue aesthetic."
+          },
+          {
+            "name": "Streetwear Editorial",
+            "description": "Dynamic and realistic street-style photography emphasizing energy, authenticity, and contrast.",
+            "template": "A street-style fashion editorial photo of a {age}-year-old {gender} model with {complexion} complexion, {hair_color} {hair_type} hair, {eye_color} eyes, {face_shape} face. The model is {pose}, wearing {outfit}. Captured in {lighting} within a {background}. Natural tone balance, dynamic posture, realistic lighting reflections, streetwear authenticity, cinematic realism."
+          },
+          {
+            "name": "Cultural / Traditional Fashion Portrait",
+            "description": "Optimized for rendering fabric detail, ornamentation, and cultural authenticity.",
+            "template": "A culturally inspired fashion portrait of a {age}-year-old {gender} model with {complexion} complexion, {hair_color} {hair_type} hair, {eye_color} eyes. The model is {pose}, wearing {outfit} with intricate {fabric_description}. Captured in {lighting} with a {background}. Sharp fabric detailing, realistic texture gradients, respectful cultural representation, cinematic realism."
+          },
+          {
+            "name": "Runway Scene",
+            "description": "For capturing motion, lighting, and atmosphere in fashion show environments.",
+            "template": "A runway scene featuring a {age}-year-old {gender} fashion model with {complexion} skin, {hair_color} {hair_type} hair, {eye_color} eyes. The model is {pose} on the catwalk, wearing {outfit}. Captured in {lighting} within a {background}. Realistic motion blur, ambient lighting reflections, luxury fashion tone, editorial-quality rendering."
+          },
+          {
+            "name": "Outdoor Lifestyle Fashion",
+            "description": "Optimized for daylight and ambient realism in open environments.",
+            "template": "A lifestyle fashion photo of a {age}-year-old {gender} with {complexion} skin, {hair_color} {hair_type} hair, {eye_color} eyes. The model is {pose}, wearing {outfit}. Captured in {lighting} within a {background}. Natural sunlight, vibrant tones, ultra-detailed realism, cinematic outdoor mood, high dynamic range lighting."
+          },
+          {
+            "name": "Close-up Beauty Shot",
+            "description": "Focuses on facial expression, makeup, and lighting quality for beauty campaigns.",
+            "template": "A close-up fashion beauty shot of a {age}-year-old {gender} with {complexion} complexion, {hair_color} {hair_type} hair, {eye_color} eyes, {face_shape} face. The model is {pose}, wearing {outfit} or minimal styling. Captured in {lighting} with a {background}. Skin pore-level detail, balanced highlights, photorealistic softness, cinematic lens depth."
+          },
+          {
+            "name": "Athletic / Sportswear Editorial",
+            "description": "Best for activewear, yoga, or performance fashion imagery.",
+            "template": "An athletic fashion editorial photo of a {age}-year-old {gender} model with {complexion} skin, {hair_color} {hair_type} hair, and {eye_color} eyes. The model is {pose}, wearing {outfit}. Captured in {lighting} within a {background}. Emphasis on movement, muscular definition, and fabric elasticity, hyperrealistic sports fashion shot."
+          },
+          {
+            "name": "Cinematic Monochrome Editorial",
+            "description": "Black-and-white editorial photography optimized for tone depth and facial character.",
+            "template": "A cinematic monochrome portrait of a {age}-year-old {gender} with {complexion} complexion, {hair_color} {hair_type} hair, {eye_color} eyes, {face_shape} face. The model is {pose}, wearing {outfit}. Captured in {lighting} with a {background}. Deep shadows, moody highlights, grayscale tonal depth, fashion magazine realism."
+          },
+          {
+            "name": "Experimental Artistic Editorial",
+            "description": "For creative or avant-garde aesthetics, focusing on emotion, abstraction, or motion blur.",
+            "template": "An artistic fashion editorial of a {age}-year-old {gender} with {complexion} skin, {hair_color} {hair_type} hair, {eye_color} eyes, and {face_shape} face. The model is {pose}, wearing {outfit}. Captured in {lighting} within a {background}. Expressive tone, shallow depth of field, emotional realism, artistic composition, cinematic rendering."
+          }
+        ]
+  }
