@@ -11,6 +11,11 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Amazon Nova Canvas virtual try-on using AWS Bedrock
   - Kling AI virtual try-on using Kolors API
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
+- **Datasets Module**: 
+  - Fashion-MNIST dataset loader with automatic download
+  - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
+  - Class-based adapter pattern for easy dataset integration
+  - Support for both small and large datasets
 - **Garment Preprocessing**: 
   - Garment segmentation using U2Net
   - Garment extraction and preprocessing
@@ -26,6 +31,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
+  - [Datasets Module](#datasets-module)
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Preprocessing Functions](#preprocessing-functions)
@@ -139,6 +145,56 @@ python main.py --dataset data --action segment_human
 ```
 
 ## 📖 Usage
+
+### Datasets Module
+
+The `tryon.datasets` module provides easy-to-use interfaces for downloading and loading datasets commonly used in fashion and virtual try-on applications. The module uses a class-based adapter pattern for consistency and extensibility.
+
+#### Supported Datasets
+
+- **Fashion-MNIST**: A dataset of Zalando's article images (60K training, 10K test, 10 classes, 28×28 grayscale images)
+- **VITON-HD**: A high-resolution virtual try-on dataset (11,647 training pairs, 2,032 test pairs, 1024×768 RGB images)
+
+#### Quick Example
+
+```python
+from tryon.datasets import FashionMNIST, VITONHD
+from torchvision import transforms
+
+# Fashion-MNIST: Small dataset, loads entirely into memory
+fashion_dataset = FashionMNIST(download=True)
+(train_images, train_labels), (test_images, test_labels) = fashion_dataset.load(
+    normalize=True,
+    flatten=False
+)
+print(f"Training set: {train_images.shape}")  # (60000, 28, 28)
+
+# VITON-HD: Large dataset, uses lazy loading via DataLoader
+viton_dataset = VITONHD(data_dir="./datasets/viton_hd", download=False)
+transform = transforms.Compose([
+    transforms.Resize((512, 384)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+])
+train_loader = viton_dataset.get_dataloader(
+    split='train',
+    batch_size=8,
+    shuffle=True,
+    transform=transform
+)
+```
+
+#### Documentation
+
+For comprehensive documentation, API reference, usage examples, and best practices, see the [Datasets Module Documentation](tryon/datasets/README.md).
+
+**Key Features:**
+- ✅ Automatic download for Fashion-MNIST
+- ✅ Lazy loading for large datasets (VITON-HD)
+- ✅ PyTorch DataLoader integration
+- ✅ Consistent API across datasets
+- ✅ Class-based and function-based interfaces
+- ✅ Support for custom transforms and preprocessing
 
 ### Virtual Try-On with Amazon Nova Canvas
 
@@ -460,6 +516,12 @@ opentryon/
 │   ├── api/                 # API adapters
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
 │   │   └── kling_ai.py     # Kling AI VTON adapter
+│   ├── datasets/            # Dataset loaders
+│   │   ├── base.py         # Base dataset interface
+│   │   ├── fashion_mnist.py # Fashion-MNIST dataset
+│   │   ├── viton_hd.py     # VITON-HD dataset
+│   │   ├── example_usage.py # Usage examples
+│   │   └── README.md       # Datasets documentation
 │   ├── preprocessing/        # Preprocessing utilities
 │   │   ├── captioning/       # Image captioning
 │   │   ├── sam2/            # SAM2 segmentation
