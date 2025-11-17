@@ -10,6 +10,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Virtual Try-On**: 
   - Amazon Nova Canvas virtual try-on using AWS Bedrock
   - Kling AI virtual try-on using Kolors API
+  - Segmind Try-On Diffusion API integration
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
@@ -34,6 +35,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Datasets Module](#datasets-module)
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
+  - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -92,12 +94,16 @@ AMAZON_NOVA_MODEL_ID=amazon.nova-canvas-v1:0  # Optional
 KLING_AI_API_KEY=your_kling_api_key
 KLING_AI_SECRET_KEY=your_kling_secret_key
 KLING_AI_BASE_URL=https://api-singapore.klingai.com  # Optional, defaults to Singapore endpoint
+
+# Segmind Credentials (required for Segmind virtual try-on)
+SEGMIND_API_KEY=your_segmind_api_key
 ```
 
 **Notes**: 
 - Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation)
 - For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+- For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
 
 ## 🎮 Quick Start
 
@@ -232,6 +238,12 @@ python vton.py --provider kling --source person.jpg --reference garment.jpg
 
 # Specify model version - Kling AI
 python vton.py --provider kling --source person.jpg --reference garment.jpg --model kolors-virtual-try-on-v1-5
+
+# Basic usage - Segmind
+python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Upper body"
+
+# Specify inference parameters - Segmind
+python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Lower body" --num-steps 35 --guidance-scale 2.5
 
 # Save output to specific directory
 python vton.py --provider nova --source person.jpg --reference garment.jpg --output-dir results/
@@ -440,6 +452,115 @@ for idx, image in enumerate(images):
 
 **Reference**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 
+### Virtual Try-On with Segmind
+
+Generate realistic virtual try-on images using Segmind's Try-On Diffusion API. This feature combines a model image (person) with a cloth image (garment/product) to create realistic try-on results.
+
+#### Prerequisites
+
+1. **Segmind Account Setup**: 
+   - Sign up for a Segmind account at [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
+   - Obtain your API key from the Segmind dashboard
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+2. **Image Requirements**:
+   - Images can be provided as file paths, URLs, or base64-encoded strings
+   - Supported formats: JPG, PNG
+   - Both model and cloth images must be valid image files
+
+#### Command Line Usage
+
+```bash
+# Basic usage
+python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Upper body"
+
+# Specify garment category
+python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Lower body"
+
+# Use custom inference parameters
+python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Dress" --num-steps 35 --guidance-scale 2.5 --seed 42
+
+# Save output to specific directory
+python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Upper body" --output-dir results/
+```
+
+#### Python API Usage
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api import SegmindVTONAdapter
+from PIL import Image
+
+# Initialize adapter (uses environment variable by default)
+adapter = SegmindVTONAdapter()
+
+# Or specify API key directly
+adapter = SegmindVTONAdapter(api_key="your_api_key")
+
+# Generate virtual try-on images
+images = adapter.generate_and_decode(
+    model_image="data/person.jpg",
+    cloth_image="data/garment.jpg",
+    category="Upper body",  # Options: "Upper body", "Lower body", "Dress"
+    num_inference_steps=35,  # Optional: 20-100, default: 25
+    guidance_scale=2.5,  # Optional: 1-25, default: 2
+    seed=42  # Optional: -1 to 999999999999999, default: -1
+)
+
+# Save results
+for idx, image in enumerate(images):
+    image.save(f"outputs/vton_result_{idx}.png")
+```
+
+#### Garment Categories
+
+Segmind supports three garment categories:
+- `"Upper body"`: Tops, shirts, jackets, hoodies (default)
+- `"Lower body"`: Pants, skirts, shorts
+- `"Dress"`: Dresses, jumpsuits
+
+#### Inference Parameters
+
+- **num_inference_steps**: Number of denoising steps (default: 25, range: 20-100)
+  - Higher values may produce better quality but take longer
+- **guidance_scale**: Scale for classifier-free guidance (default: 2, range: 1-25)
+  - Higher values make the model follow the input more closely
+- **seed**: Seed for reproducible results (default: -1 for random, range: -1 to 999999999999999)
+
+#### Example: Complete Workflow
+
+```python
+from tryon.api import SegmindVTONAdapter
+
+# Initialize adapter
+adapter = SegmindVTONAdapter()
+
+# Generate try-on for upper body garment
+images = adapter.generate_and_decode(
+    model_image="data/person.jpg",
+    cloth_image="data/shirt.jpg",
+    category="Upper body"
+)
+
+# Generate try-on for lower body garment with custom parameters
+images = adapter.generate_and_decode(
+    model_image="data/person.jpg",
+    cloth_image="data/pants.jpg",
+    category="Lower body",
+    num_inference_steps=35,
+    guidance_scale=2.5,
+    seed=42
+)
+
+# Save all results
+for idx, image in enumerate(images):
+    image.save(f"outputs/result_{idx}.png")
+```
+
+**Reference**: [Segmind Try-On Diffusion API Documentation](https://www.segmind.com/models/try-on-diffusion/api)
+
 ### Preprocessing Functions
 
 #### Segment Garment
@@ -515,7 +636,8 @@ opentryon/
 ├── tryon/                    # Main try-on preprocessing module
 │   ├── api/                 # API adapters
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
-│   │   └── kling_ai.py     # Kling AI VTON adapter
+│   │   ├── kling_ai.py     # Kling AI VTON adapter
+│   │   └── segmind.py      # Segmind Try-On Diffusion adapter
 │   ├── datasets/            # Dataset loaders
 │   │   ├── base.py         # Base dataset interface
 │   │   ├── fashion_mnist.py # Fashion-MNIST dataset
@@ -616,6 +738,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **TryOnDiffusion Paper**: [arXiv:2306.08276](https://arxiv.org/abs/2306.08276)
 - **Amazon Nova Canvas**: [AWS Blog Post](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
 - **Kling AI**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+- **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 

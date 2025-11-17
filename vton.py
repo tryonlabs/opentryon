@@ -4,11 +4,11 @@ load_dotenv()
 import os
 import argparse
 from pathlib import Path
-from tryon.api import AmazonNovaCanvasVTONAdapter, KlingAIVTONAdapter
+from tryon.api import AmazonNovaCanvasVTONAdapter, KlingAIVTONAdapter, SegmindVTONAdapter
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate virtual try-on images using Amazon Nova Canvas or Kling AI",
+        description="Generate virtual try-on images using Amazon Nova Canvas, Kling AI, or Segmind",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -27,6 +27,12 @@ Examples:
   # Kling AI - Specify model version
   python vton.py --provider kling --source person.jpg --reference garment.jpg --model kolors-virtual-try-on-v1-5
   
+  # Segmind - Basic usage
+  python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Upper body"
+  
+  # Segmind - Specify inference parameters
+  python vton.py --provider segmind --source person.jpg --reference garment.jpg --category "Lower body" --num-steps 35 --guidance-scale 2.5
+  
   # Save output to specific directory
   python vton.py --provider nova --source person.jpg --reference garment.jpg --output-dir results/
   
@@ -40,8 +46,8 @@ Examples:
         '--provider',
         type=str,
         required=True,
-        choices=['nova', 'kling'],
-        help='Virtual try-on provider to use. Options: nova (Amazon Nova Canvas), kling (Kling AI)'
+        choices=['nova', 'kling', 'segmind'],
+        help='Virtual try-on provider to use. Options: nova (Amazon Nova Canvas), kling (Kling AI), segmind (Segmind Try-On Diffusion)'
     )
     
     # Required arguments
@@ -110,6 +116,36 @@ Examples:
         type=str,
         default=None,
         help='Base URL for API (Kling AI only). Defaults to KLING_AI_BASE_URL env var or https://api-singapore.klingai.com'
+    )
+    
+    # Optional arguments for Segmind
+    parser.add_argument(
+        '--category',
+        type=str,
+        default='Upper body',
+        choices=['Upper body', 'Lower body', 'Dress'],
+        help='Garment category (Segmind only). Options: Upper body, Lower body, Dress. Default: Upper body'
+    )
+    
+    parser.add_argument(
+        '--num-steps',
+        type=int,
+        default=None,
+        help='Number of inference steps (Segmind only). Default: 25. Range: 20-100'
+    )
+    
+    parser.add_argument(
+        '--guidance-scale',
+        type=float,
+        default=None,
+        help='Guidance scale for classifier-free guidance (Segmind only). Default: 2. Range: 1-25'
+    )
+    
+    parser.add_argument(
+        '--seed',
+        type=int,
+        default=None,
+        help='Seed for image generation (Segmind only). Default: -1. Range: -1 to 999999999999999'
     )
     
     parser.add_argument(
@@ -229,6 +265,54 @@ Examples:
                 source_image=args.source,
                 reference_image=args.reference,
                 model=args.model
+            )
+            
+        except ValueError as e:
+            print(f"\n✗ Error: {e}")
+            return 1
+        except Exception as e:
+            print(f"\n✗ Unexpected error: {e}")
+            return 1
+    
+    elif args.provider == 'segmind':
+        print(f"Initializing Segmind adapter...")
+        
+        # Check for required environment variable
+        api_key = os.getenv("SEGMIND_API_KEY")
+        
+        if not api_key:
+            print("\n✗ Error: Segmind requires SEGMIND_API_KEY environment variable.")
+            print("   Please set it in your .env file or environment.")
+            return 1
+        
+        adapter = SegmindVTONAdapter(api_key=api_key)
+        
+        # Generate images
+        print(f"Generating virtual try-on image...")
+        print(f"  Model image: {args.source}")
+        print(f"  Cloth image: {args.reference}")
+        print(f"  Category: {args.category}")
+        if args.num_steps:
+            print(f"  Inference steps: {args.num_steps}")
+        if args.guidance_scale:
+            print(f"  Guidance scale: {args.guidance_scale}")
+        if args.seed is not None:
+            print(f"  Seed: {args.seed}")
+        
+        try:
+            import base64
+            from PIL import Image
+            import io
+            
+            # Generate images (decode to PIL Image objects for saving)
+            print("Generating images...")
+            images_pil = adapter.generate_and_decode(
+                model_image=args.source,
+                cloth_image=args.reference,
+                category=args.category,
+                num_inference_steps=args.num_steps,
+                guidance_scale=args.guidance_scale,
+                seed=args.seed
             )
             
         except ValueError as e:
