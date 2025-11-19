@@ -1,0 +1,356 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Import Roboto font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/* TryOn Labs Brand Colors */
+/* Primary Teal: #1FA08F */
+/* Primary Dark: #1a8a7a */
+/* Secondary Blue-Gray: #486876 */
+/* Neutral Dark: #131E32 */
+/* Neutral Light: #BDB7C0 */
+
+/* You can override the default Infima variables here. */
+:root {
+  /* Primary brand color - TryOn Labs Teal */
+  --ifm-color-primary: #1FA08F;
+  --ifm-color-primary-dark: #1a8a7a;
+  --ifm-color-primary-darker: #178070;
+  --ifm-color-primary-darkest: #12685a;
+  --ifm-color-primary-light: #2fb5a3;
+  --ifm-color-primary-lighter: #3fc0ad;
+  --ifm-color-primary-lightest: #5fcfbf;
+  
+  /* Secondary color - Blue-Gray */
+  --ifm-color-secondary: #486876;
+  --ifm-color-secondary-dark: #3d5762;
+  --ifm-color-secondary-darker: #36515a;
+  --ifm-color-secondary-darkest: #2c4249;
+  --ifm-color-secondary-light: #5a7a8a;
+  --ifm-color-secondary-lighter: #6e8a98;
+  --ifm-color-secondary-lightest: #8fa5b0;
+  
+  /* Text colors */
+  --ifm-font-color-base: #131E32;
+  --ifm-heading-color: #131E32;
+  --ifm-color-content: #131E32;
+  --ifm-color-content-secondary: #486876;
+  
+  /* Background colors */
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f0f4f6;
+  
+  /* Code block colors */
+  --ifm-code-font-size: 95%;
+  --ifm-code-background: linear-gradient(135deg, #e0f7f5 0%, #b2ede8 100%);
+  --ifm-code-color: #1a8a7a;
+  --docusaurus-highlighted-code-line-bg: rgba(31, 160, 143, 0.1);
+  
+  /* Link colors */
+  --ifm-link-color: #1FA08F;
+  --ifm-link-hover-color: #1a8a7a;
+  
+  /* Border colors */
+  --ifm-border-color: #c2d4da;
+  --ifm-hr-border-color: #e2e8f0;
+  
+  /* Set Roboto as the default font family */
+  --ifm-font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --ifm-heading-font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  
+  /* Navbar colors */
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-navbar-shadow: 0 2px 8px rgba(19, 30, 50, 0.08);
+  --ifm-navbar-height: 70px;
+  --ifm-navbar-padding-vertical: 0.75rem;
+  --ifm-navbar-padding-horizontal: 1.5rem;
+  --ifm-navbar-item-padding-vertical: 0.5rem;
+  --ifm-navbar-item-padding-horizontal: 1rem;
+}
+
+/* Dark mode - adjusted for TryOn Labs brand colors */
+[data-theme='dark'] {
+  /* Primary brand color - lighter shades for dark mode */
+  --ifm-color-primary: #2fb5a3;
+  --ifm-color-primary-dark: #1FA08F;
+  --ifm-color-primary-darker: #1a8a7a;
+  --ifm-color-primary-darkest: #178070;
+  --ifm-color-primary-light: #3fc0ad;
+  --ifm-color-primary-lighter: #5fcfbf;
+  --ifm-color-primary-lightest: #7fded0;
+  
+  /* Secondary color - lighter shades for dark mode */
+  --ifm-color-secondary: #6e8a98;
+  --ifm-color-secondary-dark: #5a7a8a;
+  --ifm-color-secondary-darker: #486876;
+  --ifm-color-secondary-darkest: #3d5762;
+  --ifm-color-secondary-light: #8fa5b0;
+  --ifm-color-secondary-lighter: #a8b9c2;
+  --ifm-color-secondary-lightest: #c1ced4;
+  
+  /* Text colors for dark mode */
+  --ifm-font-color-base: #e2e8f0;
+  --ifm-heading-color: #ffffff;
+  --ifm-color-content: #e2e8f0;
+  --ifm-color-content-secondary: #BDB7C0;
+  
+  /* Background colors for dark mode */
+  --ifm-background-color: #131E32;
+  --ifm-background-surface-color: #1a2538;
+  
+  /* Code block colors for dark mode */
+  --docusaurus-highlighted-code-line-bg: rgba(31, 160, 143, 0.2);
+  
+  /* Link colors for dark mode */
+  --ifm-link-color: #2fb5a3;
+  --ifm-link-hover-color: #3fc0ad;
+  
+  /* Border colors for dark mode */
+  --ifm-border-color: #2d3a4f;
+  --ifm-hr-border-color: #2d3a4f;
+  
+  /* Navbar colors for dark mode */
+  --ifm-navbar-background-color: #131E32;
+  --ifm-navbar-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Apply Roboto font to all text elements */
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  color: #131E32;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500; /* Medium weight for headings */
+  color: #131E32;
+}
+
+/* TryOn Labs brand styling for headings */
+h2 {
+  border-left: 5px solid #1FA08F;
+  padding-left: 16px;
+  background: linear-gradient(90deg, rgba(31, 160, 143, 0.08) 0%, transparent 100%);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+h4 {
+  color: #486876;
+}
+
+/* Code blocks with TryOn Labs styling */
+code {
+  background: linear-gradient(135deg, #e0f7f5 0%, #b2ede8 100%);
+  color: #1a8a7a;
+  border: 1px solid #80e3db;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+pre {
+  background: linear-gradient(135deg, #f0f4f6 0%, #e0f7f5 100%);
+  border: 1px solid #c2d4da;
+  border-left: 4px solid #1FA08F;
+  border-radius: 8px;
+}
+
+pre code {
+  background: transparent;
+  border: none;
+  color: #131E32;
+}
+
+/* Blockquotes with TryOn Labs styling */
+blockquote {
+  border-left: 4px solid #486876;
+  background: linear-gradient(90deg, rgba(72, 104, 118, 0.08) 0%, transparent 100%);
+  color: #486876;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Tables with TryOn Labs styling */
+table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+th {
+  background: linear-gradient(135deg, #1FA08F 0%, #1a8a7a 100%);
+  color: #ffffff;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+  background-color: #f0f4f6;
+}
+
+tr:hover {
+  background-color: #e0f7f5;
+}
+
+/* Links */
+a {
+  color: #1FA08F;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #1a8a7a;
+}
+
+/* Keep monospace font for code blocks */
+code, pre {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] body {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] h1,
+[data-theme='dark'] h2,
+[data-theme='dark'] h3,
+[data-theme='dark'] h4,
+[data-theme='dark'] h5,
+[data-theme='dark'] h6 {
+  color: #ffffff;
+}
+
+[data-theme='dark'] h2 {
+  border-left-color: #2fb5a3;
+  background: linear-gradient(90deg, rgba(47, 181, 163, 0.15) 0%, transparent 100%);
+}
+
+[data-theme='dark'] h4 {
+  color: #6e8a98;
+}
+
+[data-theme='dark'] code {
+  background: rgba(31, 160, 143, 0.2);
+  color: #2fb5a3;
+  border-color: rgba(47, 181, 163, 0.3);
+}
+
+[data-theme='dark'] pre {
+  background: #1a2538;
+  border-color: #2d3a4f;
+  border-left-color: #2fb5a3;
+}
+
+[data-theme='dark'] blockquote {
+  border-left-color: #6e8a98;
+  background: linear-gradient(90deg, rgba(110, 138, 152, 0.15) 0%, transparent 100%);
+  color: #a8b9c2;
+}
+
+[data-theme='dark'] th {
+  background: linear-gradient(135deg, #2fb5a3 0%, #1FA08F 100%);
+}
+
+[data-theme='dark'] tr:nth-child(even) {
+  background-color: #1a2538;
+}
+
+[data-theme='dark'] tr:hover {
+  background-color: rgba(31, 160, 143, 0.1);
+}
+
+/* Footer styling - TryOn Labs brand colors */
+.footer {
+  background-color: #131E32;
+  color: #e2e8f0;
+}
+
+.footer__title {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.footer__link-item {
+  color: #BDB7C0;
+  transition: color 0.2s ease;
+}
+
+.footer__link-item:hover {
+  color: #1FA08F;
+}
+
+.footer__copyright {
+  color: #BDB7C0;
+}
+
+/* Ensure footer links are visible */
+.footer a {
+  color: #BDB7C0;
+}
+
+.footer a:hover {
+  color: #1FA08F;
+}
+
+/* Dark mode footer - already dark, ensure text is light */
+[data-theme='dark'] .footer {
+  background-color: #131E32;
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .footer__title {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .footer__link-item,
+[data-theme='dark'] .footer a {
+  color: #BDB7C0;
+}
+
+[data-theme='dark'] .footer__link-item:hover,
+[data-theme='dark'] .footer a:hover {
+  color: #2fb5a3;
+}
+
+[data-theme='dark'] .footer__copyright {
+  color: #BDB7C0;
+}
+
+/* Reduce gap between navbar items */
+.navbar__items--right {
+  gap: 0.25rem;
+}
+
+.navbar__item {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Align icons and text in navbar links */
+.navbar__link-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar__link-with-icon svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Increase navbar title size by 20% */
+.navbar__title {
+  font-size: 1.25rem;
+}
+
+/* Add border radius to navbar logo */
+.navbar__logo {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
