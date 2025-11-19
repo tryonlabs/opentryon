@@ -10,9 +10,8 @@ const config: Config = {
   // Set the production url of your site here
   url: 'https://tryonlabs.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For local development, use '/' - for GitHub Pages, use '/opentryon/'
-  // Change this to '/opentryon/' when building for production deployment
-  baseUrl: '/',
+  // For GitHub Pages project pages, use '/opentryon/'
+  baseUrl: '/opentryon/',
   
   // SEO Configuration
   trailingSlash: false, // Better for SEO - no trailing slashes
@@ -37,7 +36,7 @@ const config: Config = {
           priceCurrency: 'USD',
         },
         description: 'Open-source AI toolkit for fashion technology and virtual try-on applications. Provides tools for garment segmentation, human parsing, pose estimation, and virtual try-on using state-of-the-art diffusion models.',
-        url: 'https://tryonlabs.github.io',
+        url: 'https://tryonlabs.github.io/opentryon',
         author: {
           '@type': 'Organization',
           name: 'TryOn Labs',
@@ -59,7 +58,7 @@ const config: Config = {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'OpenTryOn',
-        url: 'https://tryonlabs.github.io',
+        url: 'https://tryonlabs.github.io/opentryon',
         description: 'Open-source AI toolkit for fashion technology and virtual try-on applications',
         publisher: {
           '@type': 'Organization',
@@ -67,14 +66,14 @@ const config: Config = {
           url: 'https://tryonlabs.ai',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://tryonlabs.github.io/img/logo.png',
+            url: 'https://tryonlabs.github.io/opentryon/img/logo.png',
           },
         },
         potentialAction: {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: 'https://tryonlabs.github.io/search?q={search_term_string}',
+            urlTemplate: 'https://tryonlabs.github.io/opentryon/search?q={search_term_string}',
           },
           'query-input': 'required name=search_term_string',
         },
@@ -99,7 +98,7 @@ const config: Config = {
           name: 'TryOn Labs',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://tryonlabs.github.io/img/logo.png',
+            url: 'https://tryonlabs.github.io/opentryon/img/logo.png',
           },
         },
         datePublished: '2024-01-01',
@@ -134,7 +133,7 @@ const config: Config = {
         rel: 'alternate',
         type: 'application/rss+xml',
         title: 'OpenTryOn Documentation',
-        href: 'https://tryonlabs.github.io/feed.xml',
+        href: 'https://tryonlabs.github.io/opentryon/feed.xml',
       },
     },
   ],
@@ -144,11 +143,13 @@ const config: Config = {
   projectName: 'opentryon',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
   // Markdown configuration
   markdown: {
     format: 'mdx',
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
   },
 
   // Even if you don't use internationalization, you can use this field to set
@@ -175,6 +176,12 @@ const config: Config = {
           showLastUpdateTime: false,
         },
         blog: false,
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -308,15 +315,6 @@ const config: Config = {
         highlightSearchTermsOnTargetPage: true, // Highlight search terms on target page
         searchResultLimits: 8, // Limit search results
         searchResultContextMaxLength: 50, // Context length for search results
-      },
-    ],
-    [
-      '@docusaurus/plugin-sitemap',
-      {
-        changefreq: 'weekly',
-        priority: 0.5,
-        ignorePatterns: ['/tags/**'],
-        filename: 'sitemap.xml',
       },
     ],
     // Note: Client-side redirects only work in production builds

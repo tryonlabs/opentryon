@@ -259,7 +259,7 @@ For experienced contributors:
 1. **Find an Issue**: Check our [GitHub Issues](https://github.com/tryonlabs/opentryon/issues) for tasks labeled `good first issue`, `help wanted`, or `intermediate`
 2. **Claim a Task**: Comment on the issue to let us know you're working on it
 3. **Fork & Branch**: Fork the repo and create a feature branch
-4. **Code**: Write clean, tested code following our [Contributing Guidelines](../contributing)
+4. **Code**: Write clean, tested code following our [Contributing Guidelines](./contributing)
 5. **Test**: Ensure all tests pass and add new tests for your changes
 6. **Document**: Update documentation and add docstrings
 7. **Submit PR**: Open a pull request with a clear description
@@ -320,4 +320,4 @@ We use these labels to help you find tasks:
 
 ---
 
-**Ready to contribute?** Check out our [Contributing Guide](../contributing) and start with a `good first issue`!
+**Ready to contribute?** Check out our [Contributing Guide](./contributing) and start with a `good first issue`!
