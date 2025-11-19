@@ -1,9 +1,12 @@
 # OpenTryOn: Open-source AI toolkit for fashion tech and virtual try-on
 
+[![Documentation](https://img.shields.io/badge/Documentation-Read%20Docs-teal?style=flat-square)](https://tryonlabs.github.io/opentryon/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-blue?style=flat-square&logo=discord)](https://discord.gg/T5mPpZHxkY)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 OpenTryOn is an open-source AI toolkit designed for fashion technology and virtual try-on applications. This project provides a comprehensive suite of tools for garment segmentation, human parsing, pose estimation, and virtual try-on using state-of-the-art diffusion models.
+
+📚 **Documentation**: Comprehensive documentation is available at [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)
 
 ## 🎯 Features
 
@@ -29,6 +32,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 
 ## 📋 Table of Contents
 
+- [Documentation](#documentation)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
@@ -42,6 +46,21 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - [TryOnDiffusion Roadmap](#tryondiffusion-roadmap)
 - [Contributing](#contributing)
 - [License](#license)
+
+## 📚 Documentation
+
+**Complete documentation** for OpenTryOn is available at **[https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)**
+
+The documentation includes:
+- Getting Started guides
+- API Reference for all modules
+- Usage examples and tutorials
+- Datasets documentation (Fashion-MNIST, VITON-HD)
+- API adapters documentation (Segmind, Kling AI, Amazon Nova Canvas)
+- Interactive demos and examples
+- Advanced guides and troubleshooting
+
+Visit the [documentation site](https://tryonlabs.github.io/opentryon/) to explore all features, learn how to use OpenTryOn, and get started quickly!
 
 ## 🚀 Installation
 
