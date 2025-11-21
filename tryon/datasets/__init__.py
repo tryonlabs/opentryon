@@ -23,6 +23,11 @@ from .viton_hd import (
     VITONHDPyTorchDataset,
     load_viton_hd,
 )
+from .subjects200k import (
+    Subjects200K,
+    Subjects200KPyTorchDataset,
+    load_subjects200k,
+)
 
 __all__ = [
     # Base class
@@ -37,5 +42,9 @@ __all__ = [
     'VITONHD',
     'VITONHDPyTorchDataset',
     'load_viton_hd',
+    # Subjects200K
+    'Subjects200K',
+    'Subjects200KPyTorchDataset',
+    'load_subjects200k',
 ]
 
