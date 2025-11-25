@@ -8,6 +8,10 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 
 📚 **Documentation**: Comprehensive documentation is available at [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=tryonlabs/opentryon&type=date&legend=top-left)](https://www.star-history.com/#tryonlabs/opentryon&type=date&legend=top-left)
+
 ## 🎯 Features
 
 - **Virtual Try-On**: 
@@ -15,6 +19,9 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Kling AI virtual try-on using Kolors API
   - Segmind Try-On Diffusion API integration
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
+- **Image Generation**: 
+  - Nano Banana (Gemini 2.5 Flash Image) for fast, efficient image generation
+  - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -40,6 +47,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
+  - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -116,6 +124,9 @@ KLING_AI_BASE_URL=https://api-singapore.klingai.com  # Optional, defaults to Sin
 
 # Segmind Credentials (required for Segmind virtual try-on)
 SEGMIND_API_KEY=your_segmind_api_key
+
+# Google Gemini Credentials (required for Nano Banana image generation)
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 **Notes**: 
@@ -123,6 +134,7 @@ SEGMIND_API_KEY=your_segmind_api_key
 - For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
+- For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ## 🎮 Quick Start
 
@@ -580,6 +592,136 @@ for idx, image in enumerate(images):
 
 **Reference**: [Segmind Try-On Diffusion API Documentation](https://www.segmind.com/models/try-on-diffusion/api)
 
+### Image Generation with Nano Banana
+
+Generate high-quality images using Google's Gemini image generation models (Nano Banana and Nano Banana Pro). These models support text-to-image generation, image editing, multi-image composition, and batch generation.
+
+#### Prerequisites
+
+1. **Google Gemini Account Setup**: 
+   - Sign up for a Google AI Studio account at [Google AI Studio](https://aistudio.google.com/)
+   - Obtain your API key from the [API Keys page](https://aistudio.google.com/app/apikey)
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **Nano Banana (Gemini 2.5 Flash Image)**: Fast, efficient, 1024px resolution - ideal for high-volume tasks
+   - **Nano Banana Pro (Gemini 3 Pro Image Preview)**: Advanced, up to 4K resolution, search grounding - ideal for professional production
+
+#### Command Line Usage
+
+```bash
+# Text-to-image with Nano Banana (Fast)
+python image_gen.py --provider nano-banana --prompt "A stylish fashion model wearing a modern casual outfit in a studio setting"
+
+# Text-to-image with Nano Banana Pro (4K)
+python image_gen.py --provider nano-banana-pro --prompt "Professional fashion photography of elegant evening wear on a runway" --resolution 4K
+
+# Image editing
+python image_gen.py --provider nano-banana --mode edit --image person.jpg --prompt "Change the outfit to a formal business suit"
+
+# Multi-image composition
+python image_gen.py --provider nano-banana --mode compose --images outfit1.jpg outfit2.jpg --prompt "Create a fashion catalog layout combining these clothing styles"
+
+# Batch generation
+python image_gen.py --provider nano-banana --batch prompts.txt --output-dir results/
+```
+
+#### Python API Usage
+
+**Nano Banana (Fast):**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api.nano_banana import NanoBananaAdapter
+
+# Initialize adapter
+adapter = NanoBananaAdapter()
+
+# Text-to-image generation
+images = adapter.generate_text_to_image(
+    prompt="A stylish fashion model wearing a modern casual outfit in a studio setting",
+    aspect_ratio="16:9"  # Optional: "1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"
+)
+
+# Image editing
+images = adapter.generate_image_edit(
+    image="person.jpg",
+    prompt="Change the outfit to a formal business suit"
+)
+
+# Multi-image composition
+images = adapter.generate_multi_image(
+    images=["outfit1.jpg", "outfit2.jpg"],
+    prompt="Create a fashion catalog layout combining these clothing styles"
+)
+
+# Batch generation
+results = adapter.generate_batch([
+    "A fashion model showcasing summer collection",
+    "Professional photography of formal wear",
+    "Casual street style outfit on a model"
+])
+
+# Save results
+for idx, image in enumerate(images):
+    image.save(f"outputs/generated_{idx}.png")
+```
+
+**Nano Banana Pro (Advanced):**
+
+```python
+from tryon.api.nano_banana import NanoBananaProAdapter
+
+# Initialize adapter
+adapter = NanoBananaProAdapter()
+
+# Text-to-image with 4K resolution
+images = adapter.generate_text_to_image(
+    prompt="Professional fashion photography of elegant evening wear on a runway",
+    resolution="4K",  # Options: "1K", "2K", "4K"
+    aspect_ratio="16:9",
+    use_search_grounding=True  # Optional: Use Google Search for real-world grounding
+)
+
+# Image editing with 2K resolution
+images = adapter.generate_image_edit(
+    image="person.jpg",
+    prompt="Change the outfit to a formal business suit",
+    resolution="2K"
+)
+
+# Save results
+images[0].save("result.png")
+```
+
+#### Supported Features
+
+- **Text-to-Image**: Generate images from text descriptions
+- **Image Editing**: Edit images using text prompts (add, remove, modify elements)
+- **Multi-Image Composition**: Combine multiple images with style transfer
+- **Batch Generation**: Generate multiple images in batch
+- **Aspect Ratios**: 10 supported aspect ratios (1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9)
+- **High Resolution**: Up to 4K resolution with Nano Banana Pro
+- **Search Grounding**: Real-world grounding using Google Search (Nano Banana Pro only)
+
+#### Aspect Ratios
+
+**Nano Banana (1024px):**
+- `"1:1"` (1024x1024)
+- `"16:9"` (1344x768)
+- `"9:16"` (768x1344)
+- And 7 more options
+
+**Nano Banana Pro (1K/2K/4K):**
+- Same aspect ratios with resolution-specific dimensions
+- `"1K"`: Standard resolution
+- `"2K"`: High resolution
+- `"4K"`: Ultra-high resolution
+
+**Reference**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
+
 ### Preprocessing Functions
 
 #### Segment Garment
@@ -749,6 +891,7 @@ Key dependencies include:
 - PyJWT (>= 2.10.1)
 - boto3 (== 1.40.64)
 - python-dotenv (== 1.0.1)
+- google-genai (== 1.52.0)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.
 
@@ -758,6 +901,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **Amazon Nova Canvas**: [AWS Blog Post](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
 - **Kling AI**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 - **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
+- **Nano Banana**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 
