@@ -220,6 +220,66 @@ See [Nova Canvas API Documentation](nova-canvas) for complete details.
 
 ---
 
+## Image Generation API Adapters
+
+### `NanoBananaAdapter`
+
+Adapter for Gemini 2.5 Flash Image (Nano Banana) - fast and efficient image generation.
+
+```python
+from tryon.api.nano_banana import NanoBananaAdapter
+
+adapter = NanoBananaAdapter(api_key="your_api_key")
+
+images = adapter.generate_text_to_image(
+    prompt="A nano banana dish in a fancy restaurant",
+    aspect_ratio="16:9"
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): Google Gemini API key. Defaults to `GEMINI_API_KEY` environment variable
+
+**Methods:**
+- `generate_text_to_image(prompt, aspect_ratio, ...)` - Generate images from text
+- `generate_image_edit(image, prompt, aspect_ratio, ...)` - Edit images with text prompts
+- `generate_multi_image(images, prompt, aspect_ratio, ...)` - Compose multiple images
+- `generate_batch(prompts, aspect_ratio, ...)` - Batch generation
+
+See [Nano Banana API Documentation](nano-banana) for complete details.
+
+---
+
+### `NanoBananaProAdapter`
+
+Adapter for Gemini 3 Pro Image Preview (Nano Banana Pro) - advanced image generation with 4K support.
+
+```python
+from tryon.api.nano_banana import NanoBananaProAdapter
+
+adapter = NanoBananaProAdapter(api_key="your_api_key")
+
+images = adapter.generate_text_to_image(
+    prompt="A professional nano banana dish",
+    resolution="4K",
+    aspect_ratio="16:9",
+    use_search_grounding=True
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): Google Gemini API key. Defaults to `GEMINI_API_KEY` environment variable
+
+**Methods:**
+- `generate_text_to_image(prompt, resolution, aspect_ratio, use_search_grounding, ...)` - Generate images from text
+- `generate_image_edit(image, prompt, resolution, aspect_ratio, ...)` - Edit images with text prompts
+- `generate_multi_image(images, prompt, resolution, aspect_ratio, ...)` - Compose multiple images
+- `generate_batch(prompts, resolution, aspect_ratio, ...)` - Batch generation
+
+See [Nano Banana API Documentation](nano-banana) for complete details.
+
+---
+
 ## Utility Functions
 
 ### `convert_to_jpg`

@@ -54,6 +54,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/kling-ai',
         'api-reference/nova-canvas',
         'api-reference/segmind',
+        'api-reference/nano-banana',
         'api-reference/utils',
       ],
     },
