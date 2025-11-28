@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro), datasets (Fashion-MNIST, VITON-HD), garment segmentation, pose estimation, and TryOnDiffusion implementation.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro), datasets (Fashion-MNIST, VITON-HD, Subjects200K), garment segmentation, pose estimation, and TryOnDiffusion implementation.
 keywords:
   - virtual try-on
   - fashion AI
@@ -19,6 +19,7 @@ keywords:
   - fashion datasets
   - VITON-HD
   - Fashion-MNIST
+  - Subjects200K
   - Amazon Nova Canvas
   - Kling AI
   - Segmind
@@ -50,8 +51,9 @@ Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion with d
 Easy-to-use interfaces for fashion and virtual try-on datasets:
 - **Fashion-MNIST**: 60,000 training examples with 10 fashion categories
 - **VITON-HD**: High-resolution virtual try-on dataset with 11,647 training pairs
+- **Subjects200K**: Large-scale dataset with 200,000 paired images for subject consistency research
 - **Lazy Loading**: Efficient PyTorch DataLoader support for large datasets
-- **Automatic Download**: Built-in download functionality
+- **Automatic Download**: Built-in download functionality and HuggingFace integration
 
 ### API Adapters
 Cloud-based virtual try-on and image generation APIs:
@@ -81,7 +83,7 @@ In this documentation, you'll find:
 
 - **[Installation Guide](getting-started/installation)**: Get OpenTryOn up and running
 - **[Quick Start](getting-started/quickstart)**: Start using OpenTryOn in minutes
-- **[Datasets Module](datasets/overview)**: Load and use Fashion-MNIST and VITON-HD datasets
+- **[Datasets Module](datasets/overview)**: Load and use Fashion-MNIST, VITON-HD, and Subjects200K datasets
 - **[API Reference](api-reference/overview)**: Complete API documentation including Segmind and other adapters
 - **[Examples](examples/basic-usage)**: Real-world usage examples for datasets and virtual try-on
 - **[Advanced Guides](advanced/training-guide)**: Deep dive into training and customization

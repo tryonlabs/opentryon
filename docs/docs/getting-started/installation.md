@@ -86,10 +86,33 @@ python -c "import tryon; print('OpenTryOn installed successfully!')"
 
 Create a `.env` file in the project root with the following variables:
 
+#### Preprocessing (Required for local preprocessing)
+
 ```env
 U2NET_CLOTH_SEG_CHECKPOINT_PATH=path/to/cloth_segm.pth
 U2NET_SEGM_CHECKPOINT_PATH=path/to/u2net.pth
 ```
+
+#### API Integrations (Optional, for cloud-based services)
+
+```env
+# Segmind Try-On Diffusion API
+SEGMIND_API_KEY=your_segmind_api_key
+
+# Kling AI Virtual Try-On API
+KLING_AI_API_KEY=your_kling_api_key
+KLING_AI_SECRET_KEY=your_kling_secret_key
+
+# Amazon Nova Canvas (AWS Bedrock)
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AMAZON_NOVA_REGION=us-east-1
+
+# Google Gemini (Nano Banana Image Generation)
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+**Note**: You only need to configure the APIs you plan to use. For preprocessing-only workflows, only the U2Net checkpoints are required.
 
 ### Download Model Checkpoints
 
@@ -175,5 +198,29 @@ If you encounter issues:
 
 ## Next Steps
 
-Once installed, check out the [Quick Start Guide](quickstart.md) to begin using OpenTryOn!
+Once installed:
+
+1. **[Quick Start Guide](quickstart.md)**: Get started with API integrations, datasets, and preprocessing
+2. **[Configuration Guide](configuration.md)**: Set up environment variables and API keys
+3. **[API Reference](../api-reference/overview)**: Explore cloud-based virtual try-on and image generation APIs
+4. **[Datasets Module](../datasets/overview)**: Learn how to load and work with fashion datasets
+5. **[Preprocessing](../preprocessing/overview)**: Process garments, models, and images for virtual try-on
+
+### Key Features to Explore
+
+- **🔌 API Integrations**: Use cloud-based services without local model setup
+  - Segmind Try-On Diffusion
+  - Kling AI Virtual Try-On
+  - Amazon Nova Canvas
+  - Nano Banana Image Generation
+
+- **📊 Datasets**: Load and work with fashion datasets
+  - Fashion-MNIST (60K examples)
+  - VITON-HD (11K+ pairs)
+  - Subjects200K (200K paired images)
+
+- **🛠️ Preprocessing**: Process images for virtual try-on
+  - Garment segmentation and extraction
+  - Human segmentation
+  - Pose estimation
 

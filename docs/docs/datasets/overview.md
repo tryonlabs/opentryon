@@ -39,6 +39,17 @@ A high-resolution virtual try-on dataset consisting of person images and clothin
 
 [Learn more about VITON-HD →](viton-hd)
 
+### Subjects200K
+
+A large-scale dataset containing 200,000 paired images for subject consistency research. Each image pair maintains subject consistency while presenting variations in scene context. Loaded from HuggingFace.
+
+- **~200,000 paired images**
+- **Three collections**: Collection 1 (512×512), Collection 2 (512×512), Collection 3 (1024×1024)
+- **Quality assessment scores** for filtering
+- **HuggingFace integration** (automatic download)
+
+[Learn more about Subjects200K →](subjects200k)
+
 ## Quick Start
 
 ### Fashion-MNIST
@@ -88,6 +99,42 @@ train_loader = dataset.get_dataloader(
 for batch in train_loader:
     person_imgs = batch['person']  # [batch_size, 3, H, W]
     clothing_imgs = batch['clothing']  # [batch_size, 3, H, W]
+    # Train model...
+```
+
+### Subjects200K
+
+```python
+from tryon.datasets import Subjects200K
+from torchvision import transforms
+
+# Create dataset instance (loads from HuggingFace)
+dataset = Subjects200K()
+
+# Get HuggingFace dataset
+hf_dataset = dataset.get_hf_dataset()
+sample = hf_dataset['train'][0]
+image = sample['image']  # PIL Image (composite with paired images)
+collection = sample['collection']  # 'collection_1', 'collection_2', or 'collection_3'
+
+# Get PyTorch DataLoader with quality filtering
+transform = transforms.Compose([
+    transforms.Resize((512, 512)),
+    transforms.ToTensor(),
+])
+
+dataloader = dataset.get_dataloader(
+    batch_size=16,
+    transform=transform,
+    collection='collection_2',
+    filter_high_quality=True
+)
+
+# Use in training loop
+for batch in dataloader:
+    images = batch['image']  # [batch_size, 3, H, W]
+    collections = batch['collection']
+    quality_assessments = batch['quality_assessment']
     # Train model...
 ```
 
@@ -149,10 +196,22 @@ Install with:
 pip install torch torchvision pillow
 ```
 
+### Subjects200K
+- **datasets**: HuggingFace datasets library (required)
+- **PyTorch**: Required for DataLoader support
+- **torchvision**: Required for transforms
+- **Pillow**: Required for image loading
+
+Install with:
+```bash
+pip install datasets torch torchvision pillow
+```
+
 ## Next Steps
 
 - [Fashion-MNIST Documentation](fashion-mnist) - Detailed guide for Fashion-MNIST dataset
 - [VITON-HD Documentation](viton-hd) - Detailed guide for VITON-HD dataset
+- [Subjects200K Documentation](subjects200k) - Detailed guide for Subjects200K dataset
 - [API Reference](../api-reference/overview) - Complete API documentation
 - [Examples](../examples/datasets) - Usage examples
 

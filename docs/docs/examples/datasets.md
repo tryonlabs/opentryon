@@ -1,6 +1,6 @@
 # Dataset Usage Examples
 
-Complete examples demonstrating how to use the OpenTryOn datasets module with Fashion-MNIST and VITON-HD.
+Complete examples demonstrating how to use the OpenTryOn datasets module with Fashion-MNIST, VITON-HD, and Subjects200K.
 
 ## Fashion-MNIST Examples
 
@@ -311,10 +311,99 @@ train_loader = dataset.get_dataloader(
 )
 ```
 
+## Subjects200K Examples
+
+### Basic Usage
+
+```python
+from tryon.datasets import Subjects200K
+
+# Create dataset instance (loads from HuggingFace)
+dataset = Subjects200K()
+
+# Get HuggingFace dataset
+hf_dataset = dataset.get_hf_dataset()
+print(f"Total samples: {len(hf_dataset['train'])}")
+
+# Access a sample
+sample = hf_dataset['train'][0]
+image = sample['image']  # PIL Image (composite with paired images)
+collection = sample['collection']  # 'collection_1', 'collection_2', or 'collection_3'
+quality = sample['quality_assessment']  # Dict with quality scores
+```
+
+### Filter High-Quality Samples
+
+```python
+from tryon.datasets import Subjects200K
+
+dataset = Subjects200K()
+
+# Filter high-quality pairs from collection_2
+filtered = dataset.filter_high_quality(
+    collection='collection_2',
+    min_quality_score=5
+)
+
+print(f"High-quality pairs: {len(filtered)}")
+```
+
+### DataLoader Usage
+
+```python
+from tryon.datasets import Subjects200K
+from torchvision import transforms
+
+# Create dataset
+dataset = Subjects200K()
+
+# Define transforms
+transform = transforms.Compose([
+    transforms.Resize((512, 512)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+])
+
+# Get DataLoader with quality filtering
+dataloader = dataset.get_dataloader(
+    batch_size=16,
+    shuffle=True,
+    transform=transform,
+    collection='collection_2',
+    filter_high_quality=True,
+    num_workers=4
+)
+
+# Use in training loop
+for batch in dataloader:
+    images = batch['image']  # [batch_size, 3, H, W]
+    collections = batch['collection']
+    quality_assessments = batch['quality_assessment']
+    # Train model...
+```
+
+### Get Individual Samples
+
+```python
+from tryon.datasets import Subjects200K
+
+dataset = Subjects200K()
+
+# Get a specific sample
+sample = dataset.get_sample(0)
+image = sample['image']  # PIL Image
+collection = sample['collection']
+quality = sample['quality_assessment']
+
+print(f"Collection: {collection}")
+print(f"Quality scores: {quality}")
+```
+
 ## See Also
 
 - [Datasets Overview](../datasets/overview) - Complete datasets documentation
 - [Fashion-MNIST Documentation](../datasets/fashion-mnist) - Detailed Fashion-MNIST guide
 - [VITON-HD Documentation](../datasets/viton-hd) - Detailed VITON-HD guide
+- [Subjects200K Documentation](../datasets/subjects200k) - Detailed Subjects200K guide
 - [API Reference](../api-reference/overview) - Complete API documentation
 

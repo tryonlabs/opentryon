@@ -42,6 +42,7 @@ const sidebars: SidebarsConfig = {
         'datasets/overview',
         'datasets/fashion-mnist',
         'datasets/viton-hd',
+        'datasets/subjects200k',
       ],
     },
     {
