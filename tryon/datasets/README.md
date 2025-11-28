@@ -17,6 +17,12 @@ The `tryon.datasets` module provides easy-to-use interfaces for downloading and 
   - [Usage Examples](#usage-examples-1)
   - [Best Practices](#best-practices-1)
   - [Performance Considerations](#performance-considerations)
+- [Subjects200K](#subjects200k)
+  - [Overview](#overview-2)
+  - [API Reference](#api-reference-2)
+  - [Usage Examples](#usage-examples-2)
+  - [Best Practices](#best-practices-2)
+  - [Performance Considerations](#performance-considerations-1)
 - [Adding New Datasets](#adding-new-datasets)
 - [Dataset Storage](#dataset-storage)
 - [Requirements](#requirements)
@@ -828,6 +834,379 @@ print(f"Image shape: {info.get('image_shape', 'N/A')}")  # (768, 1024)
 
 ---
 
+## Subjects200K
+
+### Overview
+
+Subjects200K is a large-scale dataset containing 200,000 paired images, introduced as part of the OminiControl project. Each image pair maintains subject consistency while presenting variations in scene context. The dataset is ideal for:
+
+- **Subject consistency research** and training
+- **Multi-image generation** and composition
+- **Style transfer** and scene variation studies
+- **Large-scale training** with paired image data
+
+**Dataset Statistics:**
+- **Collection 1**: 512×512 resolution, 18,396 image pairs (8,200 high-quality)
+- **Collection 2**: 512×512 resolution, 187,840 image pairs (111,767 high-quality)
+- **Collection 3**: 1024×1024 resolution
+- **Total**: ~200,000 paired images
+- **Format**: Each image is a composite containing a pair of images with 16-pixel padding
+
+**Key Features:**
+- ✅ Loaded from HuggingFace (no manual download needed)
+- ✅ Quality assessment scores for filtering
+- ✅ Three collections with different resolutions
+- ✅ PyTorch DataLoader integration
+- ✅ Lazy loading support for efficient memory usage
+- ✅ Collection and quality filtering options
+
+**Reference:** 
+- [Subjects200K GitHub](https://github.com/Yuanshi9815/Subjects200K)
+- [HuggingFace Dataset](https://huggingface.co/datasets/Yuanshi/Subjects200K)
+
+### API Reference
+
+#### Class: `Subjects200K`
+
+Subjects200K dataset adapter class that loads data from HuggingFace.
+
+##### Constructor
+
+```python
+Subjects200K(data_dir: Optional[str] = None, download: bool = True, cache_dir: Optional[str] = None)
+```
+
+**Parameters:**
+- `data_dir` (str, optional): Directory to store the dataset cache. Defaults to `~/.opentryon/datasets/subjects200k`
+- `download` (bool): If `True`, download the dataset if it doesn't exist (always True for HuggingFace). Default: `True`
+- `cache_dir` (str, optional): Optional cache directory for HuggingFace datasets. If None, uses `~/.cache/huggingface/datasets`
+
+**Example:**
+```python
+# Use default directory
+dataset = Subjects200K()
+
+# Use custom cache directory
+dataset = Subjects200K(cache_dir="./hf_cache")
+```
+
+##### Methods
+
+###### `get_hf_dataset() -> Any`
+
+Get the HuggingFace dataset instance.
+
+**Returns:**
+- HuggingFace dataset instance with 'train' split
+
+**Example:**
+```python
+hf_dataset = dataset.get_hf_dataset()
+sample = hf_dataset['train'][0]
+image = sample['image']  # PIL Image
+collection = sample['collection']  # 'collection_1', 'collection_2', or 'collection_3'
+quality = sample['quality_assessment']  # Dict with quality scores
+```
+
+###### `filter_high_quality(collection=None, min_quality_score=5, num_proc=None, cache_file_name=None) -> Any`
+
+Filter high-quality image pairs from the dataset.
+
+**Parameters:**
+- `collection` (str, optional): Collection filter ('collection_1', 'collection_2', 'collection_3'). If None, filters across all collections.
+- `min_quality_score` (int): Minimum quality score threshold (default: 5). Filters samples where all quality dimensions (compositeStructure, objectConsistency, imageQuality) are >= min_quality_score.
+- `num_proc` (int, optional): Number of processes for filtering (default: None, uses all available).
+- `cache_file_name` (str, optional): Optional cache file path for filtered dataset.
+
+**Returns:**
+- Filtered HuggingFace dataset
+
+**Example:**
+```python
+# Filter high-quality pairs from collection_2
+filtered = dataset.filter_high_quality(
+    collection='collection_2',
+    min_quality_score=5
+)
+print(f"High-quality pairs: {len(filtered)}")
+```
+
+###### `get_pytorch_dataset(split='train', transform=None, collection=None, filter_high_quality=False) -> Subjects200KPyTorchDataset`
+
+Get a PyTorch Dataset instance for Subjects200K.
+
+**Parameters:**
+- `split` (str): Dataset split ('train' or 'test'). Default: 'train'
+- `transform` (Callable, optional): Optional transform to apply to images
+- `collection` (str, optional): Collection filter ('collection_1', 'collection_2', 'collection_3')
+- `filter_high_quality` (bool): If True, filter samples with quality scores >= 5. Default: False
+
+**Returns:**
+- `Subjects200KPyTorchDataset` instance
+
+**Example:**
+```python
+from torchvision import transforms
+
+transform = transforms.Compose([
+    transforms.Resize((512, 512)),
+    transforms.ToTensor(),
+])
+
+pytorch_dataset = dataset.get_pytorch_dataset(
+    transform=transform,
+    collection='collection_2',
+    filter_high_quality=True
+)
+```
+
+###### `get_dataloader(split='train', batch_size=8, shuffle=True, num_workers=0, transform=None, collection=None, filter_high_quality=False, **dataloader_kwargs) -> DataLoader`
+
+Get a PyTorch DataLoader for Subjects200K.
+
+**Parameters:**
+- `split` (str): Dataset split ('train' or 'test'). Default: 'train'
+- `batch_size` (int): Batch size for DataLoader. Default: 8
+- `shuffle` (bool): Whether to shuffle the dataset. Default: True
+- `num_workers` (int): Number of worker processes for data loading. Default: 0
+- `transform` (Callable, optional): Optional transform to apply to images
+- `collection` (str, optional): Collection filter ('collection_1', 'collection_2', 'collection_3')
+- `filter_high_quality` (bool): If True, filter samples with quality scores >= 5. Default: False
+- `**dataloader_kwargs`: Additional arguments for DataLoader
+
+**Returns:**
+- PyTorch DataLoader instance
+
+**Example:**
+```python
+dataloader = dataset.get_dataloader(
+    batch_size=16,
+    transform=transform,
+    collection='collection_2',
+    filter_high_quality=True,
+    num_workers=4
+)
+
+for batch in dataloader:
+    images = batch['image']  # [batch_size, 3, H, W]
+    collections = batch['collection']
+    quality_assessments = batch['quality_assessment']
+```
+
+###### `get_sample(index, split='train', return_numpy=False) -> Dict[str, Any]`
+
+Get a single sample from the dataset.
+
+**Parameters:**
+- `index` (int): Sample index
+- `split` (str): Dataset split ('train' or 'test'). Default: 'train'
+- `return_numpy` (bool): If True, return image as numpy array instead of PIL Image. Default: False
+
+**Returns:**
+- Dictionary containing sample data with keys: 'image', 'collection', 'quality_assessment', 'description', 'index'
+
+**Example:**
+```python
+sample = dataset.get_sample(0)
+image = sample['image']  # PIL Image
+collection = sample['collection']
+quality = sample['quality_assessment']
+```
+
+###### `load(normalize=False, flatten=False, **kwargs) -> tuple`
+
+⚠️ **Warning**: This method loads the entire dataset into memory, which may not be feasible for large collections. Use `get_dataloader()` for efficient batch processing.
+
+Load Subjects200K dataset into memory (for compatibility with base Dataset interface).
+
+**Parameters:**
+- `normalize` (bool): Not applicable for this dataset (images are already in [0, 255])
+- `flatten` (bool): Not applicable for this dataset
+- `**kwargs`: Additional arguments (ignored)
+
+**Returns:**
+- Tuple containing `(train_data, test_data)` where each is `(images, metadata)`
+
+**Note:** This method is provided for compatibility but is not recommended for large datasets. Use `get_dataloader()` instead.
+
+###### `get_class_names() -> List[str]`
+
+Get collection names for Subjects200K.
+
+**Returns:**
+- List of collection names: `['collection_1', 'collection_2', 'collection_3']`
+
+###### `get_info() -> Dict[str, Any]`
+
+Get comprehensive Subjects200K dataset information.
+
+**Returns:**
+- Dictionary containing:
+  - `name`: Dataset class name (`'Subjects200K'`)
+  - `data_dir`: Path to dataset directory
+  - `loaded`: Whether data has been loaded into memory
+  - `hf_dataset_name`: HuggingFace dataset name (`'Yuanshi/Subjects200K'`)
+  - `collections`: List of collection names
+  - `total_samples`: Total number of samples (if loaded)
+
+**Example:**
+```python
+info = dataset.get_info()
+print(f"Dataset: {info['name']}")
+print(f"Collections: {info['collections']}")
+print(f"Total samples: {info['total_samples']}")
+```
+
+### Convenience Functions
+
+#### `load_subjects200k(data_dir=None, download=True, cache_dir=None) -> Any`
+
+Load Subjects200K dataset from HuggingFace (convenience function).
+
+**Parameters:**
+- `data_dir` (str, optional): Directory to store the dataset cache
+- `download` (bool): If True, download the dataset if it doesn't exist
+- `cache_dir` (str, optional): Optional cache directory for HuggingFace datasets
+
+**Returns:**
+- HuggingFace dataset instance
+
+**Example:**
+```python
+from tryon.datasets import load_subjects200k
+
+hf_dataset = load_subjects200k()
+sample = hf_dataset['train'][0]
+```
+
+### Usage Examples
+
+#### Basic Usage
+
+```python
+from tryon.datasets import Subjects200K
+
+# Create dataset instance (loads from HuggingFace)
+dataset = Subjects200K()
+
+# Get HuggingFace dataset
+hf_dataset = dataset.get_hf_dataset()
+print(f"Total samples: {len(hf_dataset['train'])}")
+
+# Access a sample
+sample = hf_dataset['train'][0]
+image = sample['image']  # PIL Image (composite with paired images)
+collection = sample['collection']  # 'collection_1', 'collection_2', or 'collection_3'
+quality = sample['quality_assessment']  # Dict with quality scores
+description = sample.get('description')  # Optional description
+```
+
+#### Filter High-Quality Samples
+
+```python
+from tryon.datasets import Subjects200K
+
+dataset = Subjects200K()
+
+# Filter high-quality pairs from collection_2
+filtered = dataset.filter_high_quality(
+    collection='collection_2',
+    min_quality_score=5
+)
+
+print(f"High-quality pairs: {len(filtered)}")
+
+# Access filtered samples
+for idx in range(min(10, len(filtered))):
+    sample = filtered[idx]
+    quality = sample['quality_assessment']
+    print(f"Sample {idx}: {quality}")
+```
+
+#### PyTorch DataLoader Usage
+
+```python
+from tryon.datasets import Subjects200K
+from torchvision import transforms
+
+# Create dataset
+dataset = Subjects200K()
+
+# Define transforms
+transform = transforms.Compose([
+    transforms.Resize((512, 512)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+])
+
+# Get DataLoader with quality filtering
+dataloader = dataset.get_dataloader(
+    batch_size=16,
+    shuffle=True,
+    transform=transform,
+    collection='collection_2',
+    filter_high_quality=True,
+    num_workers=4
+)
+
+# Use in training loop
+for batch_idx, batch in enumerate(dataloader):
+    images = batch['image']  # [batch_size, 3, H, W]
+    collections = batch['collection']
+    quality_assessments = batch['quality_assessment']
+    
+    # Train model...
+    if batch_idx >= 10:  # Limit for example
+        break
+```
+
+#### Get Individual Samples
+
+```python
+from tryon.datasets import Subjects200K
+
+dataset = Subjects200K()
+
+# Get a specific sample
+sample = dataset.get_sample(0)
+image = sample['image']  # PIL Image
+collection = sample['collection']
+quality = sample['quality_assessment']
+
+print(f"Collection: {collection}")
+print(f"Quality scores: {quality}")
+
+# Get sample as numpy array
+sample_np = dataset.get_sample(0, return_numpy=True)
+image_array = sample_np['image']  # numpy array
+```
+
+### Best Practices
+
+1. **Use DataLoader for training**: Always use `get_dataloader()` for efficient batch processing
+2. **Filter high-quality samples**: Use `filter_high_quality=True` for better training data
+3. **Specify collection**: Filter by collection if you need specific resolution or quality
+4. **Use transforms**: Apply appropriate transforms for your model requirements
+5. **Set num_workers**: Use `num_workers > 0` for faster data loading (if you have multiple CPU cores)
+6. **Cache filtered datasets**: Use `cache_file_name` parameter to cache filtered datasets for faster subsequent loads
+7. **Memory management**: Don't use `load()` method for large collections; use DataLoader instead
+
+### Performance Considerations
+
+1. **HuggingFace caching**: The dataset is cached locally after first download, so subsequent loads are faster
+2. **Lazy loading**: DataLoader uses lazy loading, so only batches are loaded into memory
+3. **Filtering overhead**: Quality filtering can be slow for large datasets; use `cache_file_name` to cache results
+4. **Multi-processing**: Use `num_workers > 0` in DataLoader for parallel data loading
+5. **Collection selection**: Filtering by collection reduces dataset size and improves performance
+
+**Note**: Subjects200K is a very large dataset (~200K samples). It's recommended to:
+- Use DataLoader with batching instead of loading entire dataset
+- Filter by collection or quality to reduce dataset size
+- Use appropriate batch sizes based on your GPU memory
+- Cache filtered datasets for faster subsequent access
+
+---
+
 ## Adding New Datasets
 
 To add a new dataset, create a class that extends `Dataset`:
@@ -891,6 +1270,15 @@ Files:
 
 Location: `~/.opentryon/datasets/viton_hd/` (or custom path)
 
+### Subjects200K Storage
+
+Location: `~/.opentryon/datasets/subjects200k/` (or custom path)
+
+**HuggingFace Cache:**
+- Default cache: `~/.cache/huggingface/datasets/`
+- Can be customized via `cache_dir` parameter
+- Dataset is cached after first download for faster subsequent loads
+
 Structure:
 ```
 viton_hd/
@@ -916,6 +1304,28 @@ person_image.jpg clothing_image.jpg
 ...
 ```
 
+### Subjects200K Storage
+
+Location: `~/.opentryon/datasets/subjects200k/` (or custom path)
+
+**HuggingFace Cache:**
+- Default cache: `~/.cache/huggingface/datasets/`
+- Can be customized via `cache_dir` parameter
+- Dataset is cached after first download for faster subsequent loads
+
+**Dataset Structure:**
+- Loaded from HuggingFace: `Yuanshi/Subjects200K`
+- Each sample contains:
+  - `image`: PIL Image (composite with paired images, 16-pixel padding)
+  - `collection`: Collection identifier ('collection_1', 'collection_2', 'collection_3')
+  - `quality_assessment`: Dict with quality scores (compositeStructure, objectConsistency, imageQuality)
+  - `description`: Optional text description
+
+**Collections:**
+- Collection 1: 512×512 resolution, 18,396 pairs (8,200 high-quality)
+- Collection 2: 512×512 resolution, 187,840 pairs (111,767 high-quality)
+- Collection 3: 1024×1024 resolution
+
 ## Requirements
 
 ### Core Dependencies
@@ -923,6 +1333,15 @@ person_image.jpg clothing_image.jpg
 - Standard library: `os`, `gzip`, `struct`, `urllib.request`, `pathlib`
 
 ### VITON-HD Additional Dependencies
+- `torch` - PyTorch for DataLoader support
+- `torchvision` - For transforms (optional but recommended)
+- `PIL` (Pillow) - For image loading
+
+### Subjects200K Additional Dependencies
+- `datasets` - HuggingFace datasets library (required)
+  ```bash
+  pip install datasets
+  ```
 - `torch` - PyTorch for DataLoader support
 - `torchvision` - For transforms (optional but recommended)
 - `PIL` (Pillow) - For image loading

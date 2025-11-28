@@ -154,6 +154,7 @@ The `tryon.datasets` module provides easy-to-use interfaces for downloading and 
 
 - **Fashion-MNIST**: A dataset of Zalando's article images (60K training, 10K test, 10 classes, 28×28 grayscale images)
 - **VITON-HD**: A high-resolution virtual try-on dataset (11,647 training pairs, 2,032 test pairs, 1024×768 RGB images)
+- **Subjects200K**: A large-scale dataset with 200,000 paired images for subject consistency research (loaded from HuggingFace)
 
 #### Quick Example
 
@@ -181,6 +182,23 @@ train_loader = viton_dataset.get_dataloader(
     batch_size=8,
     shuffle=True,
     transform=transform
+)
+
+# Subjects200K: Large-scale paired images from HuggingFace
+from tryon.datasets import Subjects200K
+
+subjects_dataset = Subjects200K()
+hf_dataset = subjects_dataset.get_hf_dataset()
+sample = hf_dataset['train'][0]
+image = sample['image']  # PIL Image with paired images
+collection = sample['collection']  # 'collection_1', 'collection_2', or 'collection_3'
+
+# Get PyTorch DataLoader with quality filtering
+dataloader = subjects_dataset.get_dataloader(
+    batch_size=16,
+    transform=transform,
+    collection='collection_2',
+    filter_high_quality=True
 )
 ```
 
