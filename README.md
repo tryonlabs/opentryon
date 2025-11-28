@@ -11,6 +11,9 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Amazon Nova Canvas virtual try-on using AWS Bedrock
   - Kling AI virtual try-on using Kolors API
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
+- **Image Generation**: 
+  - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
+  - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -34,6 +37,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Datasets Module](#datasets-module)
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
+  - [Image Generation with FLUX.2](#image-generation-with-flux2)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -92,12 +96,16 @@ AMAZON_NOVA_MODEL_ID=amazon.nova-canvas-v1:0  # Optional
 KLING_AI_API_KEY=your_kling_api_key
 KLING_AI_SECRET_KEY=your_kling_secret_key
 KLING_AI_BASE_URL=https://api-singapore.klingai.com  # Optional, defaults to Singapore endpoint
+
+# BFL API Credentials (required for FLUX.2 image generation)
+BFL_API_KEY=your_bfl_api_key
 ```
 
 **Notes**: 
 - Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation)
 - For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+- For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 ## 🎮 Quick Start
 
@@ -515,7 +523,8 @@ opentryon/
 ├── tryon/                    # Main try-on preprocessing module
 │   ├── api/                 # API adapters
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
-│   │   └── kling_ai.py     # Kling AI VTON adapter
+│   │   ├── kling_ai.py     # Kling AI VTON adapter
+│   │   └── flux2.py        # FLUX.2 [PRO] and [FLEX] image generation adapters
 │   ├── datasets/            # Dataset loaders
 │   │   ├── base.py         # Base dataset interface
 │   │   ├── fashion_mnist.py # Fashion-MNIST dataset
@@ -616,6 +625,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **TryOnDiffusion Paper**: [arXiv:2306.08276](https://arxiv.org/abs/2306.08276)
 - **Amazon Nova Canvas**: [AWS Blog Post](https://aws.amazon.com/blogs/aws/amazon-nova-canvas-update-virtual-try-on-and-style-options-now-available/)
 - **Kling AI**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+- **FLUX.2**: [BFL AI Documentation](https://docs.bfl.ai/)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 
