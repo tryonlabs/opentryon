@@ -110,6 +110,9 @@ AMAZON_NOVA_REGION=us-east-1
 
 # Google Gemini (Nano Banana Image Generation)
 GEMINI_API_KEY=your_gemini_api_key
+
+# BFL AI (FLUX.2 Image Generation)
+BFL_API_KEY=your_bfl_api_key
 ```
 
 **Note**: You only need to configure the APIs you plan to use. For preprocessing-only workflows, only the U2Net checkpoints are required.
@@ -212,7 +215,8 @@ Once installed:
   - Segmind Try-On Diffusion
   - Kling AI Virtual Try-On
   - Amazon Nova Canvas
-  - Nano Banana Image Generation
+  - Nano Banana Image Generation (Google Gemini)
+  - FLUX.2 Image Generation (BFL AI)
 
 - **📊 Datasets**: Load and work with fashion datasets
   - Fashion-MNIST (60K examples)
