@@ -22,6 +22,8 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Image Generation**: 
   - Nano Banana (Gemini 2.5 Flash Image) for fast, efficient image generation
   - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
+  - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
+  - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -48,6 +50,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
+  - [Image Generation with FLUX.2](#image-generation-with-flux2)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -127,6 +130,9 @@ SEGMIND_API_KEY=your_segmind_api_key
 
 # Google Gemini Credentials (required for Nano Banana image generation)
 GEMINI_API_KEY=your_gemini_api_key
+
+# BFL API Credentials (required for FLUX.2 image generation)
+BFL_API_KEY=your_bfl_api_key
 ```
 
 **Notes**: 
@@ -135,6 +141,7 @@ GEMINI_API_KEY=your_gemini_api_key
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
 - For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
+- For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 ## 🎮 Quick Start
 
@@ -817,6 +824,7 @@ opentryon/
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
 │   │   ├── kling_ai.py     # Kling AI VTON adapter
 │   │   └── segmind.py      # Segmind Try-On Diffusion adapter
+│   │   └── flux2.py        # FLUX.2 [PRO] and [FLEX] image generation adapters
 │   ├── datasets/            # Dataset loaders
 │   │   ├── base.py         # Base dataset interface
 │   │   ├── fashion_mnist.py # Fashion-MNIST dataset
@@ -920,6 +928,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **Kling AI**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 - **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
 - **Nano Banana**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
+- **FLUX.2**: [BFL AI Documentation](https://docs.bfl.ai/)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 
