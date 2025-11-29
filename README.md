@@ -22,6 +22,9 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Image Generation**: 
   - Nano Banana (Gemini 2.5 Flash Image) for fast, efficient image generation
   - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
+  - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
+  - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
+
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -48,6 +51,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
+  - [Image Generation with FLUX.2](#image-generation-with-flux2)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -127,14 +131,20 @@ SEGMIND_API_KEY=your_segmind_api_key
 
 # Google Gemini Credentials (required for Nano Banana image generation)
 GEMINI_API_KEY=your_gemini_api_key
+
+# BFL API Credentials (required for FLUX.2 image generation)
+BFL_API_KEY=your_bfl_api_key
 ```
 
 **Notes**: 
 - Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation)
 - For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
 - For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+- For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 ## 🎮 Quick Start
 
@@ -740,6 +750,130 @@ images[0].save("result.png")
 
 **Reference**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
 
+### Image Generation with FLUX.2
+
+Generate high-quality images using FLUX.2 [PRO] and FLUX.2 [FLEX] models from BFL AI. These models support text-to-image generation, image editing, multi-image composition, and advanced controls.
+
+#### Prerequisites
+
+1. **BFL AI Account Setup**: 
+   - Sign up for a BFL AI account at [BFL AI](https://docs.bfl.ai/)
+   - Obtain your API key from the BFL AI dashboard
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **FLUX.2 [PRO]**: High-quality image generation with standard controls - ideal for most use cases
+   - **FLUX.2 [FLEX]**: Flexible generation with advanced controls (guidance scale, steps, prompt upsampling) - ideal for fine-tuned control
+
+#### Command Line Usage
+
+```bash
+# Text-to-image with FLUX.2 PRO
+python image_gen.py --provider flux2-pro --prompt "A professional fashion model wearing elegant evening wear" --width 1024 --height 1024
+
+# Text-to-image with FLUX.2 FLEX (Advanced controls)
+python image_gen.py --provider flux2-flex --prompt "A stylish fashion model wearing elegant evening wear" --width 1024 --height 1024 --guidance 7.5 --steps 50
+
+# Image editing
+python image_gen.py --provider flux2-pro --mode edit --image person.jpg --prompt "Change the outfit to casual streetwear"
+
+# Multi-image composition
+python image_gen.py --provider flux2-pro --mode compose --images outfit1.jpg outfit2.jpg --prompt "Combine these clothing styles into a cohesive outfit"
+```
+
+#### Python API Usage
+
+**FLUX.2 [PRO]:**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api import Flux2ProAdapter
+
+# Initialize adapter
+adapter = Flux2ProAdapter()
+
+# Text-to-image generation
+images = adapter.generate_text_to_image(
+    prompt="A professional fashion model wearing elegant evening wear on a runway",
+    width=1024,
+    height=1024,
+    seed=42
+)
+
+# Image editing
+images = adapter.generate_image_edit(
+    prompt="Change the outfit to casual streetwear style",
+    input_image="model.jpg",
+    width=1024,
+    height=1024
+)
+
+# Multi-image composition
+images = adapter.generate_multi_image(
+    prompt="Create a fashion catalog layout combining these clothing styles",
+    images=["outfit1.jpg", "outfit2.jpg", "accessories.jpg"],
+    width=1024,
+    height=1024
+)
+
+# Save results
+images[0].save("result.png")
+```
+
+**FLUX.2 [FLEX]:**
+
+```python
+from tryon.api import Flux2FlexAdapter
+
+# Initialize adapter
+adapter = Flux2FlexAdapter()
+
+# Text-to-image with advanced controls
+images = adapter.generate_text_to_image(
+    prompt="A stylish fashion model wearing elegant evening wear",
+    width=1024,
+    height=1024,
+    guidance=7.5,  # Higher guidance = more adherence to prompt (1.5-10)
+    steps=50,  # More steps = higher quality (default: 28)
+    prompt_upsampling=True,  # Enhance prompt quality
+    seed=42
+)
+
+# Image editing with advanced controls
+images = adapter.generate_image_edit(
+    prompt="Transform the outfit to match a vintage 1920s fashion style",
+    input_image="model.jpg",
+    width=1024,
+    height=1024,
+    guidance=8.0,
+    steps=50,
+    prompt_upsampling=True
+)
+
+# Save results
+images[0].save("result.png")
+```
+
+#### Supported Features
+
+- **Text-to-Image**: Generate images from text descriptions
+- **Image Editing**: Edit images using text prompts (add, remove, modify elements)
+- **Multi-Image Composition**: Combine up to 8 images with style transfer
+- **Custom Dimensions**: Control width and height (minimum: 64 pixels)
+- **Advanced Controls** (FLEX only): Guidance scale (1.5-10), steps (default: 28), prompt upsampling
+- **Reproducibility**: Seed support for consistent results
+- **Safety Controls**: Moderation tolerance (0-5, default: 2)
+- **Output Formats**: JPEG or PNG
+
+#### Key Differences: PRO vs FLEX
+
+- **FLUX.2 [PRO]**: Simpler API, faster generation, good for most use cases
+- **FLUX.2 [FLEX]**: Advanced controls (guidance, steps, prompt upsampling), more fine-tuned control over generation quality
+
+**Reference**: [FLUX.2 API Documentation](https://docs.bfl.ai/api-reference/models/generate-or-edit-an-image-with-flux2-[pro])
+
 ### Preprocessing Functions
 
 #### Segment Garment
@@ -816,7 +950,10 @@ opentryon/
 │   ├── api/                 # API adapters
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
 │   │   ├── kling_ai.py     # Kling AI VTON adapter
-│   │   └── segmind.py      # Segmind Try-On Diffusion adapter
+│   │   ├── segmind.py      # Segmind Try-On Diffusion adapter
+│   │   ├── nano_banana/    # Nano Banana (Gemini) image generation adapters
+│   │   │   └── adapter.py  # NanoBananaAdapter and NanoBananaProAdapter
+│   │   └── flux2.py        # FLUX.2 [PRO] and [FLEX] image generation adapters
 │   ├── datasets/            # Dataset loaders
 │   │   ├── base.py         # Base dataset interface
 │   │   ├── fashion_mnist.py # Fashion-MNIST dataset
@@ -842,7 +979,8 @@ opentryon/
 │   └── outfit_generator/    # Outfit generator demo
 ├── scripts/                 # Installation scripts
 ├── main.py                  # Main CLI entry point
-├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas & Kling AI)
+├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas, Kling AI, Segmind)
+├── image_gen.py             # Image generation CLI (Nano Banana, FLUX.2)
 ├── run_demo.py              # Demo launcher
 ├── requirements.txt         # Python dependencies
 └── environment.yml          # Conda environment
@@ -920,6 +1058,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **Kling AI**: [Kling AI API Documentation](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 - **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
 - **Nano Banana**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
+- **FLUX.2**: [BFL AI Documentation](https://docs.bfl.ai/)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 

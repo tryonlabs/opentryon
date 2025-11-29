@@ -62,6 +62,8 @@ Cloud-based virtual try-on and image generation APIs:
 - **Amazon Nova Canvas**: AWS-based virtual try-on service
 - **Nano Banana**: Google Gemini image generation (fast, efficient, 1024px)
 - **Nano Banana Pro**: Google Gemini advanced image generation (up to 4K, search grounding)
+- **FLUX.2 [PRO]**: High-quality image generation with text-to-image, image editing, and multi-image composition
+- **FLUX.2 [FLEX]**: Flexible image generation with advanced controls (guidance scale, steps, prompt upsampling)
 
 ### Garment Preprocessing
 - **Garment Segmentation**: U2Net-based segmentation for upper, lower, and dress categories

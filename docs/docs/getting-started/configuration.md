@@ -39,6 +39,9 @@ AMAZON_NOVA_MODEL_ID=amazon.nova-canvas-v1:0  # Optional
 
 # Google Gemini (Nano Banana Image Generation)
 GEMINI_API_KEY=your_gemini_api_key
+
+# BFL AI (FLUX.2 Image Generation)
+BFL_API_KEY=your_bfl_api_key
 ```
 
 ### Datasets (Optional - Only if using HuggingFace datasets)
@@ -102,6 +105,12 @@ from tryon.datasets import FashionMNIST
 1. Sign up at [Google AI Studio](https://aistudio.google.com/)
 2. Obtain API key from [API Keys page](https://aistudio.google.com/app/apikey)
 3. Add to `.env`: `GEMINI_API_KEY=your_key`
+
+### BFL AI (FLUX.2)
+
+1. Sign up at [BFL AI](https://docs.bfl.ai/)
+2. Obtain your API key from the BFL AI dashboard
+3. Add to `.env`: `BFL_API_KEY=your_key`
 
 ## Configuration Options
 
@@ -182,6 +191,7 @@ U2NET_SEGM_CHECKPOINT_PATH=./models/u2net.pth
 ```env
 SEGMIND_API_KEY=your_segmind_key
 GEMINI_API_KEY=your_gemini_key
+BFL_API_KEY=your_bfl_key
 ```
 
 ### Full Setup (Preprocessing + APIs + Datasets)
@@ -196,6 +206,7 @@ SEGMIND_API_KEY=your_segmind_key
 KLING_AI_API_KEY=your_kling_key
 KLING_AI_SECRET_KEY=your_kling_secret
 GEMINI_API_KEY=your_gemini_key
+BFL_API_KEY=your_bfl_key
 AWS_ACCESS_KEY_ID=your_aws_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret
 AMAZON_NOVA_REGION=us-east-1

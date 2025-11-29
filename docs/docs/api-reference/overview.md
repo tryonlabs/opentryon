@@ -280,6 +280,67 @@ See [Nano Banana API Documentation](nano-banana) for complete details.
 
 ---
 
+### `Flux2ProAdapter`
+
+Adapter for FLUX.2 [PRO] - high-quality image generation with standard controls.
+
+```python
+from tryon.api import Flux2ProAdapter
+
+adapter = Flux2ProAdapter(api_key="your_api_key")
+
+images = adapter.generate_text_to_image(
+    prompt="A professional fashion model wearing elegant evening wear",
+    width=1024,
+    height=1024,
+    seed=42
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): BFL API key. Defaults to `BFL_API_KEY` environment variable
+
+**Methods:**
+- `generate_text_to_image(prompt, width, height, seed, safety_tolerance, output_format, ...)` - Generate images from text
+- `generate_image_edit(prompt, input_image, width, height, seed, ...)` - Edit images with text prompts
+- `generate_multi_image(prompt, images, width, height, seed, ...)` - Compose multiple images (up to 8)
+
+See [FLUX.2 API Documentation](flux2) for complete details.
+
+---
+
+### `Flux2FlexAdapter`
+
+Adapter for FLUX.2 [FLEX] - flexible image generation with advanced controls.
+
+```python
+from tryon.api import Flux2FlexAdapter
+
+adapter = Flux2FlexAdapter(api_key="your_api_key")
+
+images = adapter.generate_text_to_image(
+    prompt="A stylish fashion model wearing elegant evening wear",
+    width=1024,
+    height=1024,
+    guidance=7.5,  # Higher = more adherence to prompt (1.5-10)
+    steps=50,  # More steps = higher quality
+    prompt_upsampling=True,
+    seed=42
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): BFL API key. Defaults to `BFL_API_KEY` environment variable
+
+**Methods:**
+- `generate_text_to_image(prompt, width, height, seed, guidance, steps, prompt_upsampling, ...)` - Generate images from text with advanced controls
+- `generate_image_edit(prompt, input_image, width, height, seed, guidance, steps, ...)` - Edit images with advanced controls
+- `generate_multi_image(prompt, images, width, height, seed, guidance, steps, ...)` - Compose multiple images with advanced controls
+
+See [FLUX.2 API Documentation](flux2) for complete details.
+
+---
+
 ## Utility Functions
 
 ### `convert_to_jpg`
