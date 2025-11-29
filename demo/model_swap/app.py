@@ -227,7 +227,7 @@ with gr.Blocks(css=css, theme=gr.themes.Default()) as demo:
                     label="Token",
                     lines=1,
                     value=user_token1,
-                    type="password",
+                    password=True,
                     placeholder="Enter your access token here!",
                     info="Visit https://playground.tryonlabs.ai to retrieve your access token."
                 )

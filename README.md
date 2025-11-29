@@ -1038,7 +1038,6 @@ Key dependencies include:
 - torchvision (== 0.16.2)
 - diffusers (== 0.29.2)
 - transformers (== 4.42.4)
-- gradio (== 4.44.1)
 - opencv-python (== 4.8.1.78)
 - scikit-image (== 0.22.0)
 - numpy (== 1.26.4)
