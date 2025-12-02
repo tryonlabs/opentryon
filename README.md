@@ -25,6 +25,8 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
 
+  - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
+  - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -134,6 +136,9 @@ GEMINI_API_KEY=your_gemini_api_key
 
 # BFL API Credentials (required for FLUX.2 image generation)
 BFL_API_KEY=your_bfl_api_key
+
+# Luma AI Credentials (required for Luma AI image generation)
+LUMA_AI_API_KEY=your_luma_ai_api_key
 ```
 
 **Notes**: 
@@ -145,6 +150,7 @@ BFL_API_KEY=your_bfl_api_key
 - For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
+- For Luma AI, obtain your API key from the [Luma Labs AI](https://lumalabs.ai/api)
 
 ## 🎮 Quick Start
 
@@ -874,6 +880,148 @@ images[0].save("result.png")
 
 **Reference**: [FLUX.2 API Documentation](https://docs.bfl.ai/api-reference/models/generate-or-edit-an-image-with-flux2-[pro])
 
+### Luma AI Image Generation
+
+Generate high-quality images using Luma AI’s (Photon-Flash-1 and Photon-1) models. Supports text-to-image generation, image reference, style reference, character reference and precise image modification for production workflows.
+
+#### Prerequisites
+
+1. **Luma AI Account Setup**: 
+   - Sign up for a Luma AI account at the [Luma AI Developer Console](https://lumalabs.ai/)
+   - Create and copy your API key from the [API Keys section](https://lumalabs.ai/api)
+   - Add the key to your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **Luma AI (Photon-Flash-1)**: Fast and cost efficient image generation, ideal for rapid iteration and scale
+   - **Luma AI (Photon-1)**: High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
+
+#### Command Line Usage
+
+```bash
+# Text-to-image with Luma AI ((default) photon-1, photon-flash-1)
+python luma_image.py --provider photon-1 --prompt "A stylish fashion model wearing a modern casual outfit in a studio setting"
+
+# Text-to-image with Luma AI (with aspect ratio)
+python luma_image.py --provider photon-1 --prompt "A model wearing a red saree" --aspect_ratio "16:9"
+
+# Ouptput to a particular directory
+python luma_image.py --provider photon-1 --prompt "A model wearing a red saree" --aspect_ratio "16:9" --output_dir folder_name
+
+# Image generation using Image Reference (single image)
+python luma_image.py --provider photon-1 --mode img-ref --prompt "model wearing sunglasses" --images person.jpg --weights 0.8 --aspect_ratio "1:1"
+
+# Image generation using Image Reference (multiple images)
+python luma_image.py --provider photon-flash-1 --mode img-ref --prompt "model wearing sunglasses" --images person_1.jpg person_2.jpg --weights 0.8 0.9 --aspect_ratio "9:21"
+
+# Image generation using Style Reference(single image)
+python luma_image.py --provider photon-flash-1 --mode style-ref --prompt "model wearing a blue shirt" --images person.jpg --weights 0.75 --aspect_ratio "16:9"
+
+# Image generation using Style Reference(multiple images)
+python luma_image.py --provider photon-flash-1 --mode style-ref --prompt "hat" --images person_1.jpg person_2.jpg --weights 0.75 0.9 --aspect_ratio "16:9"
+
+# Image generation using Character Reference
+python luma_image.py --provider photon-flash-1 --mode char-ref --char_id identity0 --prompt "Professional fashion photography of elegant evening wear on a runway" --char_images person.jpg --aspect_ratio "16:9"
+
+# Image modification (only single image)
+python luma_image.py --provider photon-flash-1 --mode modify --prompt "change the suit color to yellow" --images person.jpg --weights 0.85
+```
+
+#### Python API Usage
+
+**Luma AI:**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api.lumaAI import LumaAIAdapter
+
+adapter = LumaAIAdapter()
+
+list_of_images = []
+
+images = adapter.generate_text_to_image(
+    prompt="person with a hat",
+    aspect_ratio= "16:9"
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_image_reference(
+    prompt="hat",
+    aspect_ratio= '16:9',
+    image_ref= [
+      {
+        "url": "person.jpg",
+        "weight": 0.85
+      }
+    ]
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_style_reference(
+    prompt="tiger",
+    aspect_ratio= '16:9',
+    style_ref= [
+      {
+        "url": "person.jpg",
+        "weight": 0.8
+      }
+    ]
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_character_reference(
+    prompt="man as a pilot",
+    aspect_ratio= '16:9',
+    character_ref= {
+        "identity0": {
+          "images": [
+            "person.jpg"
+          ]
+        }
+      }
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_modify_image(
+    prompt="transform all flowers to oranges",
+    images= "person.jpg",
+    weights= 0.9,
+    aspect_ratio= '16:9'
+)
+
+list_of_images.extend(images)
+
+for idx, img in enumerate(list_of_images):
+    img.save(f"outputs/generated_{idx}.png")
+```
+
+#### Supported Features
+
+- **Text-to-Image**: Generate images from text descriptions
+- **Image Reference**: Useful when you want to create variations of an image
+- **Style Reference**: Apply specific style to the generation
+- **Character Reference**: A feature that allows you to create consistent and personalized characters
+- **Modify Image**: Make changes to an image
+- **Weights**: weight value can be any float value from (0 - 1)
+- **Aspect Ratios**: 7 supported aspect ratios (1:1, 3:4, 4:3, 9:16, 16:9, 21:9, 9:21)
+- **Multiple Images**: Accepts upto 4 images for image-reference, style-reference and character-reference modes
+- **Output Format**: JPEG
+
+#### Aspect Ratios
+
+**LUMA AI:**
+- `"1:1"` (1536x1536)
+- `"16:9"` (2048x1152)
+- `"9:16"` (1152x2048)
+- And 4 more options
+
+**Reference**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
+
 ### Preprocessing Functions
 
 #### Segment Garment
@@ -950,6 +1098,8 @@ opentryon/
 │   ├── api/                 # API adapters
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
 │   │   ├── kling_ai.py     # Kling AI VTON adapter
+│   │   ├── lumaAI/         # Luma AI Image generation adapter
+│   │   │    └── adapter.py  # LumaAIAdapter
 │   │   ├── segmind.py      # Segmind Try-On Diffusion adapter
 │   │   ├── nano_banana/    # Nano Banana (Gemini) image generation adapters
 │   │   │   └── adapter.py  # NanoBananaAdapter and NanoBananaProAdapter
@@ -1047,6 +1197,7 @@ Key dependencies include:
 - boto3 (== 1.40.64)
 - python-dotenv (== 1.0.1)
 - google-genai (== 1.52.0)
+- lumaai (== 1.18.1)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.
 
@@ -1058,6 +1209,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
 - **Nano Banana**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
 - **FLUX.2**: [BFL AI Documentation](https://docs.bfl.ai/)
+- **Luma AI**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 

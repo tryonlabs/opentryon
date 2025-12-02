@@ -7,7 +7,9 @@ tqdm==4.66.1
 scikit-image==0.22.0
 python-dotenv==1.0.1
 transformers==4.42.4
+python-dotenv
 boto3==1.40.64
 requests>=2.31.0
 PyJWT>=2.10.1
 google-genai>=1.52.0
+lumaai>=1.18.1
