@@ -1,5 +1,73 @@
 """
-Luma AI API adapter
+Luma AI (Photon Image Generation) API Adapter
+
+Adapter for Luma AI's Photon series of image generation models (photon-1 and photon-flash-1).
+
+Photon models enable high-quality, controllable image generation with support for text prompting,
+image referencing, style transfer, character consistency, and image modification:
+
+- Text-to-Image: Generate detailed, high-fidelity images from text prompts
+- Image Reference: Guide generation using one or more reference images
+- Style Reference: Transfer visual style from an example image
+- Character Reference: Maintain character identity across generated images
+- Modify: Edit or transform an existing image using a text instruction
+
+Reference: https://docs.lumalabs.ai/docs/python-image-generation
+
+Models:
+- photon-1: High-quality, general-purpose model (default)
+- photon-flash-1: Faster inference, optimized for rapid iteration
+
+Example:
+    Text-to-image:
+        >>> from tryon.api.lumaAI import LumaAIAdapter
+        >>> adapter = LumaAIAdapter()
+        >>> images = adapter.generate_text_to_image(
+        ...     prompt="A stylish fashion model wearing a modern casual outfit",
+        ...     aspect_ratio="16:9"
+        ... )
+        >>> images[0].save("result.png")
+
+    Image reference:
+        >>> images = adapter.generate_with_image_reference(
+        ...     image=[{"url": "http://example.com/image.jpg", "weight": 1.0}],
+        ...     prompt="A stylish fashion model wearing a modern casual outfit",
+        ...     aspect_ratio="16:9"
+        ... )
+        >>> images[0].save("result.png")
+
+    Style reference:
+        >>> images = adapter.generate_with_style_reference(
+        ...     prompt="A stylish fashion model wearing a modern casual outfit",
+        ...     style_ref=[{"url": "http://example.com/style.jpg", "weight": 1.0}],
+        ...     aspect_ratio="16:9"
+        ... )
+        >>> images[0].save("result.png")
+
+    Character reference:
+        >>> character_ref = {
+        ...     "identity0": {
+        ...         "images": ["http://example.com/image1.jpg", "http://example.com/image2.jpg"]
+        ...     },
+        ...     "identity1": {
+        ...         "images": ["http://example.com/image3.jpg"]
+        ...     }
+        ... }
+        >>> images = adapter.generate_with_character_reference(
+        ...     prompt="A stylish fashion model wearing a modern casual outfit",
+        ...     character_ref=character_ref,
+        ...     aspect_ratio="16:9"
+        ... )
+        >>> images[0].save("result.png")
+
+    Modify:
+        >>> images = adapter.generate_with_modify_image(
+        ...     prompt="A stylish fashion model wearing a modern casual outfit",
+        ...     image="http://example.com/style.jpg",
+        ...     weight=0.85,
+        ...     aspect_ratio="16:9"
+        ... )
+        >>> images[0].save("result.png")
 """
 
 import os
@@ -520,6 +588,26 @@ class LumaAIAdapter:
         """
         Modify an input image using LumaAI's modify_image_ref.
         Supports local paths, URLs, BytesIO, PIL images, etc.
+
+        Args:
+            prompt: Text prompt to generate image(s).
+            image: Input an image or an URL
+            weight: weight to tune image generation
+            aspect_ratio: Optional aspect ratio. Options: 
+                "1:1", "3:4", "4:3", "9:16", "16:9", "9:21", "21:9".
+                Defaults to "1:1" if not provided.
+        Returns:
+            List of PIL Image objects.
+
+        Example:
+            >>> adapter = LumaAIAdapter()
+            >>> images = adapter.generate_with_modify_image(
+            ...     prompt="A stylish fashion model wearing a modern casual outfit",
+            ...     image="http://example.com/style.jpg",
+            ...     weight=0.85,
+            ...     aspect_ratio="16:9"
+            ... )
+            >>> images[0].save("result.png")
         """
 
         # --- Prompt validation ---
