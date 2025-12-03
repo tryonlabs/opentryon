@@ -1,8 +1,10 @@
 """
-FastAPI server for Virtual Try-On using Nano Banana models.
+FastAPI server for Virtual Try-On using multiple model providers.
 
 This server provides a simple REST API endpoint for virtual try-on generation
-using Google's Gemini image generation models (Nano Banana and Nano Banana Pro).
+using various image generation models:
+- Nano Banana and Nano Banana Pro (Google Gemini)
+- FLUX 2 Pro and FLUX 2 Flex (Black Forest Labs)
 """
 
 import os
@@ -22,6 +24,7 @@ load_dotenv()
 
 # Import adapters
 from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from tryon.api.flux2 import Flux2ProAdapter, Flux2FlexAdapter
 
 # Create output directory for generated images
 OUTPUT_DIR = Path("outputs/virtual_tryon")
@@ -127,7 +130,7 @@ def map_resolution_to_pro_format(image: Image.Image) -> str:
 
 app = FastAPI(
     title="TryOn AI Virtual Try-On API",
-    description="Virtual try-on API using Nano Banana (Gemini Image Generation) models",
+    description="Virtual try-on API using multiple model providers (Nano Banana, FLUX 2 Pro, FLUX 2 Flex)",
     version="1.0.0"
 )
 
@@ -149,7 +152,13 @@ async def root():
         "version": "1.0.0",
         "endpoints": {
             "POST /api/v1/virtual-tryon": "Generate virtual try-on image"
-        }
+        },
+        "providers": [
+            "nano-banana",
+            "nano-banana-pro",
+            "flux-2-pro",
+            "flux-2-flex"
+        ]
     }
 
 
@@ -163,34 +172,53 @@ async def health():
 async def virtual_tryon(
     model_image: UploadFile = File(..., description="Model/person image"),
     garment_images: List[UploadFile] = File(..., description="Garment images"),
-    provider: str = Form(default="nano-banana", description="Provider: 'nano-banana' or 'nano-banana-pro'"),
+    provider: str = Form(default="nano-banana", description="Provider: 'nano-banana', 'nano-banana-pro', 'flux-2-pro', or 'flux-2-flex'"),
     prompt: Optional[str] = Form(default=None, description="Optional custom prompt"),
     resolution: Optional[str] = Form(default="1K", description="Resolution for nano-banana-pro: '1K', '2K', or '4K'"),
-    aspect_ratio: Optional[str] = Form(default=None, description="Optional aspect ratio (e.g., '16:9')")
+    aspect_ratio: Optional[str] = Form(default=None, description="Optional aspect ratio (e.g., '16:9')"),
+    width: Optional[int] = Form(default=None, description="Output image width (for FLUX 2 models)"),
+    height: Optional[int] = Form(default=None, description="Output image height (for FLUX 2 models)"),
+    seed: Optional[int] = Form(default=None, description="Random seed for reproducibility (for FLUX 2 models)"),
+    guidance: Optional[float] = Form(default=None, description="Guidance scale 1.5-10 (for FLUX 2 Flex, default: 3.5)"),
+    steps: Optional[int] = Form(default=None, description="Number of generation steps (for FLUX 2 Flex, default: 28)"),
+    safety_tolerance: Optional[int] = Form(default=2, description="Safety tolerance 0-5 (for FLUX 2 models, default: 2)")
 ):
     """
     Generate virtual try-on image from model image and garment images.
     
-    Uses multi-image composition feature of Nano Banana models to combine
+    Uses multi-image composition feature of various models to combine
     the model image with multiple garment images.
+    
+    Supported providers:
+    - nano-banana: Google Gemini Nano Banana (basic)
+    - nano-banana-pro: Google Gemini Nano Banana Pro (supports resolution)
+    - flux-2-pro: Black Forest Labs FLUX 2 Pro (high quality)
+    - flux-2-flex: Black Forest Labs FLUX 2 Flex (advanced controls)
     
     Args:
         model_image: Single model/person image
         garment_images: List of garment images (top, jeans, scarf, hat, etc.)
-        provider: Model provider ('nano-banana' or 'nano-banana-pro')
+        provider: Model provider ('nano-banana', 'nano-banana-pro', 'flux-2-pro', or 'flux-2-flex')
         prompt: Optional custom prompt for generation
         resolution: Resolution for nano-banana-pro ('1K', '2K', or '4K')
-        aspect_ratio: Optional aspect ratio
+        aspect_ratio: Optional aspect ratio (for Nano Banana models)
+        width: Output image width in pixels (for FLUX 2 models, minimum: 64)
+        height: Output image height in pixels (for FLUX 2 models, minimum: 64)
+        seed: Random seed for reproducibility (for FLUX 2 models)
+        guidance: Guidance scale 1.5-10 (for FLUX 2 Flex only, default: 3.5)
+        steps: Number of generation steps (for FLUX 2 Flex only, default: 28)
+        safety_tolerance: Safety tolerance 0-5 (for FLUX 2 models, default: 2)
         
     Returns:
         JSON response with base64-encoded result image
     """
     # try:
     # Validate provider
-    if provider not in ["nano-banana", "nano-banana-pro"]:
+    valid_providers = ["nano-banana", "nano-banana-pro", "flux-2-pro", "flux-2-flex"]
+    if provider not in valid_providers:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid provider '{provider}'. Must be 'nano-banana' or 'nano-banana-pro'"
+            detail=f"Invalid provider '{provider}'. Must be one of: {', '.join(valid_providers)}"
         )
     
     # Validate inputs
@@ -215,12 +243,20 @@ async def virtual_tryon(
     # Map resolution to appropriate format based on provider
     # For nano-banana-pro, use "1K", "2K", or "4K" format
     # For nano-banana, resolution is not used (only aspect ratio)
+    # For FLUX 2 models, use width/height parameters instead
     if provider == "nano-banana-pro":
         # Use provided resolution if valid, otherwise map from image dimensions
         if resolution and resolution in ["1K", "2K", "4K"]:
             final_resolution = resolution
         else:
             final_resolution = map_resolution_to_pro_format(model_pil)
+    elif provider in ["flux-2-pro", "flux-2-flex"]:
+        # For FLUX 2, use model dimensions as default width/height if not provided
+        if width is None:
+            width = model_width
+        if height is None:
+            height = model_height
+        final_resolution = f"{width}x{height}"
     else:
         # For nano-banana, resolution is not used, but keep calculated for reference
         final_resolution = calculated_resolution
@@ -277,7 +313,7 @@ async def virtual_tryon(
             prompt=prompt,
             aspect_ratio=final_aspect_ratio
         )
-    else:  # nano-banana-pro
+    elif provider == "nano-banana-pro":
         adapter = NanoBananaProAdapter()
         # Generate with Pro adapter (supports resolution) using calculated resolution and aspect ratio
         result_images = adapter.generate_multi_image(
@@ -286,6 +322,49 @@ async def virtual_tryon(
             resolution=final_resolution,
             aspect_ratio=final_aspect_ratio
         )
+    elif provider == "flux-2-pro":
+        adapter = Flux2ProAdapter()
+        # Generate with FLUX 2 Pro adapter
+        # Build kwargs for FLUX 2 Pro
+        flux_kwargs = {
+            "safety_tolerance": safety_tolerance if safety_tolerance is not None else 2,
+            "output_format": "png"
+        }
+        if width is not None:
+            flux_kwargs["width"] = width
+        if height is not None:
+            flux_kwargs["height"] = height
+        if seed is not None:
+            flux_kwargs["seed"] = seed
+        
+        result_images = adapter.generate_multi_image(
+            prompt=prompt,
+            images=images_list,
+            **flux_kwargs
+        )
+    else:  # flux-2-flex
+        adapter = Flux2FlexAdapter()
+        # Generate with FLUX 2 Flex adapter (supports guidance and steps)
+        # Build kwargs for FLUX 2 Flex
+        flux_kwargs = {
+            "safety_tolerance": safety_tolerance if safety_tolerance is not None else 2,
+            "output_format": "png",
+            "guidance": guidance if guidance is not None else 5,
+            "steps": steps if steps is not None else 50,
+            "prompt_upsampling": True
+        }
+        if width is not None:
+            flux_kwargs["width"] = width
+        if height is not None:
+            flux_kwargs["height"] = height
+        if seed is not None:
+            flux_kwargs["seed"] = seed
+        
+        result_images = adapter.generate_multi_image(
+            prompt=prompt,
+            images=images_list,
+            **flux_kwargs
+        )
     
     if not result_images:
         raise HTTPException(status_code=500, detail="No images generated")
@@ -293,7 +372,9 @@ async def virtual_tryon(
     # Get first result image and convert to PIL Image
     result_image = result_images[0]
     
-    # Convert Google GenAI image type to PIL Image
+    # Convert image to PIL Image if needed
+    # FLUX 2 adapters return PIL Images directly
+    # Nano Banana adapters return Google GenAI image types that need conversion
     if not isinstance(result_image, Image.Image):
         # Google GenAI image type has image_bytes attribute
         if hasattr(result_image, 'image_bytes'):
@@ -341,7 +422,8 @@ async def virtual_tryon(
             detail=f"Error saving image: {str(e)}"
         )
     
-    return JSONResponse({
+    # Build response with provider-specific metadata
+    response_data = {
         "success": True,
         "image": f"data:image/png;base64,{img_base64}",
         "provider": provider,
@@ -349,11 +431,30 @@ async def virtual_tryon(
         "saved_path": str(filepath),
         "filename": filename,
         "model_dimensions": {"width": model_width, "height": model_height},
-        "aspect_ratio": final_aspect_ratio,
-        "calculated_aspect_ratio": calculated_aspect_ratio,
-        "resolution": final_resolution,
-        "calculated_resolution": calculated_resolution
-    })
+    }
+    
+    # Add provider-specific metadata
+    if provider in ["nano-banana", "nano-banana-pro"]:
+        response_data.update({
+            "aspect_ratio": final_aspect_ratio,
+            "calculated_aspect_ratio": calculated_aspect_ratio,
+            "resolution": final_resolution,
+            "calculated_resolution": calculated_resolution
+        })
+    elif provider in ["flux-2-pro", "flux-2-flex"]:
+        response_data.update({
+            "output_dimensions": {"width": width or model_width, "height": height or model_height},
+            "safety_tolerance": safety_tolerance if safety_tolerance is not None else 2,
+        })
+        if seed is not None:
+            response_data["seed"] = seed
+        if provider == "flux-2-flex":
+            response_data.update({
+                "guidance": guidance if guidance is not None else 3.5,
+                "steps": steps if steps is not None else 28,
+            })
+    
+    return JSONResponse(response_data)
     
     # except ValueError as e:
     #     raise HTTPException(status_code=400, detail=str(e))

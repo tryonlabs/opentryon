@@ -3,38 +3,73 @@
 @tailwind utilities;
 
 :root {
-  --primary: #1FA08F;
-  --primary-dark: #1a8a7a;
-  --secondary: #486876;
-  --neutral-dark: #131E32;
-  --neutral-light: #BDB7C0;
+  --primary: #ef4444;
+  --primary-dark: #dc2626;
+  --neutral-dark: #171717;
+  --neutral-light: #fafafa;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+* {
+  @apply border-neutral-200;
 }
 
 body {
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-}
-
-@layer base {
-  * {
-    @apply border-neutral-200;
-  }
+  @apply bg-neutral-50 text-neutral-900 antialiased;
+  background-color: #fafafa;
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-400 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-500 transition-colors;
+    @apply bg-primary-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-600 transition-all duration-200;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
   
-  .btn-secondary {
-    @apply bg-secondary-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-secondary-600 transition-colors;
+  .btn-primary:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
   
   .input-field {
-    @apply w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent;
+    @apply w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   }
   
   .card {
-    @apply bg-white rounded-lg border border-neutral-200 p-6 shadow-sm;
+    @apply bg-white rounded-lg border border-neutral-200 p-6;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-neutral-600 transition-colors duration-200;
+    background-color: transparent;
+  }
+  
+  .sidebar-link:hover {
+    @apply bg-neutral-50;
+  }
+  
+  .sidebar-link-active {
+    @apply bg-primary-50 text-primary-600 font-medium;
+    background-color: #fef2f2;
+  }
+  
+  .sidebar-shadow {
+    box-shadow: 1px 0 3px 0 rgb(0 0 0 / 0.05);
+  }
+  
+  .header-shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .image-placeholder {
+    background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+    box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
   }
 }
 
