@@ -92,6 +92,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Agents',
+      items: [
+        'agents/agent-ideas-summary',
+        'agents/agent-ideas',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Community',
       items: [
         'community/contributing',
