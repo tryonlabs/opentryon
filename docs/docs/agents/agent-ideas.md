@@ -14,7 +14,7 @@ keywords:
 # Fashion AI Agents - Open Source Vision
 
 :::info Community-Driven Initiative
-This document shares **20 AI agent ideas** for the fashion industry. We're inviting the **open-source community** to build these agents together and create a comprehensive Fashion AI Agents ecosystem. Whether you're building agents already or want to start, we welcome your contributions!
+This document shares **24+ AI agent ideas** for the fashion industry. We're inviting the **open-source community** to build these agents together and create a comprehensive Fashion AI Agents ecosystem. Whether you're building agents already or want to start, we welcome your contributions!
 :::
 
 ## Our Vision
@@ -35,7 +35,7 @@ Are you building fashion AI agents? Have ideas for new agents? Want to contribut
 
 ## Overview
 
-We've identified **20+ AI agent ideas** organized into five categories that can enhance virtual try-on capabilities and provide comprehensive fashion technology solutions:
+We've identified **24+ AI agent ideas** organized into five categories that can enhance virtual try-on capabilities and provide comprehensive fashion technology solutions:
 
 - **Data Collection**: Extract and process product information
 - **Analysis**: Evaluate images, fits, and styles
@@ -55,17 +55,29 @@ These agents can work individually or together to create powerful fashion techno
 These APIs support **text-to-image**, **image editing**, **multi-image composition**, and **style transfer**, enabling agents to generate, edit, mix, and compose fashion images programmatically.
 :::
 
+:::info Virtual Try-On Capabilities
+**OpenTryOn** includes virtual try-on APIs that agents can leverage to create realistic try-on experiences:
+- **Amazon Nova Canvas**: AWS Bedrock-based virtual try-on with automatic garment detection, multiple garment classes (Upper body, Lower body, Full body, Footwear), and custom mask support (max 4.1M pixels)
+- **Kling AI**: Asynchronous virtual try-on processing with automatic polling, multiple model versions, webhook support, and high-resolution support (max 16M pixels)
+
+These APIs enable agents to combine person images with garment images to generate realistic virtual try-on results, perfect for e-commerce, styling, and fit analysis applications.
+:::
+
 ---
 
 ## Agent Ideas Catalog
 
-Below are 20+ agent ideas we're sharing with the community. Each agent includes:
+Below are 24+ agent ideas we're sharing with the community. Each agent includes:
 - **Purpose** and **Capabilities**
 - **Use Cases** and **Integration Points**
 - **Priority** for implementation
 
-:::tip Image Generation Agents
-Many agents can leverage OpenTryOn's image generation APIs (Nano Banana, Nano Banana Pro, FLUX.2 PRO, FLUX.2 FLEX) to create, edit, mix, and compose fashion images. Look for agents marked with 🎨 that can benefit from these capabilities.
+:::tip API-Powered Agents
+Many agents can leverage OpenTryOn's APIs:
+- **Image Generation**: Nano Banana, Nano Banana Pro, FLUX.2 PRO, FLUX.2 FLEX for creating, editing, and composing fashion images
+- **Virtual Try-On**: Amazon Nova Canvas, Kling AI for generating realistic try-on results
+
+Agents that use image generation or virtual try-on capabilities are clearly marked in their descriptions.
 :::
 
 ### 1. Look Analyzer Agent
@@ -82,13 +94,14 @@ Analyzes outfits on people and provides comprehensive styling feedback.
 - Analyzes face shape and suggests complementary styles
 - Evaluates accessories coordination
 - Provides feedback in simple, actionable language
+- **Can use virtual try-on APIs** to generate try-on images for analysis
 
 **Use Cases**:
 - Personal styling feedback
 - E-commerce product recommendations
 - Fashion consultation services
 
-**Integration**: Works with Personal Stylist, Outfit Compatibility, and Color Coordination agents.
+**Integration**: Works with Personal Stylist, Outfit Compatibility, and Color Coordination agents. Can leverage Amazon Nova Canvas or Kling AI for generating try-on images.
 
 ---
 
@@ -144,7 +157,7 @@ Evaluates Product Detail Page quality and suggests improvements.
 ### 4. Size Recommendation Agent
 
 **Category**: Recommendation  
-**Priority**: High ⭐
+**Priority**: High
 
 Recommends garment sizes based on body measurements and fit preferences.
 
@@ -155,6 +168,7 @@ Recommends garment sizes based on body measurements and fit preferences.
 - Accounts for brand-specific sizing variations
 - Provides size recommendations with confidence scores
 - Suggests alternative sizes if primary recommendation unavailable
+- **Can generate virtual try-on images** to visualize fit before purchase
 
 **Use Cases**:
 - E-commerce size selection
@@ -162,14 +176,14 @@ Recommends garment sizes based on body measurements and fit preferences.
 - Personalized shopping experiences
 - Size chart interpretation
 
-**Integration**: Works with Look Analyzer Agent to analyze fit on person images.
+**Integration**: Works with Look Analyzer Agent to analyze fit on person images. Can use Amazon Nova Canvas or Kling AI to generate try-on visualizations for different sizes.
 
 ---
 
-### 5. Outfit Compatibility Agent 🎨
+### 5. Outfit Compatibility Agent
 
 **Category**: Recommendation  
-**Priority**: High ⭐
+**Priority**: High
 
 Evaluates how well multiple garments work together as an outfit.
 
@@ -231,6 +245,7 @@ Predicts how well a garment will fit a person before virtual try-on.
 - Identifies potential problem areas
 - Provides fit visualization
 - Suggests alterations if needed
+- **Can generate try-on images** using virtual try-on APIs to validate predictions
 
 **Use Cases**:
 - Pre-try-on filtering
@@ -238,7 +253,7 @@ Predicts how well a garment will fit a person before virtual try-on.
 - Alteration recommendations
 - Return prediction
 
-**Integration**: Complements virtual try-on by pre-filtering garments.
+**Integration**: Complements virtual try-on by pre-filtering garments. Can use Amazon Nova Canvas or Kling AI to generate try-on results for validation.
 
 ---
 
@@ -346,7 +361,7 @@ Compares similar products across different retailers or brands.
 ### 12. Image Quality Analyzer Agent
 
 **Category**: Utility  
-**Priority**: High ⭐
+**Priority**: High
 
 Analyzes garment image quality for optimal virtual try-on results.
 
@@ -469,7 +484,7 @@ Analyzes environmental impact and sustainability of fashion items.
 
 ---
 
-### 17. Style Transfer Agent 🎨
+### 17. Style Transfer Agent
 
 **Category**: Utility  
 **Priority**: Low
@@ -548,17 +563,18 @@ Monitors product prices and alerts users of discounts.
 ### 20. Virtual Fitting Room Agent
 
 **Category**: Orchestration  
-**Priority**: High ⭐
+**Priority**: High
 
 Orchestrates multiple agents for comprehensive virtual try-on experience.
 
 **Capabilities**:
-- Coordinates virtual try-on workflow
+- Coordinates virtual try-on workflow using Amazon Nova Canvas or Kling AI
 - Integrates multiple agents (fit prediction, look analysis, etc.)
 - Provides comprehensive try-on results
 - Suggests alternatives and improvements
 - Manages user preferences and history
 - Provides personalized recommendations
+- **Generates virtual try-on images** using virtual try-on APIs
 - **Can leverage image generation** for creating alternative looks
 
 **Use Cases**:
@@ -567,11 +583,11 @@ Orchestrates multiple agents for comprehensive virtual try-on experience.
 - Fashion consultation services
 - Shopping assistants
 
-**Integration**: Orchestrates all other agents for unified experience. Can integrate with TryOn AI platform for production deployment.
+**Integration**: Orchestrates all other agents for unified experience. Uses Amazon Nova Canvas or Kling AI for virtual try-on generation. Can integrate with TryOn AI platform for production deployment.
 
 ---
 
-### 21. Fashion Image Generator Agent 🎨
+### 21. Fashion Image Generator Agent
 
 **Category**: Utility  
 **Priority**: Medium
@@ -597,7 +613,7 @@ Generates fashion images using OpenTryOn's image generation APIs.
 
 ---
 
-### 22. Product Image Enhancer Agent 🎨
+### 22. Product Image Enhancer Agent
 
 **Category**: Utility  
 **Priority**: Medium
@@ -622,6 +638,57 @@ Enhances product images using image generation and editing capabilities.
 
 ---
 
+### 23. Virtual Try-On Generator Agent
+
+**Category**: Utility  
+**Priority**: High
+
+Generates virtual try-on images using OpenTryOn's virtual try-on APIs.
+
+**Capabilities**:
+- **Person + Garment Try-On**: Combines person images with garment images
+- **Multiple Garment Types**: Supports upper body, lower body, full body, and footwear
+- **Batch Processing**: Processes multiple try-on requests efficiently
+- **API Selection**: Chooses between Amazon Nova Canvas and Kling AI based on requirements
+- **Quality Optimization**: Selects optimal API based on image size and quality needs
+- **Asynchronous Processing**: Handles long-running tasks with Kling AI's async support
+
+**Use Cases**:
+- E-commerce product pages
+- Shopping cart try-on previews
+- Styling service demonstrations
+- Fashion catalog generation
+- Customer engagement tools
+
+**Integration**: Directly uses OpenTryOn's virtual try-on APIs (Amazon Nova Canvas, Kling AI). Can be deployed on TryOn AI platform. Works with Garment Scraper Agent to get product images.
+
+---
+
+### 24. Multi-Product Try-On Agent
+
+**Category**: Utility  
+**Priority**: Medium
+
+Generates try-on images for multiple products simultaneously.
+
+**Capabilities**:
+- **Batch Try-On**: Processes multiple garments with a single person image
+- **Outfit Combinations**: Tries on multiple garments together (top + bottom)
+- **Comparison Views**: Generates side-by-side try-on comparisons
+- **API Optimization**: Selects best API for each garment type
+- **Parallel Processing**: Handles multiple API calls concurrently
+- **Result Aggregation**: Combines results into unified output
+
+**Use Cases**:
+- Outfit builder tools
+- Product comparison pages
+- Styling recommendations
+- Complete look generation
+
+**Integration**: Uses Amazon Nova Canvas and Kling AI APIs. Works with Outfit Compatibility Agent to suggest combinations. Can integrate with Fashion Image Generator Agent for enhanced visuals.
+
+---
+
 ## Implementation Priorities
 
 ### Phase 1: Foundation (High Priority)
@@ -630,11 +697,12 @@ Focus on agents that provide immediate value and are essential for core function
 
 :::tip Phase 1 Agents
 - **Image Quality Analyzer Agent** - Essential for try-on quality
-- **Size Recommendation Agent** - High user value, reduces returns
-- **Outfit Compatibility Agent** 🎨 - Leverages existing outfit generation and image APIs
-- **Look Analyzer Agent** - Core analysis capability
+- **Size Recommendation Agent** - High user value, reduces returns, uses virtual try-on
+- **Outfit Compatibility Agent** - Leverages existing outfit generation and image APIs
+- **Look Analyzer Agent** - Core analysis capability with virtual try-on support
 - **Garment Scraper Agent** - Data foundation
-- **Fashion Image Generator Agent** 🎨 - Direct use of image generation APIs
+- **Fashion Image Generator Agent** - Direct use of image generation APIs
+- **Virtual Try-On Generator Agent** - Direct use of virtual try-on APIs
 :::
 
 ### Phase 2: Enhancement (Medium Priority)
@@ -646,7 +714,8 @@ Build upon Phase 1 with recommendation and analysis capabilities:
 - Color Coordination Agent
 - PDP Analyzer Agent
 - Accessory Matching Agent
-- Product Image Enhancer Agent 🎨
+- Product Image Enhancer Agent
+- Multi-Product Try-On Agent
 
 ### Phase 3: Advanced Features (Low Priority)
 
@@ -669,7 +738,7 @@ Add specialized agents for advanced use cases:
 | **Data Collection** | Garment Scraper, PDP Analyzer | Extract and process product information |
 | **Analysis** | Look Analyzer, Fit Prediction, Image Quality, Product Comparison, Wardrobe Analyzer, Sustainability | Evaluate images, fits, and styles |
 | **Recommendation** | Personal Stylist, Outfit Compatibility, Size Recommendation, Occasion-Based, Accessory Matching | Provide personalized suggestions |
-| **Utility** | Color Coordination, Fabric Analyzer, Pose Detection, Trend Analysis, Style Transfer, Price Drop Alert, Fashion Image Generator, Product Image Enhancer | Support functions and image generation capabilities |
+| **Utility** | Color Coordination, Fabric Analyzer, Pose Detection, Trend Analysis, Style Transfer, Price Drop Alert, Fashion Image Generator, Product Image Enhancer, Virtual Try-On Generator, Multi-Product Try-On | Support functions, image generation, and virtual try-on capabilities |
 | **Orchestration** | Virtual Fitting Room | Coordinate multiple agents |
 
 ### Integration Points
@@ -680,10 +749,12 @@ Add specialized agents for advanced use cases:
 - Fabric & Material Analyzer
 
 #### Virtual Try-On Pipeline
-- Fit Prediction Agent
-- Look Analyzer Agent
-- Size Recommendation Agent
-- Image Quality Analyzer
+- **Virtual Try-On Generator Agent** - Core try-on generation using Amazon Nova Canvas or Kling AI
+- **Fit Prediction Agent** - Pre-try-on fit analysis
+- **Look Analyzer Agent** - Post-try-on analysis
+- **Size Recommendation Agent** - Size suggestions with try-on visualization
+- **Image Quality Analyzer** - Input validation
+- **Multi-Product Try-On Agent** - Batch try-on processing
 
 #### Outfit Generation
 - Outfit Compatibility Agent
@@ -768,8 +839,10 @@ We're building an open-source ecosystem of Fashion AI Agents, and we need your h
 
 All agents should be designed to integrate seamlessly with **OpenTryOn** (the open-source library):
 
-- **Use OpenTryOn APIs**: Leverage existing virtual try-on and image generation capabilities
+- **Use OpenTryOn SDK**: Leverage existing virtual try-on and image generation capabilities
+- **Virtual Try-On**: Utilize Amazon Nova Canvas and Kling AI for generating realistic try-on results
 - **Image Generation**: Utilize Nano Banana, Nano Banana Pro, FLUX.2 PRO, and FLUX.2 FLEX for generating, editing, and composing fashion images
+- **API Selection**: Choose appropriate APIs based on requirements (Nova Canvas for AWS integration, Kling AI for async/high-res)
 - **Follow Standards**: Adhere to OpenTryOn's code style and architecture
 - **Document Integration**: Provide clear integration examples
 - **Test Compatibility**: Ensure agents work with OpenTryOn's pipeline
@@ -814,10 +887,10 @@ Agents built with OpenTryOn can be deployed on TryOn AI platform for production 
 
 ### For the Community
 
-1. **Explore Ideas**: Review all 20 agent ideas above
+1. **Explore Ideas**: Review all 24+ agent ideas above
 2. **Choose Your Agent**: Pick an agent to build or contribute
 3. **Join Discussions**: Participate in GitHub Discussions
-4. **Start Building**: Begin implementation
+4. **Start Building**: Begin implementation using OpenTryOn SDK
 5. **Share Progress**: Keep the community updated
 6. **Contribute**: Submit your agent to the repository
 
@@ -890,4 +963,4 @@ Share this vision on LinkedIn, Twitter, Discord, Telegram, and other platforms. 
 - **Discord**: [Join the conversation](https://discord.gg/T5mPpZHxkY)
 - **Email**: Contact us through GitHub
 
-**Let's build the future of Fashion AI together! 🚀**
+**Let's build the future of Fashion AI together!**
