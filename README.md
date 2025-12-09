@@ -27,6 +27,8 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 
   - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
   - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
+- **Video Generation**:
+  - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -54,6 +56,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
   - [Image Generation with FLUX.2](#image-generation-with-flux2)
+  - [Video Generation with Luma AI](#video-generation-with-luma-ai)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -1021,6 +1024,123 @@ for idx, img in enumerate(list_of_images):
 - And 4 more options
 
 **Reference**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
+
+### Video Generation with Luma AI
+
+Generate smooth, high-fidelity videos using Luma AI’s Ray models (Ray 1.6, Ray 2, and Ray Flash 2). These models support text-to-video and image-to-video generation with optional keyframe interpolation. Image-to-video accepts either a single image or two keyframe images (frame0, frame1) for controlled motion.
+
+#### Prerequisites
+
+1. **Luma AI Account Setup**: 
+   - Sign up for a Luma AI account at the [Luma AI Developer Console](https://lumalabs.ai/)
+   - Create and copy your API key from the [API Keys section](https://lumalabs.ai/api)
+   - Add the key to your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **Ray 1.6 (ray-1-6)**: Balanced quality model for general video generation; slower but stable.
+   - **Ray 2 (ray-2)**: High-quality flagship model with the best motion, detail, and consistency.
+   - **Ray Flash 2 (ray-flash-2)**: Fast, lower-latency model optimized for quick iterations and previews.
+
+#### Command Line Usage
+
+```bash
+# Text to Video with Luma AI
+python video_gen.py --provider ray-2 --mode text_video --prompt "A model walking in red saree on a ramp" --resolution 720p --duration 5s --aspect 16:9 --output_dir outputs
+
+# Text to Video with loop
+python video_gen.py --provider ray-2 --mode image_video --prompt "A model walking in red saree on a ramp" --resolution 720p --duration 5s --aspect 16:9 --loop
+
+# Image to Video with start keyframe
+python video_gen.py --provider ray-flash-2 --mode image_video --prompt "Model walking" --start_image person.jpg --resolution 4k --duration 10s --aspect 21:9 
+
+# Image to Video with End Keyframe
+python video_gen.py --provider ray-flash-2 --mode image_video --prompt "Model walking" --end_image person.jpg --resolution 720p --duration 10s --aspect 21:9 
+
+# Image to Video with start and End Keyframe
+python video_gen.py --provider ray-2 --mode image_video --prompt "Model sitting on a fence" --start_image person.jpg --end_image person.jpg --resolution 4k --duration 10s --aspect 21:9
+```
+
+#### Python API Usage
+
+**Luma AI:**
+
+```python
+
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api.lumaAI import LumaAIVideoAdapter
+from pathlib import Path
+
+adapter = LumaAIVideoAdapter()
+
+video_list = []
+
+
+def save_video(video_bytes: bytes, idx: int):
+    Path("outputs").mkdir(exist_ok=True)
+    out_path = Path("outputs") / f"generated_{idx}.mp4"
+    with open(out_path, "wb") as f:
+        f.write(video_bytes)
+    print(f"[SAVED] {out_path}")
+
+
+# TEXT → VIDEO
+video = adapter.generate_text_to_video(
+    prompt="a model riding a car with long hair",
+    resolution="540p",
+    duration="5s",
+    model="ray-2",
+)
+video_list.append(video)
+
+
+# IMAGE → VIDEO (start + end)
+video = adapter.generate_image_to_video(
+    prompt="Man riding a bike",
+    start_image="start_img.png",
+    end_image="end_img.png",
+    resolution="540p",
+    duration="5s",
+    model="ray-2",
+)
+video_list.append(video)
+
+
+# IMAGE → VIDEO (only end image; no start)
+video = adapter.generate_image_to_video(
+    prompt="A man walking on a ramp",
+    end_image="end_img_only.png",
+    resolution="540p",
+    duration="5s",
+    model="ray-2",
+)
+video_list.append(video)
+
+# SAVE ALL RESULTS
+for idx, vid_bytes in enumerate(video_list):
+    save_video(vid_bytes, idx)
+```
+
+#### Supported Features
+
+- **Text to Video**: Generate videos using test descriptions.
+- **Image to Video**: Generate videos using keyframes.
+- **Keyframe Generation**: Generate videos using a start keyframe or an end keyframe or both.
+- **Duration**: Durations in seconds (5s, 9s, 10s)
+- **Resolution**: Quality of the Video (540p, 720p, 1080p, 4k)
+- **Aspect Ratios**: 7 supported aspect ratios (1:1, 3:4, 4:3, 9:16, 16:9, 21:9, 9:21)
+- **Loop**: Enable seamless looping when generating video from a single image or text prompt. Works for single image when only start_image is provided.
+
+#### Aspect Ratios
+
+**LUMA AI:**
+- `"1:1"` (1024x1024)
+- `"16:9"` (1280x720)
+- `"9:16"` (720x1280)
+- And 4 more options
+
+**Reference**: [Luma AI Video Generation Documentation](https://docs.lumalabs.ai/docs/video-generation)
 
 ### Preprocessing Functions
 

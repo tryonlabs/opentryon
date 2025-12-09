@@ -6,9 +6,9 @@ This module provides adapters for Luma AI's image generation models:
 - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
 
 This module provides adapters for Luma AI's Video generation model (Dream Machine):
-- ray-1-6: “Balanced quality model for general video generation; slower but stable.”
-- ray-2: “High-quality flagship model with the best motion, detail, and consistency.”
-- ray-flash-2: “Fast, lower-latency model optimized for quick iterations and previews.”
+- ray-1-6: Balanced quality model for general video generation; slower but stable.
+- ray-2: High-quality flagship model with the best motion, detail, and consistency.
+- ray-flash-2: Fast, lower-latency model optimized for quick iterations and previews.
 
 Reference: https://docs.lumalabs.ai/docs/image-generation
 """
