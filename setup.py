@@ -31,6 +31,9 @@ setup(
         "requests>=2.31.0",
         "PyJWT>=2.10.1",
         "google-genai>=1.52.0",
+        "fastapi==0.124.0",
+        "uvicorn[standard]==0.38.0",
+        "python-multipart==0.0.20",
     ],
     keywords=[
         "virtual try-on",

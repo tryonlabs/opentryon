@@ -24,7 +24,6 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
   - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
-
   - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
   - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
 - **Video Generation**:
@@ -151,6 +150,7 @@ LUMA_AI_API_KEY=your_luma_ai_api_key
 
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
 - For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
+- For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 - For Luma AI, obtain your API key from the [Luma Labs AI](https://lumalabs.ai/api)
@@ -1188,7 +1188,36 @@ segment_human(
 
 ## 🎨 Demos
 
-The project includes several interactive Gradio demos for easy experimentation:
+The project includes several interactive demos for easy experimentation:
+
+### Virtual Try-On Demo (Web App) ⭐ NEW
+
+A modern, full-stack virtual try-on web application with FastAPI backend and Next.js frontend.
+
+**Features**:
+- Support for 4 AI models: Nano Banana, Nano Banana Pro, FLUX 2 Pro, FLUX 2 Flex
+- Multi-image upload with drag & drop
+- Real-time credit estimation
+- Modern, responsive UI
+- Production-ready API server
+
+**Quick Start**:
+
+1. Start the backend:
+```bash
+python api_server.py
+```
+
+2. In a new terminal, start the frontend:
+```bash
+cd demo/virtual-tryon
+npm install
+npm run dev
+```
+
+3. Open `http://localhost:3000` in your browser
+
+**Documentation**: See [`demo/virtual-tryon/README.md`](demo/virtual-tryon/README.md) and [`README_API_SERVER.md`](README_API_SERVER.md) for detailed instructions.
 
 ### Extract Garment Demo
 
@@ -1208,7 +1237,7 @@ python run_demo.py --name model_swap
 python run_demo.py --name outfit_generator
 ```
 
-Each demo launches a web interface where you can interact with the models through a user-friendly UI.
+Gradio demos launch a web interface where you can interact with the models through a user-friendly UI.
 
 ## 📁 Project Structure
 
@@ -1244,16 +1273,20 @@ opentryon/
 │   ├── pre_processing/      # Preprocessing for training
 │   └── utils/               # Utility functions
 ├── demo/                    # Interactive demos
-│   ├── extract_garment/     # Garment extraction demo
-│   ├── model_swap/          # Model swap demo
-│   └── outfit_generator/    # Outfit generator demo
+│   ├── virtual-tryon/       # Full-stack virtual try-on web app (Next.js + FastAPI)
+│   ├── extract_garment/     # Garment extraction demo (Gradio)
+│   ├── model_swap/          # Model swap demo (Gradio)
+│   └── outfit_generator/    # Outfit generator demo (Gradio)
 ├── scripts/                 # Installation scripts
+├── api_server.py            # FastAPI server for virtual try-on demo
 ├── main.py                  # Main CLI entry point
+├── run_demo.py              # Demo launcher (Gradio demos)
 ├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas, Kling AI, Segmind)
 ├── image_gen.py             # Image generation CLI (Nano Banana, FLUX.2)
-├── run_demo.py              # Demo launcher
 ├── requirements.txt         # Python dependencies
-└── environment.yml          # Conda environment
+├── environment.yml          # Conda environment
+├── README_API_SERVER.md     # API server documentation
+└── setup.py                 # Package installation
 ```
 
 ## 🗺️ TryOnDiffusion: Roadmap
@@ -1316,7 +1349,10 @@ Key dependencies include:
 - PyJWT (>= 2.10.1)
 - boto3 (== 1.40.64)
 - python-dotenv (== 1.0.1)
-- google-genai (== 1.52.0)
+- google-genai (>= 1.52.0)
+- fastapi (== 0.124.0)
+- uvicorn[standard] (== 0.38.0)
+- python-multipart (== 0.0.20)
 - lumaai (== 1.18.1)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.

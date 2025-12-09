@@ -75,6 +75,7 @@ const sidebars: SidebarsConfig = {
       label: 'Demos',
       items: [
         'demos/overview',
+        'demos/virtual-tryon',
         'demos/extract-garment',
         'demos/model-swap',
         'demos/outfit-generator',

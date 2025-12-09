@@ -1201,4 +1201,3 @@ class Flux2FlexAdapter:
             decoded_images.append(image)
         
         return decoded_images
-
