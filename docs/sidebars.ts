@@ -101,6 +101,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'agents/agent-ideas-summary',
         'agents/agent-ideas',
+        'agents/vton-agent',
       ],
     },
     {

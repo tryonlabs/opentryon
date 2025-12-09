@@ -35,6 +35,11 @@ setup(
         "uvicorn[standard]==0.38.0",
         "python-multipart==0.0.20",
         "lumaai>=1.18.1",
+        "langchain>=1.0.0",
+        "langchain-openai>=0.2.0",
+        "langchain-anthropic>=0.2.0",
+        "langchain-google-genai>=2.0.0",
+        "pydantic>=2.0.0",
     ],
     keywords=[
         "virtual try-on",

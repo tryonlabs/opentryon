@@ -89,7 +89,6 @@ dependencies:
     - jedi==0.19.0
     - jupyter-client==8.3.1
     - jupyter-core==5.3.1
-    - keras==2.14.0
     - kiwisolver==1.4.5
     - lazy-loader==0.3
     - libclang==16.0.6
@@ -145,9 +144,6 @@ dependencies:
     - sympy==1.12
     - tensorboard==2.14.1
     - tensorboard-data-server==0.7.1
-    - tensorflow==2.14.0
-    - tensorflow-estimator==2.14.0
-    - tensorflow-io-gcs-filesystem==0.34.0
     - termcolor==2.3.0
     - tifffile==2024.2.12
     - tokenizers==0.19.1
@@ -172,4 +168,8 @@ dependencies:
     - boto3==1.40.64
     - requests>=2.31.0
     - PyJWT>=2.10.1
+    - langchain>=1.0.0
+    - langchain-openai>=0.2.0
+    - langchain-anthropic>=0.2.0
+    - langchain-google-genai>=2.0.0
 prefix: /Users/apple/miniconda3/envs/opentryon
