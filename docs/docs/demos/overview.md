@@ -65,6 +65,20 @@ python run_demo.py --name outfit_generator
 
 **[Read More →](./outfit-generator)**
 
+### Fashion Prompt Builder Demo (Next.js)
+
+A modern Next.js web application for generating prompts for fashion model generation.
+
+```bash
+cd demo/fashion-prompt-builder
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` to access the prompt builder interface.
+
+**[Read Full Documentation →](./fashion-prompt-builder)**
+
 ---
 
 ## Demo Comparison
@@ -72,6 +86,7 @@ python run_demo.py --name outfit_generator
 | Demo | Type | Tech Stack | Use Case |
 |------|------|------------|----------|
 | **Virtual Try-On** | Full-stack Web App | Next.js + FastAPI | Production-ready virtual try-on with multiple AI models |
+| **Fashion Prompt Builder** | Web App | Next.js + TypeScript | Generate high-quality prompts for fashion AI models |
 | **Extract Garment** | Gradio | Python + Gradio | Quick garment extraction testing |
 | **Model Swap** | Gradio | Python + Gradio | Garment swapping experiments |
 | **Outfit Generator** | Gradio | Python + Gradio | Text-to-outfit generation |

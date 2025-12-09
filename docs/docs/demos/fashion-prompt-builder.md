@@ -1,16 +1,10 @@
-# Fashion Model Prompt Builder - Next.js Application
+# Fashion Prompt Builder Demo
 
 A modern, responsive web application for generating prompts for fashion model generation. Built with Next.js 14, Tailwind CSS, and TypeScript.
 
-## Quick Start
+## Overview
 
-```bash
-cd fashion-prompt-builder
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the application.
+The Fashion Prompt Builder is a Next.js web application that helps you create high-quality prompts for AI fashion model generation. It provides three different modes to craft prompts: a template-based builder, a gallery of examples, and a raw editor for advanced users.
 
 ## Features
 
@@ -41,6 +35,32 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 - **Modern UI**: Gradient backgrounds, smooth animations, and professional styling
 - **Accessibility**: Proper focus states, keyboard navigation, and screen reader support
 
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+ installed
+- npm or yarn package manager
+
+### Installation
+
+1. Navigate to the demo directory:
+```bash
+cd demo/fashion-prompt-builder
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Run the development server:
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
 ## Project Structure
 
 ```
@@ -53,7 +73,7 @@ fashion-prompt-builder/
 │   └── ui/                 # Reusable UI components
 │       ├── button.tsx      # Button component with variants
 │       ├── input.tsx       # Input, Textarea, and Select components
-│       ├── card.tsx        # Card components (Card, CardHeader, CardTitle, CardContent)
+│       ├── card.tsx        # Card components
 │       ├── tabs.tsx        # Tab navigation component
 │       ├── accordion.tsx   # Accordion component for collapsible sections
 │       └── toast.tsx       # Toast notification component
@@ -72,9 +92,52 @@ fashion-prompt-builder/
 - **React 18** - UI library
 - **React Icons** - Icon library (Heroicons v2)
 
-## UI Components
+## Usage
+
+### Prompt Builder Flow
+
+1. Select a model (e.g., "Google Nano Banana")
+2. Choose a template style
+3. Fill in the required parameters (age, gender, appearance, etc.)
+4. Click "Generate Prompt" to create your prompt
+5. Review and edit the generated prompt
+6. Click "Use This Prompt" to proceed
+
+### Prompt Gallery Flow
+
+1. Browse through example prompts
+2. Click on any prompt to load it into the editor
+3. Edit the prompt if needed
+4. Click "Use This Prompt" to proceed
+
+### Raw Prompt Flow
+
+1. Type your custom prompt directly
+2. Use the tips accordion for guidance
+3. Monitor word and character count
+4. Optionally load a prompt from the builder
+5. Click "Use This Prompt" to proceed
+
+## Parameter Groups
+
+The Prompt Builder organizes parameters into logical groups:
+
+1. **Basic Information**: Age, Gender
+2. **Appearance**: Complexion, Hair, Eyes, Face Shape
+3. **Pose & Styling**: Pose, Outfit
+4. **Scene Settings**: Lighting, Background, Fabric Description
+
+## Design System
+
+### Color Palette
+
+- **Primary**: `#1FA08F` (Teal) - Main brand color
+- **Secondary**: `#486876` (Blue-gray) - Secondary accents
+- **Neutral Dark**: `#131E32` - Text and dark elements
+- **Neutral Light**: `#BDB7C0` - Subtle backgrounds
 
 ### Custom Components
+
 - **Button**: Primary, secondary, and outline variants
 - **Input/Textarea/Select**: Styled form inputs with focus states
 - **Card**: Container component with header and content sections
@@ -82,18 +145,21 @@ fashion-prompt-builder/
 - **Accordion**: Collapsible sections for organizing content
 - **Toast**: Notification system with success, warning, and error types
 
-### Design System
-- **Color Palette**: Custom colors defined in Tailwind config
-- **Typography**: Inter font family with responsive sizing
-- **Spacing**: Consistent spacing system using Tailwind utilities
-- **Animations**: Smooth transitions and hover effects
+## Data Files
 
-## Color Palette
+### `prompt_templates.json`
 
-- **Primary**: `#1FA08F` (Teal) - Main brand color
-- **Secondary**: `#486876` (Blue-gray) - Secondary accents
-- **Neutral Dark**: `#131E32` - Text and dark elements
-- **Neutral Light**: `#BDB7C0` - Subtle backgrounds
+Contains template definitions organized by model:
+- Each model has multiple template styles
+- Templates include placeholders for dynamic parameters
+- Each template has a name, description, and template string
+
+### `prompts.json`
+
+Contains example prompts for the gallery:
+- Array of prompt objects with metadata
+- Used to populate the Prompt Gallery tab
+- Can be extended with more examples
 
 ## Development
 
@@ -114,60 +180,16 @@ npm start
 npm run lint
 ```
 
-## Data Files
+## Toast Notifications
 
-### `prompt_templates.json`
-Contains template definitions organized by model:
-- Each model has multiple template styles
-- Templates include placeholders for dynamic parameters
-- Each template has a name, description, and template string
-
-### `prompts.json`
-Contains example prompts for the gallery:
-- Array of prompt objects with metadata
-- Used to populate the Prompt Gallery tab
-- Can be extended with more examples
-
-## Usage
-
-### Prompt Builder Flow
-1. Select a model (e.g., "Google Nano Banana")
-2. Choose a template style
-3. Fill in the required parameters (age, gender, appearance, etc.)
-4. Click "Generate Prompt" to create your prompt
-5. Review and edit the generated prompt
-6. Click "Use This Prompt" to proceed
-
-### Prompt Gallery Flow
-1. Browse through example prompts
-2. Click on any prompt to load it into the editor
-3. Edit the prompt if needed
-4. Click "Use This Prompt" to proceed
-
-### Raw Prompt Flow
-1. Type your custom prompt directly
-2. Use the tips accordion for guidance
-3. Monitor word and character count
-4. Optionally load a prompt from the builder
-5. Click "Use This Prompt" to proceed
-
-## Features in Detail
-
-### Parameter Groups
-The Prompt Builder organizes parameters into logical groups:
-1. **Basic Information**: Age, Gender
-2. **Appearance**: Complexion, Hair, Eyes, Face Shape
-3. **Pose & Styling**: Pose, Outfit
-4. **Scene Settings**: Lighting, Background, Fabric Description
-
-### Toast Notifications
 - **Success**: Green toast for successful actions
 - **Warning**: Yellow toast for warnings and missing fields
 - **Error**: Red toast for errors
 - Auto-dismisses after 4 seconds
 - Manual close button available
 
-### Responsive Design
+## Responsive Design
+
 - Mobile-first approach
 - Breakpoints: sm (640px), md (768px), lg (1024px)
 - Adaptive layouts for all screen sizes
@@ -182,6 +204,16 @@ The Prompt Builder organizes parameters into logical groups:
 - Advanced prompt editing tools
 - Template customization
 
-## License
+## Related Demos
 
-MIT
+- **[Extract Garment Demo](./extract-garment)** - Garment extraction with Gradio
+- **[Model Swap Demo](./model-swap)** - Model swapping with Gradio
+- **[Outfit Generator Demo](./outfit-generator)** - Outfit generation with Gradio
+
+## Learn More
+
+- **[Demo README](../../demo/fashion-prompt-builder/README.md)** - Complete demo documentation
+- **[API Reference](../api-reference/overview)** - OpenTryOn API adapters
+- **[Nano Banana](../api-reference/nano-banana)** - Nano Banana documentation
+
+

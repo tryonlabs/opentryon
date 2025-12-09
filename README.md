@@ -1237,6 +1237,25 @@ python run_demo.py --name model_swap
 python run_demo.py --name outfit_generator
 ```
 
+### Fashion Prompt Builder Demo
+
+A modern Next.js web application for generating prompts for fashion model generation.
+
+```bash
+cd demo/fashion-prompt-builder
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` to access the prompt builder interface.
+
+**Features**:
+- Template-based prompt generation
+- Prompt gallery with examples
+- Raw prompt editor with tips
+- Real-time preview and validation
+- Support for multiple AI models
+
 Gradio demos launch a web interface where you can interact with the models through a user-friendly UI.
 
 ## 📁 Project Structure
@@ -1273,10 +1292,11 @@ opentryon/
 │   ├── pre_processing/      # Preprocessing for training
 │   └── utils/               # Utility functions
 ├── demo/                    # Interactive demos
-│   ├── virtual-tryon/       # Full-stack virtual try-on web app (Next.js + FastAPI)
+│   ├── virtual-tryon/       # Virtual try-on demo (Nextjs+Tailwindcss)
 │   ├── extract_garment/     # Garment extraction demo (Gradio)
 │   ├── model_swap/          # Model swap demo (Gradio)
-│   └── outfit_generator/    # Outfit generator demo (Gradio)
+│   ├── outfit_generator/    # Outfit generator demo (Gradio)
+│   └── fashion-prompt-builder/  # Fashion prompt builder (Next.js)
 ├── scripts/                 # Installation scripts
 ├── api_server.py            # FastAPI server for virtual try-on demo
 ├── main.py                  # Main CLI entry point
