@@ -18,6 +18,6 @@ boto3==1.40.64
 requests>=2.31.0
 PyJWT>=2.10.1
 google-genai>=1.52.0
-fastapi>=0.104.1
-uvicorn[standard]>=0.24.0
-python-multipart>=0.0.6
+fastapi==0.124.0
+uvicorn[standard]==0.38.0
+python-multipart==0.0.20

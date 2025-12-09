@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/image-upload'
 import { MultiImageUpload } from '@/components/multi-image-upload'
-import { HiSparkles, HiPhoto, HiUser, HiShoppingBag, HiCog6Tooth, HiXMark, HiMagnifyingGlass, HiBars3 } from 'react-icons/hi2'
+import { HiSparkles, HiUser, HiXMark, HiMagnifyingGlass, HiPhoto } from 'react-icons/hi2'
 import Link from 'next/link'
 import pricingConfig from '../pricing_config.json'
 
@@ -140,7 +140,6 @@ export default function Home() {
   const [provider, setProvider] = useState<Provider>('nano-banana')
   const [imageDimensions, setImageDimensions] = useState<ImageDimensions | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   // Create preview URLs for model and garment images
   const [modelPreviewUrl, setModelPreviewUrl] = useState<string | null>(null)
@@ -236,8 +235,16 @@ export default function Home() {
         throw new Error('No image received from server')
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while generating the try-on image')
       console.error('Error generating try-on:', err)
+      
+      // Provide more specific error messages
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        setError(`Cannot connect to API server at ${API_URL}. Please ensure the server is running.`)
+      } else if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('An error occurred while generating the try-on image')
+      }
     } finally {
       setIsGenerating(false)
     }
@@ -245,87 +252,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-neutral-50 flex" style={{ backgroundColor: '#fafafa' }}>
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Sidebar Navigation */}
-      <aside className={`w-64 bg-white border-r border-neutral-200 flex flex-col fixed h-full sidebar-shadow transition-transform duration-300 z-50 ${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`} style={{ backgroundColor: '#ffffff', boxShadow: '1px 0 3px 0 rgb(0 0 0 / 0.05)' }}>
-        <div className="p-6 border-b border-neutral-200" style={{ borderColor: '#e5e5e5' }}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-sm">
-              <HiSparkles className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-neutral-900">TryOn AI</h1>
-              <p className="text-xs text-neutral-500">Playground</p>
-            </div>
-          </div>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-1">
-          <Link href="/" className="sidebar-link sidebar-link-active" onClick={() => setIsMobileMenuOpen(false)}>
-            <HiUser className="w-5 h-5" />
-            <span>Virtual Try-On</span>
-          </Link>
-          <Link href="/agent" className="sidebar-link" onClick={() => setIsMobileMenuOpen(false)}>
-            <HiSparkles className="w-5 h-5" />
-            <span>Try-On Agent</span>
-          </Link>
-          <a href="#" className="sidebar-link" onClick={() => setIsMobileMenuOpen(false)}>
-            <HiPhoto className="w-5 h-5" />
-            <span>Shopping Agent</span>
-          </a>
-          <a href="#" className="sidebar-link" onClick={() => setIsMobileMenuOpen(false)}>
-            <HiShoppingBag className="w-5 h-5" />
-            <span>Model Generator Agent</span>
-          </a>
-        </nav>
-
-        <div className="p-4 border-t border-neutral-200" style={{ borderColor: '#e5e5e5' }}>
-          <a href="#" className="sidebar-link" onClick={() => setIsMobileMenuOpen(false)}>
-            <HiCog6Tooth className="w-5 h-5" />
-            <span>Settings</span>
-          </a>
-        </div>
-      </aside>
-
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64">
+      <main className="flex-1">
         {/* Header */}
         <header className="bg-white border-b border-neutral-200 sticky top-0 z-10 header-shadow" style={{ backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' }}>
-          <div className="px-4 sm:px-6 lg:px-8 py-4">
+          <div className="px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                {/* Mobile Menu Button */}
-                <button
-                  onClick={() => setIsMobileMenuOpen(true)}
-                  className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
-                  aria-label="Open menu"
-                >
-                  <HiBars3 className="w-6 h-6 text-neutral-600" />
-                </button>
-                <div className="min-w-0">
-                  <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 truncate">Virtual Try-On</h1>
-                  <p className="text-xs sm:text-sm text-neutral-500 mt-1 hidden sm:block">Generate realistic try-on images with AI</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
-                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-yellow-50 rounded-lg border border-yellow-200 shadow-sm" style={{ backgroundColor: '#fefce8', borderColor: '#fde047', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }}>
-                  <span className="text-sm font-medium text-yellow-800">394</span>
-                  <span className="text-xs text-yellow-600 hidden sm:inline">Credits</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center shadow-sm" style={{ backgroundColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }}>
-                    <HiUser className="w-5 h-5 text-neutral-600" />
-                  </div>
-                  <span className="text-sm font-medium text-neutral-700 hidden sm:inline">tryondemo</span>
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                {/* Main Title */}
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 tracking-tight">Virtual Try-On</h1>
+                  <p className="text-xs sm:text-sm text-neutral-500 mt-1">Generate realistic try-on images with AI</p>
                 </div>
               </div>
             </div>
@@ -333,83 +270,83 @@ export default function Home() {
         </header>
 
         {/* Content Area */}
-        <div className="p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-7xl mx-auto">
+        <div className="p-5 sm:p-6 lg:p-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-7xl mx-auto">
             {/* Left Panel - Input Form */}
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-5 sm:space-y-6 lg:space-y-7">
               {/* Model Selection */}
-              <Card className="!p-4">
-                <CardHeader className="!mb-3 !pb-0">
-                  <CardTitle className="!text-base">Select plan</CardTitle>
+              <Card className="!p-5 sm:!p-6">
+                <CardHeader className="!mb-4 !pb-0">
+                  <CardTitle className="!text-base sm:!text-lg font-semibold">Select Model</CardTitle>
                 </CardHeader>
-                <CardContent className="!pt-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <CardContent className="!pt-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                     <button
                       onClick={() => setProvider('nano-banana')}
-                      className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
                         provider === 'nano-banana'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
+                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
+                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
                       }`}
                       style={provider === 'nano-banana' 
                         ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                         : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                       }
                     >
-                      Basic
+                      Nano Banana
                     </button>
                     <button
                       onClick={() => setProvider('flux-2-pro')}
-                      className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
                         provider === 'flux-2-pro'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
+                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
+                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
                       }`}
                       style={provider === 'flux-2-pro'
                         ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                         : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                       }
                     >
-                      Plus
+                      Flux 2 Pro
                     </button>
                     <button
                       onClick={() => setProvider('nano-banana-pro')}
-                      className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
                         provider === 'nano-banana-pro'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
+                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
+                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
                       }`}
                       style={provider === 'nano-banana-pro'
                         ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                         : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                       }
                     >
-                      Pro
+                      Nano Banana Pro
                     </button>
                     <button
                       onClick={() => setProvider('flux-2-flex')}
-                      className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
                         provider === 'flux-2-flex'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300'
+                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
+                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
                       }`}
                       style={provider === 'flux-2-flex'
                         ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                         : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
                       }
                     >
-                      Ultra
+                      Flux 2 Flex
                     </button>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Model Image Upload */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Model Image</CardTitle>
+              <Card className="!p-5 sm:!p-6">
+                <CardHeader className="!mb-4 !pb-0">
+                  <CardTitle className="!text-base sm:!text-lg font-semibold">Model Image</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="!pt-4">
                   <ImageUpload
                     label="Upload Model/Person Image"
                     description="Upload a single image of the person/model"
@@ -422,11 +359,11 @@ export default function Home() {
               </Card>
 
               {/* Garment Images Upload */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Garment Images</CardTitle>
+              <Card className="!p-5 sm:!p-6">
+                <CardHeader className="!mb-4 !pb-0">
+                  <CardTitle className="!text-base sm:!text-lg font-semibold">Garment Images</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="!pt-4">
                   <MultiImageUpload
                     label="Upload Garment Images"
                     description="Upload multiple garment images (top, jeans, scarf, hat, glasses, etc.)"
@@ -441,23 +378,23 @@ export default function Home() {
               </Card>
 
               {/* Estimated Cost */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 shadow-sm" style={{ backgroundColor: '#fefce8', borderColor: '#fde047', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }}>
-                <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/60 rounded-xl p-4 sm:p-5 shadow-sm" style={{ backgroundColor: '#eff6ff', borderColor: '#bfdbfe', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' }}>
+                <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3 mb-2.5 sm:mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-yellow-600">💰</span>
-                    <span className="text-sm font-medium text-yellow-800">Estimated Cost</span>
+                    <span className="text-base sm:text-lg">💰</span>
+                    <span className="text-xs sm:text-sm font-semibold text-blue-900">Estimated Cost</span>
                   </div>
-                  <span className="text-base sm:text-lg font-bold text-yellow-900">{estimatedCredits} Credits</span>
+                  <span className="text-lg sm:text-xl font-bold text-blue-900">{estimatedCredits} <span className="text-xs sm:text-sm font-semibold">Credits</span></span>
                 </div>
-                <div className="mt-2 space-y-1">
+                <div className="pt-2.5 sm:pt-3 border-t border-blue-200/50 space-y-1">
                   {imageDimensions && (
-                    <p className="text-xs text-yellow-700">
-                      Resolution: {imageDimensions.width}×{imageDimensions.height}px
+                    <p className="text-xs text-blue-700/90">
+                      Resolution: <span className="font-medium">{imageDimensions.width}×{imageDimensions.height}px</span>
                     </p>
                   )}
                   {garmentImages.length > 0 && (
-                    <p className="text-xs text-yellow-700">
-                      {1 + garmentImages.length} image{1 + garmentImages.length !== 1 ? 's' : ''}
+                    <p className="text-xs text-blue-700/90">
+                      <span className="font-medium">{1 + garmentImages.length}</span> image{1 + garmentImages.length !== 1 ? 's' : ''} total
                     </p>
                   )}
                 </div>
@@ -467,7 +404,7 @@ export default function Home() {
               <Button
                 onClick={handleGenerate}
                 disabled={!modelImage || garmentImages.length === 0 || isGenerating}
-                className="w-full py-3 sm:py-4 text-sm sm:text-base font-semibold"
+                className="w-full py-3 sm:py-3.5 text-sm sm:text-base font-semibold shadow-md hover:shadow-lg transition-shadow"
                 variant="primary"
               >
                 {isGenerating ? (
@@ -496,7 +433,7 @@ export default function Home() {
                   </span>
                 ) : (
                   <span className="flex items-center justify-center gap-2">
-                    <HiSparkles className="w-5 h-5" />
+                    <HiSparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>Generate (~{estimatedCredits} Credits)</span>
                   </span>
                 )}
@@ -504,45 +441,45 @@ export default function Home() {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  <p className="text-sm">{error}</p>
+                <div className="bg-red-50 border border-red-200/60 text-red-700 px-4 py-3 rounded-lg shadow-sm">
+                  <p className="text-xs sm:text-sm font-medium">{error}</p>
                 </div>
               )}
             </div>
 
             {/* Right Panel - Image Output */}
             <div>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>Generated Image</CardTitle>
+              <Card className="h-full !p-5 sm:!p-6">
+                <CardHeader className="!mb-4 !pb-0">
+                  <CardTitle className="!text-base sm:!text-lg font-semibold">Generated Image</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center gap-4">
+                <CardContent className="!pt-4">
+                  <div className="w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center gap-5 sm:gap-6">
                     {resultImage ? (
                       <>
-                        <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-neutral-200">
+                        <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-neutral-200 shadow-md">
                           <img
                             src={resultImage}
                             alt="Try-on result"
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain bg-neutral-50"
                           />
                         </div>
                         <Button
                           onClick={() => setIsModalOpen(true)}
                           variant="outline"
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium"
                         >
-                          <HiMagnifyingGlass className="w-5 h-5" />
+                          <HiMagnifyingGlass className="w-4 h-4 sm:w-5 sm:h-5" />
                           <span>Preview & Compare</span>
                         </Button>
                       </>
                     ) : (
-                      <div className="text-center">
-                        <div className="w-24 h-24 mx-auto mb-4 rounded-lg image-placeholder flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%)', boxShadow: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)' }}>
-                          <HiPhoto className="w-12 h-12 text-neutral-400" />
+                      <div className="text-center px-4">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-5 rounded-xl image-placeholder flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%)', boxShadow: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)' }}>
+                          <HiPhoto className="w-12 h-12 sm:w-14 sm:h-14 text-neutral-400" />
                         </div>
-                        <p className="text-lg font-medium text-neutral-600 mb-2">No Image Generated</p>
-                        <p className="text-sm text-neutral-500">Generated image will appear here after completion</p>
+                        <p className="text-base sm:text-lg font-semibold text-neutral-700 mb-1.5 sm:mb-2">No Image Generated</p>
+                        <p className="text-xs sm:text-sm text-neutral-500 max-w-sm mx-auto">Generated image will appear here after completion</p>
                       </div>
                     )}
                   </div>
@@ -565,11 +502,11 @@ export default function Home() {
             style={{ backgroundColor: '#ffffff', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)' }}
           >
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 sm:px-6 py-4 flex items-center justify-between z-10" style={{ borderColor: '#e5e5e5' }}>
-              <h2 className="text-lg sm:text-xl font-bold text-neutral-900">Image Comparison</h2>
+            <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between z-10" style={{ borderColor: '#e5e5e5' }}>
+              <h2 className="text-lg sm:text-xl font-bold text-neutral-900 tracking-tight">Image Comparison</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+                className="p-1.5 sm:p-2 rounded-lg hover:bg-neutral-100 transition-colors"
                 aria-label="Close modal"
               >
                 <HiXMark className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-600" />
@@ -577,13 +514,13 @@ export default function Home() {
             </div>
 
             {/* Modal Content */}
-            <div className="p-4 sm:p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="p-4 sm:p-6 lg:p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {/* Model Image */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-neutral-700 uppercase tracking-wide">Model Image</h3>
+                <div className="space-y-2.5 sm:space-y-3">
+                  <h3 className="text-xs font-semibold text-neutral-700 uppercase tracking-wider">Model Image</h3>
                   {modelPreviewUrl ? (
-                    <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 bg-neutral-50">
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-neutral-200 bg-neutral-50 shadow-sm">
                       <img
                         src={modelPreviewUrl}
                         alt="Model"
@@ -591,23 +528,23 @@ export default function Home() {
                       />
                     </div>
                   ) : (
-                    <div className="w-full aspect-square rounded-lg border-2 border-dashed border-neutral-300 flex items-center justify-center bg-neutral-50">
+                    <div className="w-full aspect-square rounded-xl border-2 border-dashed border-neutral-300 flex items-center justify-center bg-neutral-50">
                       <p className="text-sm text-neutral-400">No model image</p>
                     </div>
                   )}
                 </div>
 
                 {/* Garment Images */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-neutral-700 uppercase tracking-wide">
+                <div className="space-y-2.5 sm:space-y-3">
+                  <h3 className="text-xs font-semibold text-neutral-700 uppercase tracking-wider">
                     Garment Images ({garmentPreviewUrls.length})
                   </h3>
                   {garmentPreviewUrls.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                       {garmentPreviewUrls.map((url, index) => (
                         <div
                           key={index}
-                          className="relative aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 bg-neutral-50"
+                          className="relative aspect-square rounded-xl overflow-hidden border-2 border-neutral-200 bg-neutral-50 shadow-sm"
                         >
                           <img
                             src={url}
@@ -618,16 +555,16 @@ export default function Home() {
                       ))}
                     </div>
                   ) : (
-                    <div className="w-full aspect-square rounded-lg border-2 border-dashed border-neutral-300 flex items-center justify-center bg-neutral-50">
+                    <div className="w-full aspect-square rounded-xl border-2 border-dashed border-neutral-300 flex items-center justify-center bg-neutral-50">
                       <p className="text-sm text-neutral-400">No garment images</p>
                     </div>
                   )}
                 </div>
 
                 {/* Generated Result */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-neutral-700 uppercase tracking-wide">Generated Result</h3>
-                  <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-primary-500 bg-neutral-50" style={{ borderColor: '#ef4444' }}>
+                <div className="space-y-2.5 sm:space-y-3">
+                  <h3 className="text-xs font-semibold text-neutral-700 uppercase tracking-wider">Generated Result</h3>
+                  <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-primary-500 bg-neutral-50 shadow-md" style={{ borderColor: '#ef4444' }}>
                     <img
                       src={resultImage}
                       alt="Try-on result"
