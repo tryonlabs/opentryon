@@ -56,7 +56,9 @@ images = nova_adapter.generate_and_decode(
 
 ### 2. Image Generation APIs
 
-Generate images using Google's Nano Banana models:
+Generate images using Google's Nano Banana models or FLUX.2 models:
+
+**Nano Banana (Google Gemini):**
 
 ```python
 from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
@@ -74,6 +76,32 @@ images = pro_adapter.generate_text_to_image(
     prompt="Professional fashion photography",
     resolution="4K",
     aspect_ratio="16:9"
+)
+```
+
+**FLUX.2 (BFL AI):**
+
+```python
+from tryon.api import Flux2ProAdapter, Flux2FlexAdapter
+
+# FLUX.2 PRO (High-quality)
+pro_adapter = Flux2ProAdapter()
+images = pro_adapter.generate_text_to_image(
+    prompt="A professional fashion model wearing elegant evening wear",
+    width=1024,
+    height=1024,
+    seed=42
+)
+
+# FLUX.2 FLEX (Advanced controls)
+flex_adapter = Flux2FlexAdapter()
+images = flex_adapter.generate_text_to_image(
+    prompt="A stylish fashion model wearing elegant evening wear",
+    width=1024,
+    height=1024,
+    guidance=7.5,  # Higher = more adherence to prompt
+    steps=50,  # More steps = higher quality
+    prompt_upsampling=True
 )
 ```
 

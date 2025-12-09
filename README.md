@@ -24,6 +24,10 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
   - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
+  - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
+  - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
+- **Video Generation**:
+  - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -51,6 +55,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
   - [Image Generation with FLUX.2](#image-generation-with-flux2)
+  - [Video Generation with Luma AI](#video-generation-with-luma-ai)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -133,15 +138,22 @@ GEMINI_API_KEY=your_gemini_api_key
 
 # BFL API Credentials (required for FLUX.2 image generation)
 BFL_API_KEY=your_bfl_api_key
+
+# Luma AI Credentials (required for Luma AI image generation)
+LUMA_AI_API_KEY=your_luma_ai_api_key
 ```
 
 **Notes**: 
 - Download the U2Net checkpoint file from the [huggingface-cloth-segmentation repository](https://github.com/wildoctopus/huggingface-cloth-segmentation)
 - For Amazon Nova Canvas, ensure you have AWS credentials configured (via `.env` file or AWS CLI) and Nova Canvas enabled in your AWS Bedrock console
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
+
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
 - For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
+
+- For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
+- For Luma AI, obtain your API key from the [Luma Labs AI](https://lumalabs.ai/api)
 
 ## 🎮 Quick Start
 
@@ -747,6 +759,389 @@ images[0].save("result.png")
 
 **Reference**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
 
+### Image Generation with FLUX.2
+
+Generate high-quality images using FLUX.2 [PRO] and FLUX.2 [FLEX] models from BFL AI. These models support text-to-image generation, image editing, multi-image composition, and advanced controls.
+
+#### Prerequisites
+
+1. **BFL AI Account Setup**: 
+   - Sign up for a BFL AI account at [BFL AI](https://docs.bfl.ai/)
+   - Obtain your API key from the BFL AI dashboard
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **FLUX.2 [PRO]**: High-quality image generation with standard controls - ideal for most use cases
+   - **FLUX.2 [FLEX]**: Flexible generation with advanced controls (guidance scale, steps, prompt upsampling) - ideal for fine-tuned control
+
+#### Command Line Usage
+
+```bash
+# Text-to-image with FLUX.2 PRO
+python image_gen.py --provider flux2-pro --prompt "A professional fashion model wearing elegant evening wear" --width 1024 --height 1024
+
+# Text-to-image with FLUX.2 FLEX (Advanced controls)
+python image_gen.py --provider flux2-flex --prompt "A stylish fashion model wearing elegant evening wear" --width 1024 --height 1024 --guidance 7.5 --steps 50
+
+# Image editing
+python image_gen.py --provider flux2-pro --mode edit --image person.jpg --prompt "Change the outfit to casual streetwear"
+
+# Multi-image composition
+python image_gen.py --provider flux2-pro --mode compose --images outfit1.jpg outfit2.jpg --prompt "Combine these clothing styles into a cohesive outfit"
+```
+
+#### Python API Usage
+
+**FLUX.2 [PRO]:**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api import Flux2ProAdapter
+
+# Initialize adapter
+adapter = Flux2ProAdapter()
+
+# Text-to-image generation
+images = adapter.generate_text_to_image(
+    prompt="A professional fashion model wearing elegant evening wear on a runway",
+    width=1024,
+    height=1024,
+    seed=42
+)
+
+# Image editing
+images = adapter.generate_image_edit(
+    prompt="Change the outfit to casual streetwear style",
+    input_image="model.jpg",
+    width=1024,
+    height=1024
+)
+
+# Multi-image composition
+images = adapter.generate_multi_image(
+    prompt="Create a fashion catalog layout combining these clothing styles",
+    images=["outfit1.jpg", "outfit2.jpg", "accessories.jpg"],
+    width=1024,
+    height=1024
+)
+
+# Save results
+images[0].save("result.png")
+```
+
+**FLUX.2 [FLEX]:**
+
+```python
+from tryon.api import Flux2FlexAdapter
+
+# Initialize adapter
+adapter = Flux2FlexAdapter()
+
+# Text-to-image with advanced controls
+images = adapter.generate_text_to_image(
+    prompt="A stylish fashion model wearing elegant evening wear",
+    width=1024,
+    height=1024,
+    guidance=7.5,  # Higher guidance = more adherence to prompt (1.5-10)
+    steps=50,  # More steps = higher quality (default: 28)
+    prompt_upsampling=True,  # Enhance prompt quality
+    seed=42
+)
+
+# Image editing with advanced controls
+images = adapter.generate_image_edit(
+    prompt="Transform the outfit to match a vintage 1920s fashion style",
+    input_image="model.jpg",
+    width=1024,
+    height=1024,
+    guidance=8.0,
+    steps=50,
+    prompt_upsampling=True
+)
+
+# Save results
+images[0].save("result.png")
+```
+
+#### Supported Features
+
+- **Text-to-Image**: Generate images from text descriptions
+- **Image Editing**: Edit images using text prompts (add, remove, modify elements)
+- **Multi-Image Composition**: Combine up to 8 images with style transfer
+- **Custom Dimensions**: Control width and height (minimum: 64 pixels)
+- **Advanced Controls** (FLEX only): Guidance scale (1.5-10), steps (default: 28), prompt upsampling
+- **Reproducibility**: Seed support for consistent results
+- **Safety Controls**: Moderation tolerance (0-5, default: 2)
+- **Output Formats**: JPEG or PNG
+
+#### Key Differences: PRO vs FLEX
+
+- **FLUX.2 [PRO]**: Simpler API, faster generation, good for most use cases
+- **FLUX.2 [FLEX]**: Advanced controls (guidance, steps, prompt upsampling), more fine-tuned control over generation quality
+
+**Reference**: [FLUX.2 API Documentation](https://docs.bfl.ai/api-reference/models/generate-or-edit-an-image-with-flux2-[pro])
+
+### Luma AI Image Generation
+
+Generate high-quality images using Luma AI’s (Photon-Flash-1 and Photon-1) models. Supports text-to-image generation, image reference, style reference, character reference and precise image modification for production workflows.
+
+#### Prerequisites
+
+1. **Luma AI Account Setup**: 
+   - Sign up for a Luma AI account at the [Luma AI Developer Console](https://lumalabs.ai/)
+   - Create and copy your API key from the [API Keys section](https://lumalabs.ai/api)
+   - Add the key to your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **Luma AI (Photon-Flash-1)**: Fast and cost efficient image generation, ideal for rapid iteration and scale
+   - **Luma AI (Photon-1)**: High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
+
+#### Command Line Usage
+
+```bash
+# Text-to-image with Luma AI ((default) photon-1, photon-flash-1)
+python luma_image.py --provider photon-1 --prompt "A stylish fashion model wearing a modern casual outfit in a studio setting"
+
+# Text-to-image with Luma AI (with aspect ratio)
+python luma_image.py --provider photon-1 --prompt "A model wearing a red saree" --aspect_ratio "16:9"
+
+# Ouptput to a particular directory
+python luma_image.py --provider photon-1 --prompt "A model wearing a red saree" --aspect_ratio "16:9" --output_dir folder_name
+
+# Image generation using Image Reference (single image)
+python luma_image.py --provider photon-1 --mode img-ref --prompt "model wearing sunglasses" --images person.jpg --weights 0.8 --aspect_ratio "1:1"
+
+# Image generation using Image Reference (multiple images)
+python luma_image.py --provider photon-flash-1 --mode img-ref --prompt "model wearing sunglasses" --images person_1.jpg person_2.jpg --weights 0.8 0.9 --aspect_ratio "9:21"
+
+# Image generation using Style Reference(single image)
+python luma_image.py --provider photon-flash-1 --mode style-ref --prompt "model wearing a blue shirt" --images person.jpg --weights 0.75 --aspect_ratio "16:9"
+
+# Image generation using Style Reference(multiple images)
+python luma_image.py --provider photon-flash-1 --mode style-ref --prompt "hat" --images person_1.jpg person_2.jpg --weights 0.75 0.9 --aspect_ratio "16:9"
+
+# Image generation using Character Reference
+python luma_image.py --provider photon-flash-1 --mode char-ref --char_id identity0 --prompt "Professional fashion photography of elegant evening wear on a runway" --char_images person.jpg --aspect_ratio "16:9"
+
+# Image modification (only single image)
+python luma_image.py --provider photon-flash-1 --mode modify --prompt "change the suit color to yellow" --images person.jpg --weights 0.85
+```
+
+#### Python API Usage
+
+**Luma AI:**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api.lumaAI import LumaAIAdapter
+
+adapter = LumaAIAdapter()
+
+list_of_images = []
+
+images = adapter.generate_text_to_image(
+    prompt="person with a hat",
+    aspect_ratio= "16:9"
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_image_reference(
+    prompt="hat",
+    aspect_ratio= '16:9',
+    image_ref= [
+      {
+        "url": "person.jpg",
+        "weight": 0.85
+      }
+    ]
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_style_reference(
+    prompt="tiger",
+    aspect_ratio= '16:9',
+    style_ref= [
+      {
+        "url": "person.jpg",
+        "weight": 0.8
+      }
+    ]
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_character_reference(
+    prompt="man as a pilot",
+    aspect_ratio= '16:9',
+    character_ref= {
+        "identity0": {
+          "images": [
+            "person.jpg"
+          ]
+        }
+      }
+)
+
+list_of_images.extend(images)
+
+images = adapter.generate_with_modify_image(
+    prompt="transform all flowers to oranges",
+    images= "person.jpg",
+    weights= 0.9,
+    aspect_ratio= '16:9'
+)
+
+list_of_images.extend(images)
+
+for idx, img in enumerate(list_of_images):
+    img.save(f"outputs/generated_{idx}.png")
+```
+
+#### Supported Features
+
+- **Text-to-Image**: Generate images from text descriptions
+- **Image Reference**: Useful when you want to create variations of an image
+- **Style Reference**: Apply specific style to the generation
+- **Character Reference**: A feature that allows you to create consistent and personalized characters
+- **Modify Image**: Make changes to an image
+- **Weights**: weight value can be any float value from (0 - 1)
+- **Aspect Ratios**: 7 supported aspect ratios (1:1, 3:4, 4:3, 9:16, 16:9, 21:9, 9:21)
+- **Multiple Images**: Accepts upto 4 images for image-reference, style-reference and character-reference modes
+- **Output Format**: JPEG
+
+#### Aspect Ratios
+
+**LUMA AI:**
+- `"1:1"` (1536x1536)
+- `"16:9"` (2048x1152)
+- `"9:16"` (1152x2048)
+- And 4 more options
+
+**Reference**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
+
+### Video Generation with Luma AI
+
+Generate smooth, high-fidelity videos using Luma AI’s Ray models (Ray 1.6, Ray 2, and Ray Flash 2). These models support text-to-video and image-to-video generation with optional keyframe interpolation. Image-to-video accepts either a single image or two keyframe images (frame0, frame1) for controlled motion.
+
+#### Prerequisites
+
+1. **Luma AI Account Setup**: 
+   - Sign up for a Luma AI account at the [Luma AI Developer Console](https://lumalabs.ai/)
+   - Create and copy your API key from the [API Keys section](https://lumalabs.ai/api)
+   - Add the key to your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **Ray 1.6 (ray-1-6)**: Balanced quality model for general video generation; slower but stable.
+   - **Ray 2 (ray-2)**: High-quality flagship model with the best motion, detail, and consistency.
+   - **Ray Flash 2 (ray-flash-2)**: Fast, lower-latency model optimized for quick iterations and previews.
+
+#### Command Line Usage
+
+```bash
+# Text to Video with Luma AI
+python video_gen.py --provider ray-2 --mode text_video --prompt "A model walking in red saree on a ramp" --resolution 720p --duration 5s --aspect 16:9 --output_dir outputs
+
+# Text to Video with loop
+python video_gen.py --provider ray-2 --mode image_video --prompt "A model walking in red saree on a ramp" --resolution 720p --duration 5s --aspect 16:9 --loop
+
+# Image to Video with start keyframe
+python video_gen.py --provider ray-flash-2 --mode image_video --prompt "Model walking" --start_image person.jpg --resolution 4k --duration 10s --aspect 21:9 
+
+# Image to Video with End Keyframe
+python video_gen.py --provider ray-flash-2 --mode image_video --prompt "Model walking" --end_image person.jpg --resolution 720p --duration 10s --aspect 21:9 
+
+# Image to Video with start and End Keyframe
+python video_gen.py --provider ray-2 --mode image_video --prompt "Model sitting on a fence" --start_image person.jpg --end_image person.jpg --resolution 4k --duration 10s --aspect 21:9
+```
+
+#### Python API Usage
+
+**Luma AI:**
+
+```python
+
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api.lumaAI import LumaAIVideoAdapter
+from pathlib import Path
+
+adapter = LumaAIVideoAdapter()
+
+video_list = []
+
+
+def save_video(video_bytes: bytes, idx: int):
+    Path("outputs").mkdir(exist_ok=True)
+    out_path = Path("outputs") / f"generated_{idx}.mp4"
+    with open(out_path, "wb") as f:
+        f.write(video_bytes)
+    print(f"[SAVED] {out_path}")
+
+
+# TEXT → VIDEO
+video = adapter.generate_text_to_video(
+    prompt="a model riding a car with long hair",
+    resolution="540p",
+    duration="5s",
+    model="ray-2",
+)
+video_list.append(video)
+
+
+# IMAGE → VIDEO (start + end)
+video = adapter.generate_image_to_video(
+    prompt="Man riding a bike",
+    start_image="start_img.png",
+    end_image="end_img.png",
+    resolution="540p",
+    duration="5s",
+    model="ray-2",
+)
+video_list.append(video)
+
+
+# IMAGE → VIDEO (only end image; no start)
+video = adapter.generate_image_to_video(
+    prompt="A man walking on a ramp",
+    end_image="end_img_only.png",
+    resolution="540p",
+    duration="5s",
+    model="ray-2",
+)
+video_list.append(video)
+
+# SAVE ALL RESULTS
+for idx, vid_bytes in enumerate(video_list):
+    save_video(vid_bytes, idx)
+```
+
+#### Supported Features
+
+- **Text to Video**: Generate videos using test descriptions.
+- **Image to Video**: Generate videos using keyframes.
+- **Keyframe Generation**: Generate videos using a start keyframe or an end keyframe or both.
+- **Duration**: Durations in seconds (5s, 9s, 10s)
+- **Resolution**: Quality of the Video (540p, 720p, 1080p, 4k)
+- **Aspect Ratios**: 7 supported aspect ratios (1:1, 3:4, 4:3, 9:16, 16:9, 21:9, 9:21)
+- **Loop**: Enable seamless looping when generating video from a single image or text prompt. Works for single image when only start_image is provided.
+
+#### Aspect Ratios
+
+**LUMA AI:**
+- `"1:1"` (1024x1024)
+- `"16:9"` (1280x720)
+- `"9:16"` (720x1280)
+- And 4 more options
+
+**Reference**: [Luma AI Video Generation Documentation](https://docs.lumalabs.ai/docs/video-generation)
+
 ### Preprocessing Functions
 
 #### Segment Garment
@@ -852,7 +1247,11 @@ opentryon/
 │   ├── api/                 # API adapters
 │   │   ├── nova_canvas.py  # Amazon Nova Canvas VTON adapter
 │   │   ├── kling_ai.py     # Kling AI VTON adapter
-│   │   └── segmind.py      # Segmind Try-On Diffusion adapter
+│   │   ├── lumaAI/         # Luma AI Image generation adapter
+│   │   │    └── adapter.py  # LumaAIAdapter
+│   │   ├── segmind.py      # Segmind Try-On Diffusion adapter
+│   │   ├── nano_banana/    # Nano Banana (Gemini) image generation adapters
+│   │   │   └── adapter.py  # NanoBananaAdapter and NanoBananaProAdapter
 │   │   └── flux2.py        # FLUX.2 [PRO] and [FLEX] image generation adapters
 │   ├── datasets/            # Dataset loaders
 │   │   ├── base.py         # Base dataset interface
@@ -881,8 +1280,9 @@ opentryon/
 ├── scripts/                 # Installation scripts
 ├── api_server.py            # FastAPI server for virtual try-on demo
 ├── main.py                  # Main CLI entry point
-├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas & Kling AI)
 ├── run_demo.py              # Demo launcher (Gradio demos)
+├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas, Kling AI, Segmind)
+├── image_gen.py             # Image generation CLI (Nano Banana, FLUX.2)
 ├── requirements.txt         # Python dependencies
 ├── environment.yml          # Conda environment
 ├── README_API_SERVER.md     # API server documentation
@@ -941,7 +1341,6 @@ Key dependencies include:
 - torchvision (== 0.16.2)
 - diffusers (== 0.29.2)
 - transformers (== 4.42.4)
-- gradio (== 4.44.1)
 - opencv-python (== 4.8.1.78)
 - scikit-image (== 0.22.0)
 - numpy (== 1.26.4)
@@ -954,6 +1353,7 @@ Key dependencies include:
 - fastapi (== 0.124.0)
 - uvicorn[standard] (== 0.38.0)
 - python-multipart (== 0.0.20)
+- lumaai (== 1.18.1)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.
 
@@ -965,6 +1365,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
 - **Nano Banana**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
 - **FLUX.2**: [BFL AI Documentation](https://docs.bfl.ai/)
+- **Luma AI**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)
 
