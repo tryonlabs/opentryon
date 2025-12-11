@@ -6,6 +6,7 @@ from pathlib import Path
 from tryon.datasets import FashionMNIST, VITONHD
 
 
+
 def load_fashion_mnist(
     download: bool = True,
     normalize: bool = True,
