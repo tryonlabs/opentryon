@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "opentryon": {
+      "command": "python",
+      "args": [
+        "/absolute/path/to/opentryon/mcp-server/server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/absolute/path/to/opentryon"
+      }
+    }
+  }
+}
+
