@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="opentryon",
-    version="0.1.0",
+    version="0.0.1",
     description="Open-source AI toolkit for fashion tech and virtual try-on",
     long_description=long_description,
     long_description_content_type='text/markdown',

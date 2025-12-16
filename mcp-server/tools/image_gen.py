@@ -6,8 +6,8 @@ from pathlib import Path
 from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
 from tryon.api.flux2 import Flux2ProAdapter, Flux2FlexAdapter
 from tryon.api.lumaAI import LumaAIAdapter
-from ..config import config
-from ..utils import validate_image_path, validate_image_url, save_image
+from config import config
+from utils import save_image
 
 
 def generate_image_nano_banana(

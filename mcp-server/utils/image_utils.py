@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from PIL import Image
 import requests
 
-from ..config import config
+from config import config
 
 
 def validate_image_path(path: str) -> bool:

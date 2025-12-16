@@ -4,7 +4,7 @@ from typing import Optional
 from pathlib import Path
 
 from tryon.api.lumaAI import LumaAIVideoAdapter
-from ..config import config
+from config import config
 
 
 def generate_video_luma_ray(

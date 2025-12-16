@@ -44,7 +44,7 @@ The MCP server exposes the following capabilities:
 
 - Python 3.10+
 - OpenTryOn installed and configured (see main README.md)
-- Required API keys configured in `.env` file
+- At least one API key configured (see Configuration Status below)
 
 ### Install Dependencies
 
@@ -53,35 +53,117 @@ cd mcp-server
 pip install -r requirements.txt
 ```
 
-### Environment Variables
+### Configuration Status
 
-Ensure your `.env` file in the project root contains the necessary API keys:
+The MCP server requires API keys for different services. **You don't need all of them** - configure only the services you want to use:
+
+#### ✅ Required (Choose at least ONE from each category)
+
+**Virtual Try-On** (choose one or more):
+- ✓ Kling AI (recommended)
+- ✓ Segmind (recommended)
+- ⚠️ Amazon Nova Canvas (requires AWS account - optional)
+
+**Image Generation** (choose one or more):
+- ✓ Gemini (Nano Banana)
+- ✓ FLUX.2
+- ⚠️ Luma AI (optional for image generation)
+
+#### 🔄 Optional Services
+
+- **Luma AI**: Required ONLY for video generation and Luma image models
+  - If you don't need video generation or Luma-specific image generation, you can skip this
+  - Other image generation services (Gemini, FLUX.2) work independently
+
+- **U2Net Preprocessing**: Required ONLY for local garment segmentation
+  - If you use API-based virtual try-on (Nova Canvas, Kling AI, Segmind), you don't need this
+  - Download checkpoint from: https://github.com/levindabhi/cloth-segmentation
+
+- **Amazon Nova Canvas**: Requires AWS credentials
+  - Only needed if you want to use AWS Bedrock's virtual try-on
+  - Kling AI and Segmind work without AWS
+
+### Quick Start Configuration
+
+**Minimum setup (for basic functionality):**
+
+```bash
+# 1. Copy the template
+cp ../env.template .env
+
+# 2. Add at least these keys to .env:
+KLING_AI_API_KEY=your_kling_api_key
+KLING_AI_SECRET_KEY=your_kling_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+This gives you:
+- ✓ Virtual try-on with Kling AI
+- ✓ Image generation with Gemini (Nano Banana)
+- ✓ All preprocessing tools (dataset loaders work without API keys)
+
+### Complete Configuration (All Services)
+
+For full functionality, configure all services in your `.env` file:
 
 ```env
-# AWS Credentials (for Amazon Nova Canvas)
+# Virtual Try-On Services
+# AWS Credentials (Amazon Nova Canvas - OPTIONAL)
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AMAZON_NOVA_REGION=us-east-1
 
-# Kling AI
+# Kling AI (RECOMMENDED)
 KLING_AI_API_KEY=your_kling_api_key
 KLING_AI_SECRET_KEY=your_kling_secret_key
+KLING_AI_BASE_URL=https://api-singapore.klingai.com
 
-# Segmind
+# Segmind (RECOMMENDED)
 SEGMIND_API_KEY=your_segmind_api_key
 
-# Google Gemini (Nano Banana)
+# Image Generation Services
+# Google Gemini / Nano Banana (RECOMMENDED)
 GEMINI_API_KEY=your_gemini_api_key
 
-# BFL API (FLUX.2)
+# Black Forest Labs FLUX.2 (RECOMMENDED)
 BFL_API_KEY=your_bfl_api_key
 
-# Luma AI
+# Luma AI (OPTIONAL - for video generation & Luma image models)
 LUMA_AI_API_KEY=your_luma_ai_api_key
 
-# U2Net Checkpoint
-U2NET_CLOTH_SEG_CHECKPOINT_PATH=cloth_segm.pth
+# Preprocessing (OPTIONAL - for local garment segmentation)
+# Download from: https://github.com/levindabhi/cloth-segmentation
+U2NET_CLOTH_SEG_CHECKPOINT_PATH=/path/to/cloth_segm_u2net_latest.pth
 ```
+
+### Check Configuration Status
+
+When you start the MCP server, it will display the configuration status:
+
+```bash
+python server.py
+
+# Output:
+# OpenTryOn MCP Server Configuration Status:
+#   Amazon Nova Canvas: ✗ Not configured (optional)
+#   Kling AI: ✓ Configured
+#   Segmind: ✓ Configured
+#   Gemini (Nano Banana): ✓ Configured
+#   FLUX.2: ✓ Configured
+#   Luma AI: ✗ Not configured (optional)
+#   U2Net (Preprocessing): ✗ Not configured (optional)
+```
+
+### Getting API Keys
+
+| Service | Get API Key | Cost | Notes |
+|---------|-------------|------|-------|
+| **Kling AI** | [klingai.com](https://klingai.com/) | Pay-per-use | Best quality virtual try-on |
+| **Segmind** | [segmind.com](https://segmind.com/) | Pay-per-use | Fast virtual try-on |
+| **Gemini** | [ai.google.dev](https://ai.google.dev/) | Free tier available | Free quota for testing |
+| **FLUX.2** | [api.bfl.ml](https://api.bfl.ml/) | Pay-per-use | High-quality images |
+| **Luma AI** | [lumalabs.ai](https://lumalabs.ai/) | Pay-per-use | Video generation |
+| **AWS Bedrock** | [aws.amazon.com/bedrock](https://aws.amazon.com/bedrock/) | Pay-per-use | Requires AWS account |
 
 ## Usage
 

@@ -4,8 +4,8 @@ from typing import Optional, List
 from pathlib import Path
 
 from tryon.api import AmazonNovaCanvasVTONAdapter, KlingAIVTONAdapter, SegmindVTONAdapter
-from ..config import config
-from ..utils import validate_image_path, validate_image_url, save_image
+from config import config
+from utils import validate_image_path, validate_image_url, save_image
 
 
 def virtual_tryon_nova(

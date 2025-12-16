@@ -21,7 +21,7 @@ class Config:
     
     # Server settings
     SERVER_NAME = "opentryon-mcp"
-    SERVER_VERSION = "0.1.0"
+    SERVER_VERSION = "0.0.1"
     
     # AWS/Amazon Nova Canvas
     AWS_ACCESS_KEY_ID: Optional[str] = os.getenv("AWS_ACCESS_KEY_ID")
@@ -73,17 +73,100 @@ class Config:
     
     @classmethod
     def get_status_message(cls) -> str:
-        """Get a human-readable status message."""
+        """Get a human-readable status message with helpful guidance."""
         status = cls.validate()
         lines = ["OpenTryOn MCP Server Configuration Status:"]
-        lines.append(f"  Amazon Nova Canvas: {'✓ Configured' if status['amazon_nova'] else '✗ Not configured'}")
-        lines.append(f"  Kling AI: {'✓ Configured' if status['kling_ai'] else '✗ Not configured'}")
-        lines.append(f"  Segmind: {'✓ Configured' if status['segmind'] else '✗ Not configured'}")
-        lines.append(f"  Gemini (Nano Banana): {'✓ Configured' if status['gemini'] else '✗ Not configured'}")
-        lines.append(f"  FLUX.2: {'✓ Configured' if status['flux2'] else '✗ Not configured'}")
-        lines.append(f"  Luma AI: {'✓ Configured' if status['luma_ai'] else '✗ Not configured'}")
-        lines.append(f"  U2Net (Preprocessing): {'✓ Configured' if status['u2net'] else '✗ Not configured'}")
+        
+        # Virtual Try-On Services
+        nova_status = "✓ Configured" if status['amazon_nova'] else "✗ Not configured (optional - requires AWS)"
+        kling_status = "✓ Configured" if status['kling_ai'] else "✗ Not configured (recommended)"
+        segmind_status = "✓ Configured" if status['segmind'] else "✗ Not configured (recommended)"
+        
+        lines.append(f"  Amazon Nova Canvas: {nova_status}")
+        lines.append(f"  Kling AI: {kling_status}")
+        lines.append(f"  Segmind: {segmind_status}")
+        
+        # Image Generation Services
+        gemini_status = "✓ Configured" if status['gemini'] else "✗ Not configured (recommended)"
+        flux_status = "✓ Configured" if status['flux2'] else "✗ Not configured (recommended)"
+        luma_status = "✓ Configured" if status['luma_ai'] else "✗ Not configured (optional - for video)"
+        
+        lines.append(f"  Gemini (Nano Banana): {gemini_status}")
+        lines.append(f"  FLUX.2: {flux_status}")
+        lines.append(f"  Luma AI: {luma_status}")
+        
+        # Preprocessing
+        u2net_status = "✓ Configured" if status['u2net'] else "✗ Not configured (optional - for local segmentation)"
+        lines.append(f"  U2Net (Preprocessing): {u2net_status}")
+        
+        # Add helpful message
+        vton_count = sum([status['amazon_nova'], status['kling_ai'], status['segmind']])
+        img_count = sum([status['gemini'], status['flux2'], status['luma_ai']])
+        
+        lines.append("")
+        if vton_count == 0:
+            lines.append("⚠️  Warning: No virtual try-on service configured!")
+            lines.append("   Configure at least one: Kling AI (recommended) or Segmind")
+        if img_count == 0:
+            lines.append("⚠️  Warning: No image generation service configured!")
+            lines.append("   Configure at least one: Gemini (recommended) or FLUX.2")
+        
+        if vton_count > 0 and img_count > 0:
+            lines.append("✅ Ready! At least one service from each category is configured.")
+            lines.append(f"   Virtual Try-On: {vton_count}/3 services")
+            lines.append(f"   Image Generation: {img_count}/3 services")
+        
+        lines.append("")
+        lines.append("💡 Tip: Copy env.template to .env and add your API keys")
+        lines.append("📖 Setup guide: mcp-server/README.md")
+        
         return "\n".join(lines)
+    
+    @classmethod
+    def get_missing_services(cls) -> dict[str, list[str]]:
+        """Get list of missing services by category."""
+        status = cls.validate()
+        
+        missing = {
+            "virtual_tryon": [],
+            "image_generation": [],
+            "optional": []
+        }
+        
+        # Virtual Try-On (at least one required)
+        if not status['kling_ai']:
+            missing["virtual_tryon"].append("Kling AI")
+        if not status['segmind']:
+            missing["virtual_tryon"].append("Segmind")
+        if not status['amazon_nova']:
+            missing["optional"].append("Amazon Nova Canvas (requires AWS)")
+        
+        # Image Generation (at least one required)
+        if not status['gemini']:
+            missing["image_generation"].append("Gemini (Nano Banana)")
+        if not status['flux2']:
+            missing["image_generation"].append("FLUX.2")
+        
+        # Optional services
+        if not status['luma_ai']:
+            missing["optional"].append("Luma AI (for video generation)")
+        if not status['u2net']:
+            missing["optional"].append("U2Net (for local garment segmentation)")
+        
+        return missing
+    
+    @classmethod
+    def is_ready(cls) -> bool:
+        """Check if minimum required services are configured."""
+        status = cls.validate()
+        
+        # Need at least one virtual try-on service
+        has_vton = status['kling_ai'] or status['segmind'] or status['amazon_nova']
+        
+        # Need at least one image generation service
+        has_img_gen = status['gemini'] or status['flux2'] or status['luma_ai']
+        
+        return has_vton and has_img_gen
 
 
 config = Config()
