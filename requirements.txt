@@ -5,7 +5,6 @@ opencv-python==4.8.1.78
 pillow==10.1.0
 tqdm==4.66.1
 scikit-image==0.22.0
-python-dotenv==1.0.1
 transformers==4.42.4
 python-dotenv
 boto3==1.40.64
