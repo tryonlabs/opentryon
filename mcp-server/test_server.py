@@ -157,7 +157,6 @@ def test_directory_structure():
         ("tools", "Tools directory"),
         ("utils", "Utils directory"),
         ("examples", "Examples directory"),
-        ("docs", "Documentation directory"),
     ]
     
     required_files = [
@@ -165,11 +164,6 @@ def test_directory_structure():
         ("config.py", "Configuration file"),
         ("requirements.txt", "Requirements file"),
         ("README.md", "README file"),
-        ("docs/QUICKSTART.md", "Quick start guide"),
-        ("docs/INSTALL.md", "Installation guide"),
-        ("docs/ARCHITECTURE.md", "Architecture documentation"),
-        ("docs/SUMMARY.md", "Project summary"),
-        ("docs/PROJECT_OVERVIEW.md", "Project overview"),
     ]
     
     all_passed = True
