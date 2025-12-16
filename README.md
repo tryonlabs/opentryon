@@ -26,6 +26,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
   - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
   - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
+  - gpt-image-1 (OpenAI): High-quality image generation with strong prompt understanding, consistent composition, and reliable visual accuracy
 - **Video Generation**:
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
 - **Datasets Module**: 
@@ -55,6 +56,8 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
   - [Image Generation with FLUX.2](#image-generation-with-flux2)
+  - [Image Generation with Luma AI](#luma-ai-image-generation)
+  - [Image Generation with OpenAI](#image-generation-with-gpt-image-1)
   - [Video Generation with Luma AI](#video-generation-with-luma-ai)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
@@ -141,6 +144,9 @@ BFL_API_KEY=your_bfl_api_key
 
 # Luma AI Credentials (required for Luma AI image generation)
 LUMA_AI_API_KEY=your_luma_ai_api_key
+
+# OpenAI Credentials (required for OpenAI GPT-Image-1 image generation)
+OPENAI_API_KEY=your_openai_api_key
 ```
 
 **Notes**: 
@@ -153,7 +159,8 @@ LUMA_AI_API_KEY=your_luma_ai_api_key
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
-- For Luma AI, obtain your API key from the [Luma Labs AI](https://lumalabs.ai/api)
+- For Luma AI, obtain your API key from [Luma Labs AI](https://lumalabs.ai/api)
+- For OpenAI, obtain your API key from [OpenAI Platform](https://platform.openai.com/settings/organization/api-keys) 
 
 ## 🎮 Quick Start
 
@@ -1024,6 +1031,96 @@ for idx, img in enumerate(list_of_images):
 - And 4 more options
 
 **Reference**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
+
+### Image Generation with GPT-Image-1
+
+Generate high-quality images using OpenAI’s GPT-Image-1 model.
+This model supports precise prompt-driven image generation, image editing with masks, multi-image conditioning with consistent visual quality.
+
+#### Prerequisites
+
+1. **OpenAI Account Setup**:
+- Sign up for an OpenAI account at [OpenAI Platform](https://platform.openai.com/settings/organization/general)
+- Obtain your API key from the [API Keys page](https://platform.openai.com/settings/organization/api-key)
+- Configure credentials in your `.env` file (see Environment Variables section)
+
+#### Command Line Usage
+
+```bash
+# Text-to-image
+python gpt_image.py --mode text --prompt "A female model in a traditional green saree" --size 1024x1024 --quality high
+
+# With transparent background and output directory
+python gpt_image.py --mode text --prompt "A female model in a traditional green saree" --size 1024x1024 --quality high --background transparent --output_dir outputs/
+
+# Image-to-Image
+python gpt_image.py --mode image --prompt "change the flowers in the background" --images "person.jpg" --size 1536x1024 --quality medium --n 2
+
+# Image-to-Image with input fidelity (preserve input image details better)
+python gpt_image.py --mode image --prompt "change the flowers in the background" --images "person.jpg" --size 1536x1024 --quality medium --inp_fid high
+
+# Image-to-Image with mask Image
+python gpt_image.py --mode image --images "scene.png" --mask "mask.png". --prompt "Replace the masked area with a swimming pool"
+```
+
+#### Python API Usage
+
+**GPT-Image-1:**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
+from tryon.api.openAI.image_adapter import GPTImageAdapter 
+
+adapter = GPTImageAdapter()
+
+list_of_images = []
+
+# ---------- Text → Image ----------
+images = adapter.generate_text_to_image(
+    prompt="A person wearing a leather jacket with sun glasses",
+    size="1024x1024",
+    quality="high",
+    n=1
+)
+
+list_of_images.extend(images)
+
+# ---------- Image → Image ----------
+images = adapter.generate_image_edit(
+    images= "/home/naveen/dev/opentryon/outputs/generated_3.png",
+    prompt="Make the hat red and stylish",
+    size="1024x1024",
+    quality="high",
+    n=1
+)
+
+list_of_images.extend(images)
+
+# ---------- Save outputs ----------
+os.makedirs("outputs", exist_ok=True)
+
+for idx, img_bytes in enumerate(list_of_images):
+    with open(f"outputs/generated_{idx}.png", "wb") as f:
+        f.write(img_bytes)
+
+print(f"Saved {len(list_of_images)} images.")
+```
+
+#### Supported Features
+
+- **Text-to-Image**: Generate Images from text descriptions
+- **Image Editing**: Edit images using a multiple base images
+- **Edit with Mask**: Edit an image using a masked image
+- **Size**: Supported sizes (1024x1024, 1536x1024, 1024x1536, auto)
+- **Quality**: Supported quality Options (low, high, medium, auto)
+- **Background**: Supported background Options (transparent, opaque, auto)
+- **Input Fidelity**: Supported Options (low, high)
+
+**Reference**: [OpenAI GPT-Image-1 Documentation](https://platform.openai.com/docs/guides/image-generation)
+
 
 ### Video Generation with Luma AI
 
