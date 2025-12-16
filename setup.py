@@ -7,15 +7,15 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="opentryon",
-    version="0.1.0",
+    version="0.0.1",
     description="Open-source AI toolkit for fashion tech and virtual try-on",
     long_description=long_description,
     long_description_content_type='text/markdown',
     author="TryOn Labs",
     author_email="contact@tryonlabs.ai",
     url='https://github.com/tryonlabs/opentryon',
-    license='Creative Commons BY-NC 4.0',
-    packages=find_packages(),
+    license='CC-BY-NC-4.0',
+    packages=find_packages(include=['tryon', 'tryon.*', 'tryondiffusion', 'tryondiffusion.*']),
     python_requires='>=3.10',
     install_requires=[
         "torch==2.1.2",
@@ -34,6 +34,7 @@ setup(
         "fastapi==0.124.0",
         "uvicorn[standard]==0.38.0",
         "python-multipart==0.0.20",
+        "lumaai>=1.18.1",
     ],
     keywords=[
         "virtual try-on",
@@ -45,6 +46,8 @@ setup(
         "try-on diffusion",
         "computer vision",
         "deep learning",
+        "artificial intelligence",
+        "image generation",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -53,8 +56,23 @@ setup(
         "License :: Free for non-commercial use",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Image Processing",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "License :: Free For Home Use",
+        "License :: Other/Proprietary License",
     ],
+    project_urls={
+        'Documentation': 'https://tryonlabs.github.io/opentryon/',
+        'Source': 'https://github.com/tryonlabs/opentryon',
+        'Bug Reports': 'https://github.com/tryonlabs/opentryon/issues',
+        'Discord': 'https://discord.gg/T5mPpZHxkY',
+    },
+    extras_require={
+        'demos': ['gradio>=6.0.0'],
+        'training': ['diffusers>=0.21.0', 'accelerate>=0.20.0'],
+        'all': ['gradio>=6.0.0', 'diffusers>=0.21.0', 'accelerate>=0.20.0'],
+    },
 )

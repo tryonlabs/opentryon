@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include env.template
+recursive-include tryon *.json *.yaml *.yml
+prune tests
+prune demo
+prune external
