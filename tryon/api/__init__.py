@@ -5,6 +5,7 @@ from .nano_banana import NanoBananaAdapter, NanoBananaProAdapter
 from .lumaAI import LumaAIAdapter
 from .flux2 import Flux2ProAdapter, Flux2FlexAdapter
 from .lumaAI.luma_video_adapter import LumaAIVideoAdapter
+from .openAI.image_adapter import GPTImageAdapter
 
 __all__ = [
     "AmazonNovaCanvasVTONAdapter",
@@ -16,4 +17,5 @@ __all__ = [
     "Flux2ProAdapter",
     "Flux2FlexAdapter",
     "LumaAIVideoAdapter",
+    "GPTImageAdapter",
 ]
