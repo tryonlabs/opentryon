@@ -1153,6 +1153,208 @@ with open("output.png", "wb") as f:
 - [GPT-Image-1.5 Model Card](https://platform.openai.com/docs/models/gpt-image-1.5)
 
 
+### Video Generation with OpenAI Sora
+
+Generate high-quality videos using OpenAI's Sora models (Sora 2 and Sora 2 Pro). These models support text-to-video and image-to-video generation with flexible durations (4-12 seconds) and multiple resolutions.
+
+**Available Models:**
+- **Sora 2**: Fast, high-quality video generation (recommended for most use cases)
+- **Sora 2 Pro**: Enhanced quality with superior temporal consistency and prompt understanding
+
+#### Prerequisites
+
+1. **OpenAI Account Setup**:
+   - Sign up for an OpenAI account at [OpenAI Platform](https://platform.openai.com/)
+   - Obtain your API key from the [API Keys page](https://platform.openai.com/settings/organization/api-keys)
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+#### Command Line Usage
+
+```bash
+# Basic text-to-video (uses Sora 2 by default)
+python sora_video.py --prompt "A fashion model walking down a runway" --output runway.mp4
+
+# High-quality with Sora 2 Pro
+python sora_video.py --prompt "Cinematic fashion runway show" \
+                     --model sora-2-pro \
+                     --duration 12 \
+                     --resolution 1920x1080 \
+                     --output runway_hd.mp4
+
+# Image-to-video (animate a static image)
+python sora_video.py --image model_photo.jpg \
+                     --prompt "The model turns and smiles at the camera" \
+                     --duration 4 \
+                     --output animated.mp4
+
+# Asynchronous mode (non-blocking)
+python sora_video.py --prompt "Fabric flowing in slow motion" \
+                     --duration 8 \
+                     --async \
+                     --output fabric.mp4
+
+# With verbose output
+python sora_video.py --prompt "A person trying on different outfits" \
+                     --duration 8 \
+                     --resolution 1280x720 \
+                     --verbose \
+                     --output outfit_changes.mp4
+```
+
+#### Python API Usage
+
+**Text-to-Video (Synchronous):**
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+
+from tryon.api.openAI.video_adapter import SoraVideoAdapter
+
+# Initialize adapter (uses Sora 2 by default)
+adapter = SoraVideoAdapter()
+
+# Generate video from text prompt
+video_bytes = adapter.generate_text_to_video(
+    prompt="A fashion model walking down a runway wearing an elegant evening gown",
+    duration=8,  # seconds (4, 8, or 12)
+    resolution="1920x1080"  # Full HD
+)
+
+# Save the video
+with open("runway_walk.mp4", "wb") as f:
+    f.write(video_bytes)
+
+print("Video generated successfully!")
+```
+
+**Using Sora 2 Pro for Higher Quality:**
+
+```python
+# Initialize with Sora 2 Pro
+adapter = SoraVideoAdapter(model_version="sora-2-pro")
+
+video_bytes = adapter.generate_text_to_video(
+    prompt="Cinematic slow-motion shot of fabric flowing in the wind",
+    duration=12,
+    resolution="1920x1080"
+)
+
+with open("fabric_flow.mp4", "wb") as f:
+    f.write(video_bytes)
+```
+
+**Image-to-Video (Animate Static Images):**
+
+```python
+adapter = SoraVideoAdapter()
+
+# Animate a static image with a text prompt
+video_bytes = adapter.generate_image_to_video(
+    image="model_portrait.jpg",
+    prompt="The model turns around and smiles at the camera",
+    duration=4,
+    resolution="1280x720"
+)
+
+with open("animated_model.mp4", "wb") as f:
+    f.write(video_bytes)
+```
+
+**Asynchronous Generation with Callbacks:**
+
+```python
+adapter = SoraVideoAdapter()
+
+# Define callback functions
+def on_complete(video_bytes):
+    with open("output.mp4", "wb") as f:
+        f.write(video_bytes)
+    print("✅ Video generation complete!")
+
+def on_error(error):
+    print(f"❌ Error: {error}")
+
+def on_progress(status):
+    print(f"Status: {status['status']}, Progress: {status.get('progress', 'N/A')}")
+
+# Start async generation
+video_id = adapter.generate_text_to_video_async(
+    prompt="A person trying on different outfits in a fashion boutique",
+    duration=8,
+    resolution="1920x1080",
+    on_complete=on_complete,
+    on_error=on_error,
+    on_progress=on_progress
+)
+
+print(f"Video generation started with ID: {video_id}")
+# Script continues immediately, callbacks will be invoked when ready
+```
+
+**Manual Status Tracking:**
+
+```python
+import time
+
+# Start generation without waiting
+video_id = adapter.generate_text_to_video(
+    prompt="Fashion runway show with multiple models",
+    duration=12,
+    resolution="1920x1080",
+    wait=False  # Return immediately
+)
+
+# Check status manually
+while True:
+    status = adapter.get_video_status(video_id)
+    print(f"Status: {status['status']}")
+    
+    if status['status'] == 'completed':
+        video_bytes = adapter.download_video(video_id)
+        with open("runway_show.mp4", "wb") as f:
+            f.write(video_bytes)
+        break
+    elif status['status'] == 'failed':
+        print(f"Failed: {status.get('error')}")
+        break
+    
+    time.sleep(5)
+```
+
+#### Supported Features
+
+- **Text-to-Video**: Generate videos from text descriptions
+- **Image-to-Video**: Animate static images with text prompts
+- **Durations**: 4, 8, or 12 seconds
+- **Resolutions**: 
+  - `720x1280` (9:16 vertical)
+  - `1280x720` (16:9 horizontal)
+  - `1080x1920` (9:16 Full HD vertical)
+  - `1920x1080` (16:9 Full HD horizontal)
+  - `1024x1792` (tall vertical)
+  - `1792x1024` (wide horizontal)
+- **Wait Modes**: 
+  - Synchronous (blocking, wait for completion)
+  - Asynchronous (callbacks, non-blocking)
+  - Manual tracking (custom control flow)
+- **Output Format**: MP4 (H.264)
+
+#### Model Comparison
+
+| Feature | Sora 2 | Sora 2 Pro |
+|---------|--------|------------|
+| **Speed** | Fast ⚡ | Slower 🐢 |
+| **Quality** | High | Superior |
+| **Temporal Consistency** | Good | Excellent |
+| **Prompt Understanding** | Good | Superior |
+| **Best For** | Rapid iteration, previews | Final production, marketing |
+
+**References**: 
+- [OpenAI Video Generation Documentation](https://platform.openai.com/docs/guides/video-generation)
+- [Sora Models Overview](https://platform.openai.com/docs/models/sora)
+
+
 ### Video Generation with Luma AI
 
 Generate smooth, high-fidelity videos using Luma AI’s Ray models (Ray 1.6, Ray 2, and Ray Flash 2). These models support text-to-video and image-to-video generation with optional keyframe interpolation. Image-to-video accepts either a single image or two keyframe images (frame0, frame1) for controlled motion.

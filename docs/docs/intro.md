@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro, FLUX.2, GPT-Image-1), datasets (Fashion-MNIST, VITON-HD, Subjects200K), garment segmentation, pose estimation, and TryOnDiffusion implementation.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro, FLUX.2, GPT-Image-1), video generation APIs (Sora 2), datasets (Fashion-MNIST, VITON-HD, Subjects200K), garment segmentation, pose estimation, and TryOnDiffusion implementation.
 keywords:
   - virtual try-on
   - fashion AI
@@ -28,6 +28,9 @@ keywords:
   - FLUX.2
   - GPT-Image-1
   - OpenAI
+  - Sora 2
+  - video generation
+  - AI video
 image: /img/opentryon-social-card.jpg
 ---
 
@@ -59,7 +62,7 @@ Easy-to-use interfaces for fashion and virtual try-on datasets:
 - **Automatic Download**: Built-in download functionality and HuggingFace integration
 
 ### API Adapters
-Cloud-based virtual try-on and image generation APIs:
+Cloud-based virtual try-on, image generation, and video generation APIs:
 - **Segmind**: Try-On Diffusion API for realistic virtual try-on generation
 - **Kling AI**: Virtual try-on with asynchronous processing
 - **Amazon Nova Canvas**: AWS-based virtual try-on service
@@ -68,6 +71,7 @@ Cloud-based virtual try-on and image generation APIs:
 - **FLUX.2 [PRO]**: High-quality image generation with text-to-image, image editing, and multi-image composition
 - **FLUX.2 [FLEX]**: Flexible image generation with advanced controls (guidance scale, steps, prompt upsampling)
 - **GPT-Image-1 & GPT-Image-1.5**: OpenAI image generation with strong prompt understanding, transparent backgrounds, and mask-based editing. GPT-Image-1.5 offers enhanced quality and better consistency
+- **Sora 2 & Sora 2 Pro**: OpenAI video generation with text-to-video and image-to-video capabilities. Sora 2 Pro offers superior quality with enhanced temporal consistency (4-12 second videos, multiple resolutions)
 
 ### Garment Preprocessing
 - **Garment Segmentation**: U2Net-based segmentation for upper, lower, and dress categories
