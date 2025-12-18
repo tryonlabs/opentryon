@@ -11,7 +11,7 @@ from tryon.api.openAI import GPTImageAdapter
 # -------------------------------------------------------
 def build_parser():
     parser = argparse.ArgumentParser(
-        description="Generate images using Luma AI image generation models",
+        description="Generate images using OpenAI GPT Image generation models",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
