@@ -105,6 +105,34 @@ images = flex_adapter.generate_text_to_image(
 )
 ```
 
+**GPT-Image-1 (OpenAI):**
+
+```python
+from tryon.api.openAI.image_adapter import GPTImageAdapter
+
+# Text-to-image generation
+adapter = GPTImageAdapter()
+images = adapter.generate_text_to_image(
+    prompt="A female model in a traditional green saree",
+    size="1024x1024",
+    quality="high",
+    background="opaque"  # or "transparent" for transparent background
+)
+
+# Save result
+with open("result.png", "wb") as f:
+    f.write(images[0])
+
+# Image editing with mask
+edited_images = adapter.generate_image_edit(
+    images="person.jpg",
+    prompt="Make the hat red and stylish",
+    size="1024x1024",
+    quality="high",
+    input_fidelity="high"  # Preserve input image details
+)
+```
+
 ### 3. Datasets
 
 Load and work with fashion datasets:
@@ -351,7 +379,9 @@ python run_demo.py --name outfit_generator
   - [Segmind Try-On Diffusion](../api-reference/segmind)
   - [Kling AI Virtual Try-On](../api-reference/kling-ai)
   - [Amazon Nova Canvas](../api-reference/nova-canvas)
+  - [FLUX.2 Image Generation](../api-reference/flux2)
   - [Nano Banana Image Generation](../api-reference/nano-banana)
+  - [GPT-Image-1 (OpenAI)](../api-reference/gpt-image-1)
 
 - **[Datasets Module](../datasets/overview)**: Load and work with fashion datasets
   - [Fashion-MNIST](../datasets/fashion-mnist)

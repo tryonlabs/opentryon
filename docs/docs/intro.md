@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro), datasets (Fashion-MNIST, VITON-HD, Subjects200K), garment segmentation, pose estimation, and TryOnDiffusion implementation.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro, FLUX.2, GPT-Image-1), datasets (Fashion-MNIST, VITON-HD, Subjects200K), garment segmentation, pose estimation, and TryOnDiffusion implementation.
 keywords:
   - virtual try-on
   - fashion AI
@@ -25,6 +25,9 @@ keywords:
   - Segmind
   - Nano Banana
   - Gemini Image Generation
+  - FLUX.2
+  - GPT-Image-1
+  - OpenAI
 image: /img/opentryon-social-card.jpg
 ---
 
@@ -64,6 +67,7 @@ Cloud-based virtual try-on and image generation APIs:
 - **Nano Banana Pro**: Google Gemini advanced image generation (up to 4K, search grounding)
 - **FLUX.2 [PRO]**: High-quality image generation with text-to-image, image editing, and multi-image composition
 - **FLUX.2 [FLEX]**: Flexible image generation with advanced controls (guidance scale, steps, prompt upsampling)
+- **GPT-Image-1**: OpenAI image generation with strong prompt understanding, transparent backgrounds, and mask-based editing
 
 ### Garment Preprocessing
 - **Garment Segmentation**: U2Net-based segmentation for upper, lower, and dress categories
