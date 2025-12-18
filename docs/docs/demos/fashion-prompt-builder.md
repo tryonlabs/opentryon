@@ -212,7 +212,7 @@ npm run lint
 
 ## Learn More
 
-- **[Demo README](../../demo/fashion-prompt-builder/README.md)** - Complete demo documentation
+- **[Demo Source Code](https://github.com/tryonlabs/opentryon/tree/main/demo/fashion-prompt-builder)** - View source code on GitHub
 - **[API Reference](../api-reference/overview)** - OpenTryOn API adapters
 - **[Nano Banana](../api-reference/nano-banana)** - Nano Banana documentation
 
