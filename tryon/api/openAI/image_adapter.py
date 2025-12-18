@@ -1,9 +1,9 @@
 """
-GPT Image 1 (OpenAI Image Generation) API Adapter
+GPT Image (OpenAI Image Generation) API Adapter
 
-Adapter for OpenAI's GPT Image 1 image generation model.
+Adapter for OpenAI's GPT Image models (GPT-Image-1 and GPT-Image-1.5).
 
-GPT Image 1 supports high-quality image generation and image editing using
+These models support high-quality image generation and image editing using
 text prompts and reference images. This adapter provides a clean, unified
 interface for the following workflows:
 
@@ -19,13 +19,14 @@ or convert outputs (e.g., to PIL Images) as needed.
 Reference:
 https://platform.openai.com/docs/guides/image-generation
 
-Model:
-- GPT Image 1 (gpt-image-1): High-quality image generation and editing
+Models:
+- GPT-Image-1 (gpt-image-1): High-quality image generation and editing
+- GPT-Image-1.5 (gpt-image-1.5): Enhanced quality, better prompt understanding, improved consistency (default)
 
 Examples:
-    Text-to-image:
+    Text-to-image with latest model:
         >>> from tryon.api.openAI.image_adapter import GPTImageAdapter
-        >>> adapter = GPTImageAdapter()
+        >>> adapter = GPTImageAdapter()  # Uses gpt-image-1.5 by default
         >>> images = adapter.generate_text_to_image(
         ...     prompt="A cinematic portrait of a person wearing a futuristic jacket",
         ...     size="1024x1024",
@@ -34,7 +35,15 @@ Examples:
         >>> with open("result.png", "wb") as f:
         ...     f.write(images[0])
 
+    Using GPT-Image-1 specifically:
+        >>> adapter = GPTImageAdapter(model_version="gpt-image-1")
+        >>> images = adapter.generate_text_to_image(
+        ...     prompt="A fashion model in elegant attire",
+        ...     size="1024x1024"
+        ... )
+
     Image editing:
+        >>> adapter = GPTImageAdapter()
         >>> images = adapter.generate_image_edit(
         ...     images="person.jpg",
         ...     prompt="Change the jacket color to black leather"
@@ -72,16 +81,30 @@ except ImportError:
 VALID_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
 VALID_QUALITY = {"low", "high", "medium", "auto"}
 INPUT_FIDELITY = {"low", "high"}
+VALID_MODELS = {"gpt-image-1", "gpt-image-1.5"}
 
 
 class GPTImageAdapter:
     """
-    Adapter for GPTImageAdapter API
+    Adapter for OpenAI GPT Image API (supports both GPT-Image-1 and GPT-Image-1.5).
+    
+    Args:
+        api_key (str, optional): OpenAI API key. If not provided, reads from OPENAI_API_KEY environment variable.
+        model_version (str, optional): Model version to use. Options: "gpt-image-1", "gpt-image-1.5". 
+                                       Defaults to "gpt-image-1.5" (latest and recommended).
+    
+    Examples:
+        >>> # Use latest model (GPT-Image-1.5)
+        >>> adapter = GPTImageAdapter()
+        
+        >>> # Use specific model version
+        >>> adapter = GPTImageAdapter(model_version="gpt-image-1")
+        
+        >>> # With explicit API key
+        >>> adapter = GPTImageAdapter(api_key="sk-...", model_version="gpt-image-1.5")
     """
 
-    MODEL_NAME = "gpt-image-1"
-
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, model_version: str = "gpt-image-1.5"):
         
         if not OPENAI_API_KEY:
             raise ImportError(
@@ -89,10 +112,17 @@ class GPTImageAdapter:
                 "Please install it with 'pip install openai'."
             )
         
+        if model_version not in VALID_MODELS:
+            raise ValueError(
+                f"Invalid model_version: {model_version}. "
+                f"Supported models: {VALID_MODELS}"
+            )
+        
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OpenAI API key must be provided either as a parameter or through the OPENAI_API_KEY environment variable.")
         
+        self.model_version = model_version
         self.client = OpenAI(api_key=self.api_key)
 
     
@@ -193,7 +223,7 @@ class GPTImageAdapter:
             raise ValueError(f"Invalid quality: {quality}, Available Options are: {VALID_QUALITY}")
 
         response = self.client.images.generate(
-            model=self.MODEL_NAME,
+            model=self.model_version,
             prompt=prompt,
             size=size,
             quality=quality,
@@ -323,7 +353,7 @@ class GPTImageAdapter:
 
         # Build request dynamically
         kwargs = {
-            "model": self.MODEL_NAME,
+            "model": self.model_version,
             "image": image_files,
             "prompt": prompt,
             "size": size,

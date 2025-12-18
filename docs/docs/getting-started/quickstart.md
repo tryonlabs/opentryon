@@ -105,13 +105,13 @@ images = flex_adapter.generate_text_to_image(
 )
 ```
 
-**GPT-Image-1 (OpenAI):**
+**GPT-Image (OpenAI):**
 
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 
-# Text-to-image generation
-adapter = GPTImageAdapter()
+# Text-to-image generation (uses GPT-Image-1.5 by default)
+adapter = GPTImageAdapter()  # Latest model (GPT-Image-1.5)
 images = adapter.generate_text_to_image(
     prompt="A female model in a traditional green saree",
     size="1024x1024",
@@ -122,6 +122,9 @@ images = adapter.generate_text_to_image(
 # Save result
 with open("result.png", "wb") as f:
     f.write(images[0])
+
+# Use GPT-Image-1 specifically (previous version)
+adapter_v1 = GPTImageAdapter(model_version="gpt-image-1")
 
 # Image editing with mask
 edited_images = adapter.generate_image_edit(
@@ -381,7 +384,7 @@ python run_demo.py --name outfit_generator
   - [Amazon Nova Canvas](../api-reference/nova-canvas)
   - [FLUX.2 Image Generation](../api-reference/flux2)
   - [Nano Banana Image Generation](../api-reference/nano-banana)
-  - [GPT-Image-1 (OpenAI)](../api-reference/gpt-image-1)
+  - [GPT-Image (OpenAI)](../api-reference/gpt-image)
 
 - **[Datasets Module](../datasets/overview)**: Load and work with fashion datasets
   - [Fashion-MNIST](../datasets/fashion-mnist)

@@ -94,6 +94,15 @@ def build_parser():
         help="One image paths/URLs for mask."
     )
 
+    # Model Version
+    parser.add_argument(
+        '--model',
+        type=str,
+        default="gpt-image-1.5",
+        choices=['gpt-image-1', 'gpt-image-1.5'],
+        help="Model version to use. Default: gpt-image-1.5 (latest)"
+    )
+
     return parser
 
 
@@ -128,7 +137,7 @@ def main():
     
     # ------------- Initialize Adapter ------------------
 
-    adapter = GPTImageAdapter(api_key=api_key)
+    adapter = GPTImageAdapter(api_key=api_key, model_version=args.model)
 
     # ------------- Dispatch by Mode -------------------
     

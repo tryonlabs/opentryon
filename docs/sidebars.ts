@@ -57,7 +57,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/segmind',
         'api-reference/flux2',
         'api-reference/nano-banana',
-        'api-reference/gpt-image-1',
+        'api-reference/gpt-image',
         'api-reference/utils',
       ],
     },

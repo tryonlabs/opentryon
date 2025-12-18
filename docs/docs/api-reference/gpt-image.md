@@ -1,9 +1,10 @@
 ---
 sidebar_position: 7
-title: GPT-Image-1 (OpenAI Image Generation)
-description: Generate high-quality images using OpenAI's GPT-Image-1 model with text-to-image, image editing, and mask-based editing capabilities.
+title: GPT-Image (OpenAI Image Generation)
+description: Generate high-quality images using OpenAI's GPT-Image models (GPT-Image-1 and GPT-Image-1.5) with text-to-image, image editing, and mask-based editing capabilities.
 keywords:
   - GPT-Image-1
+  - GPT-Image-1.5
   - OpenAI image generation
   - image generation
   - text to image
@@ -13,9 +14,14 @@ keywords:
   - GPT Image
 ---
 
-# GPT-Image-1 (OpenAI Image Generation)
+# GPT-Image (OpenAI Image Generation)
 
-GPT-Image-1 provides high-quality image generation using OpenAI's latest image generation model. The model supports precise prompt-driven image generation, image editing with multiple base images, and mask-based editing with consistent visual quality.
+OpenAI's GPT-Image models provide high-quality image generation with two versions available. Both models support precise prompt-driven image generation, image editing with multiple base images, and mask-based editing with consistent visual quality.
+
+## Models Available
+
+- **GPT-Image-1**: Original high-quality image generation model with strong prompt understanding
+- **GPT-Image-1.5**: Enhanced version with improved quality, better consistency, and superior prompt understanding (recommended)
 
 ## Overview
 
@@ -45,12 +51,22 @@ The `tryon.api.openAI.image_adapter` module provides:
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 
-# Using environment variable
+# Using GPT-Image-1.5 (default - recommended)
 adapter = GPTImageAdapter()
 
-# Or specify API key directly
-adapter = GPTImageAdapter(api_key="your_api_key")
+# Explicitly specify GPT-Image-1.5
+adapter = GPTImageAdapter(model_version="gpt-image-1.5")
+
+# Use GPT-Image-1 (previous version)
+adapter = GPTImageAdapter(model_version="gpt-image-1")
+
+# With explicit API key
+adapter = GPTImageAdapter(api_key="your_api_key", model_version="gpt-image-1.5")
 ```
+
+**Parameters:**
+- `api_key` (str, optional): OpenAI API key. Defaults to `OPENAI_API_KEY` environment variable
+- `model_version` (str, optional): Model version - `"gpt-image-1"` or `"gpt-image-1.5"`. Defaults to `"gpt-image-1.5"`
 
 ## Text-to-Image Generation
 
@@ -381,21 +397,35 @@ with open("product.png", "wb") as f:
 
 Check [OpenAI's pricing page](https://openai.com/pricing) for current rates and limits.
 
-## Comparison with Other Models
+## Model Comparison
 
-| Feature | GPT-Image-1 | FLUX.2 | Nano Banana |
-|---------|-------------|--------|-------------|
-| Max Resolution | 1536×1024 | Custom | 4096×4096 |
-| Transparent BG | ✅ | ❌ | ❌ |
-| Multi-Image Input | ✅ | ✅ | ✅ |
-| Input Fidelity Control | ✅ | ✅ | ❌ |
-| Mask Editing | ✅ | ❌ | ❌ |
-| Speed | Fast | Fast | Very Fast |
-| Quality | High | Very High | High |
+### GPT-Image-1 vs GPT-Image-1.5
+
+| Feature | GPT-Image-1 | GPT-Image-1.5 |
+|---------|-------------|---------------|
+| Quality | High | Enhanced |
+| Prompt Understanding | Strong | Superior |
+| Consistency | Good | Excellent |
+| Detail Preservation | Good | Better |
+| Speed | Fast | Fast |
+| Recommended | ✓ | ✓✓ (Latest) |
+
+### Comparison with Other Models
+
+| Feature | GPT-Image-1.5 | GPT-Image-1 | FLUX.2 | Nano Banana |
+|---------|---------------|-------------|--------|-------------|
+| Max Resolution | 1536×1024 | 1536×1024 | Custom | 4096×4096 |
+| Transparent BG | ✅ | ✅ | ❌ | ❌ |
+| Multi-Image Input | ✅ | ✅ | ✅ | ✅ |
+| Input Fidelity Control | ✅ | ✅ | ✅ | ❌ |
+| Mask Editing | ✅ | ✅ | ❌ | ❌ |
+| Speed | Fast | Fast | Fast | Very Fast |
+| Quality | Very High | High | Very High | High |
 
 ## Reference
 
-- [OpenAI GPT-Image-1 Documentation](https://platform.openai.com/docs/guides/image-generation)
+- [OpenAI Image Generation Documentation](https://platform.openai.com/docs/guides/image-generation)
+- [GPT-Image-1.5 Model Card](https://platform.openai.com/docs/models/gpt-image-1.5)
 - [OpenAI Platform](https://platform.openai.com/)
 - [API Keys](https://platform.openai.com/settings/organization/api-key)
 - [OpenAI Pricing](https://openai.com/pricing)

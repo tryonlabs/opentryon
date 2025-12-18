@@ -26,7 +26,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
   - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
   - Photon-1 (Luma AI): High-fidelity default model for professional-grade quality, creativity and detailed prompt handling
-  - gpt-image-1 (OpenAI): High-quality image generation with strong prompt understanding, consistent composition, and reliable visual accuracy
+  - GPT-Image-1 & GPT-Image-1.5 (OpenAI): High-quality image generation with strong prompt understanding, consistent composition, and reliable visual accuracy. GPT-Image-1.5 offers enhanced quality and better consistency
 - **Video Generation**:
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
 - **Datasets Module**: 
@@ -1032,10 +1032,14 @@ for idx, img in enumerate(list_of_images):
 
 **Reference**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
 
-### Image Generation with GPT-Image-1
+### Image Generation with OpenAI GPT-Image
 
-Generate high-quality images using OpenAI’s GPT-Image-1 model.
-This model supports precise prompt-driven image generation, image editing with masks, multi-image conditioning with consistent visual quality.
+Generate high-quality images using OpenAI's GPT-Image models (GPT-Image-1 and GPT-Image-1.5).
+These models support precise prompt-driven image generation, image editing with masks, multi-image conditioning with consistent visual quality.
+
+**Available Models:**
+- **GPT-Image-1**: High-quality image generation with strong prompt understanding
+- **GPT-Image-1.5**: Enhanced quality, better consistency, improved prompt understanding (recommended)
 
 #### Prerequisites
 
@@ -1047,8 +1051,14 @@ This model supports precise prompt-driven image generation, image editing with m
 #### Command Line Usage
 
 ```bash
-# Text-to-image
+# Text-to-image (uses GPT-Image-1.5 by default)
 python gpt_image.py --mode text --prompt "A female model in a traditional green saree" --size 1024x1024 --quality high
+
+# Specify model version explicitly
+python gpt_image.py --mode text --prompt "A fashion model in elegant attire" --model gpt-image-1.5 --size 1024x1024 --quality high
+
+# Use GPT-Image-1 (previous version)
+python gpt_image.py --mode text --prompt "A fashion model" --model gpt-image-1 --size 1024x1024 --quality high
 
 # With transparent background and output directory
 python gpt_image.py --mode text --prompt "A female model in a traditional green saree" --size 1024x1024 --quality high --background transparent --output_dir outputs/
@@ -1060,12 +1070,12 @@ python gpt_image.py --mode image --prompt "change the flowers in the background"
 python gpt_image.py --mode image --prompt "change the flowers in the background" --images "person.jpg" --size 1536x1024 --quality medium --inp_fid high
 
 # Image-to-Image with mask Image
-python gpt_image.py --mode image --images "scene.png" --mask "mask.png". --prompt "Replace the masked area with a swimming pool"
+python gpt_image.py --mode image --images "scene.png" --mask "mask.png" --prompt "Replace the masked area with a swimming pool"
 ```
 
 #### Python API Usage
 
-**GPT-Image-1:**
+**Using GPT-Image-1.5 (Latest - Recommended):**
 
 ```python
 from dotenv import load_dotenv
@@ -1074,6 +1084,7 @@ load_dotenv()
 import os
 from tryon.api.openAI.image_adapter import GPTImageAdapter 
 
+# Default uses GPT-Image-1.5 (latest model)
 adapter = GPTImageAdapter()
 
 list_of_images = []
@@ -1109,6 +1120,24 @@ for idx, img_bytes in enumerate(list_of_images):
 print(f"Saved {len(list_of_images)} images.")
 ```
 
+**Using GPT-Image-1 (Previous Version):**
+
+```python
+from tryon.api.openAI.image_adapter import GPTImageAdapter 
+
+# Explicitly use GPT-Image-1
+adapter = GPTImageAdapter(model_version="gpt-image-1")
+
+images = adapter.generate_text_to_image(
+    prompt="A fashion model in elegant attire",
+    size="1024x1024",
+    quality="high"
+)
+
+with open("output.png", "wb") as f:
+    f.write(images[0])
+```
+
 #### Supported Features
 
 - **Text-to-Image**: Generate Images from text descriptions
@@ -1119,7 +1148,9 @@ print(f"Saved {len(list_of_images)} images.")
 - **Background**: Supported background Options (transparent, opaque, auto)
 - **Input Fidelity**: Supported Options (low, high)
 
-**Reference**: [OpenAI GPT-Image-1 Documentation](https://platform.openai.com/docs/guides/image-generation)
+**References**: 
+- [OpenAI Image Generation Documentation](https://platform.openai.com/docs/guides/image-generation)
+- [GPT-Image-1.5 Model Card](https://platform.openai.com/docs/models/gpt-image-1.5)
 
 
 ### Video Generation with Luma AI
