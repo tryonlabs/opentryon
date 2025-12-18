@@ -58,6 +58,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/flux2',
         'api-reference/nano-banana',
         'api-reference/gpt-image',
+        'api-reference/sora-video',
         'api-reference/utils',
       ],
     },

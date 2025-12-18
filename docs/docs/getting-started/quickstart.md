@@ -136,6 +136,47 @@ edited_images = adapter.generate_image_edit(
 )
 ```
 
+**Sora (OpenAI Video Generation):**
+
+```python
+from tryon.api.openAI.video_adapter import SoraVideoAdapter
+
+# Text-to-video generation (uses Sora 2 by default)
+adapter = SoraVideoAdapter()  # Latest model (Sora 2)
+video_bytes = adapter.generate_text_to_video(
+    prompt="A fashion model walking down a runway wearing an elegant evening gown",
+    duration=8,  # seconds (4, 8, or 12)
+    resolution="1920x1080"  # Full HD
+)
+
+# Save video
+with open("runway_walk.mp4", "wb") as f:
+    f.write(video_bytes)
+
+# Use Sora 2 Pro for higher quality
+adapter_pro = SoraVideoAdapter(model_version="sora-2-pro")
+
+# Image-to-video (animate a static image)
+video_bytes = adapter.generate_image_to_video(
+    image="model_photo.jpg",
+    prompt="The model turns and smiles at the camera",
+    duration=4,
+    resolution="1280x720"
+)
+
+# Asynchronous generation with callbacks
+def on_complete(video_bytes):
+    with open("result.mp4", "wb") as f:
+        f.write(video_bytes)
+    print("Video ready!")
+
+video_id = adapter.generate_text_to_video_async(
+    prompt="Fabric flowing in slow motion",
+    duration=8,
+    on_complete=on_complete
+)
+```
+
 ### 3. Datasets
 
 Load and work with fashion datasets:
@@ -385,6 +426,7 @@ python run_demo.py --name outfit_generator
   - [FLUX.2 Image Generation](../api-reference/flux2)
   - [Nano Banana Image Generation](../api-reference/nano-banana)
   - [GPT-Image (OpenAI)](../api-reference/gpt-image)
+  - [Sora Video (OpenAI)](../api-reference/sora-video)
 
 - **[Datasets Module](../datasets/overview)**: Load and work with fashion datasets
   - [Fashion-MNIST](../datasets/fashion-mnist)
