@@ -43,6 +43,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Model Swap**: Swap garments on different models
 - **Interactive Demos**: Gradio-based web interfaces for all features
 - **Preprocessing Pipeline**: Complete preprocessing pipeline for training and inference
+- **AI Agents**: LangChain-based agents for intelligent virtual try-on operations
 
 ## 📋 Table of Contents
 
@@ -54,6 +55,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
+  - [Virtual Try-On Agent](#virtual-try-on-agent)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
   - [Image Generation with FLUX.2](#image-generation-with-flux2)
   - [Image Generation with Luma AI](#luma-ai-image-generation)
@@ -147,6 +149,13 @@ LUMA_AI_API_KEY=your_luma_ai_api_key
 
 # OpenAI Credentials (required for OpenAI GPT-Image-1 image generation)
 OPENAI_API_KEY=your_openai_api_key
+
+# LLM Provider Credentials (required for Virtual Try-On Agent)
+OPENAI_API_KEY=your_openai_api_key  # For OpenAI (default)
+# OR
+ANTHROPIC_API_KEY=your_anthropic_api_key  # For Anthropic Claude
+# OR
+GOOGLE_API_KEY=your_google_api_key  # For Google Gemini
 ```
 
 **Notes**: 
@@ -160,7 +169,11 @@ OPENAI_API_KEY=your_openai_api_key
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 - For Luma AI, obtain your API key from [Luma Labs AI](https://lumalabs.ai/api)
-- For OpenAI, obtain your API key from [OpenAI Platform](https://platform.openai.com/settings/organization/api-keys) 
+- For OpenAI, obtain your API key from [OpenAI Platform](https://platform.openai.com/settings/organization/api-keys)
+- For Virtual Try-On Agent, obtain LLM API keys from:
+  - OpenAI: [OpenAI API Keys](https://platform.openai.com/api-keys)
+  - Anthropic: [Anthropic API Keys](https://console.anthropic.com/)
+  - Google: [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ## 🎮 Quick Start
 
@@ -635,6 +648,160 @@ for idx, image in enumerate(images):
 ```
 
 **Reference**: [Segmind Try-On Diffusion API Documentation](https://www.segmind.com/models/try-on-diffusion/api)
+
+### Virtual Try-On Agent
+
+A LangChain-based agent that intelligently selects and uses the appropriate virtual try-on adapter based on user prompts. The agent analyzes natural language requests and automatically chooses between Kling AI, Amazon Nova Canvas, or Segmind.
+
+#### Prerequisites
+
+1. **LangChain Installation**:
+   ```bash
+   pip install langchain langchain-openai langchain-anthropic langchain-google-genai
+   ```
+
+2. **LLM Provider Setup**:
+   - Choose an LLM provider: OpenAI, Anthropic Claude, or Google Gemini
+   - Set the appropriate API key in your `.env` file:
+     ```env
+     OPENAI_API_KEY=your_openai_api_key
+     # OR
+     ANTHROPIC_API_KEY=your_anthropic_api_key
+     # OR
+     GOOGLE_API_KEY=your_google_api_key
+     ```
+
+3. **Virtual Try-On API Credentials**:
+   - Ensure you have credentials for at least one VTON provider (Kling AI, Nova Canvas, or Segmind)
+   - See the individual provider sections above for setup instructions
+
+#### Command Line Usage
+
+```bash
+# Basic usage with default OpenAI provider
+python vton_agent.py --person person.jpg --garment shirt.jpg --prompt "Create a virtual try-on using Kling AI"
+
+# Specify LLM provider
+python vton_agent.py --person person.jpg --garment shirt.jpg --prompt "Use Nova Canvas for virtual try-on" --llm-provider anthropic
+
+# Use Google Gemini as LLM
+python vton_agent.py --person person.jpg --garment shirt.jpg --prompt "Generate try-on with Segmind" --llm-provider google
+
+# Specify LLM model
+python vton_agent.py --person person.jpg --garment shirt.jpg --prompt "Use Kling AI" --llm-model gpt-4-turbo-preview
+
+# Save output to specific directory
+python vton_agent.py --person person.jpg --garment shirt.jpg --prompt "Create virtual try-on" --output-dir results/
+
+# Use URLs instead of file paths
+python vton_agent.py --person https://example.com/person.jpg --garment https://example.com/shirt.jpg --prompt "Use Kling AI"
+
+# Verbose output to see agent reasoning
+python vton_agent.py --person person.jpg --garment shirt.jpg --prompt "Use Kling AI" --verbose
+```
+
+#### Python API Usage
+
+```python
+from tryon.agents.vton import VTOnAgent
+
+# Initialize the agent with your preferred LLM provider
+agent = VTOnAgent(llm_provider="openai")
+
+# Generate virtual try-on using natural language prompt
+result = agent.generate(
+    person_image="person.jpg",
+    garment_image="shirt.jpg",
+    prompt="Use Kling AI to create a virtual try-on of this shirt"
+)
+
+if result["status"] == "success":
+    print(f"Generated {len(result['images'])} images using {result['provider']}")
+```
+
+#### Provider Selection
+
+The agent automatically selects the provider based on keywords in your prompt:
+
+- **Kling AI**: "kling ai", "kling", "kolors"
+- **Nova Canvas**: "nova canvas", "amazon nova", "aws", "bedrock"
+- **Segmind**: "segmind"
+
+Examples:
+
+```python
+# Uses Kling AI
+result = agent.generate(
+    person_image="person.jpg",
+    garment_image="shirt.jpg",
+    prompt="Use Kling AI to generate the try-on"
+)
+
+# Uses Nova Canvas
+result = agent.generate(
+    person_image="person.jpg",
+    garment_image="shirt.jpg",
+    prompt="Generate with Amazon Nova Canvas"
+)
+
+# Uses Segmind
+result = agent.generate(
+    person_image="person.jpg",
+    garment_image="shirt.jpg",
+    prompt="Try Segmind for this virtual try-on"
+)
+```
+
+#### Using Different LLM Providers
+
+```python
+# OpenAI
+agent = VTOnAgent(llm_provider="openai", llm_model="gpt-4-turbo-preview")
+
+# Anthropic Claude
+agent = VTOnAgent(llm_provider="anthropic", llm_model="claude-3-opus-20240229")
+
+# Google Gemini
+agent = VTOnAgent(llm_provider="google", llm_model="gemini-pro")
+```
+
+#### Complete Example
+
+```python
+from tryon.agents.vton import VTOnAgent
+
+# Initialize agent
+agent = VTOnAgent(llm_provider="openai")
+
+# Generate virtual try-on
+result = agent.generate(
+    person_image="https://example.com/person.jpg",
+    garment_image="https://example.com/shirt.jpg",
+    prompt="Create a virtual try-on using Kling AI for best quality"
+)
+
+# Handle results
+if result["status"] == "success":
+    images = result["images"]  # List of image URLs or base64 strings
+    provider = result["provider"]  # "kling_ai", "nova_canvas", or "segmind"
+    print(f"Successfully generated {len(images)} images using {provider}")
+else:
+    print(f"Error: {result.get('error')}")
+```
+
+#### Supported Providers
+
+- **Kling AI**: High-quality virtual try-on with asynchronous processing
+- **Amazon Nova Canvas**: AWS Bedrock-based virtual try-on with automatic garment detection
+- **Segmind**: Fast and efficient virtual try-on generation
+
+#### Documentation
+
+For complete documentation, API reference, architecture details, and advanced usage examples, see:
+
+📚 **[Virtual Try-On Agent Documentation →](https://tryonlabs.github.io/opentryon/docs/agents/vton-agent)**
+
+**Reference**: [Virtual Try-On Agent Documentation](https://tryonlabs.github.io/opentryon/docs/agents/vton-agent)
 
 ### Image Generation with Nano Banana
 
@@ -1632,6 +1799,7 @@ opentryon/
 ├── main.py                  # Main CLI entry point
 ├── run_demo.py              # Demo launcher (Gradio demos)
 ├── vton.py                  # Virtual try-on CLI (Amazon Nova Canvas, Kling AI, Segmind)
+├── vton_agent.py            # Virtual try-on agent CLI (LangChain-based intelligent provider selection)
 ├── image_gen.py             # Image generation CLI (Nano Banana, FLUX.2)
 ├── requirements.txt         # Python dependencies
 ├── environment.yml          # Conda environment
@@ -1704,6 +1872,10 @@ Key dependencies include:
 - uvicorn[standard] (== 0.38.0)
 - python-multipart (== 0.0.20)
 - lumaai (== 1.18.1)
+- langchain (>= 1.0.0) - Latest LangChain 1.x API
+- langchain-openai (>= 0.2.0)
+- langchain-anthropic (>= 0.2.0)
+- langchain-google-genai (>= 2.0.0)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.
 
