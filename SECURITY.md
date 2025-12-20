@@ -103,6 +103,6 @@ We appreciate security researchers who help keep OpenTryOn safe. Contributors wh
 
 ## Contact
 
-- **Security Issues**: security@tryonlabs.ai
+- **Security Issues**: contact@tryonlabs.ai
 - **General Questions**: [Discord Community](https://discord.gg/T5mPpZHxkY)
 - **Bug Reports**: [GitHub Issues](https://github.com/tryonlabs/opentryon/issues)
