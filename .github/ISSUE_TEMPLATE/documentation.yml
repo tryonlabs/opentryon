@@ -1,0 +1,81 @@
+name: Documentation Issue
+description: Report missing, incorrect, or unclear documentation
+title: "[Docs]: "
+labels: ["documentation", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve our documentation! Please fill out the form below.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What type of documentation issue is this?
+      options:
+        - Missing documentation
+        - Incorrect / outdated information
+        - Unclear explanation
+        - Typo / grammar
+        - Broken link
+        - Missing code example
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation issue located?
+      placeholder: "README.md, docs/, https://tryonlabs.github.io/opentryon/..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the documentation issue in detail.
+      placeholder: "The documentation says X, but it should say Y..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Fix
+      description: If you have a suggestion for how to fix the issue, please describe.
+      placeholder: "The documentation should be updated to..."
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Related Component
+      description: Which component does this documentation relate to?
+      options:
+        - Getting Started / Installation
+        - Virtual Try-On APIs
+        - Image Generation APIs
+        - Video Generation APIs
+        - Datasets Module
+        - Preprocessing Functions
+        - AI Agents
+        - Demos / Examples
+        - API Reference
+        - Contributing Guide
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: willing-to-contribute
+    attributes:
+      label: Willing to Contribute
+      description: Would you be willing to submit a PR to fix this?
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true

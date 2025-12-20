@@ -1,0 +1,123 @@
+# STRICTER VERSION: Auto-closes non-compliant PRs
+# To enable: Rename this file to pr-auto-close.yml and disable pr-compliance.yml
+#
+# WARNING: This will automatically close PRs that don't follow the template.
+# Use with caution - recommended only for mature projects with established contributors.
+
+name: PR Auto-Close on Non-Compliance
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  validate-and-close:
+    name: Validate PR and Auto-Close if Non-Compliant
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Compliance and Close if Invalid
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+            const prAuthor = context.payload.pull_request.user.login;
+            const prState = context.payload.pull_request.state;
+
+            // Skip if PR is already closed
+            if (prState === 'closed') {
+              console.log('PR is already closed, skipping...');
+              return;
+            }
+
+            // Skip validation for bots and maintainers
+            const skipAuthors = ['dependabot[bot]', 'renovate[bot]', 'github-actions[bot]'];
+            if (skipAuthors.includes(prAuthor)) {
+              console.log(`Skipping validation for: ${prAuthor}`);
+              return;
+            }
+
+            // Check if author is a collaborator (maintainer)
+            try {
+              const { data: permissionLevel } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: prAuthor
+              });
+              if (['admin', 'maintain', 'write'].includes(permissionLevel.permission)) {
+                console.log(`Skipping validation for maintainer: ${prAuthor}`);
+                return;
+              }
+            } catch (e) {
+              // Not a collaborator, continue with validation
+            }
+
+            // Minimum required sections
+            const requiredSections = [
+              { name: 'Description', pattern: /##\s*Description[\s\S]*?\S+/i },
+              { name: 'Type of Change', pattern: /##\s*Type of Change[\s\S]*?\[x\]/i },
+              { name: 'Changes Made', pattern: /##\s*Changes Made[\s\S]*?-\s*\S+/i }
+            ];
+
+            const missingOrIncomplete = [];
+            for (const section of requiredSections) {
+              if (!section.pattern.test(prBody)) {
+                missingOrIncomplete.push(section.name);
+              }
+            }
+
+            // Check if PR body is essentially empty or just the template
+            const isEmptyOrTemplate = prBody.trim().length < 100 ||
+              (prBody.includes('<!-- Provide a brief description') && !prBody.match(/[^<!\->\s\n\[\]]/g));
+
+            if (missingOrIncomplete.length > 0 || isEmptyOrTemplate) {
+              const closeMessage = `## PR Automatically Closed
+
+            Thank you for your interest in contributing to OpenTryOn!
+
+            Unfortunately, this PR was automatically closed because it doesn't follow our [PR template](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/.github/PULL_REQUEST_TEMPLATE.md).
+
+            ${missingOrIncomplete.length > 0 ? `### Missing Sections:\n${missingOrIncomplete.map(s => `- ${s}`).join('\n')}` : '### Issue:\nPR description appears to be empty or unchanged from template.'}
+
+            ### How to Resubmit:
+            1. Please fill out the PR template completely
+            2. Provide a meaningful description of your changes
+            3. Select the type of change and list changes made
+            4. Create a new PR or reopen this one after updating
+
+            We appreciate your contribution and look forward to your updated PR!
+
+            ---
+            *This is an automated action. If you believe this was closed in error, please comment below and a maintainer will review.*`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: closeMessage
+              });
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: ['invalid', 'needs-template-update']
+              });
+
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                state: 'closed'
+              });
+
+              console.log(`PR #${prNumber} closed due to missing: ${missingOrIncomplete.join(', ')}`);
+              core.setFailed('PR closed due to non-compliance with template');
+            } else {
+              console.log('PR passes compliance checks!');
+            }
