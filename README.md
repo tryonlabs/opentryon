@@ -8,10 +8,6 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 
 📚 **Documentation**: Comprehensive documentation is available at [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=tryonlabs/opentryon&type=date&legend=top-left)](https://www.star-history.com/#tryonlabs/opentryon&type=date&legend=top-left)
-
 ## 🎯 Features
 
 - **Virtual Try-On**: 
@@ -1878,6 +1874,10 @@ Key dependencies include:
 - langchain-google-genai (>= 2.0.0)
 
 See `requirements.txt` or `environment.yml` for the complete list of dependencies.
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=tryonlabs/opentryon&type=date&legend=top-left)](https://www.star-history.com/#tryonlabs/opentryon&type=date&legend=top-left)
 
 ## 📚 Additional Resources
 
