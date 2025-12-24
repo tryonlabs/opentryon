@@ -43,7 +43,9 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Model Swap**: Swap garments on different models
 - **Interactive Demos**: Gradio-based web interfaces for all features
 - **Preprocessing Pipeline**: Complete preprocessing pipeline for training and inference
-- **AI Agents**: LangChain-based agents for intelligent virtual try-on operations
+- **AI Agents**: 
+  - Virtual Try-On Agent: LangChain-based agent for intelligent virtual try-on operations
+  - Model Swap Agent: AI agent for replacing models while preserving outfits using multiple AI models (Nano Banana, Nano Banana Pro, FLUX 2 Pro, FLUX 2 Flex)
 
 ## 📋 Table of Contents
 
@@ -56,6 +58,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Virtual Try-On with Kling AI](#virtual-try-on-with-kling-ai)
   - [Virtual Try-On with Segmind](#virtual-try-on-with-segmind)
   - [Virtual Try-On Agent](#virtual-try-on-agent)
+  - [Model Swap Agent](#model-swap-agent)
   - [Image Generation with Nano Banana](#image-generation-with-nano-banana)
   - [Image Generation with FLUX.2](#image-generation-with-flux2)
   - [Image Generation with Luma AI](#luma-ai-image-generation)
@@ -795,13 +798,276 @@ else:
 - **Amazon Nova Canvas**: AWS Bedrock-based virtual try-on with automatic garment detection
 - **Segmind**: Fast and efficient virtual try-on generation
 
+---
+
+### Model Swap Agent
+
+A LangChain-based AI agent that intelligently replaces models/people in images while preserving outfits and styling. Perfect for e-commerce sellers and fashion brands to create professional product imagery with diverse models.
+
+#### Overview
+
+The Model Swap Agent:
+- **Extracts person attributes** from natural language prompts (gender, age, ethnicity, body type, pose)
+- **Generates professional model-swapped images** while preserving exact outfit details
+- **Supports multiple AI models**: Nano Banana, Nano Banana Pro (default), FLUX 2 Pro, and FLUX 2 Flex
+- **Maintains high-quality photography** with up to 4K resolution support
+
+#### Prerequisites
+
+1. **LangChain Installation**:
+   ```bash
+   pip install langchain langchain-openai langchain-anthropic langchain-google-genai
+   ```
+
+2. **API Keys Required**:
+   ```bash
+   # For Nano Banana models (Gemini API key)
+   export GEMINI_API_KEY="your_gemini_api_key"
+   
+   # For FLUX 2 models (BFL API key)
+   export BFL_API_KEY="your_bfl_api_key"
+   
+   # LLM provider (choose one)
+   export OPENAI_API_KEY="your_openai_api_key"  # Default
+   export ANTHROPIC_API_KEY="your_anthropic_api_key"
+   export GOOGLE_API_KEY="your_google_api_key"
+   ```
+
+#### Command Line Usage
+
+```bash
+# Basic usage - replace with professional male model (uses Nano Banana Pro by default)
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Replace with a professional male model in his 30s, athletic build"
+
+# Use FLUX 2 Pro for high-quality results
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Replace with a professional female model" \
+    --model flux2_pro
+
+# Use FLUX 2 Flex for advanced control
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Replace with an athletic Asian model" \
+    --model flux2_flex
+
+# Use Nano Banana for fast generation
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Replace with a professional model" \
+    --model nano_banana
+
+# Specify detailed attributes with specific model
+python model_swap_agent.py \
+    --image outfit.jpg \
+    --prompt "Asian female model, mid-20s, athletic, confident pose" \
+    --model nano_banana_pro \
+    --resolution 4K
+
+# Use Google Search grounding for style references (Nano Banana Pro only)
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Model like professional fashion runway" \
+    --model nano_banana_pro \
+    --search-grounding
+
+# Use different LLM provider
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Plus-size woman, African American, 40s, friendly" \
+    --llm-provider anthropic \
+    --model flux2_pro
+
+# Use URLs instead of file paths
+python model_swap_agent.py \
+    --image https://example.com/model.jpg \
+    --prompt "Professional female model in her 30s" \
+    --model flux2_pro
+
+# Verbose output to see agent reasoning
+python model_swap_agent.py \
+    --image model.jpg \
+    --prompt "Male model in 30s" \
+    --verbose
+```
+
+#### Python API Usage
+
+```python
+from tryon.agents.model_swap import ModelSwapAgent
+
+# Initialize the agent with default Nano Banana Pro
+agent = ModelSwapAgent(llm_provider="openai")
+
+# Generate model swap
+result = agent.generate(
+    image="model_wearing_outfit.jpg",
+    prompt="Replace with a professional Asian female model in her 30s, athletic build, confident pose",
+    resolution="4K",  # Only for Nano Banana Pro
+    verbose=True
+)
+
+# Handle results
+if result["status"] == "success":
+    images = result['images']  # List of PIL Images
+    for idx, image in enumerate(images):
+        image.save(f"result_{idx}.png")
+    print(f"Generated {len(images)} images using {result['provider']}")
+else:
+    print(f"Error: {result.get('error')}")
+
+# Using different models
+# FLUX 2 Pro
+agent = ModelSwapAgent(llm_provider="openai", model="flux2_pro")
+result = agent.generate(
+    image="model.jpg",
+    prompt="Replace with a professional male model in his 30s"
+)
+
+# FLUX 2 Flex
+agent = ModelSwapAgent(llm_provider="openai", model="flux2_flex")
+result = agent.generate(
+    image="model.jpg",
+    prompt="Replace with a professional female model"
+)
+
+# Nano Banana (fast)
+agent = ModelSwapAgent(llm_provider="openai", model="nano_banana")
+result = agent.generate(
+    image="model.jpg",
+    prompt="Replace with a professional model"
+)
+```
+
+#### Example Prompts
+
+**Basic Descriptions:**
+```python
+"Professional male model in his 30s"
+"Female model, mid-20s, athletic build"
+"Plus-size woman, friendly expression"
+```
+
+**Detailed Descriptions:**
+```python
+"Professional Asian female model in her early 30s, athletic build, 
+confident posture, sharp features, editorial style photography"
+
+"Athletic male model, African American, late 20s, muscular build,
+casual confident pose, commercial photography style"
+
+"Plus-size woman, Caucasian, 40s, warm friendly expression,
+lifestyle photography, natural lighting"
+```
+
+**Style References:**
+```python
+"Professional fashion runway model style"
+"Commercial lifestyle photography model"
+"Editorial high-fashion model aesthetic"
+```
+
+#### Model Options
+
+- **Nano Banana**: Fast generation at 1024px resolution, ideal for quick iterations
+- **Nano Banana Pro** (default): High-quality up to 4K resolution with search grounding support
+- **FLUX 2 Pro**: Professional quality with custom width/height control
+- **FLUX 2 Flex**: Advanced controls (guidance scale, steps) for fine-tuned generation
+
+#### Resolution Options (Nano Banana Pro)
+
+- **1K (1024px)**: Draft quality, fast generation, testing
+- **2K (2048px)**: High-quality, good for web use
+- **4K (4096px)**: Professional e-commerce quality (default, recommended)
+
+#### Advanced Features
+
+**Search Grounding:**
+```python
+result = agent.generate(
+    image="model.jpg",
+    prompt="Professional fashion runway model",
+    use_search_grounding=True  # Enables Google Search for style references
+)
+```
+
+**Multi-LLM Support:**
+```python
+# OpenAI GPT (default)
+agent = ModelSwapAgent(llm_provider="openai", llm_model="gpt-4")
+
+# Anthropic Claude
+agent = ModelSwapAgent(llm_provider="anthropic", llm_model="claude-3-opus-20240229")
+
+# Google Gemini
+agent = ModelSwapAgent(llm_provider="google", llm_model="gemini-2.5-pro")
+```
+
+#### Use Cases
+
+- **E-commerce Sellers**: Create professional product photos with diverse models
+- **Fashion Brands**: Showcase clothing on different body types and demographics
+- **Clothing Brands**: Generate consistent product imagery across model portfolios
+- **Product Photography**: Maintain styling and composition while varying models
+
+#### How It Works
+
+1. **Prompt Analysis**: LLM agent extracts person attributes (gender, age, ethnicity, body type, pose, styling)
+2. **Prompt Construction**: Agent builds detailed, professional prompt emphasizing outfit preservation
+3. **Model Selection**: Uses the specified model (or default Nano Banana Pro) to generate images
+4. **Image Generation**: Selected model generates images with perfect outfit preservation (up to 4K with Nano Banana Pro)
+
+#### Complete Example
+
+```python
+from tryon.agents.model_swap import ModelSwapAgent
+
+# Initialize agent
+agent = ModelSwapAgent(
+    llm_provider="openai",
+    llm_model="gpt-4"
+)
+
+# Generate model swap with detailed prompt
+result = agent.generate(
+    image="original_model.jpg",
+    prompt=(
+        "Professional Asian female model in her early 30s, "
+        "athletic build, confident posture, sharp features, "
+        "editorial style photography"
+    ),
+    resolution="4K",
+    use_search_grounding=False,
+    verbose=True
+)
+
+# Save results
+if result["status"] == "success":
+    for idx, image in enumerate(result['images']):
+        image.save(f"swapped_model_{idx}.png")
+    print(f"Model swap complete! Generated {len(result['images'])} images")
+    print(f"Model description: {result['model_description']}")
+else:
+    print(f"Error: {result['error']}")
+```
+
+#### Best Practices
+
+1. **Be Specific**: Include age, gender, ethnicity, body type in prompts
+2. **Describe Pose**: Mention confident, casual, professional, etc.
+3. **Mention Style**: Editorial, commercial, lifestyle photography
+4. **Use 4K Resolution**: For professional e-commerce quality
+5. **Trust the Agent**: Outfit preservation is automatic
+
 #### Documentation
 
 For complete documentation, API reference, architecture details, and advanced usage examples, see:
 
-📚 **[Virtual Try-On Agent Documentation →](https://tryonlabs.github.io/opentryon/docs/agents/vton-agent)**
+📚 **[Model Swap Agent Documentation →](https://tryonlabs.github.io/opentryon/docs/agents/model-swap-agent)**
 
-**Reference**: [Virtual Try-On Agent Documentation](https://tryonlabs.github.io/opentryon/docs/agents/vton-agent)
+**Reference**: [Model Swap Agent Documentation](https://tryonlabs.github.io/opentryon/docs/agents/model-swap-agent)
 
 ### Image Generation with Nano Banana
 
