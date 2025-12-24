@@ -102,6 +102,7 @@ const sidebars: SidebarsConfig = {
         'agents/agent-ideas-summary',
         'agents/agent-ideas',
         'agents/vton-agent',
+        'agents/model-swap-agent',
       ],
     },
     {
