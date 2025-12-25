@@ -25,6 +25,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - GPT-Image-1 & GPT-Image-1.5 (OpenAI): High-quality image generation with strong prompt understanding, consistent composition, and reliable visual accuracy. GPT-Image-1.5 offers enhanced quality and better consistency
 - **Video Generation**:
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
+  - Google Veo 3 Video Generation Model: Generate high-quality, cinematic videos from text or images with realistic motion, temporal consistency, and fine-grained control over style and camera dynamics.
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -60,6 +61,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Image Generation with Luma AI](#luma-ai-image-generation)
   - [Image Generation with OpenAI](#image-generation-with-gpt-image-1)
   - [Video Generation with Luma AI](#video-generation-with-luma-ai)
+  - [Video Generation with Google Veo 3](#video-generation-with-google-veo-3)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -137,13 +139,13 @@ KLING_AI_BASE_URL=https://api-singapore.klingai.com  # Optional, defaults to Sin
 # Segmind Credentials (required for Segmind virtual try-on)
 SEGMIND_API_KEY=your_segmind_api_key
 
-# Google Gemini Credentials (required for Nano Banana image generation)
+# Google Gemini Credentials (required for Nano Banana image generation and Google Veo 3 Video generation)
 GEMINI_API_KEY=your_gemini_api_key
 
 # BFL API Credentials (required for FLUX.2 image generation)
 BFL_API_KEY=your_bfl_api_key
 
-# Luma AI Credentials (required for Luma AI image generation)
+# Luma AI Credentials (required for Luma AI image generation and Luma AI Video generation)
 LUMA_AI_API_KEY=your_luma_ai_api_key
 
 # OpenAI Credentials (required for OpenAI GPT-Image-1 image generation)
@@ -163,7 +165,7 @@ GOOGLE_API_KEY=your_google_api_key  # For Google Gemini
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
-- For Nano Banana, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
+- For Nano Banana and Google Veo 3, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
@@ -1883,7 +1885,7 @@ for idx, vid_bytes in enumerate(video_list):
 
 #### Supported Features
 
-- **Text to Video**: Generate videos using test descriptions.
+- **Text to Video**: Generate videos using text descriptions.
 - **Image to Video**: Generate videos using keyframes.
 - **Keyframe Generation**: Generate videos using a start keyframe or an end keyframe or both.
 - **Duration**: Durations in seconds (5s, 9s, 10s)
@@ -1900,6 +1902,138 @@ for idx, vid_bytes in enumerate(video_list):
 - And 4 more options
 
 **Reference**: [Luma AI Video Generation Documentation](https://docs.lumalabs.ai/docs/video-generation)
+
+### Video Generation with Google Veo 3
+
+Generate high-quality, cinematic videos using Google’s Veo 3 models (Veo 3.0 and Veo 3.1), including (veo-3.1-generate-preview, veo-3.1-fast-generate-preview, veo-3.0-generate-001, and veo-3.0-fast-generate-001). These models support text-to-video, image-to-video, reference-images-to-video, and frames-to-video generation for controlled motion, realistic dynamics, and consistent visual quality.
+
+#### Prerequisites
+
+1. **Google Gemini Account Setup**: 
+   - Sign up for a Google AI Studio account at [Google AI Studio](https://aistudio.google.com/)
+   - Obtain your API key from the [API Keys page](https://aistudio.google.com/app/apikey)
+   - Configure credentials in your `.env` file (see Environment Variables section)
+
+2. **Model Selection**:
+   - **veo-3.1-generate-preview**: Generate high-quality cinematic videos with enhanced motion realism and temporal consistency using the latest Veo 3.1 model.
+   - **veo-3.1-fast-generate-preview**: Create videos quickly with optimized inference speed while retaining strong visual quality and motion coherence.
+   - **veo-3.0-generate-001**: Produce stable, high-fidelity videos using the proven Veo 3.0 generation model with reliable motion and style control.
+   - **veo-3.0-fast-generate-001**: Generate videos faster with the Veo 3.0 fast variant, balancing speed and visual quality for rapid iteration.
+
+#### Command Line Usage
+
+```bash
+# Text to Video with Google Veo 3
+python veo_video.py --provider veo-3.1-generate-preview --mode text --prompt "model at a fashion show" --aspect 16:9 --duration 8 --resolution 1080p --output_dir outputs
+
+# Video generation with negative prompt
+python veo_video.py --provider veo-3.1-generate-preview --mode text --prompt "person with a hat" --resolution 1080p --negative_prompt "cartoon, anime, kids"
+
+# Image to Video
+python veo_video.py --provider veo-3.1-generate-preview --mode image --prompt "model at a fashion show" --images person.jpg --aspect 16:9 --duration 8 --resolution 1080p
+
+# Video generation with reference images (up to 3)
+python veo_video.py --provider veo-3.1-generate-preview --mode reference --prompt "create a fashion week video" --images person1.jpg person2.jpg person3.jpg --resolution 1080p
+
+# Video generation with frames
+python veo_video.py --provider veo-3.1-generate-preview --mode frames --prompt "create a cinematic video" --start_image person1.jpg --end_image person2.jpg --aspect 16:9 --resolution 720p
+```
+
+#### Python API Usage
+
+**Google Veo 3**
+
+```python
+
+from dotenv import load_dotenv
+load_dotenv()
+
+from pathlib import Path
+from tryon.api.veo import VeoAdapter
+
+adapter = VeoAdapter()
+video_list = []
+
+
+def save_video(video_bytes: bytes, idx: int):
+    Path("outputs").mkdir(exist_ok=True)
+    out_path = Path("outputs") / f"generated_{idx}.mp4"
+    with open(out_path, "wb") as f:
+        f.write(video_bytes)
+    print(f"[SAVED] {out_path}")
+
+
+# TEXT → VIDEO
+video = adapter.generate_text_to_video(
+    prompt="A cinematic neon city with cars moving at night",
+    duration_seconds="4",
+    aspect_ratio="16:9",
+    resolution="720p",
+    model="veo-3.1-generate-preview",
+)
+video_list.append(video)
+
+
+# IMAGE → VIDEO
+video = adapter.generate_image_to_video(
+    image="model.jpg",
+    prompt="Two monsters fighting with each other",
+    duration_seconds="4",
+    aspect_ratio="16:9",
+    resolution="720p",
+    model="veo-3.1-generate-preview",
+    negative_prompt="cartoon, anime, for kids",
+)
+video_list.append(video)
+
+
+# REFERENCE IMAGES → VIDEO
+video = adapter.generate_video_with_references(
+    prompt="A fashion model walking on a runway",
+    reference_images=[
+        "test_assets/ref1.jpg",
+        "test_assets/ref2.jpg",
+    ],
+    duration_seconds="8",
+    aspect_ratio="16:9",
+    resolution="720p",
+    model="veo-3.1-generate-preview",
+)
+video_list.append(video)
+
+
+# FIRST + LAST FRAME → VIDEO
+video = adapter.generate_video_with_frames(
+    prompt="Smooth cinematic transition from grizzly bear to polar bear",
+    first_image="person1.jpg",
+    last_image="person2.jpg",
+    duration_seconds="8",
+    aspect_ratio="16:9",
+    resolution="720p",
+    model="veo-3.1-generate-preview",
+    negative_prompt="cartoon, anime, kids",
+)
+video_list.append(video)
+
+
+# SAVE ALL RESULTS
+for idx, vid_bytes in enumerate(video_list):
+    save_video(vid_bytes, idx)
+
+```
+
+#### Supported Features
+
+- **Text to Video**: Generate Video using text descriptions.
+- **Image to Video**: Generate Video using a single image.
+- **Video Generation with Reference Images**: Generate Video using reference Images (up to 3).
+- **Video Generation with Frames**: Video Generation with first frame and last frame.
+- **Duration**: Durations in seconds (4s, 6s, 8s)
+- **Resolution**: Quality of the video (720p, 1080p)
+- **Aspect Ratio**: Aspect Ratio of videos (16:9, 9:16)
+- **Negative Prompt**: Negative Prompt tells the Veo model what to avoid generating in the video.
+
+**Reference**: [Google Veo 3 Video Generation Documentation](https://ai.google.dev/gemini-api/docs/video)
 
 ### Preprocessing Functions
 
