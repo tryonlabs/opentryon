@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opentryon-mcp-server"
+version = "0.0.1"
+description = "MCP server for OpenTryOn - AI toolkit for fashion tech and virtual try-on"
+authors = [
+    {name = "TryOn Labs", email = "contact@tryonlabs.ai"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "CC-BY-NC-4.0"}
+keywords = ["mcp", "fashion", "virtual-try-on", "ai", "agents"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/tryonlabs/opentryon"
+Documentation = "https://tryonlabs.github.io/opentryon/"
+Repository = "https://github.com/tryonlabs/opentryon"
+Issues = "https://github.com/tryonlabs/opentryon/issues"
+
+[project.scripts]
+opentryon-mcp = "server:main"
+
