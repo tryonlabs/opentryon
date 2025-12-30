@@ -40,6 +40,10 @@ setup(
         "langchain-anthropic>=0.2.0",
         "langchain-google-genai>=2.0.0",
         "pydantic>=2.0.0",
+        "timm>=1.0.22",
+        "einops>=0.8.1",
+        "scipy>=1.15.0",
+        "huggingface-hub>=0.36.0"
     ],
     keywords=[
         "virtual try-on",
