@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ImageUpload } from '@/components/image-upload'
 import { MultiImageUpload } from '@/components/multi-image-upload'
 import { HiSparkles, HiUser, HiXMark, HiMagnifyingGlass, HiPhoto } from 'react-icons/hi2'
-import pricingConfig from '../../data/pricing_config.json'
+import pricingConfig from '@/data/pricing_config.json'
 import { useTheme } from '@/components/ThemeProvider'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
