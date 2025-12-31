@@ -26,6 +26,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Video Generation**:
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
   - Google Veo 3 Video Generation Model: Generate high-quality, cinematic videos from text or images with realistic motion, temporal consistency, and fine-grained control over style and camera dynamics.
+- **Remove Image Background**: Remove Image Background using BEN2 (Background Erase Network)
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -62,6 +63,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Image Generation with OpenAI](#image-generation-with-gpt-image-1)
   - [Video Generation with Luma AI](#video-generation-with-luma-ai)
   - [Video Generation with Google Veo 3](#video-generation-with-google-veo-3)
+  - [Remove Image Background with BEN2](remove-image-background-with-ben2)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -2034,6 +2036,64 @@ for idx, vid_bytes in enumerate(video_list):
 - **Negative Prompt**: Negative Prompt tells the Veo model what to avoid generating in the video.
 
 **Reference**: [Google Veo 3 Video Generation Documentation](https://ai.google.dev/gemini-api/docs/video)
+
+
+### Image Background Removal With BEN2
+
+#### Requirements
+
+- Works on CUDA 11.8+
+- Model weights are automatically downloaded from [Hugging Face BEN2 Base](https://huggingface.co/PramaLLC/BEN2) on the first run and cached locally
+
+#### Command Line Usage
+
+```bash
+# single image background removal
+python bg_remove.py --mode single --image model.jpg --output_dir outputs
+
+# Perform background removal with optional refinement for higher accuracy.
+python bg_remove.py --mode single --image model.jpg --refine
+
+# Perform background removal for multiple images
+python bg_remove.py --mode batch --images model_1.jpg model_2.jpg model_3.jpg 
+```
+
+#### Python API Usage
+
+```python
+
+from tryon.api.ben2.adapter import BEN2BackgroundRemoverAdapter
+from PIL import Image
+
+# ------- SINGLE IMAGE TEST -------
+img = Image.open("ramp_walk.jpg")
+
+adapter = BEN2BackgroundRemoverAdapter()
+result = adapter.remove_background(img)
+
+result[0].save("ramp_walk_output.png")
+
+
+# ------- BATCH TEST -------
+images = [
+    Image.open("ramp_walk.jpg"),
+    Image.open("model2.jpg"),
+    Image.open("model3.jpg")
+]
+
+batch_results = adapter.remove_background_batch(images, refine=False)
+
+for i, out in enumerate(batch_results):
+    out.save(f"batch_output_{i+1}.png")
+
+print("Batch test completed successfully.")
+```
+
+**Features**:
+- Perform Background Removal for single image
+- Perform Background Removal for multiple images
+- Use the refine attribute for higher precision
+
 
 ### Preprocessing Functions
 
