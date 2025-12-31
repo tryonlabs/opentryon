@@ -1,0 +1,124 @@
+{
+    "version": "1.2",
+    "last_updated": "2025-01-27",
+    "models": {
+      "nano-banana": {
+        "pricing_strategy": "flat_rate",
+        "credits_per_image": 5,
+        "description": "Google Gemini 2.5 Flash Image (gemini-2.5-flash-image) - flat rate pricing. Based on official Google Gemini API pricing: approximately $0.039 per image (1,290 tokens for 1024x1024 images).",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing#standard",
+        "pricing_notes": {
+          "cost_per_image": "$0.039 per image (1,290 tokens for 1024x1024 resolution)",
+          "token_consumption": "1,290 tokens per image output up to 1024x1024 pixels",
+          "resolution": "Fixed resolution: 1024x1024 pixels (1 megapixel)"
+        }
+      },
+      "nano-banana-pro": {
+        "pricing_strategy": "resolution_based",
+        "description": "Google Gemini 3 Pro Image Preview (gemini-3-pro-image-preview) - resolution-based pricing. Based on official Google Gemini API pricing: 1K/2K images cost $0.134/image, 4K images cost $0.24/image.",
+        "credits_by_resolution": {
+          "1K": 15,
+          "2K": 15,
+          "4K": 26
+        },
+        "default_resolution": "1K",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing#standard",
+        "pricing_notes": {
+          "1K": "Based on $0.134 per image (1120 tokens at $120/1M tokens output + $0.0011 input)",
+          "2K": "Based on $0.134 per image (1120 tokens at $120/1M tokens output + $0.0011 input)",
+          "4K": "Based on $0.24 per image (2000 tokens at $120/1M tokens output + $0.0011 input)"
+        }
+      },
+      "flux-1-kontext-pro": {
+        "pricing_strategy": "mode_based",
+        "description": "FLUX.1 Kontext Pro - mode-based pricing. Pricing varies by generation mode (text2image, image2image, fusion). Based on BFL/Azure pricing structure.",
+        "source": "https://bfl.ai/pricing",
+        "credits_by_mode": {
+          "text2image": 5,
+          "image2image": 6,
+          "fusion": 7
+        },
+        "default_mode": "text2image",
+        "pricing_notes": {
+          "text2image": "Base text-to-image generation pricing",
+          "image2image": "Single input image editing/composition",
+          "fusion": "Multiple input images composition/fusion"
+        }
+      },
+      "flux-2-pro": {
+        "pricing_strategy": "dynamic",
+        "description": "FLUX.2 [PRO] - dynamic pricing based on output resolution (megapixels) and input images. Pricing scales with megapixels generated. Based on BFL official pricing: text2image starts at $0.03/image, image editing starts at $0.045/edit.",
+        "source": "https://bfl.ai/pricing",
+        "base_credits_by_mode": {
+          "text2image": 4,
+          "image2image": 6,
+          "multi-image": 8
+        },
+        "resolution_multipliers": {
+          "1024x1024": 1.0,
+          "1536x1536": 1.5,
+          "2048x2048": 2.0,
+          "3072x3072": 3.5,
+          "4096x4096": 4.0
+        },
+        "input_image_multipliers": {
+          "0": 1.0,
+          "1": 1.0,
+          "2": 1.2,
+          "3": 1.4,
+          "4": 1.6,
+          "5": 1.8,
+          "6": 2.0,
+          "7": 2.2,
+          "8": 2.4
+        },
+        "default_mode": "text2image",
+        "default_resolution": "1024x1024",
+        "pricing_notes": {
+          "base": "Base pricing: text2image $0.03/image, image editing $0.045/edit. Cost scales with megapixels (width × height / 1M).",
+          "resolution": "Resolution multipliers approximate megapixel scaling: 1024×1024=1MP, 2048×2048=4MP, 4096×4096=16MP",
+          "input_images": "Input images increase cost. Multi-image mode uses higher base cost."
+        }
+      },
+      "flux-2-flex": {
+        "pricing_strategy": "dynamic",
+        "description": "FLUX.2 [FLEX] - dynamic pricing based on output resolution (megapixels) and input images. Pricing scales with megapixels generated. Based on BFL official pricing: text2image starts at $0.06/image, image editing starts at $0.12/edit.",
+        "source": "https://bfl.ai/pricing",
+        "base_credits_by_mode": {
+          "text2image": 7,
+          "image2image": 13,
+          "multi-image": 20
+        },
+        "resolution_multipliers": {
+          "1024x1024": 1.0,
+          "1536x1536": 1.5,
+          "2048x2048": 2.0,
+          "3072x3072": 3.5,
+          "4096x4096": 4.0
+        },
+        "input_image_multipliers": {
+          "0": 1.0,
+          "1": 1.0,
+          "2": 1.2,
+          "3": 1.4,
+          "4": 1.6,
+          "5": 1.8,
+          "6": 2.0,
+          "7": 2.2,
+          "8": 2.4
+        },
+        "default_mode": "text2image",
+        "default_resolution": "1024x1024",
+        "pricing_notes": {
+          "base": "Base pricing: text2image $0.06/image, image editing $0.12/edit. Cost scales with megapixels (width × height / 1M).",
+          "resolution": "Resolution multipliers approximate megapixel scaling: 1024×1024=1MP, 2048×2048=4MP, 4096×4096=16MP",
+          "input_images": "Input images increase cost. Multi-image mode uses higher base cost."
+        }
+      }
+    },
+    "fallback": {
+      "default_credits_per_image": 5,
+      "description": "Default fallback pricing for unknown models"
+    }
+  }
+

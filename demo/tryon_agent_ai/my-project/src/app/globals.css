@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: rgba(254, 242, 240, 1);
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: rgba(254, 242, 240, 1);
+    --foreground: #171717;
+  }
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  background: #1f2937;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Initial colors - gray-800 (dark mode) - will be overridden by ThemeProvider */
+  background: #1f2937 !important;
+  color: #ffffff !important;
+}
+
+/* Mobile scrolling fix */
+@media (max-width: 1023px) {
+  html, body {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
