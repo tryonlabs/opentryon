@@ -1,0 +1,189 @@
+name: PR Compliance Check
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  validate-pr:
+    name: Validate PR Template Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Description
+        id: check-description
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+            const prAuthor = context.payload.pull_request.user.login;
+
+            // Skip validation for bots
+            const botAuthors = ['dependabot[bot]', 'renovate[bot]', 'github-actions[bot]'];
+            if (botAuthors.includes(prAuthor)) {
+              console.log(`Skipping validation for bot author: ${prAuthor}`);
+              return;
+            }
+
+            // Required sections from PR template
+            const requiredSections = [
+              {
+                name: 'Description',
+                pattern: /##\s*Description[\s\S]*?\S+/i,
+                message: 'Please provide a description of your changes.'
+              },
+              {
+                name: 'Type of Change',
+                pattern: /##\s*Type of Change[\s\S]*?\[x\]/i,
+                message: 'Please select at least one type of change.'
+              },
+              {
+                name: 'Changes Made',
+                pattern: /##\s*Changes Made[\s\S]*?-\s*\S+/i,
+                message: 'Please list the changes made in this PR.'
+              },
+              {
+                name: 'Testing',
+                pattern: /##\s*Testing[\s\S]*?\[x\]/i,
+                message: 'Please confirm testing by checking at least one testing checkbox.'
+              },
+              {
+                name: 'Checklist',
+                pattern: /##\s*Checklist[\s\S]*?\[x\]/i,
+                message: 'Please complete the checklist by checking at least one item.'
+              }
+            ];
+
+            // Check each required section
+            const missingOrIncomplete = [];
+            for (const section of requiredSections) {
+              if (!section.pattern.test(prBody)) {
+                missingOrIncomplete.push(`- **${section.name}**: ${section.message}`);
+              }
+            }
+
+            // Check for related issue (recommended but not strictly required)
+            const hasIssueReference = /##\s*Related Issue[\s\S]*?(#\d+|https:\/\/github\.com\/.*\/issues\/\d+)/i.test(prBody) ||
+                                      /(fixes|closes|resolves|ref|references)\s*#\d+/i.test(prBody);
+
+            if (missingOrIncomplete.length > 0) {
+              const commentBody = `## PR Template Compliance Check Failed
+
+            Thank you for your contribution! However, your PR description is missing some required information.
+
+            ### Missing or Incomplete Sections:
+            ${missingOrIncomplete.join('\n')}
+
+            ### How to Fix:
+            1. Edit your PR description
+            2. Fill in the missing sections using our [PR template](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/.github/PULL_REQUEST_TEMPLATE.md)
+            3. The check will automatically re-run once you save your changes
+
+            ${!hasIssueReference ? '> **Note:** Consider linking a related issue for better tracking.\n' : ''}
+            ---
+            *This is an automated check. If you believe this is an error, please comment below.*`;
+
+              // Find existing bot comment to update
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber
+              });
+
+              const botComment = comments.find(comment =>
+                comment.user.type === 'Bot' &&
+                comment.body.includes('PR Template Compliance Check')
+              );
+
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: commentBody
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: commentBody
+                });
+              }
+
+              // Add non-compliant label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: ['needs-template-update']
+              });
+
+              core.setFailed(`PR description is missing required sections: ${missingOrIncomplete.map(m => m.split(':')[0].replace('- **', '').replace('**', '')).join(', ')}`);
+            } else {
+              console.log('PR description passes all compliance checks!');
+
+              // Remove non-compliant label if it exists
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  name: 'needs-template-update'
+                });
+              } catch (e) {
+                // Label might not exist, that's fine
+              }
+
+              // Find and update/delete the compliance comment if PR is now compliant
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber
+              });
+
+              const botComment = comments.find(comment =>
+                comment.user.type === 'Bot' &&
+                comment.body.includes('PR Template Compliance Check Failed')
+              );
+
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: `## PR Template Compliance Check Passed ✅\n\nThank you for updating your PR description! All required sections are now complete.`
+                });
+              }
+            }
+
+  # Optional: Use PR Compliance Action for additional checks
+  pr-compliance:
+    name: Additional Compliance Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR Compliance Action
+        uses: mtfoley/pr-compliance-action@main
+        with:
+          # Require conventional commit style titles (optional)
+          title-check-enable: false
+          # Watch sensitive files
+          watch-files: |
+            .env.example
+            requirements.txt
+            environment.yml
+            setup.py
+          # Skip bots
+          ignore-authors: |
+            dependabot[bot]
+            renovate[bot]
+          # Require issue reference pattern
+          body-regex: '(#\d+|closes|fixes|resolves)'
+          body-auto-close: false
+          # Don't auto-close for branch issues
+          protected-branch-auto-close: false

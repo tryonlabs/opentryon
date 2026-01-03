@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://tryonlabs.github.io/opentryon/
+    about: Check our documentation for guides, API reference, and examples
+  - name: Discord Community
+    url: https://discord.gg/T5mPpZHxkY
+    about: Join our Discord for discussions, questions, and community support
+  - name: Discussions
+    url: https://github.com/tryonlabs/opentryon/discussions
+    about: Ask questions and share ideas in GitHub Discussions
