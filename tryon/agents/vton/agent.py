@@ -22,6 +22,39 @@ from langchain_core.language_models import BaseChatModel
 from .tools import get_vton_tools, get_tool_output_from_cache
 
 
+def _run_async(coro):
+    """
+    Run an async coroutine, handling both regular Python and Jupyter notebook environments.
+    
+    In Jupyter notebooks, there's already an event loop running, so we need to use
+    nest_asyncio to allow nested event loops, or run in a separate thread.
+    
+    Args:
+        coro: The coroutine to run
+        
+    Returns:
+        The result of the coroutine
+    """
+    try:
+        # Check if there's already a running event loop
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        # No running loop, we can use asyncio.run()
+        return asyncio.run(coro)
+    
+    # There's a running loop (e.g., in Jupyter), use nest_asyncio or thread
+    try:
+        import nest_asyncio
+        nest_asyncio.apply()
+        return asyncio.run(coro)
+    except ImportError:
+        # nest_asyncio not available, run in a new thread
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(asyncio.run, coro)
+            return future.result()
+
+
 class VTOnAgent:
     """
     LangChain-based Virtual Try-On Agent.
@@ -290,14 +323,14 @@ Please perform virtual try-on using the appropriate tool based on the user's req
                         **kwargs
                     )
             
-            # Run the streaming agent
-            asyncio.run(stream_agent())
+            # Run the streaming agent (handles both regular Python and Jupyter environments)
+            _run_async(stream_agent())
             
             # If result is still None or empty, fallback to non-streaming
             if not result or not result.get("messages"):
                 if verbose:
                     print("⚠️  No result from streaming, using standard execution...")
-                result = asyncio.run(
+                result = _run_async(
                     self.agent.ainvoke(
                         {"messages": [{"role": "user", "content": user_message}]},
                         **kwargs

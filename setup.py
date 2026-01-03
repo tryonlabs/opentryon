@@ -40,6 +40,7 @@ setup(
         "langchain-anthropic>=0.2.0",
         "langchain-google-genai>=2.0.0",
         "pydantic>=2.0.0",
+        "nest-asyncio>=1.5.0",
     ],
     keywords=[
         "virtual try-on",
