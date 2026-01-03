@@ -1,35 +1,28 @@
-name: Deploy Docusaurus to GitHub Pages
+# GitHub Pages Deployment
+#
+# This workflow is DISABLED - we use the gh-pages branch approach instead.
+# 
+# To deploy docs:
+#   1. cd docs
+#   2. npm run build
+#   3. npm run deploy
+#
+# The deploy script pushes the build folder to the gh-pages branch.
+# GitHub Pages is configured to serve from the gh-pages branch.
+#
+# Manual deployment (without npm script):
+#   npx gh-pages -d build
+#
+# See docs/README.md for more details.
+
+name: Deploy Docs (Disabled)
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    # Only trigger when docs/build changes (pre-built locally)
-    paths:
-      - 'docs/build/**'
-  # Allow manual trigger
-  workflow_dispatch:
+  workflow_dispatch:  # Manual trigger only, if ever needed
 
 jobs:
-  deploy:
-    name: Deploy Pre-built Docusaurus
+  placeholder:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+    if: false  # Never runs
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./docs/build
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: echo "This workflow is disabled. Use 'npm run deploy' in docs/ instead."

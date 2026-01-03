@@ -341,6 +341,48 @@ See [FLUX.2 API Documentation](flux2) for complete details.
 
 ---
 
+## Background Removal API
+
+### `BEN2BackgroundRemoverAdapter`
+
+Adapter for BEN2 (Background Erase Network 2) - state-of-the-art background removal for fashion and product images.
+
+```python
+from tryon.api.ben2 import BEN2BackgroundRemoverAdapter
+
+adapter = BEN2BackgroundRemoverAdapter()
+
+# Single image background removal
+result = adapter.remove_background("model.jpg", refine=True)
+result[0].save("model_no_bg.png")
+
+# Batch processing
+results = adapter.remove_background_batch(
+    ["model1.jpg", "model2.jpg", "model3.jpg"],
+    refine=True
+)
+```
+
+**Parameters:**
+- `weights_path` (str, optional): Custom weights path. Auto-downloads from Hugging Face if not specified
+- `device` (str, optional): Device to use ("cuda" or "cpu"). Auto-detected if not specified
+
+**Methods:**
+- `remove_background(image, refine=False)` - Remove background from single image
+- `remove_background_batch(images, refine=False)` - Remove background from multiple images
+- `load_image(input_data)` - Load image from path, URL, or BytesIO
+
+**Features:**
+- Automatic weight download from [Hugging Face](https://huggingface.co/PramaLLC/BEN2)
+- GPU acceleration with CUDA support
+- Foreground refinement for higher quality edges
+- Batch processing for multiple images
+- Supports file paths, URLs, BytesIO, and PIL Images
+
+See [BEN2 API Documentation](ben2) for complete details.
+
+---
+
 ## Utility Functions
 
 ### `convert_to_jpg`

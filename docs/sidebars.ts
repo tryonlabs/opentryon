@@ -59,6 +59,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/nano-banana',
         'api-reference/gpt-image',
         'api-reference/sora-video',
+        'api-reference/ben2',
         'api-reference/utils',
       ],
     },

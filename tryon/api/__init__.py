@@ -6,6 +6,7 @@ from .lumaAI import LumaAIAdapter
 from .flux2 import Flux2ProAdapter, Flux2FlexAdapter
 from .lumaAI.luma_video_adapter import LumaAIVideoAdapter
 from .openAI.image_adapter import GPTImageAdapter
+from .ben2 import BEN2BackgroundRemoverAdapter
 
 __all__ = [
     "AmazonNovaCanvasVTONAdapter",
@@ -18,4 +19,5 @@ __all__ = [
     "Flux2FlexAdapter",
     "LumaAIVideoAdapter",
     "GPTImageAdapter",
+    "BEN2BackgroundRemoverAdapter",
 ]
