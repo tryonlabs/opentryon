@@ -5,44 +5,22 @@ on:
     branches:
       - main
       - master
-    # Review deployment on pull requests
-  pull_request:
-    branches:
-      - main
-      - master
+    # Only trigger when docs/build changes (pre-built locally)
+    paths:
+      - 'docs/build/**'
+  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy Docusaurus
+    name: Deploy Pre-built Docusaurus
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pages: write
       id-token: write
-    defaults:
-      run:
-        working-directory: ./docs
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          # If your site depends on any submodule, uncomment the following line
-          # submodules: true
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'docs/package-lock.json'
-
-      - name: Install dependencies
-        working-directory: ./docs
-        run: npm ci
-
-      - name: Build website
-        working-directory: ./docs
-        run: npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -55,4 +33,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
