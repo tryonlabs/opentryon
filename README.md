@@ -27,6 +27,9 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
   - Google Veo 3 Video Generation Model: Generate high-quality, cinematic videos from text or images with realistic motion, temporal consistency, and fine-grained control over style and camera dynamics.
 - **Remove Image Background**: Remove Image Background using BEN2 (Background Erase Network)
+- **Local Models (GPU Inference)**:
+  - FLUX.2-dev Turbo: 6x faster image generation with 8-step inference, supports text-to-image and image-to-image
+  - Automatic VRAM-based model selection (full, 8-bit, or 4-bit quantized)
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -64,6 +67,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Video Generation with Luma AI](#video-generation-with-luma-ai)
   - [Video Generation with Google Veo 3](#video-generation-with-google-veo-3)
   - [Remove Image Background with BEN2](remove-image-background-with-ben2)
+  - [Local Models (GPU Inference)](#local-models-gpu-inference)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
 - [Project Structure](#project-structure)
@@ -2094,6 +2098,41 @@ print("Batch test completed successfully.")
 - Perform Background Removal for multiple images
 - Use the refine attribute for higher precision
 
+### Local Models (GPU Inference)
+
+OpenTryOn includes adapters for local inference models that run directly on your hardware. These require a CUDA-capable GPU but offer no API costs, complete privacy, and offline capability.
+
+#### Available Models
+
+| Model | Type | VRAM | Speed | Description |
+|-------|------|------|-------|-------------|
+| **FLUX.2-dev Turbo** | Image Generation | 12GB+ | 6x faster | Fast text-to-image and image-to-image via distilled LoRA |
+
+#### Quick Example
+
+```python
+from tryon.models import Flux2TurboAdapter
+
+# Initialize (auto-selects quantized model based on VRAM)
+adapter = Flux2TurboAdapter()
+
+# Text-to-image (8-step inference, 6x faster than base model)
+images = adapter.generate_text_to_image(
+    prompt="A fashion model wearing an elegant dress",
+    width=1024,
+    height=1024,
+    seed=42
+)
+images[0].save("output.png")
+
+# Image-to-image
+images = adapter.generate_image_to_image(
+    image="input.jpg",
+    prompt="Transform to an elegant evening gown"
+)
+```
+
+**Documentation**: See [Local Models Documentation](https://tryonlabs.github.io/opentryon/docs/local-models/overview) for detailed usage, VRAM requirements, and memory optimization tips.
 
 ### Preprocessing Functions
 
@@ -2236,7 +2275,8 @@ opentryon/
 │   │   ├── sam2/            # SAM2 segmentation
 │   │   ├── u2net/           # U2Net segmentation models
 │   │   └── utils.py         # Utility functions
-│   └── models/              # Model implementations
+│   └── models/              # Local inference models
+│       ├── flux2_turbo/     # FLUX.2-dev Turbo adapter
 │       └── ootdiffusion/    # OOTDiffusion model
 ├── tryondiffusion/          # TryOnDiffusion implementation
 │   ├── diffusion.py         # Diffusion model
@@ -2347,6 +2387,7 @@ See `requirements.txt` or `environment.yml` for the complete list of dependencie
 - **Segmind**: [Segmind Try-On Diffusion API](https://www.segmind.com/models/try-on-diffusion/api)
 - **Nano Banana**: [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
 - **FLUX.2**: [BFL AI Documentation](https://docs.bfl.ai/)
+- **FLUX.2-dev Turbo**: [HuggingFace Model](https://huggingface.co/fal/FLUX.2-dev-Turbo) | [Flux2Pipeline Docs](https://huggingface.co/docs/diffusers/main/en/api/pipelines/flux2)
 - **Luma AI**: [Luma AI Image Generation Documentation](https://docs.lumalabs.ai/docs/python-image-generation)
 - **Discord Community**: [Join our Discord](https://discord.gg/T5mPpZHxkY)
 - **Outfit Generator Model**: [FLUX.1-dev LoRA Outfit Generator](https://huggingface.co/tryonlabs/FLUX.1-dev-LoRA-Outfit-Generator)

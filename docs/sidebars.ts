@@ -65,6 +65,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Local Models',
+      items: [
+        'local-models/overview',
+        'local-models/flux2-turbo',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Examples',
       items: [
         'examples/basic-usage',

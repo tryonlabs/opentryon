@@ -7,13 +7,29 @@ local GPU resources for inference.
 
 Available Models:
     - Flux2TurboAdapter: FLUX.2-dev Turbo for fast image generation (8 steps)
+      Supports both text-to-image and image-to-image generation
 
-Example:
+Examples:
+    Text-to-image generation:
     >>> from tryon.models import Flux2TurboAdapter
     >>> 
     >>> adapter = Flux2TurboAdapter()
-    >>> images = adapter.generate_text_to_image("A fashion model wearing a dress")
+    >>> images = adapter.generate_text_to_image(
+    ...     prompt="A fashion model wearing a dress",
+    ...     width=1024,
+    ...     height=1024
+    ... )
     >>> images[0].save("output.png")
+    
+    Image-to-image generation:
+    >>> from PIL import Image
+    >>> 
+    >>> input_image = Image.open("input.jpg")
+    >>> edited_images = adapter.generate_image_to_image(
+    ...     image=input_image,
+    ...     prompt="A fashion model in an elegant blue dress"
+    ... )
+    >>> edited_images[0].save("edited_output.png")
 
 Requirements:
     - CUDA-capable GPU (recommended: 12GB+ VRAM)
@@ -26,4 +42,3 @@ from .flux2_turbo import Flux2TurboAdapter
 __all__ = [
     "Flux2TurboAdapter",
 ]
-
