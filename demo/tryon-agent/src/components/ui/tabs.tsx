@@ -2,7 +2,6 @@
 
 import React, { useState, createContext, useContext } from 'react'
 import { cn } from '../../lib/utils'
-import { useTheme } from '../ThemeProvider'
 
 interface TabsContextType {
   activeTab: string
@@ -34,14 +33,11 @@ export function TabsList({
   children: React.ReactNode
   className?: string
 }) {
-  const { theme } = useTheme()
   return (
     <div
       className={cn(
         'inline-flex w-full h-auto sm:h-12 items-center justify-center rounded-xl p-1 sm:p-1.5 shadow-sm border',
-        theme === 'dark'
-          ? 'bg-gray-800 border-gray-700'
-          : 'bg-gradient-to-r from-neutral-50 via-white to-neutral-50 border-neutral-200',
+        'bg-[var(--card-bg)] border-[var(--border-primary)]',
         className
       )}
     >
@@ -60,7 +56,6 @@ export function TabsTrigger({
   className?: string
 }) {
   const context = useContext(TabsContext)
-  const { theme } = useTheme()
   if (!context) throw new Error('TabsTrigger must be used within Tabs')
   const { activeTab, setActiveTab } = context
   const isActive = activeTab === value
@@ -73,9 +68,7 @@ export function TabsTrigger({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2',
         isActive
           ? 'bg-gradient-to-br from-primary-400 to-primary-500 text-white shadow-lg shadow-primary-400/30 scale-105'
-          : theme === 'dark'
-            ? 'text-gray-400 hover:text-white hover:bg-gray-700'
-            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100/50',
+          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]',
         className
       )}
     >

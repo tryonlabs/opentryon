@@ -19,19 +19,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') as Theme | null
-      const initialTheme = savedTheme || 'dark'
+      const initialTheme = savedTheme || 'light'
       
-      // Apply initial theme immediately before setting state
-      const body = document.body
+      // Apply initial theme using data-theme attribute
       const html = document.documentElement
       if (initialTheme === 'dark') {
-        body.style.setProperty('background-color', '#1f2937', 'important')
-        body.style.setProperty('color', '#ffffff', 'important')
-        html.style.setProperty('background-color', '#1f2937', 'important')
+        html.setAttribute('data-theme', 'dark')
       } else {
-        body.style.setProperty('background-color', 'rgba(254, 242, 240, 1)', 'important')
-        body.style.setProperty('color', '#171717', 'important')
-        html.style.setProperty('background-color', 'rgba(254, 242, 240, 1)', 'important')
+        html.removeAttribute('data-theme')
       }
       
       setTheme(initialTheme)
@@ -54,17 +49,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted || typeof document === 'undefined') return
     
-    const body = document.body
     const html = document.documentElement
     
     if (theme === 'dark') {
-      body.style.setProperty('background-color', '#1f2937', 'important')
-      body.style.setProperty('color', '#ffffff', 'important')
-      html.style.setProperty('background-color', '#1f2937', 'important')
+      html.setAttribute('data-theme', 'dark')
     } else {
-      body.style.setProperty('background-color', 'rgba(254, 242, 240, 1)', 'important')
-      body.style.setProperty('color', '#171717', 'important')
-      html.style.setProperty('background-color', 'rgba(254, 242, 240, 1)', 'important')
+      html.removeAttribute('data-theme')
     }
     
     // Save to localStorage
@@ -76,27 +66,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
     
-    // Immediately apply theme change before state update
+    // Immediately apply theme change using data-theme attribute
     if (typeof document !== 'undefined') {
-      const body = document.body
       const html = document.documentElement
       
       if (newTheme === 'dark') {
-        body.style.backgroundColor = '#1f2937'
-        body.style.color = '#ffffff'
-        html.style.backgroundColor = '#1f2937'
-        // Force with setProperty as well
-        body.style.setProperty('background-color', '#1f2937', 'important')
-        body.style.setProperty('color', '#ffffff', 'important')
-        html.style.setProperty('background-color', '#1f2937', 'important')
+        html.setAttribute('data-theme', 'dark')
       } else {
-        body.style.backgroundColor = 'rgba(254, 242, 240, 1)'
-        body.style.color = '#171717'
-        html.style.backgroundColor = 'rgba(254, 242, 240, 1)'
-        // Force with setProperty as well
-        body.style.setProperty('background-color', 'rgba(254, 242, 240, 1)', 'important')
-        body.style.setProperty('color', '#171717', 'important')
-        html.style.setProperty('background-color', 'rgba(254, 242, 240, 1)', 'important')
+        html.removeAttribute('data-theme')
       }
       
       // Save to localStorage immediately

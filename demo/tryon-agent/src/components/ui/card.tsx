@@ -1,7 +1,6 @@
 'use client'
 
 import { cn } from '../../lib/utils'
-import { useTheme } from '../ThemeProvider'
 
 export function Card({
   children,
@@ -10,14 +9,10 @@ export function Card({
   children: React.ReactNode
   className?: string
 }) {
-  const { theme } = useTheme()
   return (
     <div
       className={cn(
-        'rounded-lg border p-6 shadow-sm',
-        theme === 'dark'
-          ? 'bg-gray-800 border-gray-700'
-          : 'bg-white border-neutral-200',
+        'rounded-lg border p-6 shadow-sm bg-[var(--card-bg)] border-[var(--border-primary)]',
         className
       )}
     >
@@ -47,11 +42,9 @@ export function CardTitle({
   children: React.ReactNode
   className?: string
 }) {
-  const { theme } = useTheme()
   return (
     <h3 className={cn(
-      'text-lg font-semibold',
-      theme === 'dark' ? 'text-primary-300' : 'text-primary-400',
+      'text-lg font-semibold text-[var(--primary-400)]',
       className
     )}>
       {children}

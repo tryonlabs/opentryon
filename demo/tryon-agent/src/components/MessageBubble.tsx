@@ -53,11 +53,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
   if (isSystem) {
     return (
       <div className="flex justify-center my-4">
-        <div className={`text-xs px-3 py-1.5 rounded-full border ${
-          theme === 'dark' 
-            ? 'bg-gray-800 text-gray-300 border-gray-700' 
-            : 'bg-gray-100 text-gray-600 border-gray-200'
-        }`}>
+        <div className="text-xs px-3 py-1.5 rounded-full border bg-[var(--card-bg)] text-[var(--text-secondary)] border-[var(--border-primary)]">
           {message.content}
         </div>
       </div>
@@ -78,10 +74,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         <div
           className={`rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 ${
             isUser
-              ? "bg-red-500 text-white"
-              : theme === 'dark'
-                ? "bg-gray-800 text-white border border-gray-700 shadow-sm"
-                : "bg-white text-gray-800 border border-gray-200 shadow-sm"
+              ? "bg-primary-500 text-white"
+              : "bg-[var(--card-bg)] text-[var(--text-primary)] border border-[var(--border-primary)] shadow-sm"
           }`}
         >
           {/* Message Text */}
@@ -99,7 +93,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                   <img
                     src={artifact.thumbnail || artifact.url}
                     alt="Artifact"
-                    className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                    className="w-full h-24 sm:h-32 object-cover rounded-lg border border-[var(--border-primary)] cursor-pointer hover:opacity-90 transition-opacity"
                   />
                   {artifact.source === "generated" && (
                     <div className="absolute top-1 right-1 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded">
@@ -118,8 +112,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                 <div key={index} className="flex items-center gap-2 text-xs">
                   {tool.status === "processing" && (
                     <>
-                      <div className="animate-spin rounded-full h-3 w-3 border-2 border-gray-300 border-t-primary-500"></div>
-                      <span className={isUser ? "text-red-100" : theme === 'dark' ? "text-gray-300" : "text-gray-600"}>
+                      <div className="animate-spin rounded-full h-3 w-3 border-2 border-[var(--border-primary)] border-t-primary-500"></div>
+                      <span className={isUser ? "text-red-100" : "text-[var(--text-primary)]"}>
                         {tool.tool} - {tool.progress}%
                       </span>
                     </>
@@ -127,15 +121,15 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                   {tool.status === "completed" && (
                     <>
                       <IoCheckmarkCircle className="w-3 h-3 text-green-500" />
-                      <span className={isUser ? "text-red-100" : theme === 'dark' ? "text-gray-300" : "text-gray-600"}>
+                      <span className={isUser ? "text-red-100" : "text-[var(--text-primary)]"}>
                         {tool.tool} completed
                       </span>
                     </>
                   )}
                   {tool.status === "queued" && (
                     <>
-                      <IoTimeOutline className="w-3 h-3 text-gray-400" />
-                      <span className={isUser ? "text-red-100" : theme === 'dark' ? "text-gray-300" : "text-gray-600"}>
+                      <IoTimeOutline className="w-3 h-3 text-[var(--text-tertiary)]" />
+                      <span className={isUser ? "text-red-100" : "text-[var(--text-primary)]"}>
                         {tool.tool} queued
                       </span>
                     </>
@@ -147,17 +141,15 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         </div>
 
         {/* Timestamp */}
-        <span className={`text-[10px] sm:text-xs mt-1 px-1 ${
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-        }`} suppressHydrationWarning>
+        <span className="text-[10px] sm:text-xs mt-1 px-1 text-[var(--text-secondary)]" suppressHydrationWarning>
           {timeAgo || "just now"}
         </span>
       </div>
 
       {/* User Avatar */}
       {isUser && (
-        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
-          <span className="text-[10px] sm:text-xs text-gray-700">U</span>
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0">
+          <span className="text-[10px] sm:text-xs text-[var(--text-primary)]">U</span>
         </div>
       )}
     </div>

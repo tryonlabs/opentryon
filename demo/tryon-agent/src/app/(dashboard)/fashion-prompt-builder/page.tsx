@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/tabs'
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card'
-import { Button } from '../../components/ui/button'
-import { Input, Textarea, Select } from '../../components/ui/input'
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../../components/ui/accordion'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../components/ui/tabs'
+import { Card, CardHeader, CardTitle, CardContent } from '../../../components/ui/card'
+import { Button } from '../../../components/ui/button'
+import { Input, Textarea, Select } from '../../../components/ui/input'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../../../components/ui/accordion'
 import { HiSparkles, HiPhoto, HiPencil } from 'react-icons/hi2'
-import { Toast } from '../../components/ui/toast'
-import { useTheme } from '../../components/ThemeProvider'
+import { Toast } from '../../../components/ui/toast'
+import { useTheme } from '../../../components/ThemeProvider'
 
 interface Template {
   name: string
@@ -165,24 +165,24 @@ export default function FashionPromptBuilderPage() {
   const placeholders = currentTemplate ? extractPlaceholders(currentTemplate.template) : []
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
+    <div className="h-full w-full bg-[var(--background)]">
       <Toast
         message={toast.message}
         type={toast.type}
         isVisible={toast.isVisible}
         onClose={hideToast}
       />
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="mb-12 text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 max-w-6xl w-full">
+        <div className="mb-8 sm:mb-10 md:mb-12 text-center px-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 sm:mb-4">
             <span className="bg-gradient-to-r from-primary-400 via-secondary-500 to-primary-400 bg-clip-text text-transparent">
               Fashion Model Prompt Builder
             </span>
           </h1>
           
-          <p className="text-lg md:text-xl text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed text-[var(--text-secondary)] px-2">
             Create stunning fashion model prompts with our intuitive builder. 
-            <span className="text-primary-400 font-semibold"> Choose your preferred method</span> to craft the perfect prompt for AI-generated fashion imagery.
+            <span className="font-semibold text-[var(--primary-400)]"> Choose your preferred method</span> to craft the perfect prompt for AI-generated fashion imagery.
           </p>
         </div>
 
@@ -214,9 +214,7 @@ export default function FashionPromptBuilderPage() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <label className={`block text-sm font-medium mb-2 ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                      }`}>
+                      <label className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
                         Model
                       </label>
                       <Select
@@ -231,9 +229,7 @@ export default function FashionPromptBuilderPage() {
                       </Select>
                     </div>
                     <div className="md:col-span-2">
-                      <label className={`block text-sm font-medium mb-2 ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                      }`}>
+                      <label className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
                         Template Style
                       </label>
                       <Select
@@ -249,8 +245,8 @@ export default function FashionPromptBuilderPage() {
                     </div>
                   </div>
                   {currentTemplate && (
-                    <div className="bg-gradient-to-r from-primary-50 to-white p-4 rounded-lg border-l-4 border-primary-400">
-                      <p className={theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'}>
+                    <div className="p-4 rounded-lg border-l-4 bg-[var(--bg-tertiary)] border-l-[var(--primary-400)]">
+                      <p className="text-[var(--text-primary)]">
                         {currentTemplate.description}
                       </p>
                     </div>
@@ -270,22 +266,18 @@ export default function FashionPromptBuilderPage() {
                     <div className="space-y-6 pt-2">
                       {/* Basic Information Group */}
                       {(placeholders.includes('age') || placeholders.includes('gender')) && (
-                        <div className="bg-gradient-to-br from-primary-50 to-white rounded-xl p-5 border border-primary-100">
+                        <div className="bg-gradient-to-br from-[var(--primary-50)] to-[var(--background)] rounded-xl p-5 border border-[var(--primary-100)]">
                           <div className="flex items-center gap-2 mb-4">
                             <div className="w-8 h-8 rounded-lg bg-primary-400 flex items-center justify-center text-white font-semibold">
                               1
                             </div>
-                            <h4 className={`text-base font-semibold ${
-                              theme === 'dark' ? 'text-white' : 'text-neutral-900'
-                            }`}>Basic Information</h4>
+                            <h4 className="text-base font-semibold text-[var(--text-primary)]">Basic Information</h4>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {placeholders.includes('age') && (
                               <div>
-                                <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                  Age <span className="text-primary-400">*</span>
+                                <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                  Age <span className="text-[var(--primary-400)]">*</span>
                                 </label>
                                 <Input
                                   type="number"
@@ -296,23 +288,21 @@ export default function FashionPromptBuilderPage() {
                                     setParameters({ ...parameters, age: e.target.value })
                                   }
                                   placeholder="25"
-                                  className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                  className="bg-[var(--card-bg)]"
                                 />
                               </div>
                             )}
                             {placeholders.includes('gender') && (
                               <div>
-                                <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                  Gender <span className="text-primary-400">*</span>
+                                <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                  Gender <span className="text-[var(--primary-400)]">*</span>
                                 </label>
                                 <Select
                                   value={parameters.gender || ''}
                                   onChange={(e) =>
                                     setParameters({ ...parameters, gender: e.target.value })
                                   }
-                                  className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                  className="bg-[var(--card-bg)]"
                                 >
                                   <option value="">Select gender...</option>
                                   <option value="male">Male</option>
@@ -328,27 +318,25 @@ export default function FashionPromptBuilderPage() {
                       {placeholders.some((p) =>
                         ['complexion', 'hair_color', 'hair_type', 'eye_color', 'face_shape'].includes(p)
                       ) && (
-                        <div className="bg-gradient-to-br from-secondary-50 to-white rounded-xl p-5 border border-secondary-100">
+                        <div className="bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--background)] rounded-xl p-5 border border-[var(--border-primary)]">
                           <div className="flex items-center gap-2 mb-4">
                             <div className="w-8 h-8 rounded-lg bg-secondary-500 flex items-center justify-center text-white font-semibold">
                               2
                             </div>
-                            <h4 className="text-base font-semibold text-neutral-900">Appearance</h4>
+                            <h4 className="text-base font-semibold text-[var(--text-primary)]">Appearance</h4>
                           </div>
                           <div className="space-y-4">
                             {placeholders.includes('complexion') && (
                               <div>
-                                <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                  Complexion <span className="text-primary-400">*</span>
+                                <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                  Complexion <span className="text-[var(--primary-400)]">*</span>
                                 </label>
                                 <Select
                                   value={parameters.complexion || ''}
                                   onChange={(e) =>
                                     setParameters({ ...parameters, complexion: e.target.value })
                                   }
-                                  className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                  className="bg-[var(--card-bg)]"
                                 >
                                   <option value="">Select complexion...</option>
                                   <option value="fair">Fair</option>
@@ -366,17 +354,15 @@ export default function FashionPromptBuilderPage() {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {placeholders.includes('hair_color') && (
                                   <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                      Hair Color <span className="text-primary-400">*</span>
+                                    <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                      Hair Color <span className="text-[var(--primary-400)]">*</span>
                                     </label>
                                     <Select
                                       value={parameters.hair_color || ''}
                                       onChange={(e) =>
                                         setParameters({ ...parameters, hair_color: e.target.value })
                                       }
-                                      className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                      className="bg-[var(--card-bg)]"
                                     >
                                       <option value="">Select color...</option>
                                       <option value="blonde">Blonde</option>
@@ -390,17 +376,15 @@ export default function FashionPromptBuilderPage() {
                                 )}
                                 {placeholders.includes('hair_type') && (
                                   <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                      Hair Type <span className="text-primary-400">*</span>
+                                    <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                      Hair Type <span className="text-[var(--primary-400)]">*</span>
                                     </label>
                                     <Select
                                       value={parameters.hair_type || ''}
                                       onChange={(e) =>
                                         setParameters({ ...parameters, hair_type: e.target.value })
                                       }
-                                      className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                      className="bg-[var(--card-bg)]"
                                     >
                                       <option value="">Select style...</option>
                                       <option value="long straight">Long Straight</option>
@@ -420,17 +404,15 @@ export default function FashionPromptBuilderPage() {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {placeholders.includes('eye_color') && (
                                   <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                      Eye Color <span className="text-primary-400">*</span>
+                                    <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                      Eye Color <span className="text-[var(--primary-400)]">*</span>
                                     </label>
                                     <Select
                                       value={parameters.eye_color || ''}
                                       onChange={(e) =>
                                         setParameters({ ...parameters, eye_color: e.target.value })
                                       }
-                                      className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                      className="bg-[var(--card-bg)]"
                                     >
                                       <option value="">Select color...</option>
                                       <option value="blue">Blue</option>
@@ -443,17 +425,15 @@ export default function FashionPromptBuilderPage() {
                                 )}
                                 {placeholders.includes('face_shape') && (
                                   <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                      Face Shape <span className="text-primary-400">*</span>
+                                    <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                      Face Shape <span className="text-[var(--primary-400)]">*</span>
                                     </label>
                                     <Select
                                       value={parameters.face_shape || ''}
                                       onChange={(e) =>
                                         setParameters({ ...parameters, face_shape: e.target.value })
                                       }
-                                      className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                      className="bg-[var(--card-bg)]"
                                     >
                                       <option value="">Select shape...</option>
                                       <option value="oval">Oval</option>
@@ -473,22 +453,18 @@ export default function FashionPromptBuilderPage() {
 
                       {/* Styling Group */}
                       {(placeholders.includes('pose') || placeholders.includes('outfit')) && (
-                        <div className="bg-gradient-to-br from-neutral-50 to-white rounded-xl p-5 border border-neutral-200">
+                        <div className="bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--background)] rounded-xl p-5 border border-[var(--border-primary)]">
                           <div className="flex items-center gap-2 mb-4">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold ${
-                              theme === 'dark' ? 'bg-gray-700' : 'bg-neutral-600'
-                            }`}>
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold bg-[var(--bg-tertiary)]">
                               3
                             </div>
-                            <h4 className="text-base font-semibold text-neutral-900">Pose & Styling</h4>
+                            <h4 className="text-base font-semibold text-[var(--text-primary)]">Pose & Styling</h4>
                           </div>
                           <div className="space-y-4">
                             {placeholders.includes('pose') && (
                               <div>
-                                <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                  Pose <span className="text-primary-400">*</span>
+                                <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                  Pose <span className="text-[var(--primary-400)]">*</span>
                                 </label>
                                 <Input
                                   value={parameters.pose || ''}
@@ -496,21 +472,17 @@ export default function FashionPromptBuilderPage() {
                                     setParameters({ ...parameters, pose: e.target.value })
                                   }
                                   placeholder="e.g., smiling softly front-facing, standing confidently"
-                                  className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                  className="bg-[var(--card-bg)]"
                                 />
-                                <p className={`text-xs mt-1 ${
-                                  theme === 'dark' ? 'text-gray-400' : 'text-neutral-500'
-                                }`}>
+                                <p className="text-xs mt-1 text-[var(--text-secondary)]">
                                   Describe the model's pose and expression
                                 </p>
                               </div>
                             )}
                             {placeholders.includes('outfit') && (
                               <div>
-                                <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                  Outfit <span className="text-primary-400">*</span>
+                                <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                  Outfit <span className="text-[var(--primary-400)]">*</span>
                                 </label>
                                 <Input
                                   value={parameters.outfit || ''}
@@ -518,11 +490,9 @@ export default function FashionPromptBuilderPage() {
                                     setParameters({ ...parameters, outfit: e.target.value })
                                   }
                                   placeholder="e.g., floral summer dress, tailored suit, casual jeans and t-shirt"
-                                  className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                  className="bg-[var(--card-bg)]"
                                 />
-                                <p className={`text-xs mt-1 ${
-                                  theme === 'dark' ? 'text-gray-400' : 'text-neutral-500'
-                                }`}>
+                                <p className="text-xs mt-1 text-[var(--text-secondary)]">
                                   Describe the clothing and style
                                 </p>
                               </div>
@@ -535,29 +505,27 @@ export default function FashionPromptBuilderPage() {
                       {placeholders.some((p) =>
                         ['lighting', 'background', 'fabric_description'].includes(p)
                       ) && (
-                        <div className="bg-gradient-to-br from-primary-50/50 to-white rounded-xl p-5 border border-primary-100">
+                        <div className="bg-gradient-to-br from-[var(--primary-50)]/50 to-[var(--background)] rounded-xl p-5 border border-[var(--primary-100)]">
                           <div className="flex items-center gap-2 mb-4">
                             <div className="w-8 h-8 rounded-lg bg-primary-400 flex items-center justify-center text-white font-semibold">
                               4
                             </div>
-                            <h4 className="text-base font-semibold text-neutral-900">Scene Settings</h4>
+                            <h4 className="text-base font-semibold text-[var(--text-primary)]">Scene Settings</h4>
                           </div>
                           <div className="space-y-4">
                             {placeholders.some((p) => ['lighting', 'background'].includes(p)) && (
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {placeholders.includes('lighting') && (
                                   <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                      Lighting <span className="text-primary-400">*</span>
+                                    <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                      Lighting <span className="text-[var(--primary-400)]">*</span>
                                     </label>
                                     <Select
                                       value={parameters.lighting || ''}
                                       onChange={(e) =>
                                         setParameters({ ...parameters, lighting: e.target.value })
                                       }
-                                      className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                      className="bg-[var(--card-bg)]"
                                     >
                                       <option value="">Select lighting...</option>
                                       <option value="daylight outdoors">Daylight Outdoors</option>
@@ -569,10 +537,8 @@ export default function FashionPromptBuilderPage() {
                                 )}
                                 {placeholders.includes('background') && (
                                   <div>
-                                    <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
-                                      Background <span className="text-primary-400">*</span>
+                                    <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
+                                      Background <span className="text-[var(--primary-400)]">*</span>
                                     </label>
                                     <Input
                                       value={parameters.background || ''}
@@ -580,7 +546,7 @@ export default function FashionPromptBuilderPage() {
                                         setParameters({ ...parameters, background: e.target.value })
                                       }
                                       placeholder="e.g., garden, studio backdrop, urban cityscape"
-                                      className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                      className="bg-[var(--card-bg)]"
                                     />
                                   </div>
                                 )}
@@ -588,13 +554,9 @@ export default function FashionPromptBuilderPage() {
                             )}
                             {placeholders.includes('fabric_description') && (
                               <div>
-                                <label className={`block text-sm font-semibold mb-2 ${
-                                  theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
+                                <label className="block text-sm font-semibold mb-2 text-[var(--text-primary)]">
                                   Fabric Description
-                                  <span className={`text-xs font-normal ml-2 ${
-                                    theme === 'dark' ? 'text-gray-400' : 'text-neutral-500'
-                                  }`}>(optional)</span>
+                                  <span className="text-xs font-normal ml-2 text-[var(--text-secondary)]">(optional)</span>
                                 </label>
                                 <Input
                                   value={parameters.fabric_description || ''}
@@ -605,11 +567,9 @@ export default function FashionPromptBuilderPage() {
                                     })
                                   }
                                   placeholder="e.g., silk, cotton, leather, denim"
-                                  className={theme === 'dark' ? 'bg-gray-800' : 'bg-white'}
+                                  className="bg-[var(--card-bg)]"
                                 />
-                                <p className={`text-xs mt-1 ${
-                                  theme === 'dark' ? 'text-gray-400' : 'text-neutral-500'
-                                }`}>
+                                <p className="text-xs mt-1 text-[var(--text-secondary)]">
                                   Add fabric details for better texture rendering
                                 </p>
                               </div>
@@ -645,9 +605,7 @@ export default function FashionPromptBuilderPage() {
                   </div>
 
                   <div className="mb-4">
-                    <label className={`block text-sm font-medium mb-2 ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                    }`}>
+                    <label className="block text-sm font-medium mb-2 text-[var(--text-primary)]">
                       Generated Prompt
                     </label>
                     <Textarea
@@ -663,10 +621,10 @@ export default function FashionPromptBuilderPage() {
                     <div
                       className={`p-3 rounded-lg mb-4 ${
                         status.type === 'success'
-                          ? 'bg-green-50 text-green-700'
+                          ? 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-green-500/30'
                           : status.type === 'warning'
-                          ? 'bg-yellow-50 text-yellow-700'
-                          : 'bg-red-50 text-red-700'
+                          ? 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-yellow-500/30'
+                          : 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-red-500/30'
                       }`}
                     >
                       {status.message}
@@ -700,16 +658,14 @@ export default function FashionPromptBuilderPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gradient-to-r from-primary-50 to-secondary-50 p-4 rounded-lg border border-primary-100 mb-6">
-                    <p className={`text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                    }`}>
-                      <span className="font-semibold text-primary-400">💡 Tip:</span> Click on any example below to load it into the editor. You can then edit it or use it directly.
+                  <div className="bg-gradient-to-r from-[var(--primary-50)] to-[var(--bg-tertiary)] p-4 rounded-lg border border-[var(--primary-100)] mb-6">
+                    <p className="text-sm text-[var(--text-primary)]">
+                      <span className="font-semibold text-[var(--primary-400)]">💡 Tip:</span> Click on any example below to load it into the editor. You can then edit it or use it directly.
                     </p>
                   </div>
 
                   <div className="mb-6">
-                    <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                    <label className="block text-sm font-semibold text-[var(--text-primary)] mb-2">
                       Selected Prompt Preview
                     </label>
                     <div className="relative">
@@ -718,11 +674,7 @@ export default function FashionPromptBuilderPage() {
                         value={selectedGalleryPrompt}
                         onChange={(e) => setSelectedGalleryPrompt(e.target.value)}
                         placeholder="Click an example below to load it here..."
-                        className={`font-mono text-sm border-2 focus:border-primary-400 transition-colors ${
-                          theme === 'dark'
-                            ? 'bg-gray-800 border-gray-700 text-white'
-                            : 'bg-white border-neutral-200'
-                        }`}
+                        className="font-mono text-sm border-2 focus:border-primary-400 transition-colors bg-[var(--card-bg)] border-[var(--border-primary)] text-[var(--text-primary)]"
                       />
                       {selectedGalleryPrompt && (
                         <div className="absolute top-2 right-2">
@@ -736,14 +688,10 @@ export default function FashionPromptBuilderPage() {
 
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-base font-semibold text-neutral-900">
+                      <h3 className="text-base font-semibold text-[var(--text-primary)]">
                         Example Prompts
                       </h3>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        theme === 'dark'
-                          ? 'text-gray-300 bg-gray-800'
-                          : 'text-neutral-500 bg-neutral-100'
-                      }`}>
+                      <span className="text-xs px-2 py-1 rounded-full text-[var(--text-secondary)] bg-[var(--bg-secondary)]">
                         {galleryPrompts.length} examples
                       </span>
                     </div>
@@ -757,8 +705,8 @@ export default function FashionPromptBuilderPage() {
                             onClick={() => setSelectedGalleryPrompt(prompt)}
                             className={`group relative text-left p-4 rounded-xl border-2 transition-all duration-200 ${
                               isSelected
-                                ? 'border-primary-400 bg-gradient-to-br from-primary-50 to-white shadow-md shadow-primary-400/20'
-                                : 'border-neutral-200 bg-white hover:border-primary-300 hover:bg-primary-50/50 hover:shadow-sm'
+                                ? 'border-primary-400 bg-gradient-to-br from-[var(--primary-50)] to-[var(--background)] shadow-md shadow-primary-400/20'
+                                : 'border-[var(--border-primary)] bg-[var(--card-bg)] hover:border-primary-300 hover:bg-[var(--primary-50)]/50 hover:shadow-sm'
                             }`}
                           >
                             <div className="flex items-start gap-3">
@@ -766,24 +714,16 @@ export default function FashionPromptBuilderPage() {
                                 className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
                                   isSelected
                                     ? 'bg-primary-400 text-white'
-                                    : theme === 'dark'
-                                      ? 'bg-gray-800 text-gray-400 group-hover:bg-primary-600 group-hover:text-white'
-                                      : 'bg-neutral-100 text-neutral-500 group-hover:bg-primary-100 group-hover:text-primary-400'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] group-hover:bg-primary-600 group-hover:text-white'
                                 }`}
                               >
                                 {idx + 1}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`text-sm leading-relaxed line-clamp-3 ${
-                                  isSelected
-                                    ? theme === 'dark' ? 'text-white font-medium' : 'text-neutral-900 font-medium'
-                                    : theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                                }`}>
+                                <p className={`text-sm leading-relaxed line-clamp-3 ${isSelected ? 'font-medium' : ''} text-[var(--text-primary)]`}>
                                   {prompt}
                                 </p>
-                                <div className={`mt-2 flex items-center gap-2 text-xs ${
-                                  theme === 'dark' ? 'text-gray-500' : 'text-neutral-400'
-                                }`}>
+                                <div className="mt-2 flex items-center gap-2 text-xs text-[var(--text-tertiary)]">
                                   <span>{prompt.split(' ').length} words</span>
                                   <span>•</span>
                                   <span>{prompt.length} chars</span>
@@ -803,7 +743,7 @@ export default function FashionPromptBuilderPage() {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-neutral-200">
+                  <div className="pt-4 border-t border-[var(--border-primary)]">
                     <Button
                       onClick={() => {
                         if (!selectedGalleryPrompt.trim()) {
@@ -832,25 +772,23 @@ export default function FashionPromptBuilderPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gradient-to-r from-secondary-50 to-primary-50 p-4 rounded-lg border border-secondary-100 mb-6">
-                    <p className={`text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                    }`}>
+                  <div className="bg-gradient-to-r from-[var(--bg-tertiary)] to-[var(--primary-50)] p-4 rounded-lg border border-[var(--border-primary)] mb-6">
+                    <p className="text-sm text-[var(--text-primary)]">
                       <span className="font-semibold text-secondary-600">✍️ Advanced Mode:</span> For users who want full control over their prompts. Write your custom prompt from scratch or edit an existing one.
                     </p>
                   </div>
 
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-sm font-semibold text-neutral-700">
+                      <label className="block text-sm font-semibold text-[var(--text-primary)]">
                         Custom Prompt Editor
                       </label>
                       {rawPrompt && (
-                        <div className="flex items-center gap-3 text-xs text-neutral-500">
-                          <span className="bg-neutral-100 px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)]">
+                          <span className="bg-[var(--bg-secondary)] px-2 py-1 rounded-full">
                             {rawPrompt.split(' ').length} words
                           </span>
-                          <span className="bg-neutral-100 px-2 py-1 rounded-full">
+                          <span className="bg-[var(--bg-secondary)] px-2 py-1 rounded-full">
                             {rawPrompt.length} characters
                           </span>
                         </div>
@@ -862,18 +800,18 @@ export default function FashionPromptBuilderPage() {
                         value={rawPrompt}
                         onChange={(e) => setRawPrompt(e.target.value)}
                         placeholder="Enter your custom prompt here...&#10;&#10;Example:&#10;A high-quality realistic photo of a 25-year-old female fashion model with fair skin, long straight blonde hair, blue eyes, and an oval face. The model is smiling softly front-facing, wearing a floral summer dress. Captured in daylight outdoors with a garden background. Ultra-detailed, 8K, cinematic lighting, professional fashion photography."
-                        className="font-mono text-sm bg-white border-2 border-neutral-200 focus:border-primary-400 transition-colors resize-y"
+                        className="font-mono text-sm bg-[var(--card-bg)] border-2 border-[var(--border-primary)] focus:border-primary-400 transition-colors resize-y text-[var(--text-primary)]"
                       />
                       {!rawPrompt && (
-                        <div className="absolute bottom-4 left-4 text-xs text-neutral-400 pointer-events-none">
+                        <div className="absolute bottom-4 left-4 text-xs text-[var(--text-tertiary)] pointer-events-none">
                           Start typing your prompt...
                         </div>
                       )}
                     </div>
                     {rawPrompt && (
-                      <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
+                      <div className="mt-2 flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                          <span className="w-2 h-2 rounded-full bg-green-500"></span>
                           Prompt ready
                         </span>
                       </div>
@@ -889,13 +827,13 @@ export default function FashionPromptBuilderPage() {
                         </span>
                       </AccordionTrigger>
                       <AccordionContent isOpen={false}>
-                        <div className="bg-gradient-to-br from-neutral-50 to-white p-5 rounded-lg border border-neutral-200 space-y-4">
+                        <div className="bg-gradient-to-br from-[var(--bg-tertiary)] to-[var(--background)] p-5 rounded-lg border border-[var(--border-primary)] space-y-4">
                           <div>
-                            <p className="font-semibold text-neutral-900 mb-2 flex items-center gap-2">
+                            <p className="font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
                               <span className="w-6 h-6 rounded-full bg-primary-400 text-white flex items-center justify-center text-xs">1</span>
                               Best Practices:
                             </p>
-                            <ul className="list-disc list-inside space-y-2 ml-8 text-sm text-neutral-700">
+                            <ul className="list-disc list-inside space-y-2 ml-8 text-sm text-[var(--text-primary)]">
                               <li>Be specific about appearance details (age, gender, complexion, hair, eyes)</li>
                               <li>Include lighting and background settings for better results</li>
                               <li>Mention pose and outfit clearly and descriptively</li>
@@ -904,12 +842,12 @@ export default function FashionPromptBuilderPage() {
                             </ul>
                           </div>
                           
-                          <div className="pt-3 border-t border-neutral-200">
-                            <p className="font-semibold text-neutral-900 mb-2 flex items-center gap-2">
+                          <div className="pt-3 border-t border-[var(--border-primary)]">
+                            <p className="font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
                               <span className="w-6 h-6 rounded-full bg-secondary-500 text-white flex items-center justify-center text-xs">2</span>
                               Recommended Structure:
                             </p>
-                            <ol className="list-decimal list-inside space-y-2 ml-8 text-sm text-neutral-700">
+                            <ol className="list-decimal list-inside space-y-2 ml-8 text-sm text-[var(--text-primary)]">
                               <li><strong>Model description:</strong> age, gender, appearance features</li>
                               <li><strong>Outfit details:</strong> clothing, style, colors, accessories</li>
                               <li><strong>Pose and expression:</strong> body position, facial expression</li>
@@ -918,12 +856,12 @@ export default function FashionPromptBuilderPage() {
                             </ol>
                           </div>
 
-                          <div className="pt-3 border-t border-neutral-200">
-                            <p className="font-semibold text-neutral-900 mb-2 flex items-center gap-2">
+                          <div className="pt-3 border-t border-[var(--border-primary)]">
+                            <p className="font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
                               <span className="w-6 h-6 rounded-full bg-primary-400 text-white flex items-center justify-center text-xs">3</span>
                               Pro Tips:
                             </p>
-                            <ul className="list-disc list-inside space-y-2 ml-8 text-sm text-neutral-700">
+                            <ul className="list-disc list-inside space-y-2 ml-8 text-sm text-[var(--text-primary)]">
                               <li>Longer prompts (50-100 words) often produce better results</li>
                               <li>Use descriptive adjectives to enhance image quality</li>
                               <li>Combine multiple style keywords for unique looks</li>
@@ -935,7 +873,7 @@ export default function FashionPromptBuilderPage() {
                     </AccordionItem>
                   </Accordion>
 
-                  <div className="mt-6 pt-6 border-t border-neutral-200">
+                  <div className="mt-6 pt-6 border-t border-[var(--border-primary)]">
                     <div className="flex flex-col sm:flex-row gap-4">
                       <Button
                         onClick={() => {
@@ -965,7 +903,7 @@ export default function FashionPromptBuilderPage() {
                       </Button>
                     </div>
                     {rawPrompt && (
-                      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-neutral-500">
+                      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--text-secondary)]">
                         <span>💡</span>
                         <span>Your prompt is ready to use. Click the button above to proceed.</span>
                       </div>

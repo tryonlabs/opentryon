@@ -31,11 +31,7 @@ const ModelUi = () => {
             
             {/* Message Bubble with all content */}
             <div className="flex flex-col items-start max-w-full sm:max-w-md md:max-w-lg flex-1 min-w-0">
-                <div className={`border rounded-lg px-3 py-2 shadow-sm w-full ${
-                  theme === 'dark'
-                    ? 'bg-gray-800 text-white border-gray-700'
-                    : 'bg-white text-gray-800 border-gray-200'
-                }`}>
+                <div className="border rounded-lg px-3 py-2 shadow-sm w-full bg-[var(--card-bg)] text-[var(--text-primary)] border-[var(--border-primary)]">
                     {/* Prompt Text */}
                     <p className="text-xs whitespace-pre-wrap mb-2">
                         Great! I can help you with virtual try-on. I see you've uploaded a dress image. Would you like me to:
@@ -43,11 +39,7 @@ const ModelUi = () => {
 
                     {/* Main Image - Commented */}
                     <div className="mb-2">
-                        <div className={`relative w-full border-2 border-dashed rounded-lg overflow-hidden flex items-center justify-center min-h-48 ${
-                          theme === 'dark'
-                            ? 'bg-gray-900 border-gray-700'
-                            : 'bg-gray-50 border-gray-300'
-                        }`}>
+                        <div className="relative w-full border-2 border-dashed rounded-lg overflow-hidden flex items-center justify-center min-h-48 bg-[var(--bg-tertiary)] border-[var(--border-primary)]">
                             <img
                                 src={defaultMainImage}
                                 alt="Main"
@@ -85,9 +77,7 @@ const ModelUi = () => {
 
                     {/* Reference Images */}
                     <div className="mb-2">
-                        <label className={`block text-xs font-semibold mb-1 ${
-                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
+                        <label className="block text-xs font-semibold mb-1 text-[var(--text-primary)]">
                             Reference Image ({defaultReferenceImages.length})
                         </label>
                         {defaultReferenceImages.length < 6 ? (
@@ -100,9 +90,7 @@ const ModelUi = () => {
                                         <img
                                             src={imgSrc}
                                             alt={`Reference ${index + 1}`}
-                                            className={`w-full h-full object-cover rounded-lg border-2 ${
-                                              theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                                            }`}
+                                            className="w-full h-full object-cover rounded-lg border-2 border-[var(--border-primary)]"
                                         />
                                     </div>
                                 ))}
@@ -117,9 +105,7 @@ const ModelUi = () => {
                                         <img
                                             src={imgSrc}
                                             alt={`Reference ${index + 1}`}
-                                            className={`w-full h-full object-cover rounded-lg border-2 ${
-                                              theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                                            }`}
+                                            className="w-full h-full object-cover rounded-lg border-2 border-[var(--border-primary)]"
                                         />
                                     </div>
                                 ))}
@@ -129,23 +115,15 @@ const ModelUi = () => {
 
                     {/* Image Settings */}
                     <div>
-                        <label className={`block text-xs font-semibold mb-1 ${
-                          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
+                        <label className="block text-xs font-semibold mb-1 text-[var(--text-primary)]">
                             Settings → Images
                         </label>
                         <div className="grid grid-cols-3 gap-2">
                             <div>
-                                <label className={`block text-xs mb-0.5 ${
-                                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                                }`}>Mode</label>
+                                <label className="block text-xs mb-0.5 text-[var(--text-secondary)]">Mode</label>
                                 <select
                                     value={defaultSettings.mode}
-                                    className={`w-full px-2 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                                      theme === 'dark'
-                                        ? 'bg-gray-800 border-gray-700 text-white'
-                                        : 'border-gray-300'
-                                    }`}
+                                    className="w-full px-2 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-[var(--card-bg)] border-[var(--border-primary)] text-[var(--text-primary)]"
                                     disabled
                                     suppressHydrationWarning
                                 >
@@ -155,16 +133,10 @@ const ModelUi = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className={`block text-xs mb-0.5 ${
-                                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                                }`}>Quality</label>
+                                <label className="block text-xs mb-0.5 text-[var(--text-secondary)]">Quality</label>
                                 <select
                                     value={defaultSettings.quality}
-                                    className={`w-full px-2 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                                      theme === 'dark'
-                                        ? 'bg-gray-800 border-gray-700 text-white'
-                                        : 'border-gray-300'
-                                    }`}
+                                    className="w-full px-2 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-[var(--card-bg)] border-[var(--border-primary)] text-[var(--text-primary)]"
                                     disabled
                                     suppressHydrationWarning
                                 >
@@ -174,16 +146,10 @@ const ModelUi = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className={`block text-xs mb-0.5 ${
-                                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                                }`}>Output</label>
+                                <label className="block text-xs mb-0.5 text-[var(--text-secondary)]">Output</label>
                                 <select
                                     value={defaultSettings.output}
-                                    className={`w-full px-2 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                                      theme === 'dark'
-                                        ? 'bg-gray-800 border-gray-700 text-white'
-                                        : 'border-gray-300'
-                                    }`}
+                                    className="w-full px-2 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-[var(--card-bg)] border-[var(--border-primary)] text-[var(--text-primary)]"
                                     disabled
                                     suppressHydrationWarning
                                 >

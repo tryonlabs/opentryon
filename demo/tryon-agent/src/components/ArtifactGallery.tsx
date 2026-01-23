@@ -69,28 +69,22 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
   const referenceImages2 = getReferenceImages(allReferenceImages, 3);
 
   return (
-    <div className="w-full lg:w-96 border-l border-gray-200 flex flex-col h-full lg:h-screen flex-shrink-0 shadow-lg lg:shadow-none overflow-hidden" style={{ backgroundColor: 'transparent' }}>
+    <div className="w-full lg:w-96 border-l border-[var(--border-primary)] flex flex-col h-full lg:h-screen flex-shrink-0 shadow-lg lg:shadow-none overflow-hidden bg-[var(--background)]">
       {/* Header */}
-      <div className={`p-3 border-b ${
-        theme === 'dark' ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'
-      }`}>
+      <div className="p-3 border-b border-[var(--border-primary)] bg-[var(--card-bg)]">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className={`lg:hidden p-1.5 rounded-lg transition-colors ${
-                theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-200'
-              }`}
+              className="lg:hidden p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-secondary)]"
               aria-label="Close Artifacts"
               suppressHydrationWarning
             >
-              <svg className={`w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <h3 className={`text-sm font-semibold uppercase tracking-wider ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-primary)]">
               Artifacts
             </h3>
           </div>
@@ -99,12 +93,8 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
               onClick={() => setViewMode("grid")}
               className={`p-1.5 rounded transition-colors ${
                 viewMode === "grid"
-                  ? theme === 'dark'
-                    ? "bg-primary-600 text-white"
-                    : "bg-primary-100 text-primary-600"
-                  : theme === 'dark'
-                    ? "text-gray-400 hover:text-gray-300"
-                    : "text-gray-400 hover:text-gray-600"
+                  ? "bg-primary-600 text-white"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
               title="Grid view"
               suppressHydrationWarning
@@ -115,12 +105,8 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
               onClick={() => setViewMode("list")}
               className={`p-1.5 rounded transition-colors ${
                 viewMode === "list"
-                  ? theme === 'dark'
-                    ? "bg-primary-600 text-white"
-                    : "bg-primary-100 text-primary-600"
-                  : theme === 'dark'
-                    ? "text-gray-400 hover:text-gray-300"
-                    : "text-gray-400 hover:text-gray-600"
+                  ? "bg-primary-600 text-white"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
               title="List view"
               suppressHydrationWarning
@@ -136,12 +122,8 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
             onClick={() => setFilter("all")}
             className={`text-xs px-2 py-1 rounded transition-colors ${
               filter === "all"
-                ? theme === 'dark'
-                  ? "bg-gray-700 text-white font-medium"
-                  : "bg-gray-200 text-gray-800 font-medium"
-                : theme === 'dark'
-                  ? "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-primary-600 text-white font-medium"
+                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
             }`}
             suppressHydrationWarning
           >
@@ -151,12 +133,8 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
             onClick={() => setFilter("uploaded")}
             className={`text-xs px-2 py-1 rounded transition-colors ${
               filter === "uploaded"
-                ? theme === 'dark'
-                  ? "bg-primary-600 text-white font-medium"
-                  : "bg-primary-100 text-primary-700 font-medium"
-                : theme === 'dark'
-                  ? "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-primary-600 text-white font-medium"
+                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
             }`}
             suppressHydrationWarning
           >
@@ -169,9 +147,7 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
                 ? theme === 'dark'
                   ? "bg-green-600 text-white font-medium"
                   : "bg-green-100 text-green-700 font-medium"
-                : theme === 'dark'
-                  ? "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
             }`}
             suppressHydrationWarning
           >
@@ -185,9 +161,7 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
                   ? theme === 'dark'
                     ? "bg-amber-600 text-white font-medium"
                     : "bg-amber-100 text-amber-700 font-medium"
-                  : theme === 'dark'
-                    ? "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]"
               }`}
               suppressHydrationWarning
             >
@@ -201,19 +175,13 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 -webkit-overflow-scrolling-touch" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* Gallery UI Section - Two Main Images with Reference Images in 2-column Grid */}
         {mainImages.length > 0 && (
-          <div className={`mb-4 pb-4 border-b ${
-            theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-          }`}>
+          <div className="mb-4 pb-4 border-b border-[var(--border-primary)]">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* First Main Image */}
               <div className="flex flex-col">
                 {/* Main Image */}
                 <div className="mb-2">
-                  <div className={`relative w-full border-2 border-dashed rounded-lg overflow-hidden flex items-center justify-center ${
-                    theme === 'dark'
-                      ? 'bg-gray-900 border-gray-700'
-                      : 'bg-gray-50 border-gray-300'
-                  }`} style={{ maxHeight: '200px', minHeight: '150px' }}>
+                  <div className="relative w-full border-2 border-dashed rounded-lg overflow-hidden flex items-center justify-center bg-[var(--bg-tertiary)] border-[var(--border-primary)]" style={{ maxHeight: '200px', minHeight: '150px' }}>
                     <img
                       src={mainImages[0]?.url || mainImages[0]?.thumbnail}
                       alt="Generated Image 1"
@@ -225,7 +193,7 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
                 {/* Reference Images - Horizontal scroll, 5 images */}
                 {referenceImages1.length > 0 && (
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
                       Reference ({referenceImages1.length})
                     </label>
                     <div className="overflow-x-auto">
@@ -233,14 +201,12 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
                         {referenceImages1.map((artifact, index) => (
                           <div
                             key={`ref1-${artifact.id}-${index}`}
-                            className="relative w-16 h-16 flex-shrink-0"
+                            className="relative w-16 h-16 flex-shrink-0 border border-[var(--border-primary)]"
                           >
                             <img
                               src={artifact.thumbnail || artifact.url}
                               alt={`Reference ${index + 1}`}
-                              className={`w-full h-full object-cover rounded-lg border ${
-                                theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                              }`}
+                              className="w-full h-full object-cover rounded-lg border border-[var(--border-primary)]"
                             />
                           </div>
                         ))}
@@ -272,7 +238,7 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
                   {/* Reference Images - Horizontal scroll, 3 images */}
                   {referenceImages2.length > 0 && (
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-semibold text-[var(--text-primary)] mb-1">
                         Reference ({referenceImages2.length})
                       </label>
                       <div className="overflow-x-auto">
@@ -280,14 +246,12 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
                           {referenceImages2.map((artifact, index) => (
                             <div
                               key={`ref2-${artifact.id}-${index}`}
-                              className="relative w-16 h-16 flex-shrink-0"
+                              className="relative w-16 h-16 flex-shrink-0 border border-[var(--border-primary)]"
                             >
                               <img
                                 src={artifact.thumbnail || artifact.url}
                                 alt={`Reference ${index + 1}`}
-                                className={`w-full h-full object-cover rounded-lg border ${
-                                theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                              }`}
+                                className="w-full h-full object-cover rounded-lg border border-[var(--border-primary)]"
                               />
                             </div>
                           ))}
@@ -303,13 +267,13 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
 
         {filteredArtifacts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--text-tertiary)] to-[var(--text-secondary)] flex items-center justify-center">
               <AiOutlineCloudUpload className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
               No artifacts yet
             </h3>
-            <p className="text-xs text-gray-500 mb-4">
+            <p className="text-xs text-[var(--text-secondary)] mb-4">
               Upload images or generate content to see artifacts here
             </p>
             <button
@@ -341,7 +305,7 @@ export default function ArtifactGallery({ artifacts, onUpload, onView, onDownloa
 
       {/* Upload Zone (if empty) */}
       {artifacts.length === 0 && (
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <div className="p-4 border-t border-[var(--border-primary)] bg-[var(--card-bg)]">
           <button
             onClick={() => onUpload?.()}
             className="w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 rounded-lg text-sm font-medium transition-colors text-white flex items-center justify-center gap-2"

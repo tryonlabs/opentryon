@@ -37,15 +37,13 @@ export function AccordionItem({
   className?: string
 }) {
   const context = useContext(AccordionContext)
-  const { theme } = useTheme()
   if (!context) throw new Error('AccordionItem must be used within Accordion')
   const { openItem } = context
   const isOpen = openItem === value
 
   return (
     <div className={cn(
-      'border-b',
-      theme === 'dark' ? 'border-gray-700' : 'border-neutral-200',
+      'border-b border-[var(--border-primary)]',
       className
     )}>
       {React.Children.map(children, (child) => {
@@ -70,7 +68,6 @@ export function AccordionTrigger({
   className?: string
 }) {
   const context = useContext(AccordionContext)
-  const { theme } = useTheme()
   if (!context) throw new Error('AccordionTrigger must be used within Accordion')
   const { setOpenItem } = context
 
@@ -79,17 +76,14 @@ export function AccordionTrigger({
       onClick={() => setOpenItem(isOpen ? undefined : value)}
       className={cn(
         'flex w-full items-center justify-between py-4 text-left font-medium transition-all',
-        theme === 'dark'
-          ? 'text-gray-300 hover:text-primary-300'
-          : 'hover:text-primary-400',
+        'text-[var(--text-primary)] hover:text-[var(--primary-400)]',
         className
       )}
     >
       {children}
       <svg
         className={cn(
-          'h-4 w-4 shrink-0 transition-transform duration-200',
-          theme === 'dark' ? 'text-gray-400' : 'text-gray-600',
+          'h-4 w-4 shrink-0 transition-transform duration-200 text-[var(--text-secondary)]',
           isOpen && 'rotate-180'
         )}
         xmlns="http://www.w3.org/2000/svg"
