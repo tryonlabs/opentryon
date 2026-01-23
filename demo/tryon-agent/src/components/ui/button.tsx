@@ -1,7 +1,6 @@
 'use client'
 
 import { cn } from '../../lib/utils'
-import { useTheme } from '../ThemeProvider'
 
 export function Button({
   children,
@@ -13,13 +12,10 @@ export function Button({
   variant?: 'primary' | 'secondary' | 'outline'
   className?: string
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { theme } = useTheme()
   const variants = {
     primary: 'bg-primary-400 text-white hover:bg-primary-500',
     secondary: 'bg-secondary-500 text-white hover:bg-secondary-600',
-    outline: theme === 'dark'
-      ? 'border-2 border-primary-400 text-primary-300 hover:bg-gray-700'
-      : 'border-2 border-primary-400 text-primary-400 hover:bg-primary-50',
+    outline: 'border-2 border-primary-400 text-[var(--primary-400)] hover:bg-[var(--primary-50)]',
   }
 
   return (

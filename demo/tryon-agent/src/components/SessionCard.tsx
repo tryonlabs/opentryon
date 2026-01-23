@@ -50,11 +50,11 @@ export default function SessionCard({ session, isActive, onClick, onArchive }: a
       case "processing":
         return "bg-blue-100 text-blue-700 border-blue-200";
       case "completed":
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-[var(--border-primary)]";
       case "archived":
         return "bg-amber-100 text-amber-700 border-amber-200";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border-[var(--border-primary)]";
     }
   };
 
@@ -63,19 +63,15 @@ export default function SessionCard({ session, isActive, onClick, onArchive }: a
       onClick={onClick}
       className={`relative p-2.5 sm:p-3 rounded-lg border-2 cursor-pointer transition-all ${
         isActive
-          ? theme === 'dark'
-            ? "bg-gray-800 border-primary-500 shadow-md"
-            : "bg-primary-50 border-primary-300 shadow-md"
-          : theme === 'dark'
-            ? "bg-gray-900 border-gray-700 hover:border-gray-600 hover:shadow-sm"
-            : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm"
+          ? "bg-[var(--card-bg)] border-primary-500 shadow-md"
+          : "bg-[var(--card-bg)] border-[var(--border-primary)] hover:border-[var(--border-secondary)] hover:shadow-sm"
       }`}
     >
       {/* Status indicator */}
       <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${
         session.status === "active" ? "bg-green-500" :
         session.status === "processing" ? "bg-blue-500 animate-pulse" :
-        session.status === "completed" ? "bg-gray-400" :
+        session.status === "completed" ? "bg-[var(--text-tertiary)]" :
         "bg-amber-400"
       }`} />
 
@@ -87,8 +83,8 @@ export default function SessionCard({ session, isActive, onClick, onArchive }: a
         <div className="flex-1 min-w-0">
           <h3 className={`text-xs sm:text-sm font-semibold truncate ${
             isActive 
-              ? theme === 'dark' ? "text-primary-300" : "text-primary-700"
-              : theme === 'dark' ? "text-white" : "text-gray-900"
+              ? "text-primary-600"
+              : "text-[var(--text-primary)]"
           }`}>
             {session.title}
           </h3>
@@ -101,9 +97,7 @@ export default function SessionCard({ session, isActive, onClick, onArchive }: a
       </div>
 
       {/* Metadata */}
-      <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between text-[10px] sm:text-xs mt-2 sm:mt-3 gap-1 sm:gap-0 ${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-      }`}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-[10px] sm:text-xs mt-2 sm:mt-3 gap-1 sm:gap-0 text-[var(--text-secondary)]">
         <div className="flex items-center gap-2 sm:gap-3">
           <span className="flex items-center gap-1">
             <HiOutlineClock className="w-3 h-3" />
@@ -119,19 +113,13 @@ export default function SessionCard({ session, isActive, onClick, onArchive }: a
 
       {/* Actions */}
       {isActive && (
-        <div className={`flex items-center gap-2 mt-2 pt-2 border-t ${
-          theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-        }`}>
+        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--border-primary)]">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onArchive?.(session.id);
             }}
-            className={`flex-1 text-xs px-2 py-1 rounded transition-colors ${
-              theme === 'dark'
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-            }`}
+            className="flex-1 text-xs px-2 py-1 rounded transition-colors bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]"
             suppressHydrationWarning
           >
             Archive

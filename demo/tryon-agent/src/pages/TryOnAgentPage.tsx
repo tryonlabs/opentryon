@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import SessionsPanel from "../components/SessionsPanel";
 import ConversationView from "../components/ConversationView";
 import ArtifactGallery from "../components/ArtifactGallery";
@@ -146,7 +147,7 @@ export default function TryOnAgentPage() {
   };
 
   return (
-    <div className="relative flex flex-col lg:flex-row w-full h-screen lg:overflow-hidden overflow-auto" style={{ backgroundColor: 'transparent' }}>
+    <div className="relative flex flex-col lg:flex-row w-full h-screen lg:overflow-hidden overflow-auto" style={{ backgroundColor: 'var(--background)' }}>
       {/* Mobile Overlay */}
       {(showSessionsPanel || showArtifactGallery) && (
         <div 
@@ -178,23 +179,35 @@ export default function TryOnAgentPage() {
       {/* Center Panel - Conversation */}
       <div className="flex-1 flex flex-col min-w-0 relative min-h-0 lg:min-h-screen">
         {/* Mobile Header with Toggle Buttons */}
-        <div className="lg:hidden flex items-center justify-between p-3 border-b border-gray-200 z-30 sticky top-0 flex-shrink-0" style={{ backgroundColor: 'transparent' }}>
+        <div className="lg:hidden flex items-center justify-between p-3 border-b border-[var(--border-primary)] z-30 sticky top-0 flex-shrink-0 bg-[var(--background)]">
           <button
             onClick={() => setShowSessionsPanel(!showSessionsPanel)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--bg-secondary)] rounded-lg transition-colors flex-shrink-0"
             aria-label="Toggle Sessions"
           >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 className="text-sm font-semibold text-gray-700">TryOn Agent</h1>
+          <div className="flex items-center gap-2 flex-1 justify-center min-w-0">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
+              <Image
+                src="/tryon-labs-logo.png"
+                alt="TryOn AI Logo"
+                width={28}
+                height={28}
+                className="object-contain"
+                priority
+              />
+            </div>
+            <h1 className="text-xs sm:text-sm font-semibold text-[var(--text-primary)] whitespace-nowrap truncate">TryOn AI</h1>
+          </div>
           <button
             onClick={() => setShowArtifactGallery(!showArtifactGallery)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--bg-secondary)] rounded-lg transition-colors flex-shrink-0"
             aria-label="Toggle Artifacts"
           >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </button>

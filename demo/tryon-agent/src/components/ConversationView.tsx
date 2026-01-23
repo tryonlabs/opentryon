@@ -121,22 +121,18 @@ export default function ConversationView({
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-white">AI</span>
             </div>
-            <div className={`border rounded-lg px-4 py-3 shadow-sm ${
-              theme === 'dark'
-                ? 'bg-gray-800 text-white border-gray-700'
-                : 'bg-white text-gray-800 border-gray-200'
-            }`}>
+            <div className="border rounded-lg px-4 py-3 shadow-sm bg-[var(--card-bg)] text-[var(--text-primary)] border-[var(--border-primary)]">
               <div className="flex gap-1">
                 <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-[var(--text-tertiary)] rounded-full animate-bounce"
                   style={{ animationDelay: "0ms" }}
                 ></div>
                 <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-[var(--text-tertiary)] rounded-full animate-bounce"
                   style={{ animationDelay: "150ms" }}
                 ></div>
                 <div
-                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-[var(--text-tertiary)] rounded-full animate-bounce"
                   style={{ animationDelay: "300ms" }}
                 ></div>
               </div>
@@ -146,36 +142,26 @@ export default function ConversationView({
       </div>
 
       {/* Input Area */}
-      <div className={`border-t p-2 sm:p-3 ${
-        theme === 'dark' ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'
-      }`}>
-        <div className={`relative border rounded-lg focus-within:ring-0 focus-within:outline-none transition-all ${
-          theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-300'
-        }`}>
+      <div className="border-t p-2 sm:p-3 border-[var(--border-primary)] bg-[var(--background)]">
+        <div className="relative border rounded-lg focus-within:ring-0 focus-within:outline-none transition-all bg-[var(--card-bg)] border-[var(--border-primary)]">
           <div className="px-2 sm:px-4 pt-2 sm:pt-3 pb-0 flex flex-wrap gap-2 items-center">
             <div className="relative">
               <button
                 onClick={() => setShowMediaMenu(!showMediaMenu)}
-                className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
+                className="w-8 h-8 flex items-center justify-center bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] rounded-full transition-colors"
                 title="Add media"
                 suppressHydrationWarning
               >
-                <IoAdd className={`w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                <IoAdd className="w-5 h-5 text-[var(--text-secondary)]" />
               </button>
               {showMediaMenu && (
-                <div className={`absolute top-full left-0 mt-1 z-20 border shadow-lg rounded-lg py-1 w-32 ${
-                  theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                }`}>
+                <div className="absolute top-full left-0 mt-1 z-20 border shadow-lg rounded-lg py-1 w-32 bg-[var(--card-bg)] border-[var(--border-primary)]">
                   <button
                     onClick={() => {
                       onFileUpload("image");
                       setShowMediaMenu(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${
-                      theme === 'dark'
-                        ? 'hover:bg-gray-700 text-gray-300'
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-[var(--bg-secondary)] text-[var(--text-primary)]"
                   >
                     <IoImageOutline /> Image
                   </button>
@@ -184,11 +170,7 @@ export default function ConversationView({
                       onFileUpload("video");
                       setShowMediaMenu(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${
-                      theme === 'dark'
-                        ? 'hover:bg-gray-700 text-gray-300'
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-[var(--bg-secondary)] text-[var(--text-primary)]"
                   >
                     <IoVideocamOutline /> Video
                   </button>
@@ -206,16 +188,16 @@ export default function ConversationView({
                   <img
                     src={file.preview}
                     alt="preview"
-                    className="w-full h-full object-cover rounded-lg border border-gray-200"
+                    className="w-full h-full object-cover rounded-lg border border-[var(--border-primary)]"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center border border-gray-300">
-                    <IoVideocamOutline className="w-6 h-6 text-gray-500" />
+                  <div className="w-full h-full bg-[var(--bg-tertiary)] rounded-lg flex items-center justify-center border border-[var(--border-primary)]">
+                    <IoVideocamOutline className="w-6 h-6 text-[var(--text-tertiary)]" />
                   </div>
                 )}
                 <button
                   onClick={() => onRemoveFile(index)}
-                  className="absolute -top-1.5 -right-1.5 bg-gray-800 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  className="absolute -top-1.5 -right-1.5 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
                 >
                   <IoClose className="w-3 h-3" />
                 </button>
@@ -230,11 +212,7 @@ export default function ConversationView({
             onKeyDown={handleKeyDown}
             placeholder="Describe what you'd like to do..."
             rows={1}
-            className={`w-full bg-transparent border-none px-2 sm:px-4 py-2 sm:py-3 text-sm focus:ring-0 focus:outline-none resize-none overflow-y-auto ${
-              theme === 'dark'
-                ? 'text-white placeholder-gray-500'
-                : 'text-gray-900 placeholder-gray-400'
-            }`}
+            className="w-full bg-transparent border-none px-2 sm:px-4 py-2 sm:py-3 text-sm focus:ring-0 focus:outline-none resize-none overflow-y-auto text-[var(--text-primary)] placeholder-[var(--text-tertiary)]"
             style={{ minHeight: "48px", maxHeight: "120px" }}
             suppressHydrationWarning
           />
@@ -244,11 +222,7 @@ export default function ConversationView({
             <select
               value={selectedMode}
               onChange={(e) => setSelectedMode(e.target.value)}
-              className={`h-8 pl-2 sm:pl-3 pr-3 sm:pr-4 rounded-full border text-xs shadow-sm cursor-pointer appearance-none w-32 sm:w-40 focus:outline-none focus:ring-2 focus:ring-primary-400 flex-shrink-0 ${
-                theme === 'dark'
-                  ? 'border-gray-700 text-gray-300 bg-gray-800'
-                  : 'border-gray-300 text-gray-700 bg-white'
-              }`}
+                    className="h-8 pl-2 sm:pl-3 pr-3 sm:pr-4 rounded-full border text-xs shadow-sm cursor-pointer appearance-none w-32 sm:w-40 focus:outline-none focus:ring-2 focus:ring-primary-400 flex-shrink-0 border-[var(--border-primary)] text-[var(--text-primary)] bg-[var(--card-bg)]"
               suppressHydrationWarning
             >
               <option value="">Select Mode</option>
@@ -268,7 +242,7 @@ export default function ConversationView({
                   <select
                     value={selectedQuality}
                     onChange={(e) => setSelectedQuality(e.target.value)}
-                    className="h-8 px-3 rounded-full border border-gray-300 text-xs text-gray-700 bg-white shadow-sm focus:ring-2 focus:ring-primary-400 cursor-pointer"
+                    className="h-8 px-3 rounded-full border text-xs shadow-sm focus:ring-2 focus:ring-primary-400 cursor-pointer border-[var(--border-primary)] text-[var(--text-primary)] bg-[var(--card-bg)]"
                     suppressHydrationWarning
                   >
                     <option value="">Quality</option>
@@ -283,11 +257,7 @@ export default function ConversationView({
                   <select
                     value={selectedOutput}
                     onChange={(e) => setSelectedOutput(e.target.value)}
-                    className={`h-8 px-3 rounded-full border text-xs shadow-sm focus:ring-2 focus:ring-primary-400 cursor-pointer ${
-                      theme === 'dark'
-                        ? 'border-gray-700 text-gray-300 bg-gray-800'
-                        : 'border-gray-300 text-gray-700 bg-white'
-                    }`}
+                    className="h-8 px-3 rounded-full border text-xs shadow-sm focus:ring-2 focus:ring-primary-400 cursor-pointer border-[var(--border-primary)] text-[var(--text-primary)] bg-[var(--card-bg)]"
                     suppressHydrationWarning
                   >
                     <option value="">Output</option>
@@ -308,7 +278,7 @@ export default function ConversationView({
             disabled={
               (!chatInput.trim() && selectedFiles.length === 0) || isProcessing
             }
-            className="absolute right-1 sm:right-2 bottom-1 sm:bottom-2 p-1.5 sm:p-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors shadow-sm"
+            className="absolute right-1 sm:right-2 bottom-1 sm:bottom-2 p-1.5 sm:p-2 bg-primary-500 hover:bg-primary-600 disabled:bg-[var(--bg-tertiary)] disabled:cursor-not-allowed rounded-lg transition-colors shadow-sm"
             suppressHydrationWarning
           >
             <IoArrowUp className="w-4 h-4 text-white" />

@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { ImageUpload } from '@/components/image-upload'
-import { MultiImageUpload } from '@/components/multi-image-upload'
+import { Card, CardHeader, CardTitle, CardContent } from '../../../components/ui/card'
+import { Button } from '../../../components/ui/button'
+import { ImageUpload } from '../../../components/image-upload'
+import { MultiImageUpload } from '../../../components/multi-image-upload'
 import { HiSparkles, HiUser, HiXMark, HiMagnifyingGlass, HiPhoto } from 'react-icons/hi2'
-import pricingConfig from '@/data/pricing_config.json'
-import { useTheme } from '@/components/ThemeProvider'
+import pricingConfig from '../../../data/pricing_config.json'
+import { useTheme } from '../../../components/ThemeProvider'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -252,22 +252,18 @@ export default function VirtualTryOnPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: 'transparent' }}>
+    <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--background)' }}>
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="border-b border-neutral-200 sticky top-0 z-10 header-shadow" style={{ backgroundColor: 'transparent', borderColor: '#e5e5e5', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' }}>
-          <div className="px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+        <header className="border-b sticky top-0 z-10" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 {/* Main Title */}
                 <div className="min-w-0 flex-1">
-                  <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${
-                    theme === 'dark' ? 'text-white' : 'text-neutral-900'
-                  }`}>Virtual Try-On</h1>
-                  <p className={`text-xs sm:text-sm mt-1 ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-neutral-500'
-                  }`}>Generate realistic try-on images with AI</p>
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Virtual Try-On</h1>
+                  <p className="text-xs sm:text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Generate realistic try-on images with AI</p>
                 </div>
               </div>
             </div>
@@ -275,7 +271,7 @@ export default function VirtualTryOnPage() {
         </header>
 
         {/* Content Area */}
-        <div className="p-5 sm:p-6 lg:p-10">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-2 sm:pb-3 lg:pb-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-7xl mx-auto">
             {/* Left Panel - Input Form */}
             <div className="space-y-5 sm:space-y-6 lg:space-y-7">
@@ -288,57 +284,121 @@ export default function VirtualTryOnPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                     <button
                       onClick={() => setProvider('nano-banana')}
-                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
-                        provider === 'nano-banana'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
-                      }`}
+                      className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all shadow-sm"
                       style={provider === 'nano-banana' 
-                        ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
-                        : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                        ? { 
+                            backgroundColor: 'var(--primary-50)', 
+                            borderColor: 'var(--primary-500)', 
+                            color: 'var(--primary-600)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
+                        : { 
+                            backgroundColor: 'var(--card-bg)', 
+                            borderColor: 'var(--border-primary)', 
+                            color: 'var(--text-primary)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
                       }
+                      onMouseEnter={(e) => {
+                        if (provider !== 'nano-banana') {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (provider !== 'nano-banana') {
+                          e.currentTarget.style.backgroundColor = 'var(--card-bg)';
+                        }
+                      }}
                     >
                       Nano Banana
                     </button>
                     <button
                       onClick={() => setProvider('flux-2-pro')}
-                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
-                        provider === 'flux-2-pro'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
-                      }`}
+                      className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all shadow-sm"
                       style={provider === 'flux-2-pro'
-                        ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
-                        : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                        ? { 
+                            backgroundColor: 'var(--primary-50)', 
+                            borderColor: 'var(--primary-500)', 
+                            color: 'var(--primary-600)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
+                        : { 
+                            backgroundColor: 'var(--card-bg)', 
+                            borderColor: 'var(--border-primary)', 
+                            color: 'var(--text-primary)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
                       }
+                      onMouseEnter={(e) => {
+                        if (provider !== 'flux-2-pro') {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (provider !== 'flux-2-pro') {
+                          e.currentTarget.style.backgroundColor = 'var(--card-bg)';
+                        }
+                      }}
                     >
                       Flux 2 Pro
                     </button>
                     <button
                       onClick={() => setProvider('nano-banana-pro')}
-                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
-                        provider === 'nano-banana-pro'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
-                      }`}
+                      className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all shadow-sm"
                       style={provider === 'nano-banana-pro'
-                        ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
-                        : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                        ? { 
+                            backgroundColor: 'var(--primary-50)', 
+                            borderColor: 'var(--primary-500)', 
+                            color: 'var(--primary-600)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
+                        : { 
+                            backgroundColor: 'var(--card-bg)', 
+                            borderColor: 'var(--border-primary)', 
+                            color: 'var(--text-primary)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
                       }
+                      onMouseEnter={(e) => {
+                        if (provider !== 'nano-banana-pro') {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (provider !== 'nano-banana-pro') {
+                          e.currentTarget.style.backgroundColor = 'var(--card-bg)';
+                        }
+                      }}
                     >
                       Nano Banana Pro
                     </button>
                     <button
                       onClick={() => setProvider('flux-2-flex')}
-                      className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
-                        provider === 'flux-2-flex'
-                          ? 'border-primary-500 bg-primary-50 text-primary-600 shadow-sm'
-                          : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50'
-                      }`}
+                      className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all shadow-sm"
                       style={provider === 'flux-2-flex'
-                        ? { backgroundColor: '#fef2f2', borderColor: '#ef4444', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
-                        : { backgroundColor: '#ffffff', borderColor: '#e5e5e5', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                        ? { 
+                            backgroundColor: 'var(--primary-50)', 
+                            borderColor: 'var(--primary-500)', 
+                            color: 'var(--primary-600)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
+                        : { 
+                            backgroundColor: 'var(--card-bg)', 
+                            borderColor: 'var(--border-primary)', 
+                            color: 'var(--text-primary)',
+                            boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' 
+                          }
                       }
+                      onMouseEnter={(e) => {
+                        if (provider !== 'flux-2-flex') {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (provider !== 'flux-2-flex') {
+                          e.currentTarget.style.backgroundColor = 'var(--card-bg)';
+                        }
+                      }}
                     >
                       Flux 2 Flex
                     </button>
@@ -383,22 +443,22 @@ export default function VirtualTryOnPage() {
               </Card>
 
               {/* Estimated Cost */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/60 rounded-xl p-4 sm:p-5 shadow-sm" style={{ backgroundColor: '#eff6ff', borderColor: '#bfdbfe', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)' }}>
+              <div className="rounded-xl p-4 sm:p-5 shadow-sm border" style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
                 <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3 mb-2.5 sm:mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-base sm:text-lg">💰</span>
-                    <span className="text-xs sm:text-sm font-semibold text-blue-900">Estimated Cost</span>
+                    <span className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Estimated Cost</span>
                   </div>
-                  <span className="text-lg sm:text-xl font-bold text-blue-900">{estimatedCredits} <span className="text-xs sm:text-sm font-semibold">Credits</span></span>
+                  <span className="text-lg sm:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{estimatedCredits} <span className="text-xs sm:text-sm font-semibold">Credits</span></span>
                 </div>
-                <div className="pt-2.5 sm:pt-3 border-t border-blue-200/50 space-y-1">
+                <div className="pt-2.5 sm:pt-3 border-t space-y-1" style={{ borderColor: 'var(--border-primary)' }}>
                   {imageDimensions && (
-                    <p className="text-xs text-blue-700/90">
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                       Resolution: <span className="font-medium">{imageDimensions.width}×{imageDimensions.height}px</span>
                     </p>
                   )}
                   {garmentImages.length > 0 && (
-                    <p className="text-xs text-blue-700/90">
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                       <span className="font-medium">{1 + garmentImages.length}</span> image{1 + garmentImages.length !== 1 ? 's' : ''} total
                     </p>
                   )}
@@ -446,7 +506,7 @@ export default function VirtualTryOnPage() {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200/60 text-red-700 px-4 py-3 rounded-lg shadow-sm">
+                <div className="bg-[var(--bg-tertiary)] border border-red-500/30 text-[var(--text-primary)] px-4 py-3 rounded-lg shadow-sm">
                   <p className="text-xs sm:text-sm font-medium">{error}</p>
                 </div>
               )}
@@ -462,13 +522,12 @@ export default function VirtualTryOnPage() {
                   <div className="w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center gap-5 sm:gap-6">
                     {resultImage ? (
                       <>
-                        <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 border-neutral-200 shadow-md">
+                        <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 shadow-md" style={{ borderColor: 'var(--border-primary)' }}>
                           <img
                             src={resultImage}
                             alt="Try-on result"
-                            className={`w-full h-full object-contain ${
-                              theme === 'dark' ? 'bg-gray-900' : 'bg-neutral-50'
-                            }`}
+                            className="w-full h-full object-contain"
+                            style={{ backgroundColor: 'var(--bg-tertiary)' }}
                           />
                         </div>
                         <Button
@@ -482,17 +541,11 @@ export default function VirtualTryOnPage() {
                       </>
                     ) : (
                       <div className="text-center px-4">
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-5 rounded-xl image-placeholder flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%)', boxShadow: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)' }}>
-                          <HiPhoto className={`w-12 h-12 sm:w-14 sm:h-14 ${
-                            theme === 'dark' ? 'text-gray-600' : 'text-neutral-400'
-                          }`} />
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-5 rounded-xl image-placeholder flex items-center justify-center" style={{ backgroundColor: 'var(--bg-tertiary)', boxShadow: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)' }}>
+                          <HiPhoto className="w-12 h-12 sm:w-14 sm:h-14" style={{ color: 'var(--text-tertiary)' }} />
                         </div>
-                        <p className={`text-base sm:text-lg font-semibold mb-1.5 sm:mb-2 ${
-                          theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                        }`}>No Image Generated</p>
-                        <p className={`text-xs sm:text-sm max-w-sm mx-auto ${
-                          theme === 'dark' ? 'text-gray-400' : 'text-neutral-500'
-                        }`}>Generated image will appear here after completion</p>
+                        <p className="text-base sm:text-lg font-semibold mb-1.5 sm:mb-2" style={{ color: 'var(--text-primary)' }}>No Image Generated</p>
+                        <p className="text-xs sm:text-sm max-w-sm mx-auto" style={{ color: 'var(--text-secondary)' }}>Generated image will appear here after completion</p>
                       </div>
                     )}
                   </div>
@@ -510,21 +563,22 @@ export default function VirtualTryOnPage() {
           onClick={() => setIsModalOpen(false)}
         >
           <div 
-            className={`relative rounded-lg shadow-xl max-w-7xl w-full mx-4 max-h-[90vh] overflow-y-auto ${
-              theme === 'dark' ? 'bg-gray-900' : 'bg-white'
-            }`}
+            className="relative rounded-lg shadow-xl max-w-7xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
-            style={{ backgroundColor: '#ffffff', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)' }}
+            style={{ backgroundColor: 'var(--card-bg)', boxShadow: 'var(--shadow-md)' }}
           >
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b border-neutral-200 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between z-10" style={{ borderColor: '#e5e5e5' }}>
-              <h2 className="text-lg sm:text-xl font-bold text-neutral-900 tracking-tight">Image Comparison</h2>
+            <div className="sticky top-0 border-b px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between z-10" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-primary)' }}>
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Image Comparison</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 sm:p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+                className="p-1.5 sm:p-2 rounded-lg transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 aria-label="Close modal"
               >
-                <HiXMark className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-600" />
+                <HiXMark className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
@@ -533,17 +587,11 @@ export default function VirtualTryOnPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {/* Model Image */}
                 <div className="space-y-2.5 sm:space-y-3">
-                  <h3 className={`text-xs font-semibold uppercase tracking-wider ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-neutral-700'
-                  }`}>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
                     Model Image
                   </h3>
                   {modelPreviewUrl ? (
-                    <div className={`relative w-full aspect-square rounded-xl overflow-hidden border-2 shadow-sm ${
-                      theme === 'dark'
-                        ? 'border-gray-700 bg-gray-900'
-                        : 'border-neutral-200 bg-neutral-50'
-                    }`}>
+                    <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 shadow-sm" style={{ borderColor: 'var(--border-primary)', backgroundColor: 'var(--bg-tertiary)' }}>
                       <img
                         src={modelPreviewUrl}
                         alt="Model"
@@ -551,21 +599,15 @@ export default function VirtualTryOnPage() {
                       />
                     </div>
                   ) : (
-                    <div className={`w-full aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${
-                      theme === 'dark'
-                        ? 'border-gray-700 bg-gray-900'
-                        : 'border-neutral-300 bg-neutral-50'
-                    }`}>
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-gray-500' : 'text-neutral-400'
-                      }`}>No model image</p>
+                    <div className="w-full aspect-square rounded-xl border-2 border-dashed flex items-center justify-center" style={{ borderColor: 'var(--border-secondary)', backgroundColor: 'var(--bg-tertiary)' }}>
+                      <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>No model image</p>
                     </div>
                   )}
                 </div>
 
                 {/* Garment Images */}
                 <div className="space-y-2.5 sm:space-y-3">
-                  <h3 className="text-xs font-semibold text-neutral-700 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
                     Garment Images ({garmentPreviewUrls.length})
                   </h3>
                   {garmentPreviewUrls.length > 0 ? (
@@ -573,11 +615,8 @@ export default function VirtualTryOnPage() {
                       {garmentPreviewUrls.map((url, index) => (
                         <div
                           key={index}
-                          className={`relative aspect-square rounded-xl overflow-hidden border-2 shadow-sm ${
-                            theme === 'dark'
-                              ? 'border-gray-700 bg-gray-900'
-                              : 'border-neutral-200 bg-neutral-50'
-                          }`}
+                          className="relative aspect-square rounded-xl overflow-hidden border-2 shadow-sm"
+                          style={{ borderColor: 'var(--border-primary)', backgroundColor: 'var(--bg-tertiary)' }}
                         >
                           <img
                             src={url}
@@ -588,26 +627,16 @@ export default function VirtualTryOnPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className={`w-full aspect-square rounded-xl border-2 border-dashed flex items-center justify-center ${
-                      theme === 'dark'
-                        ? 'border-gray-700 bg-gray-900'
-                        : 'border-neutral-300 bg-neutral-50'
-                    }`}>
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-gray-500' : 'text-neutral-400'
-                      }`}>No garment images</p>
+                    <div className="w-full aspect-square rounded-xl border-2 border-dashed flex items-center justify-center" style={{ borderColor: 'var(--border-secondary)', backgroundColor: 'var(--bg-tertiary)' }}>
+                      <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>No garment images</p>
                     </div>
                   )}
                 </div>
 
                 {/* Generated Result */}
                 <div className="space-y-2.5 sm:space-y-3">
-                  <h3 className="text-xs font-semibold text-neutral-700 uppercase tracking-wider">Generated Result</h3>
-                  <div className={`relative w-full aspect-square rounded-xl overflow-hidden border-2 shadow-md ${
-                    theme === 'dark'
-                      ? 'bg-gray-900'
-                      : 'bg-neutral-50'
-                  }`} style={{ borderColor: '#ef4444' }}>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Generated Result</h3>
+                  <div className="relative w-full aspect-square rounded-xl overflow-hidden border-2 shadow-md" style={{ borderColor: 'var(--primary-500)', backgroundColor: 'var(--bg-tertiary)' }}>
                     <img
                       src={resultImage}
                       alt="Try-on result"
