@@ -8,9 +8,11 @@ local GPU resources for inference.
 Available Models:
     - Flux2TurboAdapter: FLUX.2-dev Turbo for fast image generation (8 steps)
       Supports both text-to-image and image-to-image generation
+    - ZImageAdapter: Z-Image family of models (6B parameters)
+      Supports text-to-image and image editing with multiple variants
 
 Examples:
-    Text-to-image generation:
+    Text-to-image generation with Flux2:
     >>> from tryon.models import Flux2TurboAdapter
     >>> 
     >>> adapter = Flux2TurboAdapter()
@@ -21,24 +23,49 @@ Examples:
     ... )
     >>> images[0].save("output.png")
     
-    Image-to-image generation:
-    >>> from PIL import Image
+    Text-to-image with Z-Image-Turbo:
+    >>> from tryon.models import ZImageAdapter
     >>> 
-    >>> input_image = Image.open("input.jpg")
-    >>> edited_images = adapter.generate_image_to_image(
-    ...     image=input_image,
-    ...     prompt="A fashion model in an elegant blue dress"
+    >>> adapter = ZImageAdapter(model_variant="turbo")
+    >>> images = adapter.generate(prompt="A cute baby polar bear")
+    >>> images[0].save("output.png")
+    
+    High-quality generation with Z-Image:
+    >>> adapter = ZImageAdapter(model_variant="base")
+    >>> images = adapter.generate(
+    ...     prompt="Professional fashion photograph",
+    ...     negative_prompt="blurry, low quality",
+    ...     guidance_scale=4.0
     ... )
-    >>> edited_images[0].save("edited_output.png")
 
 Requirements:
-    - CUDA-capable GPU (recommended: 12GB+ VRAM)
+    - CUDA-capable GPU (recommended: 12GB+ VRAM, 16GB+ for Z-Image)
     - PyTorch 2.1+
-    - diffusers >= 0.29.0
+    - diffusers >= 0.29.0 (latest from source for Z-Image)
 """
 
 from .flux2_turbo import Flux2TurboAdapter
+from .z_image import (
+    ZImageAdapter,
+    ZImageModelVariant,
+    GenerationParams,
+    EditingParams,
+    create_turbo_adapter,
+    create_base_adapter,
+    create_omni_adapter,
+    create_edit_adapter,
+)
 
 __all__ = [
+    # Flux2 models
     "Flux2TurboAdapter",
+    # Z-Image models
+    "ZImageAdapter",
+    "ZImageModelVariant",
+    "GenerationParams",
+    "EditingParams",
+    "create_turbo_adapter",
+    "create_base_adapter",
+    "create_omni_adapter",
+    "create_edit_adapter",
 ]
