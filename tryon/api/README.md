@@ -12,6 +12,7 @@ The `tryon.api` module provides adapters for various virtual try-on and image ge
 - [Image Generation APIs](#image-generation-apis)
   - [Nano Banana (Gemini 2.5 Flash Image)](#nano-banana-gemini-25-flash-image)
   - [Nano Banana Pro (Gemini 3 Pro Image Preview)](#nano-banana-pro-gemini-3-pro-image-preview)
+  - [Nano Banana 2 (Gemini 3.1 Flash Image)](#nano-banana-2-gemini-31-flash-image)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [API Comparison](#api-comparison)
@@ -318,6 +319,28 @@ GEMINI_API_KEY=your_api_key
 
 **Supported Aspect Ratios:** Same as Nano Banana (10 options), with resolution-specific dimensions.
 
+### Nano Banana 2 (Gemini 3.1 Flash Image)
+
+Nano Banana 2 combines Pro-level capabilities with Flash speed: production-ready specs (512px–4K), subject consistency, and precise instruction following. Ideal for rapid iteration and production assets.
+
+**Reference:** [Nano Banana 2 — Google Blog](https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/)
+
+**Example:**
+```python
+from tryon.api.nano_banana import NanoBanana2Adapter
+
+adapter = NanoBanana2Adapter()
+images = adapter.generate_text_to_image(
+    prompt="A fashion model wearing seasonal collection",
+    resolution="2K",  # "1K", "2K", or "4K". Default: "2K"
+    aspect_ratio="16:9",
+    use_search_grounding=False  # Optional
+)
+images[0].save("result.png")
+```
+
+Same methods as Pro: `generate_text_to_image`, `generate_image_edit`, `generate_multi_image`, `generate_batch`, all with `resolution` (default `"2K"`).
+
 ## Installation
 
 ### Core Dependencies
@@ -338,7 +361,7 @@ pip install boto3
 pip install PyJWT
 ```
 
-**Nano Banana / Nano Banana Pro:**
+**Nano Banana / Nano Banana Pro / Nano Banana 2:**
 ```bash
 pip install google-genai
 ```
@@ -383,7 +406,7 @@ from tryon.api import (
     KlingAIVTONAdapter,
     SegmindVTONAdapter
 )
-from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
 
 # Virtual Try-On
 adapter = SegmindVTONAdapter()
@@ -404,19 +427,19 @@ images[0].save("generated_image.png")
 
 ## API Comparison
 
-| Feature | Amazon Nova Canvas | Kling AI | Segmind | Nano Banana | Nano Banana Pro |
-|---------|-------------------|----------|---------|-------------|----------------|
-| **Type** | Virtual Try-On | Virtual Try-On | Virtual Try-On | Image Generation | Image Generation |
-| **Processing** | Synchronous | Asynchronous | Synchronous | Synchronous | Synchronous |
-| **Max Resolution** | 2048x2048 | 4096x4096 | Varies | 1024px | 4K (4096px+) |
-| **Mask Support** | Yes (GARMENT/IMAGE) | No | No | N/A | N/A |
-| **Garment Classes** | Yes (4 types) | No | Yes (3 types) | N/A | N/A |
-| **Batch Support** | No | No | No | Yes | Yes |
-| **Image Editing** | No | No | No | Yes | Yes |
-| **Multi-Image** | No | No | No | Yes | Yes |
-| **Search Grounding** | No | No | No | No | Yes |
-| **Cost Model** | AWS Bedrock | Token-based | Per request | Token-based | Token-based |
-| **Latency** | Medium | Medium-High | Low | Low | Medium |
+| Feature | Amazon Nova Canvas | Kling AI | Segmind | Nano Banana | Nano Banana Pro | Nano Banana 2 |
+|---------|-------------------|----------|---------|-------------|----------------|----------------|
+| **Type** | Virtual Try-On | Virtual Try-On | Virtual Try-On | Image Generation | Image Generation | Image Generation |
+| **Processing** | Synchronous | Asynchronous | Synchronous | Synchronous | Synchronous | Synchronous |
+| **Max Resolution** | 2048x2048 | 4096x4096 | Varies | 1024px | 4K (4096px+) | 4K (512px–4K) |
+| **Mask Support** | Yes (GARMENT/IMAGE) | No | No | N/A | N/A | N/A |
+| **Garment Classes** | Yes (4 types) | No | Yes (3 types) | N/A | N/A | N/A |
+| **Batch Support** | No | No | No | Yes | Yes | Yes |
+| **Image Editing** | No | No | No | Yes | Yes | Yes |
+| **Multi-Image** | No | No | No | Yes | Yes | Yes |
+| **Search Grounding** | No | No | No | No | Yes | Yes |
+| **Cost Model** | AWS Bedrock | Token-based | Per request | Token-based | Token-based | Token-based |
+| **Latency** | Medium | Medium-High | Low | Low | Medium | Low (Flash) |
 
 ## Common Patterns
 
@@ -622,8 +645,9 @@ task_id = adapter.generate(...)  # Returns task_id
 
 ### 4. Optimize for Cost
 
-- Use Nano Banana (Flash) for high-volume, low-latency tasks
-- Use Nano Banana Pro only when you need 4K resolution or search grounding
+- Use Nano Banana (Flash) for high-volume, low-latency tasks at 1024px
+- Use Nano Banana 2 for Pro-level quality at Flash speed (1K/2K/4K, subject consistency)
+- Use Nano Banana Pro when you need maximum 4K quality or search grounding
 - Cache results when possible
 - Batch requests when supported
 

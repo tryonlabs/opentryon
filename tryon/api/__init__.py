@@ -1,7 +1,7 @@
 from .nova_canvas import AmazonNovaCanvasVTONAdapter
 from .kling_ai import KlingAIVTONAdapter
 from .segmind import SegmindVTONAdapter
-from .nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from .nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
 from .lumaAI import LumaAIAdapter
 from .flux2 import Flux2ProAdapter, Flux2FlexAdapter
 from .lumaAI.luma_video_adapter import LumaAIVideoAdapter
@@ -13,6 +13,7 @@ __all__ = [
     "SegmindVTONAdapter",
     "NanoBananaAdapter",
     "NanoBananaProAdapter",
+    "NanoBanana2Adapter",
     "LumaAIAdapter",
     "Flux2ProAdapter",
     "Flux2FlexAdapter",

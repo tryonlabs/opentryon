@@ -1,9 +1,10 @@
 ---
 sidebar_position: 6
 title: Nano Banana (Gemini Image Generation)
-description: Generate high-quality images using Google's Gemini image generation models (Nano Banana and Nano Banana Pro)
+description: Generate high-quality images using Google's Gemini image generation models (Nano Banana, Nano Banana Pro, Nano Banana 2)
 keywords:
   - nano banana
+  - nano banana 2
   - gemini image generation
   - image generation
   - text to image
@@ -11,6 +12,7 @@ keywords:
   - google gemini
   - gemini 2.5 flash
   - gemini 3 pro
+  - gemini 3.1 flash image
 ---
 
 # Nano Banana (Gemini Image Generation)
@@ -19,10 +21,11 @@ Nano Banana provides adapters for Google's Gemini image generation models, enabl
 
 ## Overview
 
-The `tryon.api.nano_banana` module provides two adapters:
+The `tryon.api.nano_banana` module provides three adapters:
 
-- **NanoBananaAdapter**: Gemini 2.5 Flash Image - Fast, efficient, 1024px resolution
-- **NanoBananaProAdapter**: Gemini 3 Pro Image Preview - Advanced, up to 4K resolution, search grounding
+- **NanoBananaAdapter**: Gemini 2.5 Flash Image — Fast, efficient, 1024px resolution
+- **NanoBananaProAdapter**: Gemini 3 Pro Image Preview — Advanced, up to 4K resolution, search grounding
+- **NanoBanana2Adapter**: Gemini 3.1 Flash Image (Nano Banana 2) — Pro capabilities at Flash speed; 512px–4K, subject consistency, precise instruction following. See [Google's announcement](https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/).
 
 ## Prerequisites
 
@@ -267,6 +270,48 @@ Nano Banana Pro supports the same 10 aspect ratios as Nano Banana, but with reso
 
 See the [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation) for complete resolution tables.
 
+## NanoBanana2Adapter (Gemini 3.1 Flash Image — Nano Banana 2)
+
+Nano Banana 2 combines the advanced capabilities of Nano Banana Pro with the speed of Gemini Flash: production-ready specs (512px–4K), subject consistency, and precise instruction following. Ideal for rapid iteration and production assets.
+
+**Reference:** [Nano Banana 2: Google's latest AI image generation model](https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/)
+
+### Initialization
+
+```python
+from tryon.api.nano_banana import NanoBanana2Adapter
+
+adapter = NanoBanana2Adapter()
+# Or: adapter = NanoBanana2Adapter(api_key="your_api_key")
+```
+
+### Text-to-Image Generation
+
+```python
+images = adapter.generate_text_to_image(
+    prompt="A fashion model wearing seasonal collection",
+    resolution="2K",   # "1K", "2K", or "4K". Default: "2K"
+    aspect_ratio="16:9",
+    use_search_grounding=False  # Optional
+)
+```
+
+**Parameters:** Same as Nano Banana Pro (`prompt`, `resolution`, `aspect_ratio`, `use_search_grounding`). Default resolution is `"2K"`.
+
+**Returns:** `List[Image.Image]`
+
+### Image Editing and Multi-Image Composition
+
+Same method signatures as Nano Banana Pro: `generate_image_edit()`, `generate_multi_image()`, `generate_batch()`, all with `resolution` (default `"2K"`), `aspect_ratio`, and optional `use_search_grounding`.
+
+### When to Use Which Model
+
+| Use case | Adapter |
+|---------|--------|
+| Fastest iteration, 1024px | **NanoBananaAdapter** |
+| Maximum quality, 4K, search grounding | **NanoBananaProAdapter** |
+| Pro quality at Flash speed, rapid edits | **NanoBanana2Adapter** |
+
 ## Command Line Usage
 
 Use the `image_gen.py` script for command-line image generation:
@@ -277,6 +322,9 @@ python image_gen.py --provider nano-banana --prompt "A stylish fashion model wea
 
 # Text-to-image with Nano Banana Pro (4K)
 python image_gen.py --provider nano-banana-pro --prompt "Professional fashion photography of elegant evening wear" --resolution 4K
+
+# Text-to-image with Nano Banana 2 (Pro quality at Flash speed)
+python image_gen.py --provider nano-banana-2 --prompt "A fashion model wearing seasonal collection" --resolution 2K
 
 # Image editing
 python image_gen.py --provider nano-banana --mode edit --image person.jpg --prompt "Change the outfit to a formal business suit"
@@ -319,19 +367,20 @@ except Exception as e:
 
 ## Best Practices
 
-1. **Use Nano Banana for**: High-volume, low-latency tasks, fast iteration
+1. **Use Nano Banana for**: High-volume, low-latency tasks, fast iteration at 1024px
 2. **Use Nano Banana Pro for**: Professional production, 4K resolution needs, search grounding
-3. **Cache API Key**: Use environment variables instead of hardcoding
-4. **Batch Processing**: Use `generate_batch()` for multiple prompts to optimize API calls
-5. **Aspect Ratios**: Choose appropriate aspect ratios for your use case
-6. **Error Handling**: Always wrap API calls in try-except blocks
+3. **Use Nano Banana 2 for**: Pro-level quality with Flash speed, rapid edits, subject consistency, 1K/2K/4K
+4. **Cache API Key**: Use environment variables instead of hardcoding
+5. **Batch Processing**: Use `generate_batch()` for multiple prompts to optimize API calls
+6. **Aspect Ratios**: Choose appropriate aspect ratios for your use case
+7. **Error Handling**: Always wrap API calls in try-except blocks
 
 ## Examples
 
 ### Complete Workflow
 
 ```python
-from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
 
 # Fast generation with Nano Banana
 fast_adapter = NanoBananaAdapter()
@@ -340,6 +389,15 @@ images = fast_adapter.generate_text_to_image(
     aspect_ratio="16:9"
 )
 images[0].save("fast_result.png")
+
+# Pro quality at Flash speed with Nano Banana 2
+nb2_adapter = NanoBanana2Adapter()
+images = nb2_adapter.generate_text_to_image(
+    prompt="A fashion model wearing seasonal collection",
+    resolution="2K",
+    aspect_ratio="16:9"
+)
+images[0].save("nb2_result.png")
 
 # High-quality generation with Nano Banana Pro
 pro_adapter = NanoBananaProAdapter()
@@ -375,6 +433,7 @@ refined_image.save("refined.png")
 ## Reference
 
 - [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)
+- [Nano Banana 2 (Gemini 3.1 Flash Image) — Google Blog](https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/)
 - [Google AI Studio](https://aistudio.google.com/)
 - [API Keys](https://aistudio.google.com/app/apikey)
 

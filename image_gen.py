@@ -4,7 +4,7 @@ load_dotenv()
 import os
 import argparse
 from pathlib import Path
-from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
 from tryon.api.flux2 import Flux2ProAdapter, Flux2FlexAdapter
 
 def main():
@@ -18,6 +18,9 @@ Examples:
   
   # Nano Banana Pro (4K)
   python image_gen.py --provider nano-banana-pro --prompt "Professional fashion photography of elegant evening wear on a runway" --resolution 4K
+  
+  # Nano Banana 2 (Pro quality at Flash speed)
+  python image_gen.py --provider nano-banana-2 --prompt "A fashion model wearing seasonal collection" --resolution 2K
   
   # FLUX.2 PRO
   python image_gen.py --provider flux2-pro --prompt "A professional fashion model wearing elegant evening wear" --width 1024 --height 1024
@@ -39,8 +42,9 @@ Examples:
   # Specify aspect ratio (Nano Banana only)
   python image_gen.py --provider nano-banana --prompt "A fashion model showcasing seasonal clothing collection" --aspect-ratio "16:9"
   
-  # Use search grounding (Nano Banana Pro only)
+  # Use search grounding (Nano Banana Pro / Nano Banana 2)
   python image_gen.py --provider nano-banana-pro --prompt "Latest fashion trends from Paris Fashion Week 2024" --use-search-grounding
+  python image_gen.py --provider nano-banana-2 --prompt "Fashion editorial shot" --resolution 2K
         """
     )
     
@@ -49,8 +53,8 @@ Examples:
         '--provider',
         type=str,
         required=True,
-        choices=['nano-banana', 'nano-banana-pro', 'flux2-pro', 'flux2-flex'],
-        help='Image generation provider. Options: nano-banana (Gemini 2.5 Flash Image), nano-banana-pro (Gemini 3 Pro Image Preview), flux2-pro (FLUX.2 PRO), flux2-flex (FLUX.2 FLEX)'
+        choices=['nano-banana', 'nano-banana-pro', 'nano-banana-2', 'flux2-pro', 'flux2-flex'],
+        help='Image generation provider. Options: nano-banana (Gemini 2.5 Flash), nano-banana-pro (Gemini 3 Pro), nano-banana-2 (Gemini 3.1 Flash Image), flux2-pro, flux2-flex'
     )
     
     # Mode selection
@@ -94,13 +98,13 @@ Examples:
         help='Path to text file with prompts (one per line) for batch generation'
     )
     
-    # Resolution (Nano Banana Pro only)
+    # Resolution (Nano Banana Pro and Nano Banana 2)
     parser.add_argument(
         '--resolution',
         type=str,
         default='1K',
         choices=['1K', '2K', '4K'],
-        help='Resolution level (Nano Banana Pro only). Options: 1K, 2K, 4K. Default: 1K'
+        help='Resolution level (Nano Banana Pro / Nano Banana 2). Options: 1K, 2K, 4K. Default: 1K (Pro), 2K (Nano Banana 2)'
     )
     
     # Width/Height (FLUX.2 only)
@@ -127,11 +131,11 @@ Examples:
         help='Aspect ratio for generated images (Nano Banana only). Options: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9'
     )
     
-    # Search grounding (Nano Banana Pro only)
+    # Search grounding (Nano Banana Pro / Nano Banana 2)
     parser.add_argument(
         '--use-search-grounding',
         action='store_true',
-        help='Use Google Search for real-world grounding (Nano Banana Pro only)'
+        help='Use Google Search for real-world grounding (Nano Banana Pro / Nano Banana 2)'
     )
     
     # FLUX.2 FLEX specific parameters
@@ -204,15 +208,15 @@ Examples:
                 raise FileNotFoundError(f"Image not found: {img_path}")
     
     # Validate provider-specific arguments
-    if args.provider in ['nano-banana', 'nano-banana-pro']:
-        # Validate resolution for Nano Banana (not supported)
+    if args.provider in ['nano-banana', 'nano-banana-pro', 'nano-banana-2']:
+        # Validate resolution for Nano Banana (not supported; 2/4K only for Pro and Nano Banana 2)
         if args.provider == 'nano-banana' and args.resolution != '1K':
-            print("Warning: Resolution option is only available for Nano Banana Pro. Using default resolution.")
+            print("Warning: Resolution option is only available for Nano Banana Pro and Nano Banana 2. Using default resolution.")
             args.resolution = '1K'
         
         # Validate search grounding for Nano Banana (not supported)
         if args.provider == 'nano-banana' and args.use_search_grounding:
-            print("Warning: Search grounding is only available for Nano Banana Pro. Ignoring --use-search-grounding.")
+            print("Warning: Search grounding is only available for Nano Banana Pro and Nano Banana 2. Ignoring --use-search-grounding.")
             args.use_search_grounding = False
         
         # Check for Gemini API key
@@ -256,6 +260,12 @@ Examples:
         if args.use_search_grounding:
             print("  Search grounding: Enabled")
         adapter = NanoBananaProAdapter(api_key=api_key)
+    elif args.provider == 'nano-banana-2':
+        print("Initializing Nano Banana 2 (Gemini 3.1 Flash Image) adapter...")
+        print(f"  Resolution: {args.resolution}")
+        if args.use_search_grounding:
+            print("  Search grounding: Enabled")
+        adapter = NanoBanana2Adapter(api_key=api_key)
     elif args.provider == 'flux2-pro':
         print("Initializing FLUX.2 [PRO] adapter...")
         if args.width:
@@ -323,7 +333,7 @@ Examples:
                     prompts=prompts,
                     aspect_ratio=args.aspect_ratio
                 )
-            else:  # nano-banana-pro
+            else:  # nano-banana-pro or nano-banana-2
                 results = adapter.generate_batch(
                     prompts=prompts,
                     resolution=args.resolution,
@@ -356,6 +366,15 @@ Examples:
                 aspect_ratio=args.aspect_ratio
             )
         elif args.provider == 'nano-banana-pro':
+            if args.aspect_ratio:
+                print(f"  Aspect ratio: {args.aspect_ratio}")
+            images = adapter.generate_text_to_image(
+                prompt=args.prompt,
+                resolution=args.resolution,
+                aspect_ratio=args.aspect_ratio,
+                use_search_grounding=args.use_search_grounding
+            )
+        elif args.provider == 'nano-banana-2':
             if args.aspect_ratio:
                 print(f"  Aspect ratio: {args.aspect_ratio}")
             images = adapter.generate_text_to_image(
@@ -416,6 +435,15 @@ Examples:
                 resolution=args.resolution,
                 aspect_ratio=args.aspect_ratio
             )
+        elif args.provider == 'nano-banana-2':
+            if args.aspect_ratio:
+                print(f"  Aspect ratio: {args.aspect_ratio}")
+            images = adapter.generate_image_edit(
+                image=args.image,
+                prompt=args.prompt,
+                resolution=args.resolution,
+                aspect_ratio=args.aspect_ratio
+            )
         elif args.provider == 'flux2-pro':
             if args.width:
                 print(f"  Width: {args.width}")
@@ -462,6 +490,15 @@ Examples:
                 aspect_ratio=args.aspect_ratio
             )
         elif args.provider == 'nano-banana-pro':
+            if args.aspect_ratio:
+                print(f"  Aspect ratio: {args.aspect_ratio}")
+            images = adapter.generate_multi_image(
+                images=args.images,
+                prompt=args.prompt,
+                resolution=args.resolution,
+                aspect_ratio=args.aspect_ratio
+            )
+        elif args.provider == 'nano-banana-2':
             if args.aspect_ratio:
                 print(f"  Aspect ratio: {args.aspect_ratio}")
             images = adapter.generate_multi_image(

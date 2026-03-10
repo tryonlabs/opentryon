@@ -4,6 +4,7 @@ Image Generation Tools
 This module provides LangChain tools for image generation using:
 - Nano Banana (Gemini 2.5 Flash Image)
 - Nano Banana Pro (Gemini 3 Pro Image Preview)
+- Nano Banana 2 (Gemini 3.1 Flash Image)
 - FLUX 2 Pro
 - FLUX 2 Flex
 - GPT-Image (OpenAI)
@@ -18,7 +19,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from langchain.tools import tool
 
-from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
 from tryon.api.flux2 import Flux2ProAdapter, Flux2FlexAdapter
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 from tryon.api.lumaAI import LumaAIAdapter
@@ -178,6 +179,70 @@ def nano_banana_pro_text_to_image(
             "provider": "nano_banana_pro",
             "error": str(e),
             "message": f"Failed to generate images: {str(e)}"
+        })
+
+
+@tool("nano_banana_2_text_to_image", args_schema=TextToImageToolInput)
+def nano_banana_2_text_to_image(
+    prompt: str,
+    aspect_ratio: Optional[str] = None,
+    resolution: Optional[str] = "2K",
+    use_search_grounding: Optional[bool] = False,
+    **kwargs,
+) -> str:
+    """
+    Generate images from text using Google's Nano Banana 2 (Gemini 3.1 Flash Image).
+
+    Combines Pro-level quality with Flash speed: 1K/2K/4K resolution, subject consistency,
+    and precise instruction following. Ideal for rapid iteration and production-ready assets.
+
+    Args:
+        prompt: Text description of the image to generate
+        aspect_ratio: Optional aspect ratio ('1:1', '2:3', '16:9', '9:16', etc.)
+        resolution: Output resolution ('1K', '2K', '4K'). Default: '2K'
+        use_search_grounding: Use Google Search for real-world grounding. Default: False
+
+    Returns:
+        JSON string containing status, provider, image_count, cache_key, and message
+    """
+    try:
+        print(" Initializing Nano Banana 2 adapter...")
+        adapter = NanoBanana2Adapter()
+        print("Generating images...")
+        images = adapter.generate_text_to_image(
+            prompt=prompt,
+            aspect_ratio=aspect_ratio,
+            resolution=resolution or "2K",
+            use_search_grounding=use_search_grounding,
+            **kwargs,
+        )
+        print(" Nano Banana 2 generation completed")
+
+        cache_key = hashlib.md5(
+            f"nano_banana_2_{prompt}_{aspect_ratio}_{resolution}".encode()
+        ).hexdigest()
+        _tool_output_cache[cache_key] = {
+            "provider": "nano_banana_2",
+            "images": images if isinstance(images, list) else [images],
+            "prompt": prompt,
+            "aspect_ratio": aspect_ratio,
+            "resolution": resolution,
+        }
+
+        image_count = len(images) if isinstance(images, list) else 1
+        return json.dumps({
+            "status": "success",
+            "provider": "nano_banana_2",
+            "image_count": image_count,
+            "cache_key": cache_key,
+            "message": f"Successfully generated {image_count} image(s) using Nano Banana 2",
+        })
+    except Exception as e:
+        return json.dumps({
+            "status": "error",
+            "provider": "nano_banana_2",
+            "error": str(e),
+            "message": f"Failed to generate images: {str(e)}",
         })
 
 
@@ -446,6 +511,7 @@ def get_image_generation_tools() -> List:
     return [
         nano_banana_text_to_image,
         nano_banana_pro_text_to_image,
+        nano_banana_2_text_to_image,
         flux2_pro_text_to_image,
         flux2_flex_text_to_image,
         gpt_image_text_to_image,
