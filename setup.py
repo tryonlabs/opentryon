@@ -44,6 +44,7 @@ setup(
         "einops>=0.8.1",
         "scipy>=1.15.0",
         "huggingface-hub>=0.36.0"
+        "nest-asyncio>=1.5.0",
     ],
     keywords=[
         "virtual try-on",

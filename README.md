@@ -18,6 +18,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Image Generation**: 
   - Nano Banana (Gemini 2.5 Flash Image) for fast, efficient image generation
   - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
+  - Nano Banana 2 (Gemini 3.1 Flash Image) for Pro capabilities at Flash speed (1K/2K/4K, subject consistency)
   - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
   - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
@@ -46,7 +47,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Preprocessing Pipeline**: Complete preprocessing pipeline for training and inference
 - **AI Agents**: 
   - Virtual Try-On Agent: LangChain-based agent for intelligent virtual try-on operations
-  - Model Swap Agent: AI agent for replacing models while preserving outfits using multiple AI models (Nano Banana, Nano Banana Pro, FLUX 2 Pro, FLUX 2 Flex)
+  - Model Swap Agent: AI agent for replacing models while preserving outfits using multiple AI models (Nano Banana, Nano Banana Pro, Nano Banana 2, FLUX 2 Pro, FLUX 2 Flex)
 
 ## 📋 Table of Contents
 

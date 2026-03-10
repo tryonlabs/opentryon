@@ -17,6 +17,7 @@ Reference: https://ai.google.dev/gemini-api/docs/image-generation
 Models:
 - Gemini 2.5 Flash Image (Nano Banana): Fast, efficient, 1024px resolution
 - Gemini 3 Pro Image Preview (Nano Banana Pro): Advanced, 4K resolution, search-grounded
+- Gemini 3.1 Flash Image (Nano Banana 2): Pro capabilities at Flash speed; 512px–4K, subject consistency
 
 Example:
     Text-to-image:
@@ -624,7 +625,6 @@ class NanoBananaProAdapter:
         # Add image_size (resolution) for Nano Banana Pro
         image_config_params['image_size'] = resolution
         
-        print(f"image_config_params: {image_config_params}")
         if image_config_params:
             config['image_config'] = types.ImageConfig(**image_config_params)
         
@@ -868,5 +868,286 @@ class NanoBananaProAdapter:
                 **kwargs
             )
             results.append(images)
+        return results
+
+
+class NanoBanana2Adapter:
+    """
+    Adapter for Gemini 3.1 Flash Image (Nano Banana 2) API.
+
+    Nano Banana 2 combines the advanced capabilities of Nano Banana Pro with the
+    speed of Gemini Flash. It offers:
+    - Advanced world knowledge and precise instruction following
+    - Production-ready specs: aspect ratios and resolutions from 512px to 4K
+    - Subject consistency (e.g. up to 5 characters, 14 objects in a workflow)
+    - Faster iteration than Pro for rapid edits and generation
+
+    Reference: https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/
+    API: https://ai.google.dev/gemini-api/docs/image-generation
+
+    Authentication:
+        Requires API key via constructor or GEMINI_API_KEY environment variable.
+
+    Example:
+        >>> adapter = NanoBanana2Adapter()
+        >>> images = adapter.generate_text_to_image(
+        ...     prompt="A fashion model wearing seasonal collection",
+        ...     resolution="2K",
+        ...     aspect_ratio="16:9"
+        ... )
+    """
+
+    # Preview model ID per https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image-preview
+    MODEL_NAME = "gemini-3.1-flash-image-preview"
+
+    def __init__(self, api_key: Optional[str] = None):
+        """
+        Initialize the Nano Banana 2 (Gemini 3.1 Flash Image) adapter.
+
+        Args:
+            api_key: Google Gemini API key. Defaults to GEMINI_API_KEY environment variable.
+        """
+        if not GOOGLE_GENAI_AVAILABLE:
+            raise ImportError(
+                "Google GenAI SDK is required for Nano Banana 2. "
+                "Install it with: pip install google-genai"
+            )
+
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
+            raise ValueError(
+                "Gemini API key is required. Set GEMINI_API_KEY environment variable "
+                "or pass api_key parameter."
+            )
+
+        self.client = genai.Client(api_key=self.api_key)
+
+    def _prepare_image_input(self, image_input: Union[str, io.BytesIO, Image.Image]) -> Image.Image:
+        """Prepare image input for API request (same as Pro)."""
+        if isinstance(image_input, Image.Image):
+            return image_input
+        if hasattr(image_input, "read"):
+            image_input.seek(0)
+            return Image.open(image_input)
+        if isinstance(image_input, str):
+            if image_input.startswith(("http://", "https://")):
+                import requests
+                response = requests.get(image_input)
+                response.raise_for_status()
+                return Image.open(io.BytesIO(response.content))
+            if len(image_input) > 100 and not os.path.exists(image_input):
+                try:
+                    image_bytes = base64.b64decode(image_input)
+                    return Image.open(io.BytesIO(image_bytes))
+                except Exception:
+                    pass
+            return Image.open(image_input)
+        raise ValueError(
+            "Invalid image input: must be a file path, URL, PIL Image, file-like object, or base64 string"
+        )
+
+    def _image_to_part(self, image: Image.Image) -> types.Part:
+        """Convert PIL Image to GenAI Part."""
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+        return types.Part.from_bytes(data=buffer.read(), mime_type="image/png")
+
+    def generate_text_to_image(
+        self,
+        prompt: str,
+        resolution: str = "2K",
+        aspect_ratio: Optional[str] = None,
+        use_search_grounding: bool = False,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate image(s) from text (text-to-image).
+
+        Args:
+            prompt: Text description of the image to generate.
+            resolution: "1K", "2K", or "4K". Default: "2K".
+            aspect_ratio: Optional aspect ratio (same options as Pro).
+            use_search_grounding: Use Google Search for real-world grounding. Default: False.
+            **kwargs: Additional generation config.
+
+        Returns:
+            List of PIL Image objects.
+        """
+        if resolution not in ("1K", "2K", "4K"):
+            raise ValueError(f"Invalid resolution '{resolution}'. Must be '1K', '2K', or '4K'")
+
+        config = {}
+        image_config_params = {}
+        if aspect_ratio:
+            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+                raise ValueError(
+                    f"Invalid aspect ratio '{aspect_ratio}'. "
+                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                )
+            image_config_params["aspect_ratio"] = aspect_ratio
+        image_config_params["image_size"] = resolution
+        if image_config_params:
+            config["image_config"] = types.ImageConfig(**image_config_params)
+        if use_search_grounding:
+            try:
+                config["tools"] = [types.Tool.from_google_search()]
+            except (AttributeError, TypeError):
+                pass
+        config.update(kwargs)
+
+        response = self.client.models.generate_content(
+            model=self.MODEL_NAME,
+            contents=[prompt],
+            config=types.GenerateContentConfig(**config) if config else None,
+        )
+
+        images = []
+        for part in response.parts:
+            if part.inline_data is not None:
+                images.append(part.as_image())
+        if not images:
+            raise ValueError("No images generated in response")
+        return images
+
+    def generate_image_edit(
+        self,
+        image: Union[str, io.BytesIO, Image.Image],
+        prompt: str,
+        resolution: str = "2K",
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate edited image from image + text (image editing).
+
+        Args:
+            image: Input image (path, URL, PIL Image, file-like, or base64).
+            prompt: Text description of edits.
+            resolution: "1K", "2K", or "4K". Default: "2K".
+            aspect_ratio: Optional aspect ratio.
+            **kwargs: Additional config.
+
+        Returns:
+            List of PIL Image objects.
+        """
+        if resolution not in ("1K", "2K", "4K"):
+            raise ValueError(f"Invalid resolution '{resolution}'. Must be '1K', '2K', or '4K'")
+
+        pil_image = self._prepare_image_input(image)
+        image_part = self._image_to_part(pil_image)
+
+        config = {}
+        image_config_params = {}
+        if aspect_ratio:
+            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+                raise ValueError(
+                    f"Invalid aspect ratio '{aspect_ratio}'. "
+                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                )
+            image_config_params["aspect_ratio"] = aspect_ratio
+        image_config_params["image_size"] = resolution
+        if image_config_params:
+            config["image_config"] = types.ImageConfig(**image_config_params)
+        config.update(kwargs)
+
+        response = self.client.models.generate_content(
+            model=self.MODEL_NAME,
+            contents=[image_part, prompt],
+            config=types.GenerateContentConfig(**config) if config else None,
+        )
+
+        images = []
+        for part in response.parts:
+            if part.inline_data is not None:
+                images.append(part.as_image())
+        if not images:
+            raise ValueError("No images generated in response")
+        return images
+
+    def generate_multi_image(
+        self,
+        images: List[Union[str, io.BytesIO, Image.Image]],
+        prompt: str,
+        resolution: str = "2K",
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate image from multiple inputs (composition / style transfer).
+
+        Args:
+            images: List of input images.
+            prompt: Text description of how to combine/transform.
+            resolution: "1K", "2K", or "4K". Default: "2K".
+            aspect_ratio: Optional aspect ratio.
+            **kwargs: Additional config.
+
+        Returns:
+            List of PIL Image objects.
+        """
+        if resolution not in ("1K", "2K", "4K"):
+            raise ValueError(f"Invalid resolution '{resolution}'. Must be '1K', '2K', or '4K'")
+
+        image_parts = [self._image_to_part(self._prepare_image_input(img)) for img in images]
+        contents = image_parts + [prompt]
+
+        config = {}
+        image_config_params = {}
+        if aspect_ratio:
+            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+                raise ValueError(
+                    f"Invalid aspect ratio '{aspect_ratio}'. "
+                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                )
+            image_config_params["aspect_ratio"] = aspect_ratio
+        image_config_params["image_size"] = resolution
+        if image_config_params:
+            config["image_config"] = types.ImageConfig(**image_config_params)
+        config.update(kwargs)
+
+        response = self.client.models.generate_content(
+            model=self.MODEL_NAME,
+            contents=contents,
+            config=types.GenerateContentConfig(**config) if config else None,
+        )
+
+        result = []
+        for part in response.parts:
+            if part.inline_data is not None:
+                result.append(part.as_image())
+        if not result:
+            raise ValueError("No images generated in response")
+        return result
+
+    def generate_batch(
+        self,
+        prompts: List[str],
+        resolution: str = "2K",
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[List[Image.Image]]:
+        """
+        Generate images in batch from multiple text prompts.
+
+        Args:
+            prompts: List of text prompts.
+            resolution: "1K", "2K", or "4K". Default: "2K".
+            aspect_ratio: Optional aspect ratio.
+            **kwargs: Additional config.
+
+        Returns:
+            List of lists of PIL Image objects.
+        """
+        results = []
+        for prompt in prompts:
+            results.append(
+                self.generate_text_to_image(
+                    prompt=prompt,
+                    resolution=resolution,
+                    aspect_ratio=aspect_ratio,
+                    **kwargs,
+                )
+            )
         return results
 

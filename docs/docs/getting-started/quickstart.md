@@ -61,12 +61,20 @@ Generate images using Google's Nano Banana models or FLUX.2 models:
 **Nano Banana (Google Gemini):**
 
 ```python
-from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter
+from tryon.api.nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
 
 # Nano Banana (Fast)
 adapter = NanoBananaAdapter()
 images = adapter.generate_text_to_image(
     prompt="A stylish fashion model wearing elegant evening wear",
+    aspect_ratio="16:9"
+)
+
+# Nano Banana 2 (Pro quality at Flash speed)
+nb2_adapter = NanoBanana2Adapter()
+images = nb2_adapter.generate_text_to_image(
+    prompt="A fashion model wearing seasonal collection",
+    resolution="2K",
     aspect_ratio="16:9"
 )
 
