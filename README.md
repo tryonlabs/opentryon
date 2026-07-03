@@ -54,6 +54,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - [Documentation](#documentation)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Unified CLI (`opentryon`)](#unified-cli-opentryon)
 - [Usage](#usage)
   - [Datasets Module](#datasets-module)
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
@@ -227,6 +228,58 @@ python main.py --dataset data --action extract_garment --cls upper
 # Segment human
 python main.py --dataset data --action segment_human
 ```
+
+## 🖥️ Unified CLI (`opentryon`)
+
+Once installed (`pip install -e .` or `pip install opentryon`), every adapter in
+this repo is available through a single `opentryon` command with three levels
+of control: **service** &rarr; **model** &rarr; **parameters**.
+
+```bash
+opentryon <service> --model <model> [params...]
+```
+
+| Service | What it does | Models |
+|---|---|---|
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image`, `luma-image` |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image` |
+| `understand` | Image understanding / captioning | `llava-next` |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video` |
+| `bg-remove` | Background removal | `ben2` |
+
+Examples:
+
+```bash
+# Virtual try-on with BFL's FLUX VTO
+opentryon vton --model flux-vto \
+  --model-image model.png --garment-image garment.png \
+  --garment-description "olive green bomber jacket"
+
+# Text-to-image with Nano Banana
+opentryon generate --model nano-banana --prompt "Fashion model in a studio" --aspect-ratio 16:9
+
+# Edit an existing image with GPT Image
+opentryon edit --model gpt-image --images photo.jpg --prompt "Add sunglasses"
+
+# Animate a still image into a video with Veo (passing --image switches to image-to-video)
+opentryon video-generate --model veo --prompt "Model walks the runway" --image photo.jpg
+
+# Remove a background locally with BEN2 (requires `pip install opentryon[local]`)
+opentryon bg-remove --model ben2 --image product.jpg
+```
+
+Run `opentryon <service> --help` to list the models for that service, or
+`opentryon <service> --model <model> --help` to see that model's exact
+parameters. Add `--dry-run` to any command to see the resolved adapter call
+without actually invoking the API/model. Results are written to `outputs/`
+by default (override with `-o/--output-dir`).
+
+**Core vs. local install**: `pip install opentryon` covers every cloud API
+adapter (all models above except `flux2-turbo`, `llava-next`, and `ben2`,
+which run local inference). Those three require
+`pip install opentryon[local]` and, for GPU-accelerated inference, a
+CUDA-capable GPU.
 
 ## 📖 Usage
 

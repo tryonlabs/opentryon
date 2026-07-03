@@ -1,24 +1,43 @@
-from .nova_canvas import AmazonNovaCanvasVTONAdapter
-from .kling_ai import KlingAIVTONAdapter
-from .segmind import SegmindVTONAdapter
-from .nano_banana import NanoBananaAdapter, NanoBananaProAdapter, NanoBanana2Adapter
-from .lumaAI import LumaAIAdapter
-from .flux2 import Flux2ProAdapter, Flux2FlexAdapter
-from .lumaAI.luma_video_adapter import LumaAIVideoAdapter
-from .openAI.image_adapter import GPTImageAdapter
-from .ben2 import BEN2BackgroundRemoverAdapter
+"""
+tryon.api — cloud API adapters (remote inference).
 
-__all__ = [
-    "AmazonNovaCanvasVTONAdapter",
-    "KlingAIVTONAdapter",
-    "SegmindVTONAdapter",
-    "NanoBananaAdapter",
-    "NanoBananaProAdapter",
-    "NanoBanana2Adapter",
-    "LumaAIAdapter",
-    "Flux2ProAdapter",
-    "Flux2FlexAdapter",
-    "LumaAIVideoAdapter",
-    "GPTImageAdapter",
-    "BEN2BackgroundRemoverAdapter",
-]
+Attributes are imported lazily (PEP 562) so that, e.g., ``from tryon.api import
+FluxVTONAdapter`` does not transitively import every adapter in this package
+(some of which pull in heavy local-inference dependencies like torch/timm,
+e.g. BEN2BackgroundRemoverAdapter). Each adapter's own submodule is only
+imported the first time it's actually accessed.
+"""
+
+import importlib
+
+_LAZY_ATTRS = {
+    "AmazonNovaCanvasVTONAdapter": ".nova_canvas",
+    "KlingAIVTONAdapter": ".kling_ai",
+    "SegmindVTONAdapter": ".segmind",
+    "FluxVTONAdapter": ".vton",
+    "NanoBananaAdapter": ".nano_banana",
+    "NanoBananaProAdapter": ".nano_banana",
+    "NanoBanana2Adapter": ".nano_banana",
+    "LumaAIAdapter": ".lumaAI",
+    "Flux2ProAdapter": ".flux2",
+    "Flux2FlexAdapter": ".flux2",
+    "LumaAIVideoAdapter": ".lumaAI.luma_video_adapter",
+    "GPTImageAdapter": ".openAI.image_adapter",
+    "SoraVideoAdapter": ".openAI.video_adapter",
+    "VeoAdapter": ".veo",
+    "BEN2BackgroundRemoverAdapter": ".ben2",
+}
+
+__all__ = sorted(_LAZY_ATTRS)
+
+
+def __getattr__(name):
+    module_path = _LAZY_ATTRS.get(name)
+    if module_path is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module = importlib.import_module(module_path, __name__)
+    return getattr(module, name)
+
+
+def __dir__():
+    return sorted(list(globals()) + __all__)
