@@ -18,3 +18,11 @@ Once the pull request is created, we will review the code changes and merge the 
 
 If you are interested in writing the documentation, you can add it to README.md and create a pull request. 
 For now, we are maintaining our documentation in a single file and we will add more files as it grows.
+
+### Adding a new model/adapter
+
+If you're integrating a new cloud API or open-weight/local model, follow the
+step-by-step checklist at
+[docs/docs/advanced/new-model-checklist.md](docs/docs/advanced/new-model-checklist.md)
+(covers where the adapter code goes, dependency management, wiring it into
+the `opentryon` CLI, and which docs to update).

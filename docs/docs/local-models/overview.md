@@ -12,6 +12,7 @@ OpenTryOn provides adapters for local inference models that run directly on your
 | Model | Type | VRAM Required | Speed | Use Case |
 |-------|------|--------------|-------|----------|
 | [FLUX.2-dev Turbo](./flux2-turbo) | Image Generation | 12GB+ | 6x faster | Fast text-to-image, image-to-image |
+| [Kimi-VL](./kimi-vl) | Image/Video Understanding | 24GB+ | - | Open-weight counterpart to the Kimi K2.6/K2.7 Code APIs |
 
 ## Requirements
 

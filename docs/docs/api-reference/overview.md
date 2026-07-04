@@ -341,6 +341,40 @@ See [FLUX.2 API Documentation](flux2) for complete details.
 
 ---
 
+## Multimodal Understanding API Adapters
+
+### `KimiUnderstandAdapter`
+
+Adapter for Moonshot AI's Kimi K2.6 and K2.7 Code models -- general-purpose,
+natively multimodal image and video understanding (not limited to fashion).
+
+```python
+from tryon.api import KimiUnderstandAdapter
+
+adapter = KimiUnderstandAdapter()  # kimi-k2.6 by default
+
+result = adapter.understand_image(
+    "garment.jpg",
+    prompt="Describe this outfit: color, pattern, style, fit, and material."
+)
+print(result["text"])
+```
+
+**Parameters:**
+- `api_key` (str, optional): Moonshot API key. Defaults to `MOONSHOT_API_KEY` environment variable
+- `model` (str, optional): `"kimi-k2.6"` (default), `"kimi-k2.7-code"`, `"kimi-k2.7-code-highspeed"`, or `"kimi-k2.5"`
+
+**Methods:**
+- `understand_image(image, prompt, ...)` - Understand one or more images
+- `understand_video(video, prompt, ...)` - Understand video content
+- `understand(image=None, video=None, prompt=...)` - Single entry point accepting either/both
+- `chat(messages, tools=None, ...)` - Multi-turn/tool-calling escape hatch
+
+See [Kimi API Documentation](kimi) for complete details, or the open-weight
+[Kimi-VL local model](../local-models/kimi-vl.md) for GPU-only deployment.
+
+---
+
 ## Background Removal API
 
 ### `BEN2BackgroundRemoverAdapter`

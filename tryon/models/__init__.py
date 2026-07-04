@@ -8,6 +8,8 @@ local GPU resources for inference.
 Available Models:
     - Flux2TurboAdapter: FLUX.2-dev Turbo for fast image generation (8 steps)
       Supports both text-to-image and image-to-image generation
+    - KimiVLAdapter: Kimi-VL open-weight multimodal model (image/video
+      understanding), the local counterpart to the Kimi K2.6/K2.7 Code APIs
 
 Examples:
     Text-to-image generation:
@@ -38,7 +40,9 @@ Requirements:
 """
 
 from .flux2_turbo import Flux2TurboAdapter
+from .kimi_vl import KimiVLAdapter
 
 __all__ = [
     "Flux2TurboAdapter",
+    "KimiVLAdapter",
 ]

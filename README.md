@@ -28,9 +28,15 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
   - Google Veo 3 Video Generation Model: Generate high-quality, cinematic videos from text or images with realistic motion, temporal consistency, and fine-grained control over style and camera dynamics.
 - **Remove Image Background**: Remove Image Background using BEN2 (Background Erase Network)
+- **Multimodal Understanding** (general-purpose, not limited to fashion):
+  - Kimi K2.6 (Moonshot AI): Text, image, and video understanding with optional "thinking" mode and 256K context
+  - Kimi K2.7 Code (Moonshot AI): Coding-focused multimodal variant of K2.6 with the same image/video understanding
+  - Kimi-VL (open-weight, local): Hugging Face counterpart to the Kimi APIs for GPU-only deployment
+  - LLaVA-NeXT (local): Fashion-focused image captioning
 - **Local Models (GPU Inference)**:
   - FLUX.2-dev Turbo: 6x faster image generation with 8-step inference, supports text-to-image and image-to-image
   - Automatic VRAM-based model selection (full, 8-bit, or 4-bit quantized)
+  - Kimi-VL: Open-weight multimodal understanding (image/video), no API key required
 - **Datasets Module**: 
   - Fashion-MNIST dataset loader with automatic download
   - VITON-HD dataset loader with lazy loading via PyTorch DataLoader
@@ -69,6 +75,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - [Video Generation with Luma AI](#video-generation-with-luma-ai)
   - [Video Generation with Google Veo 3](#video-generation-with-google-veo-3)
   - [Remove Image Background with BEN2](remove-image-background-with-ben2)
+  - [Multimodal Understanding with Kimi](#multimodal-understanding-with-kimi)
   - [Local Models (GPU Inference)](#local-models-gpu-inference)
   - [Preprocessing Functions](#preprocessing-functions)
 - [Demos](#demos)
@@ -86,7 +93,7 @@ The documentation includes:
 - API Reference for all modules
 - Usage examples and tutorials
 - Datasets documentation (Fashion-MNIST, VITON-HD)
-- API adapters documentation (Segmind, Kling AI, Amazon Nova Canvas)
+- API adapters documentation (Segmind, Kling AI, Amazon Nova Canvas, FLUX.2, Kimi K2.6/K2.7 Code, and more)
 - Interactive demos and examples
 - Advanced guides and troubleshooting
 
@@ -159,6 +166,9 @@ LUMA_AI_API_KEY=your_luma_ai_api_key
 # OpenAI Credentials (required for OpenAI GPT-Image-1 image generation)
 OPENAI_API_KEY=your_openai_api_key
 
+# Moonshot AI Credentials (required for Kimi K2.6 / K2.7 Code understanding)
+MOONSHOT_API_KEY=your_moonshot_api_key
+
 # LLM Provider Credentials (required for Virtual Try-On Agent)
 OPENAI_API_KEY=your_openai_api_key  # For OpenAI (default)
 # OR
@@ -179,6 +189,7 @@ GOOGLE_API_KEY=your_google_api_key  # For Google Gemini
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 - For Luma AI, obtain your API key from [Luma Labs AI](https://lumalabs.ai/api)
 - For OpenAI, obtain your API key from [OpenAI Platform](https://platform.openai.com/settings/organization/api-keys)
+- For Kimi K2.6 / K2.7 Code, obtain your API key from the [Moonshot AI Platform](https://platform.kimi.ai/console/api-keys)
 - For Virtual Try-On Agent, obtain LLM API keys from:
   - OpenAI: [OpenAI API Keys](https://platform.openai.com/api-keys)
   - Anthropic: [Anthropic API Keys](https://console.anthropic.com/)
@@ -244,7 +255,7 @@ opentryon <service> --model <model> [params...]
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image`, `luma-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image` |
-| `understand` | Image understanding / captioning | `llava-next` |
+| `understand` | Image/video understanding (general-purpose) | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-vl`, `llava-next` |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video` |
 | `bg-remove` | Background removal | `ben2` |
 
@@ -267,6 +278,13 @@ opentryon video-generate --model veo --prompt "Model walks the runway" --image p
 
 # Remove a background locally with BEN2 (requires `pip install opentryon[local]`)
 opentryon bg-remove --model ben2 --image product.jpg
+
+# Understand an image or video with Kimi K2.6 (general-purpose, not fashion-only)
+opentryon understand --model kimi-k2.6 --image garment.jpg --prompt "Describe this outfit."
+opentryon understand --model kimi-k2.6 --video runway_clip.mp4
+
+# Open-weight understanding, no API key (requires `pip install opentryon[local]`)
+opentryon understand --model kimi-vl --image garment.jpg
 ```
 
 Run `opentryon <service> --help` to list the models for that service, or
@@ -276,8 +294,8 @@ without actually invoking the API/model. Results are written to `outputs/`
 by default (override with `-o/--output-dir`).
 
 **Core vs. local install**: `pip install opentryon` covers every cloud API
-adapter (all models above except `flux2-turbo`, `llava-next`, and `ben2`,
-which run local inference). Those three require
+adapter (all models above except `flux2-turbo`, `llava-next`, `kimi-vl`, and
+`ben2`, which run local inference). Those four require
 `pip install opentryon[local]` and, for GPU-accelerated inference, a
 CUDA-capable GPU.
 
@@ -2152,6 +2170,58 @@ print("Batch test completed successfully.")
 - Perform Background Removal for multiple images
 - Use the refine attribute for higher precision
 
+### Multimodal Understanding with Kimi
+
+[Kimi](https://platform.kimi.ai/docs/overview) (Moonshot AI) provides general-purpose text, image, and video understanding -- useful for describing garments and lookbook/runway videos in the fashion domain, but equally capable on documents, UI screenshots, or any other visual content. Two variants are available:
+
+- **Kimi K2.6** (`kimi-k2.6`): General-purpose multimodal model, optional "thinking" mode, 256K context
+- **Kimi K2.7 Code** (`kimi-k2.7-code` / `kimi-k2.7-code-highspeed`): Coding-focused variant with the same vision/video understanding
+
+An open-weight local counterpart, **Kimi-VL**, is also available for GPU-only deployment (no API key) -- see [Local Models (GPU Inference)](#local-models-gpu-inference) below.
+
+#### Prerequisites
+
+- **API Key**: Get one from [platform.kimi.ai](https://platform.kimi.ai/console/api-keys) and set `MOONSHOT_API_KEY` in your `.env` file
+
+#### Command Line Usage
+
+```bash
+# Image understanding
+opentryon understand --model kimi-k2.6 --image garment.jpg --prompt "Describe this outfit."
+
+# Video understanding
+opentryon understand --model kimi-k2.6 --video runway_clip.mp4 --prompt "Summarize the styling shown."
+
+# Coding-focused variant (still multimodal)
+opentryon understand --model kimi-k2.7-code --image ui_mockup.png --prompt "Write the HTML/CSS for this design."
+```
+
+#### Python API Usage
+
+```python
+from tryon.api import KimiUnderstandAdapter
+
+adapter = KimiUnderstandAdapter()  # kimi-k2.6 by default
+
+result = adapter.understand_image(
+    "garment.jpg",
+    prompt="Describe this outfit: color, pattern, style, fit, and material."
+)
+print(result["text"])
+
+# Video understanding
+result = adapter.understand_video(
+    "runway_clip.mp4",
+    prompt="Summarize the styling and garments shown in this video."
+)
+
+# Coding-focused variant
+code_adapter = KimiUnderstandAdapter(model="kimi-k2.7-code")
+result = code_adapter.understand_image("ui_mockup.png", prompt="Write the HTML/CSS for this design.")
+```
+
+**Documentation**: See [Kimi API Documentation](https://tryonlabs.github.io/opentryon/docs/api-reference/kimi) for complete details.
+
 ### Local Models (GPU Inference)
 
 OpenTryOn includes adapters for local inference models that run directly on your hardware. These require a CUDA-capable GPU but offer no API costs, complete privacy, and offline capability.
@@ -2161,11 +2231,12 @@ OpenTryOn includes adapters for local inference models that run directly on your
 | Model | Type | VRAM | Speed | Description |
 |-------|------|------|-------|-------------|
 | **FLUX.2-dev Turbo** | Image Generation | 12GB+ | 6x faster | Fast text-to-image and image-to-image via distilled LoRA |
+| **Kimi-VL** | Image/Video Understanding | 24GB+ | - | Open-weight counterpart to the Kimi K2.6/K2.7 Code APIs (`moonshotai/Kimi-VL-A3B-Thinking-2506`) |
 
 #### Quick Example
 
 ```python
-from tryon.models import Flux2TurboAdapter
+from tryon.models import Flux2TurboAdapter, KimiVLAdapter
 
 # Initialize (auto-selects quantized model based on VRAM)
 adapter = Flux2TurboAdapter()
@@ -2184,6 +2255,11 @@ images = adapter.generate_image_to_image(
     image="input.jpg",
     prompt="Transform to an elegant evening gown"
 )
+
+# Open-weight understanding (no API key, downloads on first use)
+kimi_vl = KimiVLAdapter()
+result = kimi_vl.understand_image("garment.jpg", prompt="Describe this outfit.")
+print(result["text"])
 ```
 
 **Documentation**: See [Local Models Documentation](https://tryonlabs.github.io/opentryon/docs/local-models/overview) for detailed usage, VRAM requirements, and memory optimization tips.

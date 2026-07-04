@@ -75,9 +75,62 @@ def check_flux_vto_real_call():
         print(f"\u2713 real BFL API call via CLI succeeded, saved {saved[0]}")
 
 
+def check_kimi_dry_runs():
+    for model_id, expect_kwarg in [
+        ("kimi-k2.6", "'thinking': True"),
+        ("kimi-k2.7-code", "'model': 'kimi-k2.7-code'"),
+        ("kimi-vl", "'num_frames': 8"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "understand", "--model", model_id,
+                "--image", "data/model-1.jpg",
+                "--prompt", "Describe the outfit",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        assert code == 0 and expect_kwarg in printed, printed
+    print("\u2713 understand kimi-k2.6 / kimi-k2.7-code / kimi-vl --dry-run resolve the expected calls")
+
+
+def check_kimi_understand_requires_image_or_video():
+    from tryon.api.kimi import KimiUnderstandAdapter
+
+    try:
+        KimiUnderstandAdapter(api_key="fake-key-for-validation-test").understand(prompt="hi")
+    except ValueError as e:
+        assert "image" in str(e) and "video" in str(e)
+        print("\u2713 KimiUnderstandAdapter.understand() rejects missing image/video")
+    else:
+        raise AssertionError("expected ValueError when neither image nor video is given")
+
+
+def check_kimi_k26_real_call():
+    if not os.getenv("MOONSHOT_API_KEY"):
+        print("\u26a0 skipping real API test: MOONSHOT_API_KEY not set")
+        return
+
+    with tempfile.TemporaryDirectory() as tmp:
+        output_dir = os.path.join(tmp, "cli_out")
+        code = cli_main([
+            "understand", "--model", "kimi-k2.6",
+            "--image", os.path.join(REPO_ROOT, "data", "model-1.jpg"),
+            "--prompt", "Describe the outfit worn in this image in one sentence.",
+            "-o", output_dir,
+        ])
+        assert code == 0
+        saved = [f for f in os.listdir(output_dir) if f.endswith(".json")]
+        assert saved, "expected a saved understand result"
+        print(f"\u2713 real Kimi K2.6 API call via CLI succeeded, saved {saved[0]}")
+
+
 if __name__ == "__main__":
     check_registry_has_no_flag_collisions()
     check_every_model_parser_builds()
     check_flux_vto_dry_run()
     check_flux_vto_real_call()
+    check_kimi_dry_runs()
+    check_kimi_understand_requires_image_or_video()
+    check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")

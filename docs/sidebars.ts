@@ -10,6 +10,7 @@ const sidebars: SidebarsConfig = {
         'getting-started/installation',
         'getting-started/quickstart',
         'getting-started/configuration',
+        'getting-started/cli',
       ],
     },
     {
@@ -60,6 +61,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/gpt-image',
         'api-reference/sora-video',
         'api-reference/ben2',
+        'api-reference/kimi',
         'api-reference/utils',
       ],
     },
@@ -69,6 +71,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'local-models/overview',
         'local-models/flux2-turbo',
+        'local-models/kimi-vl',
       ],
     },
     {
@@ -102,6 +105,7 @@ const sidebars: SidebarsConfig = {
         'advanced/training-guide',
         'advanced/performance-optimization',
         'advanced/troubleshooting',
+        'advanced/new-model-checklist',
       ],
     },
     {

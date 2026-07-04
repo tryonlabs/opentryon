@@ -5,6 +5,25 @@ All notable changes to OpenTryOn will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### 🖥️ Unified CLI
+- **`opentryon` command-line interface**: Installable console script exposing every adapter through `opentryon <service> --model <model> [params...]` (services: `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`)
+- Data-driven model registry (`tryon/cli/registry.py`) with two-stage argument parsing, `--dry-run`, and automatic `local`-extra detection
+- `pip install opentryon[local]` extra to keep the core install lightweight while still supporting GPU-only models
+
+#### 🧠 Multimodal Understanding
+- **Kimi K2.6 & K2.7 Code (Moonshot AI)**: General-purpose text, image, and video understanding via the hosted API (`tryon.api.kimi.KimiUnderstandAdapter`), plus an open-weight local counterpart (`tryon.models.kimi_vl.KimiVLAdapter`, based on `moonshotai/Kimi-VL-A3B-Thinking-2506`)
+  - Available in the CLI as `opentryon understand --model kimi-k2.6 / kimi-k2.7-code / kimi-vl`
+  - Extends OpenTryOn's understanding capabilities beyond the fashion domain (documents, UI screenshots, general photography, etc.)
+
+### Fixed
+- Lazy (PEP 562) attribute loading for `tryon.api` so importing one adapter no longer transitively imports every adapter's dependencies (e.g. `torch`/`timm` for BEN2)
+- Missing comma in `setup.py` `install_requires` that merged two dependency strings into one invalid requirement
+- Missing `openai` dependency for GPT-Image/Sora adapters
+
 ## [0.0.2] - 27 December 2025
 
 ### Added

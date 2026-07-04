@@ -31,6 +31,11 @@ keywords:
   - Sora 2
   - video generation
   - AI video
+  - Kimi K2.6
+  - Kimi K2.7 Code
+  - Moonshot AI
+  - multimodal understanding
+  - opentryon CLI
 image: /img/opentryon-social-card.jpg
 ---
 
@@ -72,6 +77,7 @@ Cloud-based virtual try-on, image generation, and video generation APIs:
 - **FLUX.2 [FLEX]**: Flexible image generation with advanced controls (guidance scale, steps, prompt upsampling)
 - **GPT-Image-1 & GPT-Image-1.5**: OpenAI image generation with strong prompt understanding, transparent backgrounds, and mask-based editing. GPT-Image-1.5 offers enhanced quality and better consistency
 - **Sora 2 & Sora 2 Pro**: OpenAI video generation with text-to-video and image-to-video capabilities. Sora 2 Pro offers superior quality with enhanced temporal consistency (4-12 second videos, multiple resolutions)
+- **Kimi K2.6 & K2.7 Code**: Moonshot AI multimodal text, image, and video understanding -- general-purpose (not limited to fashion), with an open-weight local counterpart (Kimi-VL) for GPU-only deployment
 
 ### Garment Preprocessing
 - **Garment Segmentation**: U2Net-based segmentation for upper, lower, and dress categories

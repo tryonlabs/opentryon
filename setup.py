@@ -6,9 +6,16 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 # Heavy, GPU-oriented stack needed only for local/on-device inference
-# (BEN2 background removal, LLaVA-NeXT understanding, FLUX.2-dev Turbo) and
-# for training via tryondiffusion. Kept out of the core install so
-# `pip install opentryon` (cloud API adapters + CLI) stays light.
+# (BEN2 background removal, LLaVA-NeXT understanding, FLUX.2-dev Turbo,
+# Kimi-VL understanding) and for training via tryondiffusion. Kept out of
+# the core install so `pip install opentryon` (cloud API adapters + CLI)
+# stays light.
+#
+# Note: Kimi-VL (moonshotai/Kimi-VL-*) recommends transformers>=4.48.2 in
+# its model card. The pin below is shared across all local models and kept
+# at the version validated for BEN2/LLaVA-NeXT/FLUX.2-dev Turbo; if you hit
+# `trust_remote_code` loading errors with Kimi-VL specifically, upgrade
+# transformers in a separate environment (`pip install -U transformers`).
 LOCAL_INFERENCE_DEPS = [
     "torch==2.1.2",
     "torchvision==0.16.2",
@@ -20,6 +27,7 @@ LOCAL_INFERENCE_DEPS = [
     "scipy>=1.15.0",
     "huggingface-hub>=0.36.0",
     "nest-asyncio>=1.5.0",
+    "decord>=0.6.0",  # video frame sampling for Kimi-VL understand_video()
 ]
 
 setup(

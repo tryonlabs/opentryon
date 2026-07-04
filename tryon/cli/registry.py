@@ -361,6 +361,48 @@ _UNDERSTAND = {
             Arg(("--json-only",), "json_only", action="store_true", help="Return structured JSON only, skip natural-language caption"),
         ],
     ),
+    "kimi-k2.6": ModelSpec(
+        id="kimi-k2.6", label="Kimi K2.6 (Moonshot AI multimodal understanding)",
+        import_path="tryon.api.kimi", class_name="KimiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="MOONSHOT_API_KEY",
+        notes="General-purpose: understands images AND video, any domain (not fashion-specific). 256K context.",
+        args=[
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--no-thinking",), "thinking", action="store_false", default=True, help="Disable Kimi's thinking mode"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (server default: 32768)"),
+        ],
+    ),
+    "kimi-k2.7-code": ModelSpec(
+        id="kimi-k2.7-code", label="Kimi K2.7 Code (Moonshot AI coding + multimodal understanding)",
+        import_path="tryon.api.kimi", class_name="KimiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="MOONSHOT_API_KEY",
+        notes="Coding-focused variant of K2.6 with the same image/video understanding. Thinking mode is always on.",
+        args=[
+            Arg(("--kimi-model",), "kimi_model", target="init", call_name="model", default="kimi-k2.7-code",
+                choices=["kimi-k2.7-code", "kimi-k2.7-code-highspeed"], help="Kimi K2.7 Code variant"),
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (server default: 32768)"),
+        ],
+    ),
+    "kimi-vl": ModelSpec(
+        id="kimi-vl", label="Kimi-VL (open-weight, local)",
+        import_path="tryon.models.kimi_vl", class_name="KimiVLAdapter",
+        method="understand", output_kind="text", extra="local",
+        notes="Open-weight counterpart to kimi-k2.6/k2.7-code. Local GPU inference "
+        "(24GB+ VRAM recommended). Requires `pip install opentryon[local]`.",
+        args=[
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL, requires `pip install decord`)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--num-frames",), "num_frames", type=int, default=8, help="Frames to sample from --video"),
+            Arg(("--max-new-tokens",), "max_new_tokens", type=int, default=4096, help="Max output tokens"),
+            Arg(("--temperature",), "temperature", type=float, default=0.8, help="Sampling temperature"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------

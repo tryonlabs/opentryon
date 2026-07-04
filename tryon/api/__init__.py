@@ -26,6 +26,7 @@ _LAZY_ATTRS = {
     "SoraVideoAdapter": ".openAI.video_adapter",
     "VeoAdapter": ".veo",
     "BEN2BackgroundRemoverAdapter": ".ben2",
+    "KimiUnderstandAdapter": ".kimi",
 }
 
 __all__ = sorted(_LAZY_ATTRS)

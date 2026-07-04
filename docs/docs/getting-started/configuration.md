@@ -42,6 +42,9 @@ GEMINI_API_KEY=your_gemini_api_key
 
 # BFL AI (FLUX.2 Image Generation)
 BFL_API_KEY=your_bfl_api_key
+
+# Moonshot AI (Kimi K2.6 / K2.7 Code multimodal understanding)
+MOONSHOT_API_KEY=your_moonshot_api_key
 ```
 
 ### Datasets (Optional - Only if using HuggingFace datasets)
@@ -111,6 +114,12 @@ from tryon.datasets import FashionMNIST
 1. Sign up at [BFL AI](https://docs.bfl.ai/)
 2. Obtain your API key from the BFL AI dashboard
 3. Add to `.env`: `BFL_API_KEY=your_key`
+
+### Moonshot AI (Kimi K2.6 / K2.7 Code)
+
+1. Sign up at [platform.kimi.ai](https://platform.kimi.ai/)
+2. Obtain your API key from the [API Keys console](https://platform.kimi.ai/console/api-keys)
+3. Add to `.env`: `MOONSHOT_API_KEY=your_key`
 
 ## Configuration Options
 
