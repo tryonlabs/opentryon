@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opentryon-mcp-server"
+version = "0.1.0"
+description = "MCP server exposing OpenTryOn's models (virtual try-on, image/video generation & editing, multimodal understanding, background removal) as tools for LLM agents"
+authors = [
+    {name = "TryOn Labs", email = "contact@tryonlabs.ai"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "CC-BY-NC-4.0"}
+keywords = ["mcp", "fastmcp", "model-context-protocol", "fashion", "virtual-try-on", "ai", "agents"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastmcp>=3.4.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+local = ["opentryon[local]"]
+
+[project.urls]
+Homepage = "https://github.com/tryonlabs/opentryon"
+Documentation = "https://tryonlabs.github.io/opentryon/"
+Repository = "https://github.com/tryonlabs/opentryon"
+Issues = "https://github.com/tryonlabs/opentryon/issues"
+
+[project.scripts]
+opentryon-mcp = "server:main"
