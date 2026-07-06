@@ -1,0 +1,9 @@
+# MCP Server Dependencies
+fastmcp>=3.4.0
+python-dotenv>=1.0.0
+
+# OpenTryOn is installed from the parent directory.
+# Core (API-backed) models only:
+#   pip install -e ..
+# To also enable local/GPU models (llava-next, kimi-vl, flux2-turbo, ben2):
+#   pip install -e "..[local]"

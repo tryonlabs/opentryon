@@ -61,6 +61,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Unified CLI (`opentryon`)](#unified-cli-opentryon)
+- [MCP Server](#-mcp-server)
 - [Usage](#usage)
   - [Datasets Module](#datasets-module)
   - [Virtual Try-On with Amazon Nova Canvas](#virtual-try-on-with-amazon-nova-canvas)
@@ -298,6 +299,18 @@ adapter (all models above except `flux2-turbo`, `llava-next`, `kimi-vl`, and
 `ben2`, which run local inference). Those four require
 `pip install opentryon[local]` and, for GPU-accelerated inference, a
 CUDA-capable GPU.
+
+## 🔌 MCP Server
+
+Every model above is also available as an [MCP](https://modelcontextprotocol.io) tool, so agents in Claude Desktop, Cursor, or any other MCP client can call them directly. The server is built on [FastMCP](https://gofastmcp.com) and generates one tool per (service, model) straight from the same registry that powers the CLI -- so it's always up to date with every model in this table.
+
+```bash
+cd mcp-server
+pip install -r requirements.txt
+python server.py   # stdio transport, ready for Claude Desktop / Cursor
+```
+
+See [`mcp-server/README.md`](mcp-server/README.md) for the full tool list, client configuration examples, and architecture notes.
 
 ## 📖 Usage
 

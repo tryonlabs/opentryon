@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🔌 MCP Server
+- **Rebuilt `mcp-server/` on [FastMCP](https://gofastmcp.com) 3.x** (up from the low-level `mcp` SDK), replacing ~15 hand-written tool wrappers with 27 tools generated dynamically from `tryon.cli.registry` -- every model reachable via the `opentryon` CLI (Kimi, FLUX VTO/2, GPT Image, Sora, Veo, Nano Banana, BEN2, etc.) is now automatically exposed as an MCP tool, and new registry entries need zero MCP-server changes to show up
+- New `tryon.cli.runner.invoke_model()`: a kwargs-based, non-argv equivalent of the CLI's `run_service()`, shared by both the CLI and the MCP server so they can never drift apart; always returns a structured `{"success": ...}` dict instead of raising
+- Two discovery tools, `list_opentryon_tools` and `opentryon_status`, report live per-model configuration/readiness straight from the registry and the loaded `.env`
+- Every generated tool supports `dry_run` (preview the resolved adapter call, no API/GPU cost) and `output_dir`, matching the CLI's `--dry-run`/`--output-dir` flags
+- `mcp-server/test_server.py`: offline test suite covering tool/registry parity, schema generation (required fields, `choices` -> enum), dry-run calls across all six services, and `alt_method_on_image` switching (veo/sora/luma-video)
+
 #### 🖥️ Unified CLI
 - **`opentryon` command-line interface**: Installable console script exposing every adapter through `opentryon <service> --model <model> [params...]` (services: `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`)
 - Data-driven model registry (`tryon/cli/registry.py`) with two-stage argument parsing, `--dry-run`, and automatic `local`-extra detection
