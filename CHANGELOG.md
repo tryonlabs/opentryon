@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+#### 🎨 Demos
+- **The aggregated Next.js/Tailwind web UI has moved out of this repo.** `demo/virtual-tryon`, `demo/fashion-prompt-builder`, and `demo/tryon-agent` (the combined dashboard prototype) are removed; that UI now lives in the standalone [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) app, which talks to `opentryon` exclusively over the MCP server (see below) so the two repos stay independently releasable
+- `demo/` now contains only the Gradio demos (`extract_garment`, `model_swap`, `outfit_generator`) -- this package's own demos are Gradio apps and Jupyter notebooks, not a hosted web frontend
+- Added `notebooks/virtual_tryon_demo.ipynb`, a runnable, dependency-light walkthrough of `tryon.cli.runner.invoke_model()` for the `vton` service (dry-run by default, no API key required to execute)
+
 ### Added
 
 #### 🔌 MCP Server
@@ -15,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Two discovery tools, `list_opentryon_tools` and `opentryon_status`, report live per-model configuration/readiness straight from the registry and the loaded `.env`
 - Every generated tool supports `dry_run` (preview the resolved adapter call, no API/GPU cost) and `output_dir`, matching the CLI's `--dry-run`/`--output-dir` flags
 - `mcp-server/test_server.py`: offline test suite covering tool/registry parity, schema generation (required fields, `choices` -> enum), dry-run calls across all six services, and `alt_method_on_image` switching (veo/sora/luma-video)
+- `invoke_model()` / `run_service()` results for `images`/`image_bytes` outputs now include an `images_base64` list alongside `output_paths`, so remote MCP clients (e.g. a web frontend calling the server over the `http` transport) can render results directly without needing filesystem access to the server's `output_dir`
 
 #### 🖥️ Unified CLI
 - **`opentryon` command-line interface**: Installable console script exposing every adapter through `opentryon <service> --model <model> [params...]` (services: `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`)

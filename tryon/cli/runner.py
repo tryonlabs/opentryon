@@ -13,6 +13,7 @@ further flags are valid (mirrors how e.g. ``git <subcommand>`` or
 from __future__ import annotations
 
 import argparse
+import base64
 import importlib
 import importlib.util
 import io
@@ -142,10 +143,15 @@ def _package_result(spec: ModelSpec, result: Any, output_dir: Path, prefix: str)
     (`invoke_model`) so both surfaces produce identical output shapes."""
     if spec.output_kind in ("images", "image_bytes"):
         images = result if isinstance(result, (list, tuple)) else [result]
-        saved = _save_images(images, output_dir, prefix)
+        saved, encoded = _save_images(images, output_dir, prefix)
         return {
             "output_kind": spec.output_kind,
             "output_paths": [str(p) for p in saved],
+            # Base64 PNG data for each image, in the same order as
+            # `output_paths`. Lets remote callers (e.g. the MCP server, hit
+            # over HTTP by a frontend on a different host/filesystem) render
+            # results without needing filesystem access to `output_dir`.
+            "images_base64": encoded,
             "count": len(saved),
         }
 
@@ -165,18 +171,23 @@ def _package_result(spec: ModelSpec, result: Any, output_dir: Path, prefix: str)
     return {"output_kind": "raw", "result": repr(result)}
 
 
-def _save_images(images, output_dir: Path, prefix: str) -> List[Path]:
+def _save_images(images, output_dir: Path, prefix: str) -> tuple[List[Path], List[str]]:
     from PIL import Image
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    saved = []
+    saved: List[Path] = []
+    encoded: List[str] = []
     for idx, img in enumerate(images):
         if isinstance(img, (bytes, bytearray)):
             img = Image.open(io.BytesIO(img))
         path = output_dir / f"{prefix}_{idx}.png"
         img.save(path)
         saved.append(path)
-    return saved
+
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        encoded.append(base64.b64encode(buffer.getvalue()).decode("utf-8"))
+    return saved, encoded
 
 
 def _save_video(video_bytes: bytes, output_dir: Path, prefix: str) -> Path:

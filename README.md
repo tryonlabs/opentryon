@@ -2323,73 +2323,36 @@ segment_human(
 
 ## 🎨 Demos
 
-The project includes several interactive demos for easy experimentation:
+`opentryon` itself ships as an installable Python package plus a set of
+lightweight, single-purpose **Gradio demos** and **Jupyter notebooks** -- no
+Next.js/web frontend lives in this repo. For the full aggregated web UI
+(virtual try-on, fashion prompt builder, and more, all backed by this
+package over MCP), see the companion
+[`tryon-studio`](https://github.com/tryonlabs/tryon-studio) app.
 
-### Virtual Try-On Demo (Web App) ⭐ NEW
+### Notebooks
 
-A modern, full-stack virtual try-on web application with FastAPI backend and Next.js frontend.
+See [`notebooks/`](notebooks) for runnable, end-to-end examples (starting
+with `virtual_tryon_demo.ipynb`) that call the `opentryon` package directly
+-- no server or frontend required.
 
-**Features**:
-- Support for 4 AI models: Nano Banana, Nano Banana Pro, FLUX 2 Pro, FLUX 2 Flex
-- Multi-image upload with drag & drop
-- Real-time credit estimation
-- Modern, responsive UI
-- Production-ready API server
-
-**Quick Start**:
-
-1. Start the backend:
-```bash
-python api_server.py
-```
-
-2. In a new terminal, start the frontend:
-```bash
-cd demo/virtual-tryon
-npm install
-npm run dev
-```
-
-3. Open `http://localhost:3000` in your browser
-
-**Documentation**: See [`demo/virtual-tryon/README.md`](demo/virtual-tryon/README.md) and [`README_API_SERVER.md`](README_API_SERVER.md) for detailed instructions.
-
-### Extract Garment Demo
+### Extract Garment Demo (Gradio)
 
 ```bash
 python run_demo.py --name extract_garment
 ```
 
-### Model Swap Demo
+### Model Swap Demo (Gradio)
 
 ```bash
 python run_demo.py --name model_swap
 ```
 
-### Outfit Generator Demo
+### Outfit Generator Demo (Gradio)
 
 ```bash
 python run_demo.py --name outfit_generator
 ```
-
-### Fashion Prompt Builder Demo
-
-A modern Next.js web application for generating prompts for fashion model generation.
-
-```bash
-cd demo/fashion-prompt-builder
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000` to access the prompt builder interface.
-
-**Features**:
-- Template-based prompt generation
-- Prompt gallery with examples
-- Raw prompt editor with tips
-- Real-time preview and validation
-- Support for multiple AI models
 
 Gradio demos launch a web interface where you can interact with the models through a user-friendly UI.
 
@@ -2427,12 +2390,11 @@ opentryon/
 │   ├── trainer.py           # Training utilities
 │   ├── pre_processing/      # Preprocessing for training
 │   └── utils/               # Utility functions
-├── demo/                    # Interactive demos
-│   ├── virtual-tryon/       # Virtual try-on demo (Nextjs+Tailwindcss)
+├── demo/                    # Gradio demos only -- see tryon-studio for the web UI
 │   ├── extract_garment/     # Garment extraction demo (Gradio)
 │   ├── model_swap/          # Model swap demo (Gradio)
-│   ├── outfit_generator/    # Outfit generator demo (Gradio)
-│   └── fashion-prompt-builder/  # Fashion prompt builder (Next.js)
+│   └── outfit_generator/    # Outfit generator demo (Gradio)
+├── notebooks/               # Jupyter notebook demos of the package
 ├── scripts/                 # Installation scripts
 ├── api_server.py            # FastAPI server for virtual try-on demo
 ├── main.py                  # Main CLI entry point
