@@ -73,7 +73,11 @@ async def check_dry_run_calls() -> None:
     # (tool_name, args, needs_local_extra)
     cases = [
         ("vton_flux_vto", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
+        ("vton_p_image_tryon", {"person_image": "p.jpg", "garment_images": ["g1.jpg", "g2.jpg"], "dry_run": True}, False),
+        ("vton_nano_banana_2_lite", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
         ("generate_nano_banana", {"prompt": "a red dress", "dry_run": True}, False),
+        ("generate_nano_banana_2_lite", {"prompt": "a red dress", "dry_run": True}, False),
+        ("edit_nano_banana_2_lite", {"image": "p.jpg", "prompt": "make it blue", "dry_run": True}, False),
         ("edit_gpt_image", {"images": ["a.jpg", "b.jpg"], "prompt": "make it blue", "dry_run": True}, False),
         ("understand_kimi_k2_6", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),

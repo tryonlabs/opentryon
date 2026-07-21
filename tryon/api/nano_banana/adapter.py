@@ -18,6 +18,9 @@ Models:
 - Gemini 2.5 Flash Image (Nano Banana): Fast, efficient, 1024px resolution
 - Gemini 3 Pro Image Preview (Nano Banana Pro): Advanced, 4K resolution, search-grounded
 - Gemini 3.1 Flash Image (Nano Banana 2): Pro capabilities at Flash speed; 512px–4K, subject consistency
+- Gemini 3.1 Flash-Lite Image (Nano Banana 2 Lite): Fastest/cheapest tier; 1K only, up to 14
+  reference images. Not optimized for multi-turn sequential editing. Its multi-image
+  composition can also be used for a lightweight virtual try-on (person + garment -> image).
 
 Example:
     Text-to-image:
@@ -55,6 +58,21 @@ except ImportError:
     GOOGLE_GENAI_AVAILABLE = False
     genai = None
     types = None
+
+
+def _part_to_pil_image(part: "types.Part") -> Image.Image:
+    """
+    Decode a Gemini response ``Part``'s inline image data into a PIL Image.
+
+    Note: intentionally does *not* use ``part.as_image()`` -- as of
+    ``google-genai`` 2.11.0 that returns a ``google.genai.types.Image``
+    (a pydantic model with an ``image_bytes`` field and its own ``.save()``),
+    not a ``PIL.Image.Image``, which breaks every caller in this module that
+    expects a real PIL Image (``.size``, ``.mode``, saving via the CLI/MCP
+    runner's ``_save_images``, etc.). ``inline_data.data`` is already raw
+    image bytes, so decode that directly instead.
+    """
+    return Image.open(io.BytesIO(part.inline_data.data))
 
 
 # Supported aspect ratios for Gemini 2.5 Flash Image
@@ -261,7 +279,7 @@ class NanoBananaAdapter:
         images = []
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                image = _part_to_pil_image(part)
                 images.append(image)
         
         if not images:
@@ -326,7 +344,7 @@ class NanoBananaAdapter:
         images = []
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                image = _part_to_pil_image(part)
                 images.append(image)
         
         if not images:
@@ -396,7 +414,7 @@ class NanoBananaAdapter:
         images_result = []
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                image = _part_to_pil_image(part)
                 images_result.append(image)
         
         if not images_result:
@@ -652,7 +670,7 @@ class NanoBananaProAdapter:
         images = []
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                image = _part_to_pil_image(part)
                 images.append(image)
         
         if not images:
@@ -733,7 +751,7 @@ class NanoBananaProAdapter:
         images = []
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                image = _part_to_pil_image(part)
                 images.append(image)
         
         if not images:
@@ -819,7 +837,7 @@ class NanoBananaProAdapter:
         images_result = []
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                image = _part_to_pil_image(part)
                 images_result.append(image)
         
         if not images_result:
@@ -1005,7 +1023,7 @@ class NanoBanana2Adapter:
         images = []
         for part in response.parts:
             if part.inline_data is not None:
-                images.append(part.as_image())
+                images.append(_part_to_pil_image(part))
         if not images:
             raise ValueError("No images generated in response")
         return images
@@ -1060,7 +1078,7 @@ class NanoBanana2Adapter:
         images = []
         for part in response.parts:
             if part.inline_data is not None:
-                images.append(part.as_image())
+                images.append(_part_to_pil_image(part))
         if not images:
             raise ValueError("No images generated in response")
         return images
@@ -1115,7 +1133,7 @@ class NanoBanana2Adapter:
         result = []
         for part in response.parts:
             if part.inline_data is not None:
-                result.append(part.as_image())
+                result.append(_part_to_pil_image(part))
         if not result:
             raise ValueError("No images generated in response")
         return result
@@ -1150,4 +1168,332 @@ class NanoBanana2Adapter:
                 )
             )
         return results
+
+
+class NanoBanana2LiteAdapter:
+    """
+    Adapter for Gemini 3.1 Flash-Lite Image (Nano Banana 2 Lite) API.
+
+    Google's fastest and cheapest Gemini image model, engineered for
+    high-velocity pipelines where speed and cost are the primary
+    constraints. It shares Nano Banana 2's character consistency and
+    editing precision but is capped at 1K output and is "not optimized for
+    multiple reference inputs or multi-turn sequential editing" per
+    Google's docs -- so treat multi-image results as a fast/cheap option
+    rather than the highest-fidelity one (use NanoBanana2Adapter for that).
+
+    Reference: https://deepmind.google/models/gemini-image/flash-lite/
+    API: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image
+
+    Authentication:
+        Requires API key via constructor or GEMINI_API_KEY environment variable.
+
+    Example:
+        >>> adapter = NanoBanana2LiteAdapter()
+        >>> images = adapter.generate_text_to_image(
+        ...     prompt="A fashion model wearing a summer collection",
+        ...     aspect_ratio="16:9",
+        ... )
+
+    Virtual try-on (via multi-image composition):
+        >>> images = adapter.generate_virtual_tryon(
+        ...     person="person.jpg",
+        ...     garment="jacket.jpg",
+        ...     garment_description="olive green bomber jacket",
+        ... )
+        >>> images[0].save("result.png")
+    """
+
+    # Model code per https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image
+    MODEL_NAME = "gemini-3.1-flash-lite-image"
+
+    DEFAULT_TRYON_PROMPT = (
+        "The person in the first image, keeping their face, pose and background "
+        "unchanged, wearing the garment shown in the second image."
+    )
+
+    def __init__(self, api_key: Optional[str] = None):
+        """
+        Initialize the Nano Banana 2 Lite (Gemini 3.1 Flash-Lite Image) adapter.
+
+        Args:
+            api_key: Google Gemini API key. Defaults to GEMINI_API_KEY environment variable.
+        """
+        if not GOOGLE_GENAI_AVAILABLE:
+            raise ImportError(
+                "Google GenAI SDK is required for Nano Banana 2 Lite. "
+                "Install it with: pip install google-genai"
+            )
+
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
+            raise ValueError(
+                "Gemini API key is required. Set GEMINI_API_KEY environment variable "
+                "or pass api_key parameter."
+            )
+
+        self.client = genai.Client(api_key=self.api_key)
+
+    def _prepare_image_input(self, image_input: Union[str, io.BytesIO, Image.Image]) -> Image.Image:
+        """Prepare image input for API request (same as the other adapters in this module)."""
+        if isinstance(image_input, Image.Image):
+            return image_input
+        if hasattr(image_input, "read"):
+            image_input.seek(0)
+            return Image.open(image_input)
+        if isinstance(image_input, str):
+            if image_input.startswith(("http://", "https://")):
+                import requests
+                response = requests.get(image_input)
+                response.raise_for_status()
+                return Image.open(io.BytesIO(response.content))
+            if len(image_input) > 100 and not os.path.exists(image_input):
+                try:
+                    image_bytes = base64.b64decode(image_input)
+                    return Image.open(io.BytesIO(image_bytes))
+                except Exception:
+                    pass
+            return Image.open(image_input)
+        raise ValueError(
+            "Invalid image input: must be a file path, URL, PIL Image, file-like object, or base64 string"
+        )
+
+    def _image_to_part(self, image: Image.Image) -> types.Part:
+        """Convert PIL Image to GenAI Part."""
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+        return types.Part.from_bytes(data=buffer.read(), mime_type="image/png")
+
+    def _build_config(self, aspect_ratio: Optional[str], **kwargs) -> Dict[str, Any]:
+        config: Dict[str, Any] = {}
+        if aspect_ratio:
+            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+                raise ValueError(
+                    f"Invalid aspect ratio '{aspect_ratio}'. "
+                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                )
+            # Gemini 3.1 Flash-Lite Image only supports 1K output.
+            config["image_config"] = types.ImageConfig(aspect_ratio=aspect_ratio, image_size="1K")
+        config.update(kwargs)
+        return config
+
+    def generate_text_to_image(
+        self,
+        prompt: str,
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate image(s) from text prompt (text-to-image), at 1K resolution.
+
+        Args:
+            prompt: Text description of the image to generate.
+            aspect_ratio: Optional aspect ratio, e.g. "1:1", "16:9", "9:16".
+            **kwargs: Additional generation config parameters.
+
+        Returns:
+            List of PIL Image objects.
+        """
+        config = self._build_config(aspect_ratio, **kwargs)
+        response = self.client.models.generate_content(
+            model=self.MODEL_NAME,
+            contents=[prompt],
+            config=types.GenerateContentConfig(**config) if config else None,
+        )
+
+        images = []
+        for part in response.parts:
+            if part.inline_data is not None:
+                images.append(_part_to_pil_image(part))
+        if not images:
+            raise ValueError("No images generated in response")
+        return images
+
+    def generate_image_edit(
+        self,
+        image: Union[str, io.BytesIO, Image.Image],
+        prompt: str,
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate edited image from image + text prompt (image editing), at 1K resolution.
+
+        Args:
+            image: Input image (path, URL, PIL Image, file-like, or base64).
+            prompt: Text description of the edits to make.
+            aspect_ratio: Optional aspect ratio.
+            **kwargs: Additional config.
+
+        Returns:
+            List of PIL Image objects.
+        """
+        image_part = self._image_to_part(self._prepare_image_input(image))
+        config = self._build_config(aspect_ratio, **kwargs)
+        response = self.client.models.generate_content(
+            model=self.MODEL_NAME,
+            contents=[image_part, prompt],
+            config=types.GenerateContentConfig(**config) if config else None,
+        )
+
+        images = []
+        for part in response.parts:
+            if part.inline_data is not None:
+                images.append(_part_to_pil_image(part))
+        if not images:
+            raise ValueError("No images generated in response")
+        return images
+
+    def generate_multi_image(
+        self,
+        images: List[Union[str, io.BytesIO, Image.Image]],
+        prompt: str,
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate image from multiple input images (composition / style transfer),
+        at 1K resolution. Up to 14 reference images are supported, though this
+        model is "not optimized for multiple reference inputs" per Google's docs
+        -- prefer NanoBanana2Adapter when reference-image fidelity matters more
+        than latency/cost.
+
+        Args:
+            images: List of input images.
+            prompt: Text description of how to combine/transform the images.
+            aspect_ratio: Optional aspect ratio.
+            **kwargs: Additional config.
+
+        Returns:
+            List of PIL Image objects.
+        """
+        image_parts = [self._image_to_part(self._prepare_image_input(img)) for img in images]
+        contents = image_parts + [prompt]
+        config = self._build_config(aspect_ratio, **kwargs)
+        response = self.client.models.generate_content(
+            model=self.MODEL_NAME,
+            contents=contents,
+            config=types.GenerateContentConfig(**config) if config else None,
+        )
+
+        result = []
+        for part in response.parts:
+            if part.inline_data is not None:
+                result.append(_part_to_pil_image(part))
+        if not result:
+            raise ValueError("No images generated in response")
+        return result
+
+    def generate_batch(
+        self,
+        prompts: List[str],
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[List[Image.Image]]:
+        """
+        Generate images in batch from multiple text prompts.
+
+        Args:
+            prompts: List of text prompts.
+            aspect_ratio: Optional aspect ratio for all images.
+            **kwargs: Additional config.
+
+        Returns:
+            List of lists of PIL Image objects.
+        """
+        results = []
+        for prompt in prompts:
+            results.append(
+                self.generate_text_to_image(prompt=prompt, aspect_ratio=aspect_ratio, **kwargs)
+            )
+        return results
+
+    def build_tryon_prompt(
+        self,
+        prompt: Optional[str] = None,
+        garment_description: Optional[str] = None,
+    ) -> str:
+        """
+        Build the styling prompt for a virtual try-on composition.
+
+        Args:
+            prompt: Full prompt override. When provided, garment_description is ignored.
+            garment_description: Concise garment description inserted into the
+                                 recommended prompt template.
+
+        Returns:
+            str: Prompt sent to the model for virtual try-on composition.
+        """
+        if prompt:
+            return prompt
+        if garment_description:
+            return (
+                "The person in the first image, keeping their face, pose and "
+                f"background unchanged, wearing the {garment_description} shown "
+                "in the second image."
+            )
+        return self.DEFAULT_TRYON_PROMPT
+
+    def generate_virtual_tryon(
+        self,
+        person: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        garment: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        *,
+        source_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        reference_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        model_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        cloth_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        person_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        garment_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        prompt: Optional[str] = None,
+        garment_description: Optional[str] = None,
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Lightweight virtual try-on: compose a garment onto a person image using
+        Nano Banana 2 Lite's multi-image composition. Convenience wrapper around
+        ``generate_multi_image([person, garment], prompt)`` with a sensible
+        default styling prompt (mirrors ``FluxVTONAdapter.generate``).
+
+        This is a fast/cheap option, not the highest-fidelity one -- Google's
+        docs note this model isn't optimized for multiple reference inputs.
+        Prefer a dedicated VTON model (FLUX VTO, Nova Canvas, Kling AI, Segmind,
+        P-Image-Try-On) when garment-fit accuracy matters more than latency/cost.
+
+        Args:
+            person: Person/model image.
+            garment: Garment reference image.
+            source_image / person_image / model_image: Aliases for person.
+            reference_image / garment_image / cloth_image: Aliases for garment.
+            prompt: Full styling prompt. Overrides garment_description when set.
+            garment_description: Concise garment description used to build the prompt.
+            aspect_ratio: Optional aspect ratio for the output.
+            **kwargs: Additional generation config.
+
+        Returns:
+            List[Image.Image]: Composed try-on result image(s).
+        """
+        resolved_person = person or source_image or person_image or model_image
+        resolved_garment = garment or reference_image or garment_image or cloth_image
+
+        if resolved_person is None:
+            raise ValueError(
+                "Person image is required. Pass person, source_image, person_image, "
+                "or model_image."
+            )
+        if resolved_garment is None:
+            raise ValueError(
+                "Garment image is required. Pass garment, reference_image, "
+                "garment_image, or cloth_image."
+            )
+
+        styling_prompt = self.build_tryon_prompt(prompt=prompt, garment_description=garment_description)
+        return self.generate_multi_image(
+            images=[resolved_person, resolved_garment],
+            prompt=styling_prompt,
+            aspect_ratio=aspect_ratio,
+            **kwargs,
+        )
 

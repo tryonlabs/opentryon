@@ -142,6 +142,44 @@ _VTON = {
             Arg(("--seed",), "seed", type=int, help="Seed for reproducibility (-1 for random)"),
         ],
     ),
+    "p-image-tryon": ModelSpec(
+        id="p-image-tryon",
+        label="Pruna P-Image-Try-On",
+        import_path="tryon.api.vton.p_image_tryon",
+        class_name="PImageTryOnAdapter",
+        method="generate_and_decode",
+        output_kind="images",
+        env_hint="PRUNA_API_KEY",
+        notes="Supports up to 11 garment reference images in one call (multi-garment try-on).",
+        args=[
+            _img(("--person-image", "--model-image"), "person_image", "Person/model image (path or URL)", required=True),
+            Arg(("--garment-image", "--garment-images", "--cloth-image"), "garment_images", nargs="+", required=True,
+                help="One or more garment reference images (paths or URLs), up to 11"),
+            Arg(("--prompt",), "prompt", default="", help="Experimental guidance for non-flatlay garment images"),
+            Arg(("--seed",), "seed", type=int, help="Seed for reproducibility"),
+            Arg(("--turbo",), "turbo", action="store_true", help="Faster inference; not recommended for >4 garments"),
+            Arg(("--output-format",), "output_format", default="jpg", choices=["jpg", "png", "webp"]),
+            Arg(("--output-quality",), "output_quality", type=int, default=95, help="JPEG/WebP quality 0-100"),
+            Arg(("--reference-pose",), "reference_pose", help="EXPERIMENTAL: reference pose image to repose the person before try-on"),
+        ],
+    ),
+    "nano-banana-2-lite": ModelSpec(
+        id="nano-banana-2-lite",
+        label="Nano Banana 2 Lite (Gemini 3.1 Flash-Lite Image, via multi-image composition)",
+        import_path="tryon.api.nano_banana",
+        class_name="NanoBanana2LiteAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        env_hint="GEMINI_API_KEY",
+        notes="Fast/cheap option, not the highest-fidelity one -- not optimized for multiple reference inputs per Google's docs.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description", help="Short garment description used to build the default prompt"),
+            Arg(("--aspect-ratio",), "aspect_ratio", help="e.g. 1:1, 16:9, 9:16"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
@@ -194,6 +232,13 @@ _GENERATE = {
         import_path="tryon.api.nano_banana", class_name="NanoBanana2Adapter",
         method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
         args=_nano_banana_generate_args(with_resolution=True, with_grounding=True),
+    ),
+    "nano-banana-2-lite": ModelSpec(
+        id="nano-banana-2-lite", label="Nano Banana 2 Lite (Gemini 3.1 Flash-Lite Image)",
+        import_path="tryon.api.nano_banana", class_name="NanoBanana2LiteAdapter",
+        method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
+        notes="Fastest/cheapest Nano Banana tier; 1K resolution only.",
+        args=_nano_banana_generate_args(with_resolution=False, with_grounding=False),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",
@@ -282,6 +327,17 @@ _EDIT = {
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
             Arg(("--aspect-ratio",), "aspect_ratio"),
             Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]),
+        ],
+    ),
+    "nano-banana-2-lite": ModelSpec(
+        id="nano-banana-2-lite", label="Nano Banana 2 Lite",
+        import_path="tryon.api.nano_banana", class_name="NanoBanana2LiteAdapter",
+        method="generate_image_edit", output_kind="images", env_hint="GEMINI_API_KEY",
+        notes="Fastest/cheapest Nano Banana tier; 1K resolution only.",
+        args=[
+            _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
+            Arg(("--aspect-ratio",), "aspect_ratio"),
         ],
     ),
     "flux2-pro": ModelSpec(

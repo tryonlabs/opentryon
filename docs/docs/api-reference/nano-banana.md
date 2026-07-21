@@ -1,31 +1,35 @@
 ---
 sidebar_position: 6
 title: Nano Banana (Gemini Image Generation)
-description: Generate high-quality images using Google's Gemini image generation models (Nano Banana, Nano Banana Pro, Nano Banana 2)
+description: Generate high-quality images using Google's Gemini image generation models (Nano Banana, Nano Banana Pro, Nano Banana 2, Nano Banana 2 Lite)
 keywords:
   - nano banana
   - nano banana 2
+  - nano banana 2 lite
   - gemini image generation
   - image generation
   - text to image
   - image editing
+  - virtual try-on
   - google gemini
   - gemini 2.5 flash
   - gemini 3 pro
   - gemini 3.1 flash image
+  - gemini 3.1 flash-lite image
 ---
 
 # Nano Banana (Gemini Image Generation)
 
-Nano Banana provides adapters for Google's Gemini image generation models, enabling text-to-image generation, image editing, multi-image composition, and batch generation.
+Nano Banana provides adapters for Google's Gemini image generation models, enabling text-to-image generation, image editing, multi-image composition, batch generation, and (via `NanoBanana2LiteAdapter`) a lightweight virtual try-on convenience method.
 
 ## Overview
 
-The `tryon.api.nano_banana` module provides three adapters:
+The `tryon.api.nano_banana` module provides four adapters:
 
 - **NanoBananaAdapter**: Gemini 2.5 Flash Image — Fast, efficient, 1024px resolution
 - **NanoBananaProAdapter**: Gemini 3 Pro Image Preview — Advanced, up to 4K resolution, search grounding
 - **NanoBanana2Adapter**: Gemini 3.1 Flash Image (Nano Banana 2) — Pro capabilities at Flash speed; 512px–4K, subject consistency, precise instruction following. See [Google's announcement](https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/).
+- **NanoBanana2LiteAdapter**: Gemini 3.1 Flash-Lite Image (Nano Banana 2 Lite) — Google's fastest/cheapest tier; 1K resolution only, up to 14 reference images, but "not optimized for multiple reference inputs or multi-turn sequential editing" per Google's docs. See [Google DeepMind's announcement](https://deepmind.google/models/gemini-image/flash-lite/).
 
 ## Prerequisites
 
@@ -311,6 +315,66 @@ Same method signatures as Nano Banana Pro: `generate_image_edit()`, `generate_mu
 | Fastest iteration, 1024px | **NanoBananaAdapter** |
 | Maximum quality, 4K, search grounding | **NanoBananaProAdapter** |
 | Pro quality at Flash speed, rapid edits | **NanoBanana2Adapter** |
+| Lowest latency/cost, high-volume pipelines | **NanoBanana2LiteAdapter** |
+
+## NanoBanana2LiteAdapter (Gemini 3.1 Flash-Lite Image — Nano Banana 2 Lite)
+
+Google's fastest and cheapest Gemini image model, engineered for velocity and scale where speed and cost are the primary operational constraints. Capped at 1K resolution; per Google's docs it is "not optimized for multiple reference inputs or multi-turn sequential editing" -- use `NanoBanana2Adapter` instead when reference-image fidelity matters more than latency/cost.
+
+**Reference:** [Gemini 3.1 Flash-Lite Image — Google DeepMind](https://deepmind.google/models/gemini-image/flash-lite/)
+
+### Initialization
+
+```python
+from tryon.api.nano_banana import NanoBanana2LiteAdapter
+
+adapter = NanoBanana2LiteAdapter()
+# Or: adapter = NanoBanana2LiteAdapter(api_key="your_api_key")
+```
+
+### Text-to-Image Generation
+
+```python
+images = adapter.generate_text_to_image(
+    prompt="A fashion model wearing a summer collection",
+    aspect_ratio="16:9",  # Optional
+)
+```
+
+**Parameters:**
+- `prompt` (str): Text description of the image to generate
+- `aspect_ratio` (str, optional): Aspect ratio. Options: `"1:1"`, `"2:3"`, `"3:2"`, `"3:4"`, `"4:3"`, `"4:5"`, `"5:4"`, `"9:16"`, `"16:9"`, `"21:9"`
+
+**Returns:** `List[Image.Image]` — always at 1K resolution (no `resolution` parameter)
+
+### Image Editing and Multi-Image Composition
+
+Same method signatures as the other adapters: `generate_image_edit(image, prompt, aspect_ratio, ...)`, `generate_multi_image(images, prompt, aspect_ratio, ...)`, `generate_batch(prompts, aspect_ratio, ...)`. None of them accept a `resolution` or `use_search_grounding` parameter, since Flash-Lite Image only supports 1K output and doesn't support search grounding.
+
+### Virtual Try-On (Multi-Image Composition)
+
+`NanoBanana2LiteAdapter` adds a `generate_virtual_tryon()` convenience method that composes a garment onto a person image via `generate_multi_image()`, with a sensible default styling prompt (mirroring `FluxVTONAdapter.generate`). This is a **fast/cheap option, not the highest-fidelity one** -- prefer a dedicated VTON model (FLUX VTO, Nova Canvas, Kling AI, Segmind, or [P-Image-Try-On](pruna)) when garment-fit accuracy matters more.
+
+```python
+images = adapter.generate_virtual_tryon(
+    person="person.jpg",
+    garment="jacket.jpg",
+    garment_description="olive green bomber jacket",  # Optional, builds the default prompt
+    # or: prompt="Full custom styling instruction"     # Optional, overrides garment_description
+)
+images[0].save("result.png")
+```
+
+**Parameters:**
+- `person` / `source_image` / `person_image` / `model_image` (aliases): Person/model image
+- `garment` / `reference_image` / `garment_image` / `cloth_image` (aliases): Garment reference image
+- `prompt` (str, optional): Full styling prompt override
+- `garment_description` (str, optional): Short garment description used to build the default prompt
+- `aspect_ratio` (str, optional): Aspect ratio for the output
+
+**Returns:** `List[Image.Image]`
+
+Also available from the `opentryon` CLI / MCP server as `vton --model nano-banana-2-lite`.
 
 ## Command Line Usage
 

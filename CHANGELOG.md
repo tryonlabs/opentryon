@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+#### 🎨 Demos
+- **The aggregated Next.js/Tailwind web UI has moved out of this repo.** `demo/virtual-tryon`, `demo/fashion-prompt-builder`, and `demo/tryon-agent` (the combined dashboard prototype) are removed; that UI now lives in the standalone [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) app, which talks to `opentryon` exclusively over the MCP server (see below) so the two repos stay independently releasable
+- `demo/` now contains only the Gradio demos (`extract_garment`, `model_swap`, `outfit_generator`) -- this package's own demos are Gradio apps and Jupyter notebooks, not a hosted web frontend
+- Added `notebooks/virtual_tryon_demo.ipynb`, a runnable, dependency-light walkthrough of `tryon.cli.runner.invoke_model()` for the `vton` service (dry-run by default, no API key required to execute)
+
 ### Added
 
 #### 🔌 MCP Server
@@ -15,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Two discovery tools, `list_opentryon_tools` and `opentryon_status`, report live per-model configuration/readiness straight from the registry and the loaded `.env`
 - Every generated tool supports `dry_run` (preview the resolved adapter call, no API/GPU cost) and `output_dir`, matching the CLI's `--dry-run`/`--output-dir` flags
 - `mcp-server/test_server.py`: offline test suite covering tool/registry parity, schema generation (required fields, `choices` -> enum), dry-run calls across all six services, and `alt_method_on_image` switching (veo/sora/luma-video)
+- `invoke_model()` / `run_service()` results for `images`/`image_bytes` outputs now include an `images_base64` list alongside `output_paths`, so remote MCP clients (e.g. a web frontend calling the server over the `http` transport) can render results directly without needing filesystem access to the server's `output_dir`
 
 #### 🖥️ Unified CLI
 - **`opentryon` command-line interface**: Installable console script exposing every adapter through `opentryon <service> --model <model> [params...]` (services: `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`)
@@ -26,10 +34,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Available in the CLI as `opentryon understand --model kimi-k2.6 / kimi-k2.7-code / kimi-vl`
   - Extends OpenTryOn's understanding capabilities beyond the fashion domain (documents, UI screenshots, general photography, etc.)
 
+#### 👗 Virtual Try-On / 🎨 Image Generation
+- **Pruna P-Image-Try-On** (`tryon.api.vton.PImageTryOnAdapter`): multi-garment virtual try-on -- fits up to 11 garment reference images onto a person photo in a single call. Available as `opentryon vton --model p-image-tryon` and the `vton_p_image_tryon` MCP tool. Lives under `tryon/api/vton/` (a use-case directory) rather than a new `tryon/api/pruna/` package -- see the updated "Decide where the adapter lives" section of `docs/docs/advanced/new-model-checklist.md` for the rationale (avoids one top-level vendor directory per new single-purpose provider)
+- **Nano Banana 2 Lite** (`tryon.api.nano_banana.NanoBanana2LiteAdapter`, `gemini-3.1-flash-lite-image`): Google's fastest/cheapest Gemini image tier (1K resolution only). Registered under `generate` and `edit` (`opentryon generate|edit --model nano-banana-2-lite`), and under `vton` (`opentryon vton --model nano-banana-2-lite`) via a new `generate_virtual_tryon()` convenience method that composes a garment onto a person via multi-image composition -- a fast/cheap option, not the highest-fidelity one
+
 ### Fixed
 - Lazy (PEP 562) attribute loading for `tryon.api` so importing one adapter no longer transitively imports every adapter's dependencies (e.g. `torch`/`timm` for BEN2)
 - Missing comma in `setup.py` `install_requires` that merged two dependency strings into one invalid requirement
 - Missing `openai` dependency for GPT-Image/Sora adapters
+- `tryon.api.nano_banana` adapters (`NanoBananaAdapter`, `NanoBananaProAdapter`, `NanoBanana2Adapter`) were decoding Gemini image responses with `part.as_image()`, which returns a `google.genai.types.Image` (a pydantic model), not a `PIL.Image.Image`, on `google-genai>=2.x` -- broke `.size`/`.mode` access and anything expecting a real PIL Image downstream (CLI/MCP output saving, notebooks, etc.). Now decodes `part.inline_data.data` directly via `PIL.Image.open()`
 
 ## [0.0.2] - 27 December 2025
 

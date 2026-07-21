@@ -20,8 +20,35 @@ integrations touch every item below.
 
 | Kind | Location | Pattern |
 |---|---|---|
-| Cloud API (needs an API key) | `tryon/api/<provider>/` | `tryon/api/kimi/adapter.py` |
+| Cloud API, existing vendor with a dedicated package | `tryon/api/<provider>/` | `tryon/api/kimi/adapter.py`, or a new class in an existing family file, e.g. `NanoBanana2LiteAdapter` added to `tryon/api/nano_banana/adapter.py` |
+| Cloud API, brand-new vendor whose adapter's *primary* purpose is a single existing service | `tryon/api/<service>/` (use-case directory, matches a `SERVICES` key in `tryon/cli/registry.py`) | `tryon/api/vton/p_image_tryon.py` (Pruna P-Image-Try-On) |
 | Open-weight / local GPU model | `tryon/models/<model>/` | `tryon/models/kimi_vl/adapter.py` |
+
+**Why a use-case directory for new vendors:** `tryon/api/` already has a
+one-directory-per-vendor pattern for providers with multiple adapter classes
+or files (`nano_banana/`, `kimi/`, `openAI/`, `lumaAI/`, `ben2/`). As more
+VTON/generate/edit providers get added over time, minting a new top-level
+`tryon/api/<vendor>/` directory for every single-file, single-purpose
+adapter would make that listing grow unbounded. Instead, park new
+single-file adapters whose primary purpose is one existing service inside
+the matching use-case directory (`tryon/api/vton/`, and analogously
+`tryon/api/generate/`, `tryon/api/edit/`, etc. if/when those are needed) --
+the same small, fixed set of directories the CLI/MCP registry already
+organizes by (`vton`, `generate`, `edit`, `understand`, `video-generate`,
+`bg-remove`). A vendor whose model is already represented in one of these
+directories, or that ships multiple adapter classes/files, still gets its
+own `tryon/api/<provider>/` package as before.
+
+If a single adapter/model genuinely serves *multiple* services (e.g. an
+image model that can also do virtual try-on via multi-image composition),
+prefer registering the *same* class under multiple `ModelSpec` entries in
+`tryon/cli/registry.py` (different `service`, different `method`) over
+duplicating the adapter file into several use-case directories -- see how
+`nano-banana`/`nano-banana-pro`/`nano-banana-2`/`nano-banana-2-lite` are
+each registered under both `generate` and `edit`, and how
+`nano-banana-2-lite` is *also* registered under `vton` (calling
+`generate_virtual_tryon()`, a thin wrapper around `generate_multi_image()`)
+without adding any new files.
 
 Single-file adapters (no extra helpers) can skip the subpackage and live
 directly as `tryon/api/<provider>.py` (see `veo.py`, `segmind.py`). Prefer a

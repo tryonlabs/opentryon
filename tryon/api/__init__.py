@@ -18,6 +18,8 @@ _LAZY_ATTRS = {
     "NanoBananaAdapter": ".nano_banana",
     "NanoBananaProAdapter": ".nano_banana",
     "NanoBanana2Adapter": ".nano_banana",
+    "NanoBanana2LiteAdapter": ".nano_banana",
+    "PImageTryOnAdapter": ".vton",
     "LumaAIAdapter": ".lumaAI",
     "Flux2ProAdapter": ".flux2",
     "Flux2FlexAdapter": ".flux2",
