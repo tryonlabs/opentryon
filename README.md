@@ -14,11 +14,14 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Amazon Nova Canvas virtual try-on using AWS Bedrock
   - Kling AI virtual try-on using Kolors API
   - Segmind Try-On Diffusion API integration
+  - Pruna AI P-Image-Try-On: multi-garment virtual try-on (up to 11 garment reference images in one call)
+  - Nano Banana 2 Lite: lightweight virtual try-on via multi-image composition (fast/cheap alternative)
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
 - **Image Generation**: 
   - Nano Banana (Gemini 2.5 Flash Image) for fast, efficient image generation
   - Nano Banana Pro (Gemini 3 Pro Image Preview) for advanced 4K image generation with search grounding
   - Nano Banana 2 (Gemini 3.1 Flash Image) for Pro capabilities at Flash speed (1K/2K/4K, subject consistency)
+  - Nano Banana 2 Lite (Gemini 3.1 Flash-Lite Image) for Google's fastest, cheapest image generation/editing tier (1K)
   - FLUX.2 [PRO] high-quality image generation with text-to-image, image editing, and multi-image composition
   - FLUX.2 [FLEX] flexible image generation with advanced controls (guidance, steps, prompt upsampling)
   - Photon-Flash-1 (Luma AI): Fast and cost efficient image generation, ideal for rapid iteration and scale
@@ -155,7 +158,11 @@ KLING_AI_BASE_URL=https://api-singapore.klingai.com  # Optional, defaults to Sin
 # Segmind Credentials (required for Segmind virtual try-on)
 SEGMIND_API_KEY=your_segmind_api_key
 
-# Google Gemini Credentials (required for Nano Banana image generation and Google Veo 3 Video generation)
+# Pruna AI Credentials (required for P-Image-Try-On multi-garment virtual try-on)
+PRUNA_API_KEY=your_pruna_api_key
+
+# Google Gemini Credentials (required for Nano Banana image generation, Nano Banana 2 Lite
+# virtual try-on, and Google Veo 3 Video generation)
 GEMINI_API_KEY=your_gemini_api_key
 
 # BFL API Credentials (required for FLUX.2 image generation)
@@ -184,7 +191,8 @@ GOOGLE_API_KEY=your_google_api_key  # For Google Gemini
 - For Kling AI, obtain your API key and secret key from the [Kling AI Developer Portal](https://app.klingai.com/global/dev/document-api/apiReference/model/functionalityTry)
 
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
-- For Nano Banana and Google Veo 3, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
+- For Pruna AI (P-Image-Try-On), request API access at [Pruna's dashboard](https://dashboard.pruna.ai/login)
+- For Nano Banana, Nano Banana 2 Lite, and Google Veo 3, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
@@ -253,9 +261,9 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind` |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image`, `luma-image` |
-| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `nano-banana-2-lite` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-lite`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image`, `luma-image` |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-lite`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image` |
 | `understand` | Image/video understanding (general-purpose) | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-vl`, `llava-next` |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video` |
 | `bg-remove` | Background removal | `ben2` |
@@ -265,6 +273,15 @@ Examples:
 ```bash
 # Virtual try-on with BFL's FLUX VTO
 opentryon vton --model flux-vto \
+  --model-image model.png --garment-image garment.png \
+  --garment-description "olive green bomber jacket"
+
+# Multi-garment virtual try-on with Pruna's P-Image-Try-On (up to 11 garment images)
+opentryon vton --model p-image-tryon \
+  --person-image model.png --garment-image top.png --garment-image bottoms.png
+
+# Lightweight virtual try-on with Nano Banana 2 Lite (fast/cheap alternative)
+opentryon vton --model nano-banana-2-lite \
   --model-image model.png --garment-image garment.png \
   --garment-description "olive green bomber jacket"
 

@@ -220,6 +220,35 @@ See [Nova Canvas API Documentation](nova-canvas) for complete details.
 
 ---
 
+### `PImageTryOnAdapter`
+
+Adapter for Pruna AI's P-Image-Try-On API -- multi-garment virtual try-on
+(up to 11 garment reference images in one call). Lives under
+`tryon.api.vton` (use-case directory) rather than a dedicated `tryon.api.pruna`
+package, since it's a single-file, VTON-primary adapter.
+
+```python
+from tryon.api.vton import PImageTryOnAdapter
+
+adapter = PImageTryOnAdapter(api_key="your_api_key")
+
+images = adapter.generate_and_decode(
+    person_image="person.jpg",
+    garment_images=["top.jpg", "bottoms.jpg"],
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): Pruna API key. Defaults to `PRUNA_API_KEY` environment variable
+
+**Methods:**
+- `generate(person_image, garment_images, ...)` - Generate a virtual try-on result (returns a URL)
+- `generate_and_decode(person_image, garment_images, ...)` - Generate and decode to PIL Images
+
+See [Pruna P-Image-Try-On API Documentation](pruna) for complete details.
+
+---
+
 ## Image Generation API Adapters
 
 ### `NanoBananaAdapter`
@@ -275,6 +304,46 @@ images = adapter.generate_text_to_image(
 - `generate_image_edit(image, prompt, resolution, aspect_ratio, ...)` - Edit images with text prompts
 - `generate_multi_image(images, prompt, resolution, aspect_ratio, ...)` - Compose multiple images
 - `generate_batch(prompts, resolution, aspect_ratio, ...)` - Batch generation
+
+See [Nano Banana API Documentation](nano-banana) for complete details.
+
+---
+
+### `NanoBanana2LiteAdapter`
+
+Adapter for Gemini 3.1 Flash-Lite Image (Nano Banana 2 Lite) -- Google's
+fastest and cheapest Gemini image tier (1K resolution only). Also exposes
+`generate_virtual_tryon()`, a lightweight try-on convenience method built on
+multi-image composition (not the highest-fidelity option -- see the note in
+[Nano Banana API Documentation](nano-banana)).
+
+```python
+from tryon.api.nano_banana import NanoBanana2LiteAdapter
+
+adapter = NanoBanana2LiteAdapter(api_key="your_api_key")
+
+images = adapter.generate_text_to_image(
+    prompt="A fashion model wearing a summer collection",
+    aspect_ratio="16:9",
+)
+
+# Lightweight virtual try-on
+images = adapter.generate_virtual_tryon(
+    person="person.jpg",
+    garment="jacket.jpg",
+    garment_description="olive green bomber jacket",
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): Google Gemini API key. Defaults to `GEMINI_API_KEY` environment variable
+
+**Methods:**
+- `generate_text_to_image(prompt, aspect_ratio, ...)` - Generate images from text (1K only)
+- `generate_image_edit(image, prompt, aspect_ratio, ...)` - Edit images with text prompts
+- `generate_multi_image(images, prompt, aspect_ratio, ...)` - Compose multiple images
+- `generate_virtual_tryon(person, garment, garment_description, ...)` - Lightweight virtual try-on
+- `generate_batch(prompts, aspect_ratio, ...)` - Batch generation
 
 See [Nano Banana API Documentation](nano-banana) for complete details.
 

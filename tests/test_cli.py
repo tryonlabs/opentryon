@@ -75,6 +75,56 @@ def check_flux_vto_real_call():
         print(f"\u2713 real BFL API call via CLI succeeded, saved {saved[0]}")
 
 
+def check_p_image_tryon_dry_run():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "vton", "--model", "p-image-tryon",
+            "--person-image", "data/model-1.jpg",
+            "--garment-image", "data/garment.png", "data/garment2.png",
+            "--turbo",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    print(printed, end="")
+    assert code == 0
+    assert "PImageTryOnAdapter" in printed and "generate_and_decode" in printed, printed
+    assert "'turbo': True" in printed, printed
+    print("\u2713 vton p-image-tryon --dry-run resolves the expected call")
+
+
+def check_nano_banana_2_lite_dry_runs():
+    cases = [
+        (
+            ["vton", "--model", "nano-banana-2-lite",
+             "--model-image", "data/model-1.jpg",
+             "--garment-image", "data/garment.png",
+             "--garment-description", "olive green bomber jacket"],
+            "generate_virtual_tryon",
+        ),
+        (
+            ["generate", "--model", "nano-banana-2-lite",
+             "--prompt", "A fashion model wearing a summer collection",
+             "--aspect-ratio", "16:9"],
+            "generate_text_to_image",
+        ),
+        (
+            ["edit", "--model", "nano-banana-2-lite",
+             "--image", "data/model-1.jpg",
+             "--prompt", "Change the outfit to a formal business suit"],
+            "generate_image_edit",
+        ),
+    ]
+    for argv, expect_method in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "NanoBanana2LiteAdapter" in printed and f".{expect_method}(" in printed, printed
+    print("\u2713 vton/generate/edit nano-banana-2-lite --dry-run resolve the expected calls")
+
+
 def check_kimi_dry_runs():
     for model_id, expect_kwarg in [
         ("kimi-k2.6", "'thinking': True"),
@@ -130,6 +180,8 @@ if __name__ == "__main__":
     check_every_model_parser_builds()
     check_flux_vto_dry_run()
     check_flux_vto_real_call()
+    check_p_image_tryon_dry_run()
+    check_nano_banana_2_lite_dry_runs()
     check_kimi_dry_runs()
     check_kimi_understand_requires_image_or_video()
     check_kimi_k26_real_call()

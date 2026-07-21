@@ -34,10 +34,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Available in the CLI as `opentryon understand --model kimi-k2.6 / kimi-k2.7-code / kimi-vl`
   - Extends OpenTryOn's understanding capabilities beyond the fashion domain (documents, UI screenshots, general photography, etc.)
 
+#### 👗 Virtual Try-On / 🎨 Image Generation
+- **Pruna P-Image-Try-On** (`tryon.api.vton.PImageTryOnAdapter`): multi-garment virtual try-on -- fits up to 11 garment reference images onto a person photo in a single call. Available as `opentryon vton --model p-image-tryon` and the `vton_p_image_tryon` MCP tool. Lives under `tryon/api/vton/` (a use-case directory) rather than a new `tryon/api/pruna/` package -- see the updated "Decide where the adapter lives" section of `docs/docs/advanced/new-model-checklist.md` for the rationale (avoids one top-level vendor directory per new single-purpose provider)
+- **Nano Banana 2 Lite** (`tryon.api.nano_banana.NanoBanana2LiteAdapter`, `gemini-3.1-flash-lite-image`): Google's fastest/cheapest Gemini image tier (1K resolution only). Registered under `generate` and `edit` (`opentryon generate|edit --model nano-banana-2-lite`), and under `vton` (`opentryon vton --model nano-banana-2-lite`) via a new `generate_virtual_tryon()` convenience method that composes a garment onto a person via multi-image composition -- a fast/cheap option, not the highest-fidelity one
+
 ### Fixed
 - Lazy (PEP 562) attribute loading for `tryon.api` so importing one adapter no longer transitively imports every adapter's dependencies (e.g. `torch`/`timm` for BEN2)
 - Missing comma in `setup.py` `install_requires` that merged two dependency strings into one invalid requirement
 - Missing `openai` dependency for GPT-Image/Sora adapters
+- `tryon.api.nano_banana` adapters (`NanoBananaAdapter`, `NanoBananaProAdapter`, `NanoBanana2Adapter`) were decoding Gemini image responses with `part.as_image()`, which returns a `google.genai.types.Image` (a pydantic model), not a `PIL.Image.Image`, on `google-genai>=2.x` -- broke `.size`/`.mode` access and anything expecting a real PIL Image downstream (CLI/MCP output saving, notebooks, etc.). Now decodes `part.inline_data.data` directly via `PIL.Image.open()`
 
 ## [0.0.2] - 27 December 2025
 
