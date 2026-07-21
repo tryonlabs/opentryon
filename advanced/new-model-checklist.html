@@ -10,8 +10,8 @@
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io">
 <link rel="alternate" type="application/rss+xml" title="OpenTryOn Documentation" href="https://tryonlabs.github.io/opentryon/feed.xml"><link rel="stylesheet" href="/opentryon/assets/css/styles.0ecc2d9e.css">
-<script src="/opentryon/assets/js/runtime~main.1a5d7e77.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.b46e6a1e.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.a6fc9f2e.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.9b388d35.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -22,7 +22,31 @@
 open-weight/local) is added to OpenTryOn. Use it as a PR checklist -- most
 integrations touch every item below.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-decide-where-the-adapter-lives">1. Decide where the adapter lives<a href="#1-decide-where-the-adapter-lives" class="hash-link" aria-label="Direct link to 1. Decide where the adapter lives" title="Direct link to 1. Decide where the adapter lives" translate="no">​</a></h2>
-<table><thead><tr><th>Kind</th><th>Location</th><th>Pattern</th></tr></thead><tbody><tr><td>Cloud API (needs an API key)</td><td><code>tryon/api/&lt;provider&gt;/</code></td><td><code>tryon/api/kimi/adapter.py</code></td></tr><tr><td>Open-weight / local GPU model</td><td><code>tryon/models/&lt;model&gt;/</code></td><td><code>tryon/models/kimi_vl/adapter.py</code></td></tr></tbody></table>
+<table><thead><tr><th>Kind</th><th>Location</th><th>Pattern</th></tr></thead><tbody><tr><td>Cloud API, existing vendor with a dedicated package</td><td><code>tryon/api/&lt;provider&gt;/</code></td><td><code>tryon/api/kimi/adapter.py</code>, or a new class in an existing family file, e.g. <code>NanoBanana2LiteAdapter</code> added to <code>tryon/api/nano_banana/adapter.py</code></td></tr><tr><td>Cloud API, brand-new vendor whose adapter&#x27;s <em>primary</em> purpose is a single existing service</td><td><code>tryon/api/&lt;service&gt;/</code> (use-case directory, matches a <code>SERVICES</code> key in <code>tryon/cli/registry.py</code>)</td><td><code>tryon/api/vton/p_image_tryon.py</code> (Pruna P-Image-Try-On)</td></tr><tr><td>Open-weight / local GPU model</td><td><code>tryon/models/&lt;model&gt;/</code></td><td><code>tryon/models/kimi_vl/adapter.py</code></td></tr></tbody></table>
+<p><strong>Why a use-case directory for new vendors:</strong> <code>tryon/api/</code> already has a
+one-directory-per-vendor pattern for providers with multiple adapter classes
+or files (<code>nano_banana/</code>, <code>kimi/</code>, <code>openAI/</code>, <code>lumaAI/</code>, <code>ben2/</code>). As more
+VTON/generate/edit providers get added over time, minting a new top-level
+<code>tryon/api/&lt;vendor&gt;/</code> directory for every single-file, single-purpose
+adapter would make that listing grow unbounded. Instead, park new
+single-file adapters whose primary purpose is one existing service inside
+the matching use-case directory (<code>tryon/api/vton/</code>, and analogously
+<code>tryon/api/generate/</code>, <code>tryon/api/edit/</code>, etc. if/when those are needed) --
+the same small, fixed set of directories the CLI/MCP registry already
+organizes by (<code>vton</code>, <code>generate</code>, <code>edit</code>, <code>understand</code>, <code>video-generate</code>,
+<code>bg-remove</code>). A vendor whose model is already represented in one of these
+directories, or that ships multiple adapter classes/files, still gets its
+own <code>tryon/api/&lt;provider&gt;/</code> package as before.</p>
+<p>If a single adapter/model genuinely serves <em>multiple</em> services (e.g. an
+image model that can also do virtual try-on via multi-image composition),
+prefer registering the <em>same</em> class under multiple <code>ModelSpec</code> entries in
+<code>tryon/cli/registry.py</code> (different <code>service</code>, different <code>method</code>) over
+duplicating the adapter file into several use-case directories -- see how
+<code>nano-banana</code>/<code>nano-banana-pro</code>/<code>nano-banana-2</code>/<code>nano-banana-2-lite</code> are
+each registered under both <code>generate</code> and <code>edit</code>, and how
+<code>nano-banana-2-lite</code> is <em>also</em> registered under <code>vton</code> (calling
+<code>generate_virtual_tryon()</code>, a thin wrapper around <code>generate_multi_image()</code>)
+without adding any new files.</p>
 <p>Single-file adapters (no extra helpers) can skip the subpackage and live
 directly as <code>tryon/api/&lt;provider&gt;.py</code> (see <code>veo.py</code>, <code>segmind.py</code>). Prefer a
 subpackage once you have more than one file (adapter + custom model code,
