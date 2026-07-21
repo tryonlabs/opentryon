@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### 👗 Virtual Try-On / 🎨 Image Generation
 - **Pruna P-Image-Try-On** (`tryon.api.vton.PImageTryOnAdapter`): multi-garment virtual try-on -- fits up to 11 garment reference images onto a person photo in a single call. Available as `opentryon vton --model p-image-tryon` and the `vton_p_image_tryon` MCP tool. Lives under `tryon/api/vton/` (a use-case directory) rather than a new `tryon/api/pruna/` package -- see the updated "Decide where the adapter lives" section of `docs/docs/advanced/new-model-checklist.md` for the rationale (avoids one top-level vendor directory per new single-purpose provider)
 - **Nano Banana 2 Lite** (`tryon.api.nano_banana.NanoBanana2LiteAdapter`, `gemini-3.1-flash-lite-image`): Google's fastest/cheapest Gemini image tier (1K resolution only). Registered under `generate` and `edit` (`opentryon generate|edit --model nano-banana-2-lite`), and under `vton` (`opentryon vton --model nano-banana-2-lite`) via a new `generate_virtual_tryon()` convenience method that composes a garment onto a person via multi-image composition -- a fast/cheap option, not the highest-fidelity one
+- **FASHN AI Virtual Try-On** (`tryon.api.vton.FashnVTONAdapter`): fashion-focused try-on via FASHN's universal `/v1/run` API. Registered as `opentryon vton --model fashn-tryon-max` (recommended high-fidelity, up to 4K, prompt-based styling) and `opentryon vton --model fashn-tryon-v1.6` (fast/cheap real-time e-commerce). Also lives under `tryon/api/vton/`
+
+#### 🎬 Video Generation
+- **Gemini Omni Flash** (`tryon.api.omni.GeminiOmniAdapter`, `gemini-omni-flash-preview`): multimodal video generation and conversational editing via the Interactions API. Available as `opentryon video-generate --model gemini-omni` (text-to-video; pass `--image` for image-to-video; pass `--previous-interaction-id` for multi-turn edits). Uses the same `GEMINI_API_KEY` as Nano Banana / Veo
 
 ### Fixed
 - Lazy (PEP 562) attribute loading for `tryon.api` so importing one adapter no longer transitively imports every adapter's dependencies (e.g. `torch`/`timm` for BEN2)

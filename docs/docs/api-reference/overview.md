@@ -249,6 +249,36 @@ See [Pruna P-Image-Try-On API Documentation](pruna) for complete details.
 
 ---
 
+### `FashnVTONAdapter`
+
+Adapter for FASHN AI virtual try-on (`tryon-max` and `tryon-v1.6`). Lives
+under `tryon.api.vton` (use-case directory) rather than a dedicated
+`tryon.api.fashn` package.
+
+```python
+from tryon.api.vton import FashnVTONAdapter
+
+adapter = FashnVTONAdapter(api_key="your_api_key")
+
+images = adapter.generate_and_decode(
+    model_image="person.jpg",
+    product_image="garment.jpg",
+    model_name="tryon-max",
+    resolution="2k",
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): FASHN API key. Defaults to `FASHN_API_KEY`
+
+**Methods:**
+- `generate(model_image, product_image, model_name, ...)` - Run try-on (returns URLs / data URIs)
+- `generate_and_decode(model_image, product_image, model_name, ...)` - Generate and decode to PIL Images
+
+See [FASHN AI Virtual Try-On Documentation](fashn) for complete details.
+
+---
+
 ## Image Generation API Adapters
 
 ### `NanoBananaAdapter`
@@ -407,6 +437,36 @@ images = adapter.generate_text_to_image(
 - `generate_multi_image(prompt, images, width, height, seed, guidance, steps, ...)` - Compose multiple images with advanced controls
 
 See [FLUX.2 API Documentation](flux2) for complete details.
+
+---
+
+## Video Generation API Adapters
+
+### `GeminiOmniAdapter`
+
+Adapter for Gemini Omni Flash (`gemini-omni-flash-preview`) -- multimodal
+video generation and conversational editing via the Interactions API.
+
+```python
+from tryon.api.omni import GeminiOmniAdapter
+
+adapter = GeminiOmniAdapter(api_key="your_api_key")
+
+video = adapter.generate_text_to_video(
+    prompt="A fashion model walking a runway",
+    aspect_ratio="9:16",
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): Google Gemini API key. Defaults to `GEMINI_API_KEY`
+
+**Methods:**
+- `generate_text_to_video(prompt, aspect_ratio, previous_interaction_id, ...)` - Text-to-video (or edit turn)
+- `generate_image_to_video(image, prompt, aspect_ratio, reference_images, ...)` - Image-to-video
+- `edit_video(prompt, previous_interaction_id, ...)` - Conversational edit of a prior clip
+
+See [Gemini Omni Flash Documentation](gemini-omni) for complete details.
 
 ---
 

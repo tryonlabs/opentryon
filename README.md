@@ -16,6 +16,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
   - Segmind Try-On Diffusion API integration
   - Pruna AI P-Image-Try-On: multi-garment virtual try-on (up to 11 garment reference images in one call)
   - Nano Banana 2 Lite: lightweight virtual try-on via multi-image composition (fast/cheap alternative)
+  - FASHN AI Try-On Max / v1.6: fashion-focused virtual try-on (high-fidelity up to 4K, or fast real-time e-commerce)
   - Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion
 - **Image Generation**: 
   - Nano Banana (Gemini 2.5 Flash Image) for fast, efficient image generation
@@ -30,6 +31,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Video Generation**:
   - Luma AI Video Generation Model (Dream Machine): High-quality video generation with text-to-image and image-to-video modes.
   - Google Veo 3 Video Generation Model: Generate high-quality, cinematic videos from text or images with realistic motion, temporal consistency, and fine-grained control over style and camera dynamics.
+  - Gemini Omni Flash: Fast multimodal video generation and conversational video editing (text/image → video, multi-turn refinements via the Interactions API).
 - **Remove Image Background**: Remove Image Background using BEN2 (Background Erase Network)
 - **Multimodal Understanding** (general-purpose, not limited to fashion):
   - Kimi K2.6 (Moonshot AI): Text, image, and video understanding with optional "thinking" mode and 256K context
@@ -161,8 +163,11 @@ SEGMIND_API_KEY=your_segmind_api_key
 # Pruna AI Credentials (required for P-Image-Try-On multi-garment virtual try-on)
 PRUNA_API_KEY=your_pruna_api_key
 
+# FASHN AI Credentials (required for FASHN Try-On Max / v1.6)
+FASHN_API_KEY=your_fashn_api_key
+
 # Google Gemini Credentials (required for Nano Banana image generation, Nano Banana 2 Lite
-# virtual try-on, and Google Veo 3 Video generation)
+# virtual try-on, Google Veo 3, and Gemini Omni Flash video generation)
 GEMINI_API_KEY=your_gemini_api_key
 
 # BFL API Credentials (required for FLUX.2 image generation)
@@ -192,7 +197,8 @@ GOOGLE_API_KEY=your_google_api_key  # For Google Gemini
 
 - For Segmind, obtain your API key from the [Segmind API Portal](https://www.segmind.com/models/try-on-diffusion/api)
 - For Pruna AI (P-Image-Try-On), request API access at [Pruna's dashboard](https://dashboard.pruna.ai/login)
-- For Nano Banana, Nano Banana 2 Lite, and Google Veo 3, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
+- For FASHN AI (Try-On Max / v1.6), obtain your API key from the [FASHN Developer API dashboard](https://app.fashn.ai/api)
+- For Nano Banana, Nano Banana 2 Lite, Google Veo 3, and Gemini Omni Flash, obtain your API key from the [Google AI Studio](https://aistudio.google.com/app/apikey)
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
 
 - For FLUX.2 models, obtain your API key from [BFL AI](https://docs.bfl.ai/)
@@ -261,11 +267,11 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `nano-banana-2-lite` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `nano-banana-2-lite`, `fashn-tryon-max`, `fashn-tryon-v1.6` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-lite`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image`, `luma-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-lite`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image` |
 | `understand` | Image/video understanding (general-purpose) | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-vl`, `llava-next` |
-| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video` |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `gemini-omni` |
 | `bg-remove` | Background removal | `ben2` |
 
 Examples:
@@ -285,6 +291,15 @@ opentryon vton --model nano-banana-2-lite \
   --model-image model.png --garment-image garment.png \
   --garment-description "olive green bomber jacket"
 
+# High-fidelity virtual try-on with FASHN Try-On Max
+opentryon vton --model fashn-tryon-max \
+  --model-image model.png --garment-image garment.png \
+  --resolution 2k --generation-mode quality
+
+# Fast e-commerce try-on with FASHN v1.6
+opentryon vton --model fashn-tryon-v1.6 \
+  --model-image model.png --garment-image garment.png --mode performance
+
 # Text-to-image with Nano Banana
 opentryon generate --model nano-banana --prompt "Fashion model in a studio" --aspect-ratio 16:9
 
@@ -293,6 +308,14 @@ opentryon edit --model gpt-image --images photo.jpg --prompt "Add sunglasses"
 
 # Animate a still image into a video with Veo (passing --image switches to image-to-video)
 opentryon video-generate --model veo --prompt "Model walks the runway" --image photo.jpg
+
+# Generate (or conversationally edit) video with Gemini Omni Flash
+opentryon video-generate --model gemini-omni \
+  --prompt "A fashion model walking a runway under soft studio lights" --aspect-ratio 9:16
+# Follow-up edit turn (reuse the interaction id printed / returned by the prior call):
+# opentryon video-generate --model gemini-omni \
+#   --prompt "Dim the lights and add a slow dolly-in" \
+#   --previous-interaction-id <id>
 
 # Remove a background locally with BEN2 (requires `pip install opentryon[local]`)
 opentryon bg-remove --model ben2 --image product.jpg

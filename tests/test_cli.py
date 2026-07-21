@@ -125,6 +125,58 @@ def check_nano_banana_2_lite_dry_runs():
     print("\u2713 vton/generate/edit nano-banana-2-lite --dry-run resolve the expected calls")
 
 
+def check_fashn_dry_runs():
+    for model_id, expect_model_name in [
+        ("fashn-tryon-max", "tryon-max"),
+        ("fashn-tryon-v1.6", "tryon-v1.6"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "vton", "--model", model_id,
+                "--person-image", "data/model-1.jpg",
+                "--garment-image", "data/garment.png",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        print(printed, end="")
+        assert code == 0, printed
+        assert "FashnVTONAdapter" in printed and "generate_and_decode" in printed, printed
+        assert f"'model_name': '{expect_model_name}'" in printed, printed
+    print("\u2713 vton fashn-tryon-max / fashn-tryon-v1.6 --dry-run resolve the expected calls")
+
+
+def check_gemini_omni_dry_runs():
+    cases = [
+        (
+            ["video-generate", "--model", "gemini-omni",
+             "--prompt", "A fashion model walking a runway",
+             "--aspect-ratio", "9:16"],
+            "generate_text_to_video",
+        ),
+        (
+            ["video-generate", "--model", "gemini-omni",
+             "--prompt", "Animate a slow walk",
+             "--image", "data/model-1.jpg"],
+            "generate_image_to_video",
+        ),
+        (
+            ["video-generate", "--model", "gemini-omni",
+             "--prompt", "Dim the lights",
+             "--previous-interaction-id", "v1_fake_interaction"],
+            "generate_text_to_video",
+        ),
+    ]
+    for argv, expect_method in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "GeminiOmniAdapter" in printed and f".{expect_method}(" in printed, printed
+    print("\u2713 video-generate gemini-omni --dry-run resolves text / image / edit paths")
+
+
 def check_kimi_dry_runs():
     for model_id, expect_kwarg in [
         ("kimi-k2.6", "'thinking': True"),
@@ -182,6 +234,8 @@ if __name__ == "__main__":
     check_flux_vto_real_call()
     check_p_image_tryon_dry_run()
     check_nano_banana_2_lite_dry_runs()
+    check_fashn_dry_runs()
+    check_gemini_omni_dry_runs()
     check_kimi_dry_runs()
     check_kimi_understand_requires_image_or_video()
     check_kimi_k26_real_call()
