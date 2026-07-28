@@ -474,7 +474,7 @@ See [Gemini Omni Flash Documentation](gemini-omni) for complete details.
 
 ### `KimiUnderstandAdapter`
 
-Adapter for Moonshot AI's Kimi K2.6 and K2.7 Code models -- general-purpose,
+Adapter for Moonshot AI's Kimi K2.6, K2.7 Code, and K3 models -- general-purpose,
 natively multimodal image and video understanding (not limited to fashion).
 
 ```python
@@ -491,7 +491,7 @@ print(result["text"])
 
 **Parameters:**
 - `api_key` (str, optional): Moonshot API key. Defaults to `MOONSHOT_API_KEY` environment variable
-- `model` (str, optional): `"kimi-k2.6"` (default), `"kimi-k2.7-code"`, `"kimi-k2.7-code-highspeed"`, or `"kimi-k2.5"`
+- `model` (str, optional): `"kimi-k2.6"` (default), `"kimi-k2.7-code"`, `"kimi-k2.7-code-highspeed"`, `"kimi-k3"`, or `"kimi-k2.5"`
 
 **Methods:**
 - `understand_image(image, prompt, ...)` - Understand one or more images

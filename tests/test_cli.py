@@ -181,6 +181,7 @@ def check_kimi_dry_runs():
     for model_id, expect_kwarg in [
         ("kimi-k2.6", "'thinking': True"),
         ("kimi-k2.7-code", "'model': 'kimi-k2.7-code'"),
+        ("kimi-k3", "'reasoning_effort': 'max'"),
         ("kimi-vl", "'num_frames': 8"),
     ]:
         buf = io.StringIO()
@@ -193,7 +194,7 @@ def check_kimi_dry_runs():
             ])
         printed = buf.getvalue()
         assert code == 0 and expect_kwarg in printed, printed
-    print("\u2713 understand kimi-k2.6 / kimi-k2.7-code / kimi-vl --dry-run resolve the expected calls")
+    print("\u2713 understand kimi-k2.6 / kimi-k2.7-code / kimi-k3 / kimi-vl --dry-run resolve the expected calls")
 
 
 def check_kimi_understand_requires_image_or_video():

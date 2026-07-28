@@ -496,6 +496,22 @@ _UNDERSTAND = {
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (server default: 32768)"),
         ],
     ),
+    "kimi-k3": ModelSpec(
+        id="kimi-k3", label="Kimi K3 (Moonshot AI flagship multimodal reasoning model)",
+        import_path="tryon.api.kimi", class_name="KimiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="MOONSHOT_API_KEY",
+        notes="Official Moonshot K3 API channel. K3 always uses thinking mode; use reasoning_effort to control depth.",
+        args=[
+            Arg(("--kimi-model",), "kimi_model", target="init", call_name="model", default="kimi-k3",
+                choices=["kimi-k3"], help="Kimi model variant"),
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--reasoning-effort",), "reasoning_effort", default="max",
+                choices=["low", "high", "max"], help="K3 reasoning effort level"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max completion tokens (server default: 131072)"),
+        ],
+    ),
     "kimi-vl": ModelSpec(
         id="kimi-vl", label="Kimi-VL (open-weight, local)",
         import_path="tryon.models.kimi_vl", class_name="KimiVLAdapter",

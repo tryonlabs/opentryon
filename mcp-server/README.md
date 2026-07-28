@@ -105,7 +105,7 @@ Two meta tools are always available regardless of what's configured:
 
 Every tool returns a structured dict: `{"success": true/false, ...}` -- never raises, so an LLM caller always gets a clean result to reason about instead of a stack trace.
 
-## Available tools (27 models across 6 services)
+## Available tools (35 models across 6 services)
 
 ### vton -- Virtual try-on: compose a garment onto a person image
 
@@ -148,6 +148,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `understand_llava_next` | LLaVA-NeXT (local VLM captioning) | local/GPU |
 | `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI multimodal understanding) | `MOONSHOT_API_KEY` |
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code (coding + multimodal understanding) | `MOONSHOT_API_KEY` |
+| `understand_kimi_k3` | Kimi K3 (flagship multimodal reasoning) | `MOONSHOT_API_KEY` |
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU |
 
 ### video-generate -- Text/image-to-video generation
@@ -157,6 +158,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `video_generate_veo` | Google Veo | `GEMINI_API_KEY` |
 | `video_generate_sora` | OpenAI Sora | `OPENAI_API_KEY` |
 | `video_generate_luma_video` | Luma Dream Machine | `LUMA_AI_API_KEY` |
+| `video_generate_gemini_omni` | Gemini Omni Flash (video generation / conversational editing) | `GEMINI_API_KEY` |
 
 ### bg-remove -- Background removal
 

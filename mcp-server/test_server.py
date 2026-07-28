@@ -83,6 +83,7 @@ async def check_dry_run_calls() -> None:
         ("edit_gpt_image", {"images": ["a.jpg", "b.jpg"], "prompt": "make it blue", "dry_run": True}, False),
         ("understand_kimi_k2_6", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
         ("video_generate_veo", {"prompt": "a cat", "image": "cat.jpg", "dry_run": True}, False),
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
         ("bg_remove_ben2", {"image": "i.jpg", "dry_run": True}, True),
@@ -134,6 +135,7 @@ async def check_list_opentryon_tools() -> None:
     result = await tool.run({"service": "understand"})
     data = result.structured_content
     assert "kimi-k2.6" in data["services"]["understand"]["models"]
+    assert "kimi-k3" in data["services"]["understand"]["models"]
     assert "kimi-vl" in data["services"]["understand"]["models"]
 
     bad = await tool.run({"service": "not-a-service"})

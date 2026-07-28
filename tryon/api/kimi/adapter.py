@@ -1,7 +1,7 @@
 """
 Kimi (Moonshot AI) Vision API Adapter
 
-Adapter for Moonshot AI's Kimi K2.6 and K2.7 Code models via the Kimi
+Adapter for Moonshot AI's Kimi K2.6, K2.7 Code, and K3 models via the Kimi
 Platform API, which is fully compatible with the OpenAI SDK/API format.
 These models are natively multimodal (text + image + video) and are
 general-purpose -- not limited to the fashion domain -- so this adapter can
@@ -12,6 +12,7 @@ Reference:
 https://platform.kimi.ai/docs/overview
 https://platform.kimi.ai/docs/guide/kimi-k2-6-quickstart
 https://platform.kimi.ai/docs/guide/kimi-k2-7-code-quickstart
+https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
 https://platform.kimi.ai/docs/guide/use-kimi-vision-model
 
 Models:
@@ -21,6 +22,8 @@ Models:
   with thinking enabled (the API rejects requests that try to disable it).
 - kimi-k2.7-code-highspeed: Same capabilities as kimi-k2.7-code with faster
   token throughput.
+- kimi-k3: Flagship multimodal reasoning model with a 1M-token context.
+  Thinking mode is always enabled and reasoning effort is configurable.
 
 Notes on sampling parameters:
     K2.5/K2.6/K2.7-code fix `temperature`, `top_p`, `n`, `presence_penalty`,
@@ -64,9 +67,17 @@ except ImportError:
 
 DEFAULT_BASE_URL = "https://api.moonshot.ai/v1"
 
-VALID_MODELS = {"kimi-k2.6", "kimi-k2.7-code", "kimi-k2.7-code-highspeed", "kimi-k2.5"}
+VALID_MODELS = {
+    "kimi-k2.5",
+    "kimi-k2.6",
+    "kimi-k2.7-code",
+    "kimi-k2.7-code-highspeed",
+    "kimi-k3",
+}
 # These models reject requests that try to disable "thinking" mode.
-THINKING_LOCKED_MODELS = {"kimi-k2.7-code", "kimi-k2.7-code-highspeed"}
+THINKING_LOCKED_MODELS = {"kimi-k2.7-code", "kimi-k2.7-code-highspeed", "kimi-k3"}
+K3_MODELS = {"kimi-k3"}
+VALID_REASONING_EFFORTS = {"low", "high", "max"}
 
 # Kimi's video_url data URIs use these subtype names (mostly the file
 # extension, with a couple of overrides for MIME-incompatible extensions).
@@ -81,7 +92,7 @@ VideoInput = Union[str, Path, io.BytesIO, bytes]
 
 class KimiUnderstandAdapter:
     """
-    Adapter for Moonshot AI's Kimi vision models (K2.6 / K2.7 Code) via the
+    Adapter for Moonshot AI's Kimi vision models (K2.6 / K2.7 Code / K3) via the
     OpenAI-compatible Kimi Platform API.
 
     Args:
@@ -184,6 +195,7 @@ class KimiUnderstandAdapter:
         system_prompt: str = DEFAULT_SYSTEM_PROMPT,
         thinking: Optional[bool] = None,
         max_tokens: Optional[int] = None,
+        reasoning_effort: Optional[str] = None,
     ) -> Dict[str, Any]:
         model = model or self.model
         if model not in VALID_MODELS:
@@ -197,12 +209,28 @@ class KimiUnderstandAdapter:
             ],
         }
         if max_tokens is not None:
-            kwargs["max_tokens"] = max_tokens
+            # K3 uses max_completion_tokens in the official API docs.
+            if model in K3_MODELS:
+                kwargs["max_completion_tokens"] = max_tokens
+            else:
+                kwargs["max_tokens"] = max_tokens
 
         if thinking is not None:
             if model in THINKING_LOCKED_MODELS and not thinking:
                 raise ValueError(f"{model} does not support disabling thinking mode.")
-            kwargs["extra_body"] = {"thinking": {"type": "enabled" if thinking else "disabled"}}
+            # K3 always has thinking mode enabled and does not use this toggle.
+            if model not in K3_MODELS:
+                kwargs["extra_body"] = {"thinking": {"type": "enabled" if thinking else "disabled"}}
+
+        if reasoning_effort is not None:
+            if model not in K3_MODELS:
+                raise ValueError("reasoning_effort is only supported by kimi-k3.")
+            if reasoning_effort not in VALID_REASONING_EFFORTS:
+                raise ValueError(
+                    f"Invalid reasoning_effort: {reasoning_effort!r}. "
+                    f"Supported values: {sorted(VALID_REASONING_EFFORTS)}"
+                )
+            kwargs["reasoning_effort"] = reasoning_effort
 
         completion = self.client.chat.completions.create(**kwargs)
         message = completion.choices[0].message
@@ -222,6 +250,7 @@ class KimiUnderstandAdapter:
         model: Optional[str] = None,
         thinking: Optional[bool] = None,
         max_tokens: Optional[int] = None,
+        reasoning_effort: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Understand one or more images with a text prompt/instruction.
@@ -234,7 +263,10 @@ class KimiUnderstandAdapter:
             model: Override the adapter's default model for this call.
             thinking: Force-enable/disable Kimi's thinking mode (only
                 supported by kimi-k2.6; kimi-k2.7-code always thinks).
-            max_tokens: Maximum output tokens (server default: 32768).
+            max_tokens: Maximum output tokens (server default: 32768 for K2.x,
+                131072 for K3).
+            reasoning_effort: K3-only reasoning effort level (`low`, `high`,
+                `max`).
 
         Returns:
             dict with keys `text`, `reasoning`, `model`, `usage`.
@@ -244,7 +276,13 @@ class KimiUnderstandAdapter:
             {"type": "image_url", "image_url": {"url": self._image_to_data_uri(img)}} for img in images
         ]
         content.append({"type": "text", "text": prompt})
-        return self._chat(content, model=model, thinking=thinking, max_tokens=max_tokens)
+        return self._chat(
+            content,
+            model=model,
+            thinking=thinking,
+            max_tokens=max_tokens,
+            reasoning_effort=reasoning_effort,
+        )
 
     def understand_video(
         self,
@@ -255,6 +293,7 @@ class KimiUnderstandAdapter:
         max_tokens: Optional[int] = None,
         use_file_upload: Optional[bool] = None,
         max_inline_mb: float = 20.0,
+        reasoning_effort: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Understand video content with a text prompt/instruction.
@@ -266,6 +305,8 @@ class KimiUnderstandAdapter:
             model: Override the adapter's default model for this call.
             thinking: Force-enable/disable Kimi's thinking mode.
             max_tokens: Maximum output tokens (server default: 32768).
+            reasoning_effort: K3-only reasoning effort level (`low`, `high`,
+                `max`).
             use_file_upload: Upload the video to Moonshot storage first
                 (`ms://` reference) instead of inlining as base64. Defaults
                 to auto: enabled for videos larger than `max_inline_mb`.
@@ -292,7 +333,13 @@ class KimiUnderstandAdapter:
             {"type": "video_url", "video_url": {"url": video_url}},
             {"type": "text", "text": prompt},
         ]
-        return self._chat(content, model=model, thinking=thinking, max_tokens=max_tokens)
+        return self._chat(
+            content,
+            model=model,
+            thinking=thinking,
+            max_tokens=max_tokens,
+            reasoning_effort=reasoning_effort,
+        )
 
     def understand(
         self,
@@ -302,6 +349,7 @@ class KimiUnderstandAdapter:
         model: Optional[str] = None,
         thinking: Optional[bool] = None,
         max_tokens: Optional[int] = None,
+        reasoning_effort: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Single entry point for CLI/uniform usage: pass `image` and/or
@@ -321,7 +369,13 @@ class KimiUnderstandAdapter:
             content.append({"type": "video_url", "video_url": {"url": self._video_to_data_uri(video)}})
         content.append({"type": "text", "text": prompt})
 
-        return self._chat(content, model=model, thinking=thinking, max_tokens=max_tokens)
+        return self._chat(
+            content,
+            model=model,
+            thinking=thinking,
+            max_tokens=max_tokens,
+            reasoning_effort=reasoning_effort,
+        )
 
     def chat(
         self,
@@ -329,6 +383,7 @@ class KimiUnderstandAdapter:
         model: Optional[str] = None,
         thinking: Optional[bool] = None,
         max_tokens: Optional[int] = None,
+        reasoning_effort: Optional[str] = None,
         tools: Optional[List[Dict[str, Any]]] = None,
         tool_choice: Optional[str] = None,
     ):
@@ -341,12 +396,25 @@ class KimiUnderstandAdapter:
         model = model or self.model
         kwargs: Dict[str, Any] = {"model": model, "messages": messages}
         if max_tokens is not None:
-            kwargs["max_tokens"] = max_tokens
+            if model in K3_MODELS:
+                kwargs["max_completion_tokens"] = max_tokens
+            else:
+                kwargs["max_tokens"] = max_tokens
         if tools is not None:
             kwargs["tools"] = tools
             kwargs["tool_choice"] = tool_choice or "auto"
         if thinking is not None:
             if model in THINKING_LOCKED_MODELS and not thinking:
                 raise ValueError(f"{model} does not support disabling thinking mode.")
-            kwargs["extra_body"] = {"thinking": {"type": "enabled" if thinking else "disabled"}}
+            if model not in K3_MODELS:
+                kwargs["extra_body"] = {"thinking": {"type": "enabled" if thinking else "disabled"}}
+        if reasoning_effort is not None:
+            if model not in K3_MODELS:
+                raise ValueError("reasoning_effort is only supported by kimi-k3.")
+            if reasoning_effort not in VALID_REASONING_EFFORTS:
+                raise ValueError(
+                    f"Invalid reasoning_effort: {reasoning_effort!r}. "
+                    f"Supported values: {sorted(VALID_REASONING_EFFORTS)}"
+                )
+            kwargs["reasoning_effort"] = reasoning_effort
         return self.client.chat.completions.create(**kwargs)

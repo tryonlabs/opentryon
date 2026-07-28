@@ -31,7 +31,7 @@ opentryon <service> --model <model> [params...]
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image` |
-| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-vl` (local), `llava-next` (local) |
+| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `llava-next` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
@@ -75,6 +75,12 @@ opentryon understand --model kimi-k2.6 \
 opentryon understand --model kimi-k2.7-code \
   --image ui_mockup.png --prompt "Write the HTML/CSS for this design."
 
+# Kimi K3 (flagship multimodal reasoning)
+opentryon understand --model kimi-k3 \
+  --image garment.jpg \
+  --prompt "Write a marketplace-ready title and bullet points." \
+  --reasoning-effort high
+
 # Open-weight local understanding (no API key, needs a GPU)
 opentryon understand --model kimi-vl --image garment.jpg
 
@@ -113,6 +119,6 @@ stack trace:
 
 ## See Also
 
-- [Kimi K2.6 / K2.7 Code understanding](../api-reference/kimi.md)
+- [Kimi K2.6 / K2.7 Code / K3 understanding](../api-reference/kimi.md)
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
 - [Adding a new model to the CLI](../advanced/new-model-checklist.md)

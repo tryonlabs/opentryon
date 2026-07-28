@@ -36,6 +36,7 @@ OpenTryOn is an open-source AI toolkit designed for fashion technology and virtu
 - **Multimodal Understanding** (general-purpose, not limited to fashion):
   - Kimi K2.6 (Moonshot AI): Text, image, and video understanding with optional "thinking" mode and 256K context
   - Kimi K2.7 Code (Moonshot AI): Coding-focused multimodal variant of K2.6 with the same image/video understanding
+  - Kimi K3 (Moonshot AI): Flagship multimodal reasoning model with 1M context and configurable reasoning effort
   - Kimi-VL (open-weight, local): Hugging Face counterpart to the Kimi APIs for GPU-only deployment
   - LLaVA-NeXT (local): Fashion-focused image captioning
 - **Local Models (GPU Inference)**:
@@ -99,7 +100,7 @@ The documentation includes:
 - API Reference for all modules
 - Usage examples and tutorials
 - Datasets documentation (Fashion-MNIST, VITON-HD)
-- API adapters documentation (Segmind, Kling AI, Amazon Nova Canvas, FLUX.2, Kimi K2.6/K2.7 Code, and more)
+- API adapters documentation (Segmind, Kling AI, Amazon Nova Canvas, FLUX.2, Kimi K2.6/K2.7 Code/K3, and more)
 - Interactive demos and examples
 - Advanced guides and troubleshooting
 
@@ -179,7 +180,7 @@ LUMA_AI_API_KEY=your_luma_ai_api_key
 # OpenAI Credentials (required for OpenAI GPT-Image-1 image generation)
 OPENAI_API_KEY=your_openai_api_key
 
-# Moonshot AI Credentials (required for Kimi K2.6 / K2.7 Code understanding)
+# Moonshot AI Credentials (required for Kimi K2.6 / K2.7 Code / K3 understanding)
 MOONSHOT_API_KEY=your_moonshot_api_key
 
 # LLM Provider Credentials (required for Virtual Try-On Agent)
@@ -270,7 +271,7 @@ opentryon <service> --model <model> [params...]
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `nano-banana-2-lite`, `fashn-tryon-max`, `fashn-tryon-v1.6` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-lite`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image`, `luma-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2-lite`, `flux2-pro`, `flux2-flex`, `flux2-turbo`, `gpt-image` |
-| `understand` | Image/video understanding (general-purpose) | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-vl`, `llava-next` |
+| `understand` | Image/video understanding (general-purpose) | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl`, `llava-next` |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `gemini-omni` |
 | `bg-remove` | Background removal | `ben2` |
 
@@ -2247,6 +2248,10 @@ opentryon understand --model kimi-k2.6 --video runway_clip.mp4 --prompt "Summari
 
 # Coding-focused variant (still multimodal)
 opentryon understand --model kimi-k2.7-code --image ui_mockup.png --prompt "Write the HTML/CSS for this design."
+
+# Flagship multimodal reasoning with controllable depth
+opentryon understand --model kimi-k3 --image garment.jpg \
+  --prompt "Create a product listing draft." --reasoning-effort high
 ```
 
 #### Python API Usage
