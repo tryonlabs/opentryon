@@ -7,6 +7,8 @@ This module provides an adapter for Moonshot AI's Kimi vision models:
 - Kimi K2.7 Code (kimi-k2.7-code / kimi-k2.7-code-highspeed): Coding-focused
   multimodal model built on K2.6 with the same vision/video understanding
   capabilities, tuned for long-horizon agentic coding and tool use.
+- Kimi K3 (kimi-k3): Flagship multimodal model with 1M context and
+  configurable reasoning effort (thinking mode is always enabled).
 
 Unlike most other adapters in this repo, Kimi's understanding capabilities
 are general-purpose -- useful for the fashion domain (describing garments,

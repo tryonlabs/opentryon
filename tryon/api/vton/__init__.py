@@ -9,8 +9,10 @@ directory listing unbounded as more VTON-capable providers are added.
 
 from .flux_vto import FluxVTONAdapter
 from .p_image_tryon import PImageTryOnAdapter
+from .fashn import FashnVTONAdapter
 
 __all__ = [
     "FluxVTONAdapter",
     "PImageTryOnAdapter",
+    "FashnVTONAdapter",
 ]

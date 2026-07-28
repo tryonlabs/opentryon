@@ -20,6 +20,7 @@ _LAZY_ATTRS = {
     "NanoBanana2Adapter": ".nano_banana",
     "NanoBanana2LiteAdapter": ".nano_banana",
     "PImageTryOnAdapter": ".vton",
+    "FashnVTONAdapter": ".vton",
     "LumaAIAdapter": ".lumaAI",
     "Flux2ProAdapter": ".flux2",
     "Flux2FlexAdapter": ".flux2",
@@ -27,6 +28,7 @@ _LAZY_ATTRS = {
     "GPTImageAdapter": ".openAI.image_adapter",
     "SoraVideoAdapter": ".openAI.video_adapter",
     "VeoAdapter": ".veo",
+    "GeminiOmniAdapter": ".omni",
     "BEN2BackgroundRemoverAdapter": ".ben2",
     "KimiUnderstandAdapter": ".kimi",
 }
