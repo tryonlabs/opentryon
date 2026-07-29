@@ -1,55 +1,20 @@
-import os
-from pathlib import Path
-from tryon.api.lumaAI import LumaAIVideoAdapter
+"""
+DEPRECATED legacy test entrypoint.
 
-from dotenv import load_dotenv
-load_dotenv()
+Moved to `tests/legacy/luma_video_test.py`.
+Use `opentryon video-generate ... --dry-run` for registry-driven testing.
+"""
 
-adapter = LumaAIVideoAdapter()
+from __future__ import annotations
 
+import pathlib
+import runpy
+import sys
 
-def save_video(name: str, video_bytes: bytes):
-    """Save video bytes to disk."""
-    Path("outputs").mkdir(exist_ok=True)
-    path = Path("outputs") / f"{name}.mp4"
-    with open(path, "wb") as f:
-        f.write(video_bytes)
-    print(f"[SAVED] {path.absolute()}")
-    return path
+_ROOT = pathlib.Path(__file__).resolve().parent
+_TARGET = _ROOT / "tests" / "legacy" / "luma_video_test.py"
 
+print("[opentryon] WARNING: `luma_video_test.py` moved to tests/legacy.", file=sys.stderr)
 
-def test_text_to_video(adapter):
-    print("\n=== TEST: TEXT → VIDEO ===")
-    video_bytes = adapter.generate_text_to_video(
-        prompt="a neon city full of cars on the road",
-        resolution="540p",
-        duration="5s",
-        model="ray-2",
-    )
-    save_video("text_to_video", video_bytes)
+runpy.run_path(str(_TARGET), run_name="__main__")
 
-
-def test_image_to_video(adapter, start_image: str, end_image: str):
-    print("\n=== TEST: IMAGE → VIDEO ===")
-    video_bytes = adapter.generate_image_to_video(
-        prompt="Man riding a bike",
-        start_image=start_image,
-        end_image=end_image,
-        resolution="540p",
-        duration="5s",
-        model="ray-2",
-    )
-    save_video("image_to_video", video_bytes)
-
-
-if __name__ == "__main__":
-    print("=== LUMA VIDEO GENERATION TEST ===")
-
-    START_IMAGE = "Image for start keyframe"
-    END_IMAGE = "Image for end keyframe"
-
-    # Run tests
-    test_text_to_video(adapter)
-    test_image_to_video(adapter, START_IMAGE, END_IMAGE)
-
-    print("\n=== ALL TESTS COMPLETED ===")

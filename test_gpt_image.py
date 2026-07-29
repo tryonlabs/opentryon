@@ -1,41 +1,20 @@
-from dotenv import load_dotenv
-load_dotenv()
+"""
+DEPRECATED legacy test entrypoint.
 
-import os
-from tryon.api.openAI.image_adapter import GPTImageAdapter 
+Moved to `tests/legacy/test_gpt_image.py`.
+Use `opentryon generate/edit --model gpt-image ...` or MCP tools instead.
+"""
 
-adapter = GPTImageAdapter()
+from __future__ import annotations
 
-list_of_images = []
+import pathlib
+import runpy
+import sys
 
-# ---------- Text → Image ----------
-images = adapter.generate_text_to_image(
-    prompt="A person wearing a leather jacket with sun glasses",
-    size="1024x1024",
-    quality="high",
-    n=1
-)
+_ROOT = pathlib.Path(__file__).resolve().parent
+_TARGET = _ROOT / "tests" / "legacy" / "test_gpt_image.py"
 
-list_of_images.extend(images)
+print("[opentryon] WARNING: `test_gpt_image.py` moved to tests/legacy.", file=sys.stderr)
 
+runpy.run_path(str(_TARGET), run_name="__main__")
 
-# ---------- Image → Image ----------
-images = adapter.generate_image_edit(
-    images= "/home/naveen/dev/opentryon/outputs/generated_3.png",
-    prompt="Make the hat red and stylish",
-    size="1024x1024",
-    quality="high",
-    n=1
-)
-
-list_of_images.extend(images)
-
-
-# ---------- Save outputs ----------
-os.makedirs("outputs", exist_ok=True)
-
-for idx, img_bytes in enumerate(list_of_images):
-    with open(f"outputs/generated_{idx}.png", "wb") as f:
-        f.write(img_bytes)
-
-print(f"Saved {len(list_of_images)} images.")
