@@ -2,6 +2,8 @@
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that exposes every model in the [`opentryon`](../README.md) toolkit -- virtual try-on, image/video generation & editing, multimodal image & video understanding, and background removal -- as tools an LLM agent (Claude, Cursor, ChatGPT, or any MCP client) can call directly.
 
+Requires **OpenTryOn v0.0.3+** (`pip install -U opentryon`). Docs: [MCP Server guide](https://tryonlabs.github.io/opentryon/docs/getting-started/mcp).
+
 Built on [FastMCP](https://gofastmcp.com) 3.x, the actively-maintained, high-level Python framework for MCP servers (FastMCP 1.0 was folded into the official MCP Python SDK in 2024; this server uses the standalone FastMCP 2/3 project, which adds streamable-HTTP transport, better auth, and much less boilerplate).
 
 ## Why this is registry-driven

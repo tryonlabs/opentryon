@@ -11,6 +11,8 @@ const sidebars: SidebarsConfig = {
         'getting-started/quickstart',
         'getting-started/configuration',
         'getting-started/cli',
+        'getting-started/mcp',
+        'getting-started/openapi-swagger',
       ],
     },
     {

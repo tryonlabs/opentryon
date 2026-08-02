@@ -11,10 +11,10 @@ keywords:
 
 # Unified CLI (`opentryon`)
 
-Once OpenTryOn is installed (`pip install -e .` or `pip install opentryon`),
-every adapter in the repo is available through a single `opentryon` command
-with three levels of control: **service** &rarr; **model** &rarr;
-**parameters**.
+Once OpenTryOn is installed (`pip install -U opentryon` or `pip install -e .`;
+**v0.0.3+** recommended), every adapter in the repo is available through a
+single `opentryon` command with three levels of control: **service** &rarr;
+**model** &rarr; **parameters**.
 
 ```bash
 opentryon <service> --model <model> [params...]
@@ -137,6 +137,9 @@ stack trace:
 
 ## See Also
 
+- [MCP Server](mcp)
+- [OpenAPI & Postman](openapi-swagger)
 - [Kimi K2.6 / K2.7 Code / K3 understanding](../api-reference/kimi.md)
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
 - [Adding a new model to the CLI](../advanced/new-model-checklist.md)
+- [Roadmap](../community/roadmap)

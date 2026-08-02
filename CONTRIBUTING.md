@@ -25,4 +25,7 @@ If you're integrating a new cloud API or open-weight/local model, follow the
 step-by-step checklist at
 [docs/docs/advanced/new-model-checklist.md](docs/docs/advanced/new-model-checklist.md)
 (covers where the adapter code goes, dependency management, wiring it into
-the `opentryon` CLI, and which docs to update).
+the `opentryon` CLI / MCP registry, and which docs to update).
+
+See also the project [ROADMAP.md](ROADMAP.md) for shipped vs remaining work
+(current release: **v0.0.3**).

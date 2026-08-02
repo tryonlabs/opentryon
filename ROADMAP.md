@@ -1,316 +1,133 @@
 # OpenTryOn Roadmap
 
-> **Last Updated**: November 18, 2025 | **Timeline**: November 2025 - April 2026
+> **Last Updated**: 2 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/) · **Horizon**: Aug 2026 – early 2027
 
-## Roadmap Overview
+This roadmap tracks what shipped in the toolkit and what remains. Product strategy detail lives in [`VISION.md`](VISION.md).
+
+## At a glance
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ COMPLETED (Q4 2025 - November 2025)                                    │
+│ SHIPPED — v0.0.3 (August 2026)                                          │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ ✓ Repository rebranded: TryOnDiffusion → OpenTryOn                      │
-│ ✓ Datasets module (Fashion-MNIST, VITON-HD) with class-based adapters   │
-│ ✓ Virtual Try-On adapters: Amazon Nova Canvas, Kling AI, Segmind        │
-│ ✓ Enhanced documentation                                                 │
+│ ✓ Unified `opentryon` CLI (registry-driven services + --dry-run)        │
+│ ✓ FastMCP server (tools auto-generated from the same registry)          │
+│ ✓ invoke_model() shared by CLI + MCP                                    │
+│ ✓ Media OpenAPI/Swagger snapshot + Postman collection                   │
+│ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
+│ ✓ Local extras: FLUX.2-dev Turbo, Kimi-VL, LLaVA-NeXT, BEN2             │
+│ ✓ Docs site, env.template, Gradio demos, tryon-studio via MCP           │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ IN PROGRESS (November 17-30, 2025)                                      │
+│ NEXT — toolkit depth (near term)                                        │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ • Dataset module testing and refinement                                 │
-│ • API adapter pattern standardization                                   │
-│ • Documentation improvements                                             │
-│ • Image Generation model integrations                                   │
-│    - Closed-source: Nano Banana, GPT-Image-1, FLUX Kontext Pro          │
-│    - Open-source: FLUX.1-dev and other open-source models               │
+│ • Local OSS VTON (CatVTON / IDM-VTON / OOTDiffusion or FLUX-fill paths) │
+│ • Train / LoRA recipes + fashion fine-tune notebooks                    │
+│ • Prompt packs + lightweight garment/identity evals                     │
+│ • Deeper Studio (tryon-studio) wired to MCP                             │
+│ • More datasets (DeepFashion, FashionGen, …)                            │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ PLANNED (December 2025 - January 2026)                                  │
+│ LATER — efficiency, agents, platform                                    │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ Core API Infrastructure                                                 │
-│    • Base provider classes/interfaces (BaseProvider, BaseVTONAdapter)    │
-│    • Unified API response types (GenerationResponse, VTONResponse)      │
-│    • Configuration management, error handling, retry logic               │
-│    • VirtualTryOn unified interface                                     │
-│    • Standardize existing adapters (Nova Canvas, Kling AI, Segmind)    │
-│                                                                          │
-│ Image Generation & Model Integration (December 2025)                   │
-│    • ImageGenerator unified interface                                   │
-│    • Model registry system                                              │
-│    • Additional open-source image generation models                     │
-│                                                                          │
-│ Video Generation Capabilities                                          │
-│    • VideoGenerator unified interface                                   │
-│    • Closed-source providers: SORA2, Kling AI, LUMA Ray                │
-│    • Open-source models from GitHub, HuggingFace                        │
-│                                                                          │
-│ Open-Source Virtual Try-On Models                                       │
-│    • Image VTON: Leffa, DreamO, Voost, IDM-VTON, CatVTON               │
-│    • Video VTON: Video VTON models                                     │
-│    • 3D VTON: Open-source 3D virtual try-on models                     │
-│    • Integration with HuggingFace and GitHub models                    │
-│                                                                          │
-│ Agentic AI System for PDP Optimization                                 │
-│    • Multi-agent system for product detail page evaluation             │
-│    • LLM and VLM integration for analysis and optimization             │
-│    • Automated PDP content analysis and recommendations                │
-│                                                                          │
-│ Testing & Quality                                                       │
-│    • Unit/integration tests, >85% coverage                              │
-└─────────────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────────────┐
-│ EXPLORING (February - April 2026)                                       │
-├─────────────────────────────────────────────────────────────────────────┤
-│ • Additional providers: Fashn AI, TryOnLabs, Qwen-Image                │
-│ • HuggingFace model loading utilities                                   │
-│ • CLI improvements (`ot generate`, `ot tryon`, `ot video`, `ot agent`) │
-│ • Additional datasets (DeepFashion, FashionGen)                        │
-│ • Enhanced agentic AI capabilities                                      │
-│ • Advanced features: async/await, caching, batch processing (if time)  │
+│ • Quantization / distillation / serving recipes for local models        │
+│ • Fashion agents v1 (PDP, try-on QA, lookbook, model-swap, prompts)     │
+│ • Async / batch / caching DX improvements                               │
+│ • Video VTON / 3D VTON exploration                                      │
+│ • Additional providers (Qwen-Image, more open weights, …)               │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
-
-## Detailed Breakdown
-
-### Completed (Q4 2025 - November 2025)
-- Repository rebranding, documentation updates
-- **Datasets Module**: Fashion-MNIST, VITON-HD with class-based adapter pattern
-- **Virtual Try-On Adapters**: Amazon Nova Canvas, Kling AI, Segmind
-
-### In Progress (November 17-30, 2025)
-- [ ] Dataset module testing and refinement
-- [ ] API adapter pattern standardization
-- [ ] Documentation improvements
-- [ ] **Image Generation Model Integrations**:
-- [ ] Nano Banana image generation adapter (closed-source)
-- [ ] GPT-Image-1 adapter (closed-source)
-- [ ] FLUX Kontext Pro adapter (closed-source)
-- [ ] FLUX.1-dev adapter (open-source)
-- [ ] Additional open-source image generation models from HuggingFace/GitHub
-
-### Planned (December 2025 - January 2026)
-
-**December 2025: Core API Infrastructure**
-- [ ] Base provider classes/interfaces (`BaseProvider`, `BaseVTONAdapter`)
-- [ ] Unified API response types (`GenerationResponse`, `VTONResponse`)
-- [ ] Configuration management, error handling, retry logic
-- [ ] VirtualTryOn unified interface
-- [ ] Standardize existing adapters (Nova Canvas, Kling AI, Segmind)
-
-**December 2025: Image Generation Unified Interface**
-- [ ] ImageGenerator unified interface
-- [ ] Model registry system for image generation models
-- [ ] Standardize image generation adapters
-- [ ] Unit/integration tests for image generation, >90% coverage
-
-**January - February 2026: Video Generation & Agentic AI**
-- [ ] VideoGenerator unified interface
-- [ ] Video providers: SORA2, Kling AI, LUMA Ray (closed-source)
-- [ ] Open-source video models from GitHub, HuggingFace
-- [ ] Agentic AI system for PDP (Product Detail Page) optimization
-- [ ] LLM and VLM integration for content analysis
-- [ ] Automated PDP evaluation and optimization pipeline
-
-**January - February 2026: Open-Source Virtual Try-On Models**
-- [ ] Image VTON models: Leffa, DreamO, Voost, IDM-VTON, CatVTON
-- [ ] Video VTON models integration
-- [ ] 3D VTON models integration
-- [ ] HuggingFace model loading utilities for VTON models
-- [ ] GitHub model integration framework
-
-### Exploring (February - April 2026)
-- [ ] Additional providers: Fashn AI, TryOnLabs, Qwen-Image
-- [ ] Additional open-source VTON models from community
-- [ ] CLI improvements (`ot generate`, `ot tryon`, `ot edit`, `ot list-models`, `ot video`, `ot agent`)
-- [ ] Additional datasets (DeepFashion, FashionGen)
-- [ ] Advanced features: async/await, caching, batch processing (if time permits)
-- [ ] Enhanced agentic AI capabilities and integrations
-
-## Success Metrics
-
-**November 2025**: ✓ Datasets module (2 datasets), ✓ 3 VTON adapters (Nova Canvas, Kling AI, Segmind), Image generation adapters (Nano Banana, GPT-Image-1, FLUX Kontext Pro, FLUX.1-dev), >80% test coverage
-
-**December 2025**: Base architecture, Unified VirtualTryOn interface, ImageGenerator unified interface, Model registry system, >85% test coverage
-
-**January - February 2026**: VideoGenerator interface, Video providers (SORA2, Kling AI, LUMA Ray), Open-source VTON models (Leffa, DreamO, Voost, IDM-VTON, CatVTON, Video VTON, 3D VTON), Agentic AI system for PDP optimization, >90% coverage
-
-**February - April 2026**: Additional providers, CLI improvements, Enhanced DX, Advanced agentic AI features
-
-## Contributor Roadmap
-
-> **For Contributors**: This section highlights areas where we need your help! Pick a task that matches your skills and interests.
-
-### Good First Issues (Great for New Contributors)
-
-These are perfect for getting started with the project:
-
-#### Documentation & Examples
-- [ ] **Documentation**: Improve README examples and add code snippets
-- [ ] **Tutorials**: Create Jupyter notebook tutorials for datasets module
-- [ ] **Examples**: Add usage examples for each API adapter
-- [ ] **Type Hints**: Add type hints to existing functions and classes
-- **Labels**: `good first issue`, `documentation`, `help wanted`
-
-#### Testing & Quality
-- [ ] **Unit Tests**: Write tests for dataset loaders (Fashion-MNIST, VITON-HD)
-- [ ] **Integration Tests**: Add tests for API adapters (Nova Canvas, Kling AI, Segmind)
-- [ ] **Test Coverage**: Improve test coverage for existing modules
-- **Labels**: `good first issue`, `testing`, `help wanted`
-
-#### Code Quality
-- [ ] **Linting**: Fix linting errors and improve code style
-- [ ] **Error Handling**: Improve error messages and exception handling
-- [ ] **Code Comments**: Add docstrings and inline comments
-- **Labels**: `good first issue`, `code quality`, `help wanted`
-
-### Intermediate Contributions
-
-For contributors with some experience:
-
-#### API Adapters & Integrations
-- [ ] **Base Classes**: Implement `BaseProvider` and `BaseVTONAdapter` abstract classes
-- [ ] **Response Types**: Create unified response types (`GenerationResponse`, `VTONResponse`)
-- [ ] **Error Handling**: Implement retry logic with exponential backoff
-- [ ] **Configuration**: Build configuration management system
-- **Labels**: `intermediate`, `api`, `help wanted`
-
-#### Image Generation Providers (November 2025 - High Priority)
-- [ ] **Nano Banana**: Implement Nano Banana image generation adapter (closed-source)
-- [ ] **GPT-Image-1**: Integrate GPT-Image-1 API (closed-source)
-- [ ] **FLUX Kontext Pro**: Add FLUX Kontext Pro adapter (closed-source)
-- [ ] **FLUX.1-dev**: Create adapter for open-source FLUX.1-dev model
-- [ ] **Additional Open-Source Models**: Integrate other open-source image generation models from HuggingFace/GitHub
-- **Labels**: `intermediate`, `image-generation`, `help wanted`, `high-priority`
-
-#### Dataset Adapters
-- [ ] **DeepFashion**: Create DeepFashion dataset adapter
-- [ ] **FashionGen**: Implement FashionGen dataset loader
-- [ ] **Dataset Utils**: Add preprocessing utilities (masks, segmentation, pose detection)
-- **Labels**: `intermediate`, `datasets`, `help wanted`
-
-#### Open-Source Virtual Try-On Models
-- [ ] **Leffa**: Integrate Leffa image virtual try-on model
-- [ ] **DreamO**: Integrate DreamO image virtual try-on model
-- [ ] **Voost**: Integrate Voost image virtual try-on model
-- [ ] **IDM-VTON**: Integrate IDM-VTON image virtual try-on model
-- [ ] **CatVTON**: Integrate CatVTON image virtual try-on model
-- [ ] **Video VTON**: Integrate video virtual try-on models
-- [ ] **3D VTON**: Integrate 3D virtual try-on models
-- **Labels**: `intermediate`, `virtual-try-on`, `open-source`, `help wanted`
-
-### Advanced Contributions
-
-For experienced contributors:
-
-#### Video Generation
-- [ ] **VideoGenerator Interface**: Design and implement unified VideoGenerator interface
-- [ ] **SORA2 Integration**: Integrate SORA2 video generation API
-- [ ] **LUMA Ray Integration**: Add LUMA Ray video generation adapter
-- [ ] **Open-Source Video Models**: Integrate video models from HuggingFace/GitHub
-- **Labels**: `advanced`, `video-generation`, `help wanted`
-
-#### Agentic AI System
-- [ ] **Multi-Agent Framework**: Design multi-agent system architecture
-- [ ] **LLM Integration**: Integrate LLMs for text analysis
-- [ ] **VLM Integration**: Add VLM support for image analysis
-- [ ] **PDP Optimizer**: Build automated PDP evaluation and optimization pipeline
-- **Labels**: `advanced`, `agentic-ai`, `help wanted`
-
-#### Core Infrastructure
-- [ ] **Model Registry**: Implement model registry system for easy model discovery
-- [ ] **HuggingFace Integration**: Create utilities for loading models from HuggingFace Hub
-- [ ] **CLI Tool**: Enhance CLI with `ot generate`, `ot tryon`, `ot video`, `ot agent` commands
-- [ ] **Async Support**: Add async/await support for API calls
-- **Labels**: `advanced`, `infrastructure`, `help wanted`
-
-### Contribution Areas by Priority
-
-#### High Priority (November 2025 - December 2025)
-1. **Image Generation Providers** - Nano Banana, GPT-Image-1, FLUX Kontext Pro (closed-source), FLUX.1-dev (open-source)
-2. **Core API Infrastructure** - Base classes, interfaces, unified responses
-3. **ImageGenerator Unified Interface** - Standardize image generation adapters
-4. **Testing** - Unit tests, integration tests, >90% coverage
-5. **Documentation** - API docs, examples, tutorials
-
-#### Medium Priority (January - February 2026)
-1. **Open-Source VTON Models** - Leffa, DreamO, Voost, IDM-VTON, CatVTON, Video VTON, 3D VTON integrations
-2. **Video Generation** - VideoGenerator interface, SORA2, LUMA Ray integrations
-3. **Agentic AI System** - Multi-agent framework, LLM/VLM integration
-4. **Model Registry** - Model discovery and management system
-5. **CLI Improvements** - Enhanced command-line interface
-
-#### Nice to Have (February - April 2026)
-1. **Additional Providers** - Fashn AI, TryOnLabs, Qwen-Image
-2. **Additional Datasets** - DeepFashion, FashionGen
-3. **Advanced Features** - Async support, caching, batch processing
-4. **Developer Tools** - VS Code extension, Jupyter integration
-
-### How to Contribute
-
-1. **Find an Issue**: Check our [GitHub Issues](https://github.com/tryonlabs/opentryon/issues) for tasks labeled `good first issue`, `help wanted`, or `intermediate`
-2. **Claim a Task**: Comment on the issue to let us know you're working on it
-3. **Fork & Branch**: Fork the repo and create a feature branch
-4. **Code**: Write clean, tested code following our [Contributing Guidelines](CONTRIBUTING.md)
-5. **Test**: Ensure all tests pass and add new tests for your changes
-6. **Document**: Update documentation and add docstrings
-7. **Submit PR**: Open a pull request with a clear description
-
-### Contribution Guidelines
-
-- **Code Style**: Follow PEP 8, use type hints, add docstrings
-- **Testing**: Write tests for new features, maintain >85% coverage
-- **Documentation**: Update README, add examples, document APIs
-- **Commits**: Write clear commit messages following conventional commits
-- **PRs**: Keep PRs focused, include tests and documentation
-
-### Issue Labels
-
-We use these labels to help you find tasks:
-- `good first issue` - Perfect for new contributors
-- `help wanted` - We need help with this
-- `intermediate` - Requires some experience
-- `advanced` - Complex tasks for experienced contributors
-- `documentation` - Documentation improvements
-- `testing` - Test-related tasks
-- `api` - API adapter work
-- `image-generation` - Image generation features
-- `video-generation` - Video generation features
-- `virtual-try-on` - Virtual try-on model integrations
-- `open-source` - Open-source model integrations
-- `agentic-ai` - Agentic AI system work
-- `datasets` - Dataset adapter work
-- `infrastructure` - Core infrastructure improvements
-
-### Get Help
-
-- **Discord**: Join our [Discord community](https://discord.gg/T5mPpZHxkY)
-- **GitHub Discussions**: Ask questions in [Discussions](https://github.com/tryonlabs/opentryon/discussions)
-- **Issues**: Open an issue for bugs or feature requests
-
-### Current Focus Areas
-
-**This Month (November 2025)**:
-- Dataset module testing and refinement
-- API adapter pattern standardization
-- **Image Generation Model Integrations**:
-  - Closed-source: Nano Banana, GPT-Image-1, FLUX Kontext Pro
-  - Open-source: FLUX.1-dev and other open-source models
-- Documentation improvements
-
-**Next Month (December 2025)**:
-- ImageGenerator unified interface
-- Model registry system
-- Core API infrastructure (base classes, interfaces)
-- Unified VirtualTryOn interface
-- Configuration management system
-
-**Coming Soon (January 2026)**:
-- Video Generation capabilities
-- Open-source VTON models (Leffa, DreamO, Voost, IDM-VTON, CatVTON, Video VTON, 3D VTON)
-- Agentic AI system foundation
 
 ---
 
-**Ready to contribute?** Check out our [Contributing Guide](CONTRIBUTING.md) and start with a `good first issue`!
+## Completed (through v0.0.3)
+
+### Developer surfaces
+- [x] **`opentryon` CLI** — `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`
+- [x] **MCP server** (`mcp-server/`) on FastMCP 3.x — one tool per registry model
+- [x] **Shared runner** — `tryon.cli.runner.invoke_model()` for CLI + MCP
+- [x] **Registry** — `tryon/cli/registry.py` as source of truth
+- [x] **OpenAPI / Swagger** — `openapi/opentryon-media.openapi.yaml` (upstream media APIs)
+- [x] **Postman** — `postman/opentryon-media.postman_collection.json`
+- [x] **Docs** — Docusaurus site; PyPI package `opentryon==0.0.3`
+- [x] **tryon-studio** — web UI in a separate repo, talks to OpenTryOn over MCP
+
+### Virtual try-on (cloud)
+- [x] FLUX VTO, Amazon Nova Canvas, Kling AI, Segmind
+- [x] Pruna P-Image-Try-On (multi-garment)
+- [x] FASHN Try-On Max & v1.6
+- [x] Nano Banana 2 Lite composition path
+
+### Image generate / edit
+- [x] Nano Banana family (incl. Pro / 2 / 2 Lite)
+- [x] FLUX.2 Pro / Flex (+ local Turbo)
+- [x] GPT Image, Luma Photon
+- [x] Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image
+- [x] Pruna P-Image, P-Image-Edit, P-Image-Upscale
+
+### Video
+- [x] Veo, Sora, Luma Ray 2 + Ray 3.2
+- [x] Seedance 2.5, Kling 3.0 / Omni / Turbo
+- [x] Grok Imagine Video 1.5, Gemini Omni Flash
+- [x] Pruna P-Video, P-Video-Replace, P-Video-Avatar, P-Video-Animate
+
+### Understanding & other
+- [x] Kimi K2.6 / K2.7 Code / K3 (API); Kimi-VL & LLaVA-NeXT (local)
+- [x] BEN2 background removal
+- [x] Datasets: Fashion-MNIST, VITON-HD, Subjects200K
+- [x] Preprocessing (garment / human / pose) + TryOnDiffusion research code
+- [x] Early LangChain agents (VTON, model-swap) + Gradio demos
+
+---
+
+## Remaining / in progress
+
+### Near term (toolkit depth)
+- [ ] **Local OSS VTON** — CatVTON, IDM-VTON, OOTDiffusion (or FLUX-fill LoRA) under `tryon.models`
+- [ ] **Train / finetune** — documented LoRA/QLoRA recipes; brand-style fine-tune notebook
+- [ ] **Prompt collections** — versioned packs (try-on, catalog, lookbook, video)
+- [ ] **Evals** — garment fidelity / identity checklist + side-by-side runner
+- [ ] **Studio maturity** — orgs, comparison UI, export flows in [tryon-studio](https://github.com/tryonlabs/tryon-studio)
+- [ ] **Additional datasets** — DeepFashion, FashionGen, richer loaders
+
+### Medium term (efficiency & agents)
+- [ ] **Quantization / distillation** — 8-bit / 4-bit recipes; VRAM tables in docs
+- [ ] **Serving guidance** — batching, latency notes for local models
+- [ ] **Fashion agents v1** — Catalog PDP, Try-on QA, Lookbook director, Model-swap ops, Prompt librarian
+- [ ] **DX** — broader async support, optional caching / batch helpers
+- [ ] **Test coverage** — expand unit/integration coverage toward >85% on core paths
+
+### Exploring
+- [ ] Open-source **video VTON** / **3D VTON**
+- [ ] Additional providers (e.g. Qwen-Image, more HF/GitHub weights)
+- [ ] Stronger base-provider abstractions only where the registry pattern is insufficient
+- [ ] Commercial license clarity for adapters vs weights vs Studio
+
+Skipped by design (for now): Ideogram-via-Pruna (use direct Ideogram adapter).
+
+---
+
+## Success metrics (rolling)
+
+| Signal | Target |
+|---|---|
+| PyPI / install | `pip install opentryon` works without GPU deps; `[local]` optional |
+| Registry parity | Every CLI model has an MCP tool; dry-runs pass offline |
+| Docs | New adapters documented under `docs/docs/api-reference/` + CLI table |
+| Community | Monthly toolkit drops; Discord + LinkedIn engagement |
+
+---
+
+## Contributor focus
+
+**Good first issues:** docs/examples, dry-run tests for new adapters, type hints, error-message polish.
+
+**High-value next:** local OSS VTON adapters, LoRA fine-tune notebooks, eval scripts, tryon-studio ↔ MCP polish.
+
+See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/new-model-checklist.md), and [VISION.md](VISION.md).
+
+---
+
+**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.3](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)

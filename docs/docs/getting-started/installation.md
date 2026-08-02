@@ -64,12 +64,19 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-### Method 3: Install from PyPI (Future)
-
-Once published to PyPI, you'll be able to install directly:
+### Method 3: Install from PyPI (recommended for app use)
 
 ```bash
-pip install opentryon
+pip install -U opentryon
+# optional local/GPU models:
+pip install -U "opentryon[local]"
+```
+
+Verify the version (current stable: **0.0.3**):
+
+```bash
+python -c "import tryon; print(tryon.__version__)"
+opentryon --help
 ```
 
 ## Verify Installation
@@ -77,7 +84,7 @@ pip install opentryon
 After installation, verify that OpenTryOn is correctly installed:
 
 ```python
-python -c "import tryon; print('OpenTryOn installed successfully!')"
+python -c "import tryon; print('OpenTryOn', tryon.__version__, 'installed successfully')"
 ```
 
 ## Configuration

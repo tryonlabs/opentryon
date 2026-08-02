@@ -1,10 +1,13 @@
 # OpenTryOn
 
 [![Documentation](https://img.shields.io/badge/Documentation-Read%20Docs-teal?style=flat-square)](https://tryonlabs.github.io/opentryon/)
+[![PyPI](https://img.shields.io/pypi/v/opentryon?style=flat-square)](https://pypi.org/project/opentryon/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-blue?style=flat-square&logo=discord)](https://discord.gg/T5mPpZHxkY)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 Open-source AI toolkit for fashion technology: virtual try-on, image/video generation & editing, multimodal understanding, background removal, preprocessing, datasets, and TryOnDiffusion research code.
+
+**Current release: [v0.0.3](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3)** — unified CLI, FastMCP server, expanded media providers (Pruna, Seedance/Seedream, Kling 3, Luma Ray 3.2, Grok, Ideogram, …).
 
 📚 **Full documentation:** [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)  
 API tutorials, configuration, examples, and agent guides live there — not in this README.
@@ -124,6 +127,8 @@ opentryon/
 ├── tryon/           # Package: api/, cli/, models/, agents/, datasets/, preprocessing/
 ├── tryondiffusion/  # Research diffusion training / inference
 ├── mcp-server/      # FastMCP server (registry → tools)
+├── openapi/         # OpenAPI / Swagger snapshot (upstream media APIs)
+├── postman/         # Postman collection for media providers
 ├── demo/            # Gradio demos
 ├── notebooks/       # Jupyter examples
 ├── docs/            # Docusaurus documentation site
@@ -137,9 +142,12 @@ opentryon/
 |---|---|
 | Install & config | [Getting Started](https://tryonlabs.github.io/opentryon/docs/getting-started/installation) |
 | CLI | [CLI guide](https://tryonlabs.github.io/opentryon/docs/getting-started/cli) |
+| MCP | [MCP server](https://tryonlabs.github.io/opentryon/docs/getting-started/mcp) · [`mcp-server/README.md`](mcp-server/README.md) |
+| OpenAPI / Postman | [Swagger guide](https://tryonlabs.github.io/opentryon/docs/getting-started/openapi-swagger) · [`openapi/`](openapi/) · [`postman/`](postman/) |
 | Per-provider APIs | [API Reference](https://tryonlabs.github.io/opentryon/docs/api-reference/overview) |
 | Local / GPU models | [Local Models](https://tryonlabs.github.io/opentryon/docs/local-models/overview) |
 | Agents | [Agents](https://tryonlabs.github.io/opentryon/docs/agents/vton-agent) |
+| Roadmap | [Roadmap](https://tryonlabs.github.io/opentryon/docs/community/roadmap) · [`ROADMAP.md`](ROADMAP.md) |
 | Add a new model | [New model checklist](https://tryonlabs.github.io/opentryon/docs/advanced/new-model-checklist) |
 | TryOnDiffusion | [Overview](https://tryonlabs.github.io/opentryon/docs/tryondiffusion/overview) · [paper](https://arxiv.org/abs/2306.08276) |
 

@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on applications. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), image generation APIs (Nano Banana, Nano Banana Pro, FLUX.2, GPT-Image-1), video generation APIs (Sora 2), datasets (Fashion-MNIST, VITON-HD, Subjects200K), garment segmentation, pose estimation, and TryOnDiffusion implementation.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.3 adds a unified CLI, FastMCP server, OpenAPI/Postman media snapshots, and a wide set of cloud try-on, image, video, and understanding models (Pruna, Seedance, Seedream, Kling 3, Luma Ray 3.2, Grok, Ideogram, FASHN, Kimi, and more).
 keywords:
   - virtual try-on
   - fashion AI
@@ -33,76 +33,74 @@ keywords:
   - AI video
   - Kimi K2.6
   - Kimi K2.7 Code
+  - Kimi K3
   - Moonshot AI
   - multimodal understanding
   - opentryon CLI
+  - MCP
+  - Model Context Protocol
+  - Pruna
+  - Seedance
+  - Seedream
+  - Ideogram
+  - Grok Imagine
+  - FASHN
+  - OpenAPI
+  - Swagger
 image: /img/opentryon-social-card.jpg
 ---
 
 # Welcome to OpenTryOn
 
-OpenTryOn is an open-source AI toolkit designed for fashion technology and virtual try-on applications. This project provides a comprehensive suite of tools for garment segmentation, human parsing, pose estimation, and virtual try-on using state-of-the-art diffusion models.
+OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/)** on PyPI.
 
 ## 🎯 What is OpenTryOn?
 
-OpenTryOn is a powerful Python library that democratizes fashion technology by providing:
+OpenTryOn gives you three ways to run fashion AI models:
 
-- **Preprocessing Utilities**: Garment segmentation, human parsing, and pose estimation
-- **TryOnDiffusion Implementation**: Dual UNet architecture for virtual try-on
-- **Easy-to-Use APIs**: Simple interfaces that abstract away complexity
-- **Production-Ready Code**: Comprehensive documentation and examples
-- **Open Source**: Free for non-commercial use
+1. **CLI** — `opentryon <service> --model <model> …`
+2. **MCP server** — tools for Cursor, Claude, and [tryon-studio](https://github.com/tryonlabs/tryon-studio)
+3. **Python APIs** — `tryon.api` adapters + `invoke_model()`
 
-## 🚀 Key Features
+Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
-### Virtual Try-On
-Advanced diffusion-based virtual try-on capabilities using TryOnDiffusion with dual UNet architecture. Also includes API adapters for cloud-based virtual try-on services like Segmind.
+## 🚀 Key Features (v0.0.3)
 
-### Datasets Module
-Easy-to-use interfaces for fashion and virtual try-on datasets:
-- **Fashion-MNIST**: 60,000 training examples with 10 fashion categories
-- **VITON-HD**: High-resolution virtual try-on dataset with 11,647 training pairs
-- **Subjects200K**: Large-scale dataset with 200,000 paired images for subject consistency research
-- **Lazy Loading**: Efficient PyTorch DataLoader support for large datasets
-- **Automatic Download**: Built-in download functionality and HuggingFace integration
+### Developer surfaces
+- Unified **registry-driven CLI** with `--dry-run`
+- **FastMCP** server — every registry model is a tool
+- **OpenAPI / Swagger** + **Postman** snapshots for upstream media APIs ([guide](getting-started/openapi-swagger))
 
-### API Adapters
-Cloud-based virtual try-on, image generation, and video generation APIs:
-- **Segmind**: Try-On Diffusion API for realistic virtual try-on generation
-- **Kling AI**: Virtual try-on with asynchronous processing
-- **Amazon Nova Canvas**: AWS-based virtual try-on service
-- **Nano Banana**: Google Gemini image generation (fast, efficient, 1024px)
-- **Nano Banana Pro**: Google Gemini advanced image generation (up to 4K, search grounding)
-- **FLUX.2 [PRO]**: High-quality image generation with text-to-image, image editing, and multi-image composition
-- **FLUX.2 [FLEX]**: Flexible image generation with advanced controls (guidance scale, steps, prompt upsampling)
-- **GPT-Image-1 & GPT-Image-1.5**: OpenAI image generation with strong prompt understanding, transparent backgrounds, and mask-based editing. GPT-Image-1.5 offers enhanced quality and better consistency
-- **Sora 2 & Sora 2 Pro**: OpenAI video generation with text-to-video and image-to-video capabilities. Sora 2 Pro offers superior quality with enhanced temporal consistency (4-12 second videos, multiple resolutions)
-- **Kimi K2.6 & K2.7 Code**: Moonshot AI multimodal text, image, and video understanding -- general-purpose (not limited to fashion), with an open-weight local counterpart (Kimi-VL) for GPU-only deployment
+### Virtual try-on
+Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, and Nano Banana 2 Lite composition.
 
-### Garment Preprocessing
-- **Garment Segmentation**: U2Net-based segmentation for upper, lower, and dress categories
-- **Garment Extraction**: Extract and preprocess garments for virtual try-on
-- **Human Segmentation**: Isolate human subjects from images
+### Image generate / edit
+Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / Edit / Upscale**, plus local FLUX.2-dev Turbo.
 
-### Pose Estimation
-OpenPose-based pose keypoint extraction for both garments and humans, enabling accurate virtual try-on.
+### Video
+Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**.
 
-### Outfit Generation
-FLUX.1-dev LoRA-based outfit generation from text descriptions.
+### Understanding & other
+**Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.
 
-### Interactive Demos
-Gradio-based web interfaces for easy experimentation and testing.
+### Interactive demos
+Gradio apps in-repo; the Next.js playground/studio UI lives in **tryon-studio** and talks to OpenTryOn over MCP.
 
 ## 📚 What You'll Learn
 
 In this documentation, you'll find:
 
-- **[Installation Guide](getting-started/installation)**: Get OpenTryOn up and running
-- **[Quick Start](getting-started/quickstart)**: Start using OpenTryOn in minutes
-- **[Datasets Module](datasets/overview)**: Load and use Fashion-MNIST, VITON-HD, and Subjects200K datasets
-- **[API Reference](api-reference/overview)**: Complete API documentation including Segmind and other adapters
-- **[Examples](examples/basic-usage)**: Real-world usage examples for datasets and virtual try-on
-- **[Advanced Guides](advanced/training-guide)**: Deep dive into training and customization
+- **[Installation Guide](getting-started/installation)**: Get OpenTryOn up and running (`pip install opentryon`)
+- **[Quick Start](getting-started/quickstart)**: First successful runs
+- **[Configuration](getting-started/configuration)**: API keys and `.env`
+- **[Unified CLI](getting-started/cli)**: Service → model → params
+- **[MCP Server](getting-started/mcp)**: Agent / IDE tool surface
+- **[OpenAPI & Postman](getting-started/openapi-swagger)**: Swagger for upstream media APIs
+- **[Datasets Module](datasets/overview)**: Fashion-MNIST, VITON-HD, Subjects200K
+- **[API Reference](api-reference/overview)**: Adapters and provider docs
+- **[Examples](examples/basic-usage)**: Real-world usage examples
+- **[Advanced Guides](advanced/training-guide)**: Training and customization
+- **[Roadmap](community/roadmap)**: Shipped vs remaining work
 
 ## 🎓 Prerequisites
 
