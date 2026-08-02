@@ -37,4 +37,4 @@ The canonical roadmap file in the repo is [`ROADMAP.md`](https://github.com/tryo
 
 ## Contribute
 
-Pick up a `good first issue`, follow the [new-model checklist](/docs/advanced/new-model-checklist), or join [Discord](https://discord.gg/T5mPpZHxkY).
+Pick up a `good first issue`, follow the [new-model checklist](../advanced/new-model-checklist), or join [Discord](https://discord.gg/T5mPpZHxkY).
