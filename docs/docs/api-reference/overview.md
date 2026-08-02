@@ -442,6 +442,18 @@ See [FLUX.2 API Documentation](flux2) for complete details.
 
 ## Video Generation API Adapters
 
+Also available via the CLI/MCP registry:
+
+| Adapter | CLI model | Docs |
+|---|---|---|
+| `SeedanceAdapter` | `seedance` | [Seedance & Seedream](seedance-seedream) |
+| `LumaRay32Adapter` | `luma-ray-3.2` | [Luma Ray 3.2](luma-ray) |
+| `KlingVideoAdapter` | `kling-v3` / `kling-v3-omni` / `kling-v2-5-turbo` | [Kling Video](kling-video) |
+| `GrokImagineVideoAdapter` | `grok-imagine-video` | [Grok Imagine](grok-imagine) |
+| `SoraVideoAdapter` / `VeoAdapter` / `LumaAIVideoAdapter` | `sora` / `veo` / `luma-video` | existing pages |
+
+Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`).
+
 ### `GeminiOmniAdapter`
 
 Adapter for Gemini Omni Flash (`gemini-omni-flash-preview`) -- multimodal

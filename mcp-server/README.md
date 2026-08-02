@@ -105,7 +105,7 @@ Two meta tools are always available regardless of what's configured:
 
 Every tool returns a structured dict: `{"success": true/false, ...}` -- never raises, so an LLM caller always gets a clean result to reason about instead of a stack trace.
 
-## Available tools (35 models across 6 services)
+## Available tools (registry-driven; count grows with `tryon/cli/registry.py`)
 
 ### vton -- Virtual try-on: compose a garment onto a person image
 
@@ -128,6 +128,9 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_flux2_turbo` | FLUX.2-dev Turbo (local, 8-step) | local/GPU |
 | `generate_gpt_image` | OpenAI GPT Image | `OPENAI_API_KEY` |
 | `generate_luma_image` | Luma Photon | `LUMA_AI_API_KEY` |
+| `generate_seedream` | ByteDance Seedream 5.0 Pro | `ARK_API_KEY` |
+| `generate_ideogram` | Ideogram 4.0 | `IDEOGRAM_API_KEY` |
+| `generate_grok_imagine_image` | xAI Grok Imagine Image Quality | `XAI_API_KEY` |
 
 ### edit -- Image editing (image + instruction -> image)
 
@@ -140,6 +143,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `edit_flux2_turbo` | FLUX.2-dev Turbo (local, image-to-image) | local/GPU |
 | `edit_gpt_image` | OpenAI GPT Image | `OPENAI_API_KEY` |
+| `edit_seedream` | ByteDance Seedream 5.0 Pro (edit / multi-ref) | `ARK_API_KEY` |
 
 ### understand -- Image & video understanding / captioning
 
@@ -157,8 +161,14 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 |---|---|---|
 | `video_generate_veo` | Google Veo | `GEMINI_API_KEY` |
 | `video_generate_sora` | OpenAI Sora | `OPENAI_API_KEY` |
-| `video_generate_luma_video` | Luma Dream Machine | `LUMA_AI_API_KEY` |
-| `video_generate_gemini_omni` | Gemini Omni Flash (video generation / conversational editing) | `GEMINI_API_KEY` |
+| `video_generate_luma_video` | Luma Dream Machine (Ray 2) | `LUMA_AI_API_KEY` |
+| `video_generate_luma_ray_3_2` | Luma Ray 3.2 (Agents API) | `LUMA_AGENTS_API_KEY` / `LUMA_AI_API_KEY` |
+| `video_generate_seedance` | ByteDance Seedance 2.5 | `ARK_API_KEY` |
+| `video_generate_kling_v3` | Kling 3.0 | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
+| `video_generate_kling_v3_omni` | Kling 3.0 Omni | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
+| `video_generate_kling_v2_5_turbo` | Kling 2.5 Turbo | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
+| `video_generate_grok_imagine_video` | xAI Grok Imagine Video 1.5 | `XAI_API_KEY` |
+| `video_generate_gemini_omni` | Gemini Omni Flash | `GEMINI_API_KEY` |
 
 ### bg-remove -- Background removal
 

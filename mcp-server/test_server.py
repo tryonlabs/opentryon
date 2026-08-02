@@ -86,6 +86,15 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
         ("video_generate_veo", {"prompt": "a cat", "image": "cat.jpg", "dry_run": True}, False),
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
+        ("video_generate_seedance", {"prompt": "runway walk", "dry_run": True}, False),
+        ("video_generate_luma_ray_3_2", {"prompt": "dolly shot", "dry_run": True}, False),
+        ("video_generate_kling_v3", {"prompt": "fashion pan", "dry_run": True}, False),
+        ("video_generate_kling_v3_omni", {"prompt": "lookbook", "dry_run": True}, False),
+        ("video_generate_kling_v2_5_turbo", {"prompt": "quick clip", "dry_run": True}, False),
+        ("video_generate_grok_imagine_video", {"prompt": "cinematic", "dry_run": True}, False),
+        ("generate_seedream", {"prompt": "editorial still", "dry_run": True}, False),
+        ("generate_ideogram", {"prompt": "poster type", "dry_run": True}, False),
+        ("generate_grok_imagine_image", {"prompt": "product shot", "dry_run": True}, False),
         ("bg_remove_ben2", {"image": "i.jpg", "dry_run": True}, True),
     ]
     checked = 0

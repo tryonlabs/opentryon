@@ -15,8 +15,10 @@ Reference: https://docs.lumalabs.ai/docs/image-generation
 
 from .adapter import LumaAIAdapter
 from .luma_video_adapter import LumaAIVideoAdapter
+from .ray32_adapter import LumaRay32Adapter
 
 __all__ = [
     'LumaAIAdapter',
     'LumaAIVideoAdapter',
+    'LumaRay32Adapter',
 ]

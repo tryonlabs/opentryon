@@ -228,6 +228,46 @@ def check_kimi_k26_real_call():
         print(f"\u2713 real Kimi K2.6 API call via CLI succeeded, saved {saved[0]}")
 
 
+def check_new_media_models_dry_runs():
+    cases = [
+        (["generate", "--model", "seedream", "--prompt", "editorial fashion still"],
+         "SeedreamAdapter", "generate_text_to_image"),
+        (["generate", "--model", "ideogram", "--prompt", "poster with crisp type"],
+         "IdeogramAdapter", "generate_text_to_image"),
+        (["generate", "--model", "grok-imagine-image", "--prompt", "studio product shot"],
+         "GrokImagineImageAdapter", "generate_text_to_image"),
+        (["edit", "--model", "seedream", "--prompt", "swap outfit",
+          "--images", "data/model-1.jpg"],
+         "SeedreamAdapter", "generate_image_edit"),
+        (["video-generate", "--model", "seedance", "--prompt", "runway walk"],
+         "SeedanceAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "seedance", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "SeedanceAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "luma-ray-3.2", "--prompt", "dolly through atelier"],
+         "LumaRay32Adapter", "generate_text_to_video"),
+        (["video-generate", "--model", "kling-v3", "--prompt", "slow pan fashion"],
+         "KlingVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "kling-v3-omni", "--prompt", "multi-shot lookbook"],
+         "KlingVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "kling-v2-5-turbo", "--prompt", "quick preview"],
+         "KlingVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "grok-imagine-video", "--prompt", "cinematic push-in"],
+         "GrokImagineVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "grok-imagine-video", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "GrokImagineVideoAdapter", "generate_image_to_video"),
+    ]
+    for argv, expect_cls, expect_method in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert expect_cls in printed and f".{expect_method}(" in printed, printed
+    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2 --dry-run calls resolve")
+
+
 if __name__ == "__main__":
     check_registry_has_no_flag_collisions()
     check_every_model_parser_builds()
@@ -237,6 +277,7 @@ if __name__ == "__main__":
     check_nano_banana_2_lite_dry_runs()
     check_fashn_dry_runs()
     check_gemini_omni_dry_runs()
+    check_new_media_models_dry_runs()
     check_kimi_dry_runs()
     check_kimi_understand_requires_image_or_video()
     check_kimi_k26_real_call()

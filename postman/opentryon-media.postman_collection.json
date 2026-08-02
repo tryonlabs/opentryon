@@ -1,0 +1,153 @@
+{
+  "info": {
+    "name": "OpenTryOn Media APIs",
+    "description": "Postman collection for newly integrated OpenTryOn image/video providers (Seedance, Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram). These call upstream provider APIs directly — for the unified CLI/MCP path use `opentryon` / MCP tools instead.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "ARK_API_KEY", "value": "" },
+    { "key": "ARK_BASE", "value": "https://ark.ap-southeast.bytepluses.com/api/v3" },
+    { "key": "KLING_JWT", "value": "" },
+    { "key": "KLING_BASE", "value": "https://api-singapore.klingai.com" },
+    { "key": "LUMA_AGENTS_API_KEY", "value": "" },
+    { "key": "XAI_API_KEY", "value": "" },
+    { "key": "IDEOGRAM_API_KEY", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "BytePlus Seedance — create video task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{ARK_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{ARK_BASE}}/contents/generations/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"seedance-2-5\",\n  \"content\": [{ \"type\": \"text\", \"text\": \"A 10-second runway walk in soft studio light\" }],\n  \"ratio\": \"16:9\",\n  \"resolution\": \"1080p\",\n  \"duration\": 10,\n  \"generate_audio\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "BytePlus Seedream 5.0 Pro — generate image",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{ARK_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{ARK_BASE}}/images/generations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"seedream-5-0-pro-260628\",\n  \"prompt\": \"Editorial product shot of matte black sneakers\",\n  \"size\": \"2K\",\n  \"output_format\": \"png\",\n  \"watermark\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Kling 3.0 — text2video",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{KLING_JWT}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{KLING_BASE}}/v1/videos/text2video",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model_name\": \"kling-v3\",\n  \"prompt\": \"Slow pan across a couture atelier\",\n  \"duration\": \"5\",\n  \"mode\": \"pro\",\n  \"aspect_ratio\": \"16:9\",\n  \"sound\": \"on\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Kling 3.0 Omni — omni-video",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{KLING_JWT}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{KLING_BASE}}/v1/videos/omni-video",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model_name\": \"kling-v3-omni\",\n  \"prompt\": \"Multi-shot lookbook\",\n  \"duration\": \"8\",\n  \"mode\": \"pro\",\n  \"aspect_ratio\": \"16:9\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Kling 2.5 Turbo — text2video",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{KLING_JWT}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{KLING_BASE}}/v1/videos/text2video",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model_name\": \"kling-v2-5-turbo\",\n  \"prompt\": \"Quick product spin\",\n  \"duration\": \"5\",\n  \"mode\": \"std\",\n  \"aspect_ratio\": \"16:9\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Luma Ray 3.2 — Agents video",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{LUMA_AGENTS_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "https://agents.lumalabs.ai/v1/generations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"ray-3.2\",\n  \"type\": \"video\",\n  \"prompt\": \"Slow dolly through a misty greenhouse at sunrise\",\n  \"aspect_ratio\": \"16:9\",\n  \"video\": { \"resolution\": \"720p\", \"duration\": \"5s\" }\n}"
+        }
+      }
+    },
+    {
+      "name": "xAI Grok Imagine Image Quality",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{XAI_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "https://api.x.ai/v1/images/generations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"grok-imagine-image-quality\",\n  \"prompt\": \"A collage of London landmarks in stencil street-art style\",\n  \"n\": 1,\n  \"aspect_ratio\": \"16:9\",\n  \"response_format\": \"url\"\n}"
+        }
+      }
+    },
+    {
+      "name": "xAI Grok Imagine Video 1.5",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{XAI_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "https://api.x.ai/v1/videos/generations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"grok-imagine-video-1.5\",\n  \"prompt\": \"Slow cinematic push-in as embers drift\",\n  \"duration\": 6,\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"720p\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Ideogram 4.0 — generate",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Api-Key", "value": "{{IDEOGRAM_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "https://api.ideogram.ai/v1/ideogram-v4/generate",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text_prompt\": \"Poster for a summer design conference\",\n  \"rendering_speed\": \"QUALITY\",\n  \"aspect_ratio\": \"3:4\",\n  \"num_images\": 1\n}"
+        }
+      }
+    }
+  ]
+}

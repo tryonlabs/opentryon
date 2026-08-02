@@ -13,6 +13,7 @@ import importlib
 _LAZY_ATTRS = {
     "AmazonNovaCanvasVTONAdapter": ".nova_canvas",
     "KlingAIVTONAdapter": ".kling_ai",
+    "KlingVideoAdapter": ".kling_video",
     "SegmindVTONAdapter": ".segmind",
     "FluxVTONAdapter": ".vton",
     "NanoBananaAdapter": ".nano_banana",
@@ -25,12 +26,18 @@ _LAZY_ATTRS = {
     "Flux2ProAdapter": ".flux2",
     "Flux2FlexAdapter": ".flux2",
     "LumaAIVideoAdapter": ".lumaAI.luma_video_adapter",
+    "LumaRay32Adapter": ".lumaAI.ray32_adapter",
     "GPTImageAdapter": ".openAI.image_adapter",
     "SoraVideoAdapter": ".openAI.video_adapter",
     "VeoAdapter": ".veo",
     "GeminiOmniAdapter": ".omni",
     "BEN2BackgroundRemoverAdapter": ".ben2",
     "KimiUnderstandAdapter": ".kimi",
+    "SeedanceAdapter": ".byteplus",
+    "SeedreamAdapter": ".byteplus",
+    "IdeogramAdapter": ".ideogram",
+    "GrokImagineImageAdapter": ".xai",
+    "GrokImagineVideoAdapter": ".xai",
 }
 
 __all__ = sorted(_LAZY_ATTRS)

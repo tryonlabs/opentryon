@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 🎬 Video / 🎨 Image — new provider models
+- **ByteDance Seedance 2.5** (`tryon.api.byteplus.SeedanceAdapter`): ModelArk async video (`opentryon video-generate --model seedance`). Variants: Seedance 2.5 + Seedance 2.0 Standard/Fast/Mini
+- **ByteDance Seedream 5.0 Pro** (`SeedreamAdapter`): ModelArk image generate + edit/multi-ref (`opentryon generate|edit --model seedream`)
+- **Luma Ray 3.2** (`tryon.api.lumaAI.LumaRay32Adapter`): Agents API T2V/I2V with HDR (`opentryon video-generate --model luma-ray-3.2`)
+- **Kling 3.0 / 3.0 Omni / 2.5 Turbo** (`tryon.api.kling_video.KlingVideoAdapter`): official Open Platform video endpoints (`kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`)
+- **xAI Grok Imagine Video 1.5** + **Image Quality** (`tryon.api.xai`)
+- **Ideogram 4.0** (`tryon.api.ideogram.IdeogramAdapter`) with TURBO/DEFAULT/QUALITY rendering speeds
+- Postman collection (`postman/opentryon-media.postman_collection.json`) and OpenAPI snapshot (`openapi/opentryon-media.openapi.yaml`) for the new media models
+- Docs pages under `docs/docs/api-reference/` for Seedance/Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram
+
 ### Changed
 
 #### 🎨 Demos
@@ -14,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `demo/` now contains only the Gradio demos (`extract_garment`, `model_swap`, `outfit_generator`) -- this package's own demos are Gradio apps and Jupyter notebooks, not a hosted web frontend
 - Added `notebooks/virtual_tryon_demo.ipynb`, a runnable, dependency-light walkthrough of `tryon.cli.runner.invoke_model()` for the `vton` service (dry-run by default, no API key required to execute)
 
-### Added
+### Added (earlier)
 
 #### 🔌 MCP Server
 - **Rebuilt `mcp-server/` on [FastMCP](https://gofastmcp.com) 3.x** (up from the low-level `mcp` SDK), replacing ~15 hand-written tool wrappers with 27 tools generated dynamically from `tryon.cli.registry` -- every model reachable via the `opentryon` CLI (Kimi, FLUX VTO/2, GPT Image, Sora, Veo, Nano Banana, BEN2, etc.) is now automatically exposed as an MCP tool, and new registry entries need zero MCP-server changes to show up
