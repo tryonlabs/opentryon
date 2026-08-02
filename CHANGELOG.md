@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2 August 2026
+
 ### Added
 
 #### 🎬 Video / 🎨 Image — new provider models
@@ -16,8 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Kling 3.0 / 3.0 Omni / 2.5 Turbo** (`tryon.api.kling_video.KlingVideoAdapter`): official Open Platform video endpoints (`kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`)
 - **xAI Grok Imagine Video 1.5** + **Image Quality** (`tryon.api.xai`)
 - **Ideogram 4.0** (`tryon.api.ideogram.IdeogramAdapter`) with TURBO/DEFAULT/QUALITY rendering speeds
-- **Pruna Phase 1+2** (`tryon.api.pruna`): shared `PrunaClient` plus `p-image`, `p-image-edit`, `p-image-upscale`, `p-video`, `p-video-replace` (try-on remains `vton --model p-image-tryon` and now reuses the shared client)
-- **Pruna Phase 3**: `p-video-avatar` (talking head) and `p-video-animate` (motion transfer)
+- **Pruna** (`tryon.api.pruna`): shared `PrunaClient` plus `p-image`, `p-image-edit`, `p-image-upscale`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate` (try-on remains `vton --model p-image-tryon` and reuses the shared client)
 - Postman collection (`postman/opentryon-media.postman_collection.json`) and OpenAPI snapshot (`openapi/opentryon-media.openapi.yaml`) for the new media models
 - Docs pages under `docs/docs/api-reference/` for Seedance/Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram, expanded Pruna
 
@@ -28,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `demo/` now contains only the Gradio demos (`extract_garment`, `model_swap`, `outfit_generator`) -- this package's own demos are Gradio apps and Jupyter notebooks, not a hosted web frontend
 - Added `notebooks/virtual_tryon_demo.ipynb`, a runnable, dependency-light walkthrough of `tryon.cli.runner.invoke_model()` for the `vton` service (dry-run by default, no API key required to execute)
 
-### Added (earlier)
+### Added (earlier in 0.0.3 cycle)
 
 #### 🔌 MCP Server
 - **Rebuilt `mcp-server/` on [FastMCP](https://gofastmcp.com) 3.x** (up from the low-level `mcp` SDK), replacing ~15 hand-written tool wrappers with 27 tools generated dynamically from `tryon.cli.registry` -- every model reachable via the `opentryon` CLI (Kimi, FLUX VTO/2, GPT Image, Sora, Veo, Nano Banana, BEN2, etc.) is now automatically exposed as an MCP tool, and new registry entries need zero MCP-server changes to show up
@@ -131,6 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive demos
 - Complete documentation
 
+[0.0.3]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3
 [0.0.2]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.2
 [0.0.1]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.1
 

@@ -32,7 +32,7 @@ LOCAL_INFERENCE_DEPS = [
 
 setup(
     name="opentryon",
-    version="0.0.2",
+    version="0.0.3",
     description="Open-source AI toolkit for fashion tech and virtual try-on",
     long_description=long_description,
     long_description_content_type='text/markdown',
