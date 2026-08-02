@@ -224,8 +224,8 @@ See [Nova Canvas API Documentation](nova-canvas) for complete details.
 
 Adapter for Pruna AI's P-Image-Try-On API -- multi-garment virtual try-on
 (up to 11 garment reference images in one call). Lives under
-`tryon.api.vton` (use-case directory) rather than a dedicated `tryon.api.pruna`
-package, since it's a single-file, VTON-primary adapter.
+`tryon.api.vton` and shares `tryon.api.pruna.client.PrunaClient` with the
+newer P-Image / P-Video adapters in `tryon.api.pruna`.
 
 ```python
 from tryon.api.vton import PImageTryOnAdapter
@@ -245,7 +245,7 @@ images = adapter.generate_and_decode(
 - `generate(person_image, garment_images, ...)` - Generate a virtual try-on result (returns a URL)
 - `generate_and_decode(person_image, garment_images, ...)` - Generate and decode to PIL Images
 
-See [Pruna P-Image-Try-On API Documentation](pruna) for complete details.
+See [Pruna AI Documentation](pruna) for complete details (also covers `PImageAdapter`, `PImageEditAdapter`, `PImageUpscaleAdapter`, `PVideoAdapter`, `PVideoReplaceAdapter`, `PVideoAvatarAdapter`, `PVideoAnimateAdapter`).
 
 ---
 

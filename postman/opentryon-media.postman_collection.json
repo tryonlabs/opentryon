@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "OpenTryOn Media APIs",
-    "description": "Postman collection for newly integrated OpenTryOn image/video providers (Seedance, Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram). These call upstream provider APIs directly — for the unified CLI/MCP path use `opentryon` / MCP tools instead.",
+    "description": "Postman collection for newly integrated OpenTryOn image/video providers (Seedance, Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram, Pruna). These call upstream provider APIs directly — for the unified CLI/MCP path use `opentryon` / MCP tools instead.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -11,7 +11,9 @@
     { "key": "KLING_BASE", "value": "https://api-singapore.klingai.com" },
     { "key": "LUMA_AGENTS_API_KEY", "value": "" },
     { "key": "XAI_API_KEY", "value": "" },
-    { "key": "IDEOGRAM_API_KEY", "value": "" }
+    { "key": "IDEOGRAM_API_KEY", "value": "" },
+    { "key": "PRUNA_API_KEY", "value": "" },
+    { "key": "PRUNA_BASE", "value": "https://api.pruna.ai" }
   ],
   "item": [
     {
@@ -146,6 +148,122 @@
         "body": {
           "mode": "raw",
           "raw": "{\n  \"text_prompt\": \"Poster for a summer design conference\",\n  \"rendering_speed\": \"QUALITY\",\n  \"aspect_ratio\": \"3:4\",\n  \"num_images\": 1\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Image — generate",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-image" },
+          { "key": "Try-Sync", "value": "true" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"prompt\": \"Editorial fashion still, soft window light\",\n    \"aspect_ratio\": \"3:4\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Image-Edit",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-image-edit" },
+          { "key": "Try-Sync", "value": "true" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"prompt\": \"Clean studio background\",\n    \"images\": [\"https://example.com/photo.jpg\"],\n    \"aspect_ratio\": \"match_input_image\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Image-Upscale",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-image-upscale" },
+          { "key": "Try-Sync", "value": "true" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"image\": \"https://example.com/photo.jpg\",\n    \"target\": 8,\n    \"enhance_details\": true,\n    \"output_format\": \"png\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Video — text-to-video",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-video" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"prompt\": \"Model walks toward camera, soft breeze\",\n    \"duration\": 5,\n    \"resolution\": \"720p\",\n    \"aspect_ratio\": \"16:9\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Video-Replace",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-video-replace" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"video\": \"https://api.pruna.ai/v1/files/source-video\",\n    \"images\": [\"https://api.pruna.ai/v1/files/identity\"],\n    \"resolution\": \"720p\",\n    \"instruction_prompt\": \"Place the reference person into the video\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Video-Avatar",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-video-avatar" },
+          { "key": "Try-Sync", "value": "true" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"image\": \"https://example.com/portrait.jpg\",\n    \"voice_script\": \"Welcome to our product demo!\",\n    \"voice\": \"Zephyr (Female)\",\n    \"voice_language\": \"English (US)\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Pruna P-Video-Animate",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "apikey", "value": "{{PRUNA_API_KEY}}" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Model", "value": "p-video-animate" }
+        ],
+        "url": "{{PRUNA_BASE}}/v1/predictions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"video\": \"https://api.pruna.ai/v1/files/source-video\",\n    \"image\": \"https://api.pruna.ai/v1/files/subject\",\n    \"resolution\": \"720p\",\n    \"instruction_prompt\": \"Animate the reference subject using the motion from the source video.\"\n  }\n}"
         }
       }
     }

@@ -1,212 +1,207 @@
 ---
 sidebar_position: 8
-title: Pruna P-Image-Try-On
-description: Multi-garment virtual try-on using Pruna AI's P-Image-Try-On API
+title: Pruna AI
+description: Pruna P-Image, P-Image-Edit, P-Image-Upscale, P-Image-Try-On, P-Video, P-Video-Replace, P-Video-Avatar, and P-Video-Animate
 keywords:
   - pruna
+  - p-image
+  - p-image-edit
+  - p-image-upscale
   - p-image-try-on
+  - p-video
+  - p-video-replace
+  - p-video-avatar
+  - p-video-animate
   - virtual try-on
-  - multi-garment
-  - image editing
 ---
 
-# Pruna P-Image-Try-On
+# Pruna AI
 
-The `PImageTryOnAdapter` provides an interface to Pruna AI's P-Image-Try-On API for multi-garment virtual try-on, combining a person photo with one or more garment reference images.
+OpenTryOn integrates Pruna's unified predictions API (`POST /v1/predictions` with a `Model` header) through a shared client in `tryon.api.pruna.client.PrunaClient`.
 
-## Overview
+| Model | CLI | Adapter | Role |
+|---|---|---|---|
+| `p-image` | `generate --model p-image` | `PImageAdapter` | Ultra-fast text-to-image |
+| `p-image-edit` | `edit --model p-image-edit` | `PImageEditAdapter` | Edit / compose 1–5 images |
+| `p-image-upscale` | `edit --model p-image-upscale` | `PImageUpscaleAdapter` | Upscale to 1–128 MP |
+| `p-image-try-on` | `vton --model p-image-tryon` | `PImageTryOnAdapter` | Multi-garment virtual try-on |
+| `p-video` | `video-generate --model p-video` | `PVideoAdapter` | T2V / I2V (+ optional audio) |
+| `p-video-replace` | `video-generate --model p-video-replace` | `PVideoReplaceAdapter` | Identity swap in a source clip |
+| `p-video-avatar` | `video-generate --model p-video-avatar` | `PVideoAvatarAdapter` | Talking-head from portrait + script/audio |
+| `p-video-animate` | `video-generate --model p-video-animate` | `PVideoAnimateAdapter` | Animate a subject with source motion |
 
-P-Image-Try-On fits one or more garments onto a person's photo. Unlike single-garment VTON APIs (Nova Canvas, Kling AI, Segmind), it accepts up to 11 garment reference images in one call (6 recommended), so you can compose a full outfit -- top, bottoms, shoes, accessories -- in a single request. The adapter handles image upload, prediction creation, async polling, and response decoding automatically.
+**Auth:** `PRUNA_API_KEY` (optional `PRUNA_BASE_URL`). Key is sent as the `apikey` header.
 
-**API endpoint:** `POST /v1/predictions` (`Model: p-image-try-on`)
+**Docs:** [Pruna model guides](https://docs.api.pruna.ai/guides/models)
 
-**Reference:** [Pruna P-Image-Try-On Documentation](https://docs.api.pruna.ai/guides/models/p-image-try-on)
+Ideogram-via-Pruna is skipped — use `opentryon generate --model ideogram` instead.
 
-**Pricing:** $0.015 for the first garment image, plus $0.008 for each additional garment image (per Pruna's docs).
+## Shared client
 
-**Location note:** unlike most cloud adapters in this repo, `PImageTryOnAdapter` lives under `tryon.api.vton` (a use-case directory) rather than a dedicated `tryon.api.pruna/` package -- see [Adding a New Model Integration](../advanced/new-model-checklist.md#1-decide-where-the-adapter-lives) for why.
-
-## Installation
-
-No additional installation required. The adapter uses the `requests` and `Pillow` libraries, which are included with OpenTryOn.
+All adapters upload local files via `/v1/files`, create predictions with `Try-Sync: true` by default, and poll `/v1/predictions/status/{id}` when needed. Try-on lives under `tryon.api.vton` for historical reasons but reuses the same client; image/video models live in `tryon.api.pruna`.
 
 ## Authentication
 
-Pruna requires an API key, sent as the `apikey` header on every request.
+```bash
+export PRUNA_API_KEY="your_api_key"
+# optional:
+# export PRUNA_BASE_URL="https://api.pruna.ai"
+```
 
-1. **Environment Variable** (Recommended):
-   ```bash
-   export PRUNA_API_KEY="your_api_key"
-   ```
+## CLI examples
 
-2. **Constructor Parameter**:
-   ```python
-   adapter = PImageTryOnAdapter(api_key="your_api_key")
-   ```
+```bash
+# Text-to-image
+opentryon generate --model p-image \
+  --prompt "editorial fashion still, soft window light" \
+  --aspect-ratio 3:4
 
-## Quick Start
+# Multi-image edit
+opentryon edit --model p-image-edit \
+  --images person.jpg garment.jpg \
+  --prompt "Dress the person in the garment, studio lighting"
+
+# Upscale
+opentryon edit --model p-image-upscale \
+  --image result.jpg --target 8 --enhance-details
+
+# Multi-garment try-on
+opentryon vton --model p-image-tryon \
+  --person-image person.jpg \
+  --garment-image top.jpg --garment-image bottoms.jpg
+
+# Text / image to video
+opentryon video-generate --model p-video \
+  --prompt "model walks toward camera, soft breeze" \
+  --duration 5 --resolution 720p
+
+opentryon video-generate --model p-video \
+  --prompt "gentle head turn and smile" \
+  --image still.jpg --duration 5
+
+# Identity replace in video
+opentryon video-generate --model p-video-replace \
+  --video source.mp4 \
+  --images identity.jpg \
+  --instruction-prompt "Place the reference person into the video"
+
+# Talking-head avatar (script or audio)
+opentryon video-generate --model p-video-avatar \
+  --image portrait.jpg \
+  --voice-script "Welcome to our spring collection." \
+  --voice "Zephyr (Female)"
+
+opentryon video-generate --model p-video-avatar \
+  --image portrait.jpg \
+  --audio speech.mp3
+
+# Animate subject with source motion
+opentryon video-generate --model p-video-animate \
+  --video driver.mp4 \
+  --image subject.jpg \
+  --instruction-prompt "Keep the subject’s outfit and lighting"
+```
+
+## Python quick start
 
 ```python
 from dotenv import load_dotenv
 load_dotenv()
 
+from tryon.api.pruna import (
+    PImageAdapter,
+    PImageEditAdapter,
+    PImageUpscaleAdapter,
+    PVideoAdapter,
+    PVideoAnimateAdapter,
+    PVideoAvatarAdapter,
+    PVideoReplaceAdapter,
+)
 from tryon.api.vton import PImageTryOnAdapter
 
-# Initialize adapter (uses PRUNA_API_KEY from environment)
-adapter = PImageTryOnAdapter()
+# Generate
+images = PImageAdapter().generate_text_to_image(
+    prompt="luxury knitwear flatlay on marble",
+    aspect_ratio="1:1",
+)
+images[0].save("out.png")
 
-# Generate a multi-garment virtual try-on
-images = adapter.generate_and_decode(
-    person_image="data/person.jpg",
-    garment_images=["data/top.jpg", "data/bottoms.jpg"],
+# Edit
+edited = PImageEditAdapter().generate_image_edit(
+    prompt="Replace the background with a clean studio",
+    image=["photo.jpg"],
 )
 
-# Save the result
-images[0].save("outputs/tryon_result.jpg")
-```
+# Upscale
+hires = PImageUpscaleAdapter().upscale(image="out.png", target=8)
 
-## API Reference
-
-### Class: `PImageTryOnAdapter`
-
-Adapter class for Pruna AI's P-Image-Try-On API.
-
-#### Constructor
-
-```python
-PImageTryOnAdapter(
-    api_key: Optional[str] = None,
-    base_url: Optional[str] = None,
-)
-```
-
-**Parameters:**
-- `api_key` (str, optional): Pruna API key. Defaults to `PRUNA_API_KEY` environment variable. If not provided, raises `ValueError`.
-- `base_url` (str, optional): Base URL for the Pruna API. Defaults to `PRUNA_BASE_URL` environment variable or `'https://api.pruna.ai'`.
-
-#### Methods
-
-##### `generate(person_image, garment_images, ...)`
-
-Generate a virtual try-on result.
-
-**Parameters:**
-- `person_image` (str, PIL.Image, or file-like): Person/model photo. File paths and file-like objects are uploaded to Pruna's temporary file store automatically; URLs are passed through as-is.
-- `garment_images` (str or list): One or more garment reference images (same input types as `person_image`). Up to 11 supported, 6 recommended.
-- `prompt` (str, optional): Experimental guidance for non-flatlay garment images, e.g. which garment from which image to use. Default: `""`.
-- `seed` (int, optional): Random seed. Omit for a random seed.
-- `turbo` (bool, optional): Run faster with additional optimizations. Not recommended for more than 4 garments. Default: `False`.
-- `output_format` (str, optional): `"jpg"`, `"png"`, or `"webp"`. Default: `"jpg"`.
-- `output_quality` (int, optional): JPEG/WebP quality, 0-100. Default: `95`.
-- `reference_pose` (optional): EXPERIMENTAL reference pose image; when provided, the person is reposed to match it before try-on.
-- `preserve_input_size` (bool, optional): Return the output at the original input resolution. Default: `True`.
-- `wait` (bool, optional): Use Pruna's synchronous mode and poll automatically if it takes longer than 60s. Default: `True`.
-- `max_wait_time` (int, optional): Maximum polling time in seconds. Default: `120`.
-
-**Returns:**
-- `str`: URL of the generated result image.
-
-**Raises:**
-- `ValueError`: If required images are missing, the API returns an error, or the prediction fails/times out.
-
-**Example:**
-```python
-url = adapter.generate(
+# Try-on
+tryon = PImageTryOnAdapter().generate_and_decode(
     person_image="person.jpg",
-    garment_images=["shirt.jpg", "pants.jpg"],
-    turbo=True,
+    garment_images=["top.jpg", "bottoms.jpg"],
+)
+
+# Video
+mp4 = PVideoAdapter().generate_text_to_video(
+    prompt="runway walk, cinematic tracking shot",
+    duration=5,
+    resolution="720p",
+)
+open("clip.mp4", "wb").write(mp4)
+
+replaced = PVideoReplaceAdapter().generate_video_replace(
+    video="source.mp4",
+    images=["identity.jpg"],
+)
+
+avatar = PVideoAvatarAdapter().generate_video_avatar(
+    image="portrait.jpg",
+    voice_script="Welcome to our spring collection.",
+)
+
+animated = PVideoAnimateAdapter().generate_video_animate(
+    video="driver.mp4",
+    image="subject.jpg",
 )
 ```
 
-##### `generate_and_decode(person_image, garment_images, ...)`
+## Parameter notes
 
-Same parameters as `generate()`, but downloads and decodes the result to a PIL Image.
+### P-Image
+- Required: `prompt`
+- Optional: `aspect_ratio` (incl. `custom` + `width`/`height`), `seed`, `prompt_upsampling`, LoRA fields
 
-**Returns:**
-- `List[PIL.Image.Image]`: A single-element list containing the decoded result image.
+### P-Image-Edit
+- Required: `prompt`, 1–5 images
+- Optional: `aspect_ratio` (default `match_input_image`), `turbo` (default `True`), `seed`
 
-**Example:**
-```python
-images = adapter.generate_and_decode(
-    person_image="data/person.jpg",
-    garment_images=["data/top.jpg", "data/bottoms.jpg"],
-    output_format="png",
-)
-images[0].save("outputs/tryon_result.png")
-```
+### P-Image-Upscale
+- Required: `image`
+- Optional: `target` MP (1–128, default 4), `output_format`, `enhance_details`, `enhance_realism`
 
-## Image Input Formats
+### P-Image-Try-On
+- Required: person image + ≥1 garment image (up to 11; 6 recommended)
+- Optional: `prompt`, `turbo`, `reference_pose`, `output_format` / `output_quality`
+- Pricing (per Pruna): $0.015 first garment + $0.008 each additional
 
-Both `person_image` and each entry in `garment_images` accept:
+### P-Video
+- Required: `prompt`
+- Optional: `image` (I2V), `audio` (duration follows audio), `duration` 1–20s, `resolution` 720p/1080p, `fps` 24/48, `draft`, `prompt_upsampling`
 
-- **File paths**: `"data/person.jpg"` -- uploaded to Pruna's temporary file store automatically
-- **URLs**: `"https://example.com/person.jpg"` -- passed straight through
-- **PIL Images**: `Image.open("person.jpg")` -- uploaded as PNG
-- **Base64 strings**: decoded and uploaded
+### P-Video-Replace
+- Required: source `video`, 1–3 identity `images`
+- Optional: `instruction_prompt`, `resolution`, `target_fps`, `turbo`, audio flags
 
-Uploaded files live on Pruna's servers for a limited time (per Pruna's docs) and are used only for the duration of the prediction.
+### P-Video-Avatar
+- Required: portrait `image`, plus `voice_script` and/or `audio` (audio wins if both)
+- Optional: `voice`, `voice_language`, `resolution`, `video_prompt`, `voice_prompt`, negative-prompt fields
 
-## Multi-Garment Try-On
-
-Unlike Nova Canvas, Kling AI, or Segmind (one garment per call), P-Image-Try-On composes multiple garments in a single request:
-
-```python
-images = adapter.generate_and_decode(
-    person_image="model.jpg",
-    garment_images=["jacket.jpg", "shirt.jpg", "trousers.jpg", "shoes.jpg"],
-)
-```
-
-For more than 4 garments, avoid `turbo=True` (Pruna's docs note it's not recommended beyond that).
-
-## Asynchronous Processing
-
-By default (`wait=True`), the adapter uses Pruna's synchronous mode (`Try-Sync: true`) and transparently falls back to polling `GET /v1/predictions/status/{id}` if the request doesn't finish within Pruna's ~60 second synchronous window. Pass `wait=False` to always submit asynchronously and poll up to `max_wait_time` seconds.
-
-```python
-url = adapter.generate(
-    person_image="person.jpg",
-    garment_images=["shirt.jpg"],
-    wait=False,
-    max_wait_time=180,
-)
-```
-
-## Error Handling
-
-```python
-from tryon.api.vton import PImageTryOnAdapter
-
-try:
-    adapter = PImageTryOnAdapter()
-    images = adapter.generate_and_decode(
-        person_image="person.jpg",
-        garment_images=["shirt.jpg"],
-    )
-except ValueError as e:
-    print(f"Error: {e}")
-```
-
-Common errors:
-- Missing API key
-- Missing person or garment image(s)
-- API request failure
-- Prediction failed or timed out
-
-## opentryon CLI / MCP Server
-
-P-Image-Try-On is also wired into the `opentryon` CLI and MCP server as `vton --model p-image-tryon`:
-
-```bash
-opentryon vton --model p-image-tryon \
-  --person-image person.jpg \
-  --garment-image top.jpg --garment-image bottoms.jpg \
-  --turbo
-```
+### P-Video-Animate
+- Required: source `video`, subject `image`
+- Optional: `instruction_prompt`, `resolution`, `target_fps`, `turbo`, audio flags
 
 ## See Also
 
-- [Virtual Try-On Examples](../examples/virtual-tryon) - Usage examples
-- [API Reference Overview](overview) - Complete API reference
-- [Nano Banana 2 Lite](nano-banana#nanobanana2liteadapter-gemini-31-flash-lite-image--nano-banana-2-lite) - A faster/cheaper (lower-fidelity) alternative for virtual try-on
-- [Pruna P-Image-Try-On Documentation](https://docs.api.pruna.ai/guides/models/p-image-try-on) - Official API docs
+- [API Reference Overview](overview)
+- [Unified CLI](../getting-started/cli)
+- [Pruna docs](https://docs.api.pruna.ai/guides/models)

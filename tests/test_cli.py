@@ -257,6 +257,28 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "grok-imagine-video", "--prompt", "animate",
           "--image", "data/model-1.jpg"],
          "GrokImagineVideoAdapter", "generate_image_to_video"),
+        (["generate", "--model", "p-image", "--prompt", "knitwear flatlay"],
+         "PImageAdapter", "generate_text_to_image"),
+        (["edit", "--model", "p-image-edit", "--prompt", "studio background",
+          "--images", "data/model-1.jpg"],
+         "PImageEditAdapter", "generate_image_edit"),
+        (["edit", "--model", "p-image-upscale", "--image", "data/model-1.jpg", "--target", "4"],
+         "PImageUpscaleAdapter", "upscale"),
+        (["video-generate", "--model", "p-video", "--prompt", "runway walk"],
+         "PVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "p-video", "--prompt", "gentle turn",
+          "--image", "data/model-1.jpg"],
+         "PVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "p-video-replace",
+          "--video", "data/model-1.jpg", "--images", "data/model-1.jpg"],
+         "PVideoReplaceAdapter", "generate_video_replace"),
+        (["video-generate", "--model", "p-video-avatar",
+          "--image", "data/model-1.jpg",
+          "--voice-script", "Welcome to the collection."],
+         "PVideoAvatarAdapter", "generate_video_avatar"),
+        (["video-generate", "--model", "p-video-animate",
+          "--video", "data/model-1.jpg", "--image", "data/model-1.jpg"],
+         "PVideoAnimateAdapter", "generate_video_animate"),
     ]
     for argv, expect_cls, expect_method in cases:
         buf = io.StringIO()
@@ -265,7 +287,7 @@ def check_new_media_models_dry_runs():
         printed = buf.getvalue()
         assert code == 0, printed
         assert expect_cls in printed and f".{expect_method}(" in printed, printed
-    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2 --dry-run calls resolve")
+    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2/Pruna --dry-run calls resolve")
 
 
 if __name__ == "__main__":

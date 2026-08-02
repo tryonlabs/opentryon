@@ -16,8 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Kling 3.0 / 3.0 Omni / 2.5 Turbo** (`tryon.api.kling_video.KlingVideoAdapter`): official Open Platform video endpoints (`kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`)
 - **xAI Grok Imagine Video 1.5** + **Image Quality** (`tryon.api.xai`)
 - **Ideogram 4.0** (`tryon.api.ideogram.IdeogramAdapter`) with TURBO/DEFAULT/QUALITY rendering speeds
+- **Pruna Phase 1+2** (`tryon.api.pruna`): shared `PrunaClient` plus `p-image`, `p-image-edit`, `p-image-upscale`, `p-video`, `p-video-replace` (try-on remains `vton --model p-image-tryon` and now reuses the shared client)
+- **Pruna Phase 3**: `p-video-avatar` (talking head) and `p-video-animate` (motion transfer)
 - Postman collection (`postman/opentryon-media.postman_collection.json`) and OpenAPI snapshot (`openapi/opentryon-media.openapi.yaml`) for the new media models
-- Docs pages under `docs/docs/api-reference/` for Seedance/Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram
+- Docs pages under `docs/docs/api-reference/` for Seedance/Seedream, Kling Video, Luma Ray 3.2, Grok Imagine, Ideogram, expanded Pruna
 
 ### Changed
 

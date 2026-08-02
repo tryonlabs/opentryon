@@ -21,7 +21,7 @@ integrations touch every item below.
 | Kind | Location | Pattern |
 |---|---|---|
 | Cloud API, existing vendor with a dedicated package | `tryon/api/<provider>/` | `tryon/api/kimi/adapter.py`, or a new class in an existing family file, e.g. `NanoBanana2LiteAdapter` added to `tryon/api/nano_banana/adapter.py` |
-| Cloud API, brand-new vendor whose adapter's *primary* purpose is a single existing service | `tryon/api/<service>/` (use-case directory, matches a `SERVICES` key in `tryon/cli/registry.py`) | `tryon/api/vton/p_image_tryon.py` (Pruna P-Image-Try-On) |
+| Cloud API, brand-new vendor whose adapter's *primary* purpose is a single existing service | `tryon/api/<service>/` (use-case directory, matches a `SERVICES` key in `tryon/cli/registry.py`) | historically `tryon/api/vton/p_image_tryon.py` (Pruna try-on); once a vendor grows multiple adapters, promote to `tryon/api/<provider>/` as we did for Pruna (`tryon/api/pruna/`) |
 | Open-weight / local GPU model | `tryon/models/<model>/` | `tryon/models/kimi_vl/adapter.py` |
 
 **Why a use-case directory for new vendors:** `tryon/api/` already has a

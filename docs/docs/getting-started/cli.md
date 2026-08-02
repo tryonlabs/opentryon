@@ -28,11 +28,11 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind` |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image` |
-| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image` |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `llava-next` (local) |
-| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni` |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
 Models marked "local" run on your own GPU and require
@@ -88,16 +88,23 @@ opentryon understand --model kimi-vl --image garment.jpg
 opentryon video-generate --model veo \
   --prompt "A model walking a runway in slow motion" --duration 6
 
-# Seedance 2.5 / Kling 3.0 / Ray 3.2 / Grok Imagine Video
+# Seedance 2.5 / Kling 3.0 / Ray 3.2 / Grok Imagine Video / Pruna P-Video
 opentryon video-generate --model seedance --prompt "10s lookbook walk" --duration 10
 opentryon video-generate --model kling-v3 --prompt "atelier pan" --mode pro --sound on
 opentryon video-generate --model luma-ray-3.2 --prompt "dolly through mist" --resolution 720p
 opentryon video-generate --model grok-imagine-video --prompt "cinematic push-in" --duration 6
+opentryon video-generate --model p-video --prompt "runway walk, soft light" --duration 5
+opentryon video-generate --model p-video-replace --video clip.mp4 --images identity.jpg
+opentryon video-generate --model p-video-avatar --image portrait.jpg --voice-script "Hello from the showroom."
+opentryon video-generate --model p-video-animate --video driver.mp4 --image subject.jpg
 
-# Seedream / Ideogram / Grok Imagine Image
+# Seedream / Ideogram / Grok Imagine Image / Pruna P-Image
 opentryon generate --model seedream --prompt "editorial sneaker still" --size 2K
 opentryon generate --model ideogram --prompt 'Poster "SUMMER 2026"' --rendering-speed QUALITY
 opentryon generate --model grok-imagine-image --prompt "street-art collage" --aspect-ratio 16:9
+opentryon generate --model p-image --prompt "luxury knitwear flatlay" --aspect-ratio 1:1
+opentryon edit --model p-image-edit --images photo.jpg --prompt "clean studio background"
+opentryon edit --model p-image-upscale --image photo.jpg --target 8
 
 # Background removal
 opentryon bg-remove --model ben2 --image product.jpg --refine

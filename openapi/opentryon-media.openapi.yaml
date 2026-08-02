@@ -17,6 +17,8 @@ servers:
     description: xAI Grok Imagine
   - url: https://api.ideogram.ai
     description: Ideogram
+  - url: https://api.pruna.ai
+    description: Pruna AI (P-Image / P-Video family)
 paths:
   /contents/generations/tasks:
     post:
@@ -238,6 +240,86 @@ paths:
       responses:
         "200":
           description: Images generated
+  /v1/predictions:
+    post:
+      tags: [Pruna]
+      summary: Create Pruna prediction (Model header selects p-image / p-image-edit / p-image-upscale / p-video / p-video-replace / p-video-avatar / p-video-animate / …)
+      parameters:
+        - in: header
+          name: apikey
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Model
+          required: true
+          schema:
+            type: string
+            enum:
+              - p-image
+              - p-image-edit
+              - p-image-upscale
+              - p-image-try-on
+              - p-video
+              - p-video-replace
+              - p-video-avatar
+              - p-video-animate
+        - in: header
+          name: Try-Sync
+          schema:
+            type: string
+            example: "true"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [input]
+              properties:
+                input:
+                  type: object
+                  description: Model-specific input (prompt, images, video, duration, …)
+            examples:
+              pImage:
+                summary: p-image
+                value:
+                  input:
+                    prompt: Editorial fashion still
+                    aspect_ratio: "3:4"
+              pVideo:
+                summary: p-video
+                value:
+                  input:
+                    prompt: Runway walk
+                    duration: 5
+                    resolution: 720p
+      responses:
+        "200":
+          description: Prediction accepted or completed (when Try-Sync)
+  /v1/files:
+    post:
+      tags: [Pruna]
+      summary: Upload temporary media for Pruna predictions
+      parameters:
+        - in: header
+          name: apikey
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: File uploaded; use urls.get as image/video URI
 components:
   securitySchemes:
     bearerAuth:
@@ -250,3 +332,4 @@ tags:
   - name: LumaRay
   - name: GrokImagine
   - name: Ideogram
+  - name: Pruna

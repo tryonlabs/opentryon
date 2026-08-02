@@ -115,6 +115,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `vton_nova_canvas` | Amazon Nova Canvas | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` |
 | `vton_kling_ai` | Kling AI (Kolors Virtual Try-On) | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `vton_segmind` | Segmind Try-On Diffusion | `SEGMIND_API_KEY` |
+| `vton_p_image_tryon` | Pruna P-Image-Try-On | `PRUNA_API_KEY` |
 
 ### generate -- Text-to-image generation
 
@@ -131,6 +132,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_seedream` | ByteDance Seedream 5.0 Pro | `ARK_API_KEY` |
 | `generate_ideogram` | Ideogram 4.0 | `IDEOGRAM_API_KEY` |
 | `generate_grok_imagine_image` | xAI Grok Imagine Image Quality | `XAI_API_KEY` |
+| `generate_p_image` | Pruna P-Image | `PRUNA_API_KEY` |
 
 ### edit -- Image editing (image + instruction -> image)
 
@@ -144,6 +146,8 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_flux2_turbo` | FLUX.2-dev Turbo (local, image-to-image) | local/GPU |
 | `edit_gpt_image` | OpenAI GPT Image | `OPENAI_API_KEY` |
 | `edit_seedream` | ByteDance Seedream 5.0 Pro (edit / multi-ref) | `ARK_API_KEY` |
+| `edit_p_image_edit` | Pruna P-Image-Edit | `PRUNA_API_KEY` |
+| `edit_p_image_upscale` | Pruna P-Image-Upscale | `PRUNA_API_KEY` |
 
 ### understand -- Image & video understanding / captioning
 
@@ -169,6 +173,10 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `video_generate_kling_v2_5_turbo` | Kling 2.5 Turbo | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `video_generate_grok_imagine_video` | xAI Grok Imagine Video 1.5 | `XAI_API_KEY` |
 | `video_generate_gemini_omni` | Gemini Omni Flash | `GEMINI_API_KEY` |
+| `video_generate_p_video` | Pruna P-Video | `PRUNA_API_KEY` |
+| `video_generate_p_video_replace` | Pruna P-Video-Replace | `PRUNA_API_KEY` |
+| `video_generate_p_video_avatar` | Pruna P-Video-Avatar | `PRUNA_API_KEY` |
+| `video_generate_p_video_animate` | Pruna P-Video-Animate | `PRUNA_API_KEY` |
 
 ### bg-remove -- Background removal
 
