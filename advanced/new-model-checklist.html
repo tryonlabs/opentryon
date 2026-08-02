@@ -10,8 +10,8 @@
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io">
 <link rel="alternate" type="application/rss+xml" title="OpenTryOn Documentation" href="https://tryonlabs.github.io/opentryon/feed.xml"><link rel="stylesheet" href="/opentryon/assets/css/styles.0ecc2d9e.css">
-<script src="/opentryon/assets/js/runtime~main.a6fc9f2e.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.9b388d35.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.fb16c053.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.a292ecc6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -22,7 +22,7 @@
 open-weight/local) is added to OpenTryOn. Use it as a PR checklist -- most
 integrations touch every item below.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-decide-where-the-adapter-lives">1. Decide where the adapter lives<a href="#1-decide-where-the-adapter-lives" class="hash-link" aria-label="Direct link to 1. Decide where the adapter lives" title="Direct link to 1. Decide where the adapter lives" translate="no">​</a></h2>
-<table><thead><tr><th>Kind</th><th>Location</th><th>Pattern</th></tr></thead><tbody><tr><td>Cloud API, existing vendor with a dedicated package</td><td><code>tryon/api/&lt;provider&gt;/</code></td><td><code>tryon/api/kimi/adapter.py</code>, or a new class in an existing family file, e.g. <code>NanoBanana2LiteAdapter</code> added to <code>tryon/api/nano_banana/adapter.py</code></td></tr><tr><td>Cloud API, brand-new vendor whose adapter&#x27;s <em>primary</em> purpose is a single existing service</td><td><code>tryon/api/&lt;service&gt;/</code> (use-case directory, matches a <code>SERVICES</code> key in <code>tryon/cli/registry.py</code>)</td><td><code>tryon/api/vton/p_image_tryon.py</code> (Pruna P-Image-Try-On)</td></tr><tr><td>Open-weight / local GPU model</td><td><code>tryon/models/&lt;model&gt;/</code></td><td><code>tryon/models/kimi_vl/adapter.py</code></td></tr></tbody></table>
+<table><thead><tr><th>Kind</th><th>Location</th><th>Pattern</th></tr></thead><tbody><tr><td>Cloud API, existing vendor with a dedicated package</td><td><code>tryon/api/&lt;provider&gt;/</code></td><td><code>tryon/api/kimi/adapter.py</code>, or a new class in an existing family file, e.g. <code>NanoBanana2LiteAdapter</code> added to <code>tryon/api/nano_banana/adapter.py</code></td></tr><tr><td>Cloud API, brand-new vendor whose adapter&#x27;s <em>primary</em> purpose is a single existing service</td><td><code>tryon/api/&lt;service&gt;/</code> (use-case directory, matches a <code>SERVICES</code> key in <code>tryon/cli/registry.py</code>)</td><td>historically <code>tryon/api/vton/p_image_tryon.py</code> (Pruna try-on); once a vendor grows multiple adapters, promote to <code>tryon/api/&lt;provider&gt;/</code> as we did for Pruna (<code>tryon/api/pruna/</code>)</td></tr><tr><td>Open-weight / local GPU model</td><td><code>tryon/models/&lt;model&gt;/</code></td><td><code>tryon/models/kimi_vl/adapter.py</code></td></tr></tbody></table>
 <p><strong>Why a use-case directory for new vendors:</strong> <code>tryon/api/</code> already has a
 one-directory-per-vendor pattern for providers with multiple adapter classes
 or files (<code>nano_banana/</code>, <code>kimi/</code>, <code>openAI/</code>, <code>lumaAI/</code>, <code>ben2/</code>). As more
