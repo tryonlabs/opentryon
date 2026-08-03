@@ -1,40 +1,52 @@
 ---
 sidebar_position: 3
 title: Roadmap
-description: What shipped in OpenTryOn v0.0.3 and what remains on the toolkit roadmap
+description: OpenTryOn roadmap — v0.0.3 invoke layer shipped; next is Fashion ML Toolkit Core toward v0.1.0
 ---
 
 # Roadmap
 
-> **Last Updated**: 2 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/)
+> **Last Updated**: 3 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/) · **Next**: **v0.1.0 Fashion ML Toolkit Core**
 
-The canonical roadmap file in the repo is [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/ROADMAP.md). Product strategy: [`VISION.md`](https://github.com/tryonlabs/opentryon/blob/main/VISION.md).
+Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/ROADMAP.md) · Strategy: [`VISION.md`](https://github.com/tryonlabs/opentryon/blob/main/VISION.md)
 
-## Shipped — v0.0.3
+**Audience priority:** fashion AI/ML engineers · agent builders · app builders · fashion companies (train + MCP) · CLI-first developers.
 
-- Unified **`opentryon` CLI** and **FastMCP server** (same registry + `invoke_model()`)
-- **OpenAPI / Swagger** snapshot and **Postman** collection for upstream media APIs
-- Broad cloud coverage: try-on, generate/edit, video, understanding, bg-remove
-- Providers including Pruna (full image/video suite), Seedance/Seedream, Kling 3, Luma Ray 3.2, Grok Imagine, Ideogram, FASHN, Gemini Omni, Kimi, Nano Banana family, FLUX / GPT / Sora / Veo, and more
-- Local extras: FLUX.2-dev Turbo, Kimi-VL, LLaVA-NeXT, BEN2
-- Web UI moved to [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) (MCP client)
+**v0.1.0 exit criteria:** train pack → LoRA finetune → garment/identity eval + Fashion Bench v0 → invoke via CLI/MCP → one agentic fashion workflow — without assembling five research repos. Outline: [Fashion ML Engineer Path](../getting-started/fashion-ml).
 
-## Remaining — near term
+## Shipped — v0.0.3 (Phase 0: invoke layer)
 
-- Local OSS VTON (CatVTON / IDM-VTON / OOTDiffusion or FLUX-fill paths)
-- Train / LoRA recipes and fashion fine-tune notebooks
-- Prompt packs + lightweight garment/identity evals
-- Deeper Studio features over MCP
-- Additional datasets (DeepFashion, FashionGen, …)
+- Unified **CLI** + **FastMCP** (shared registry / `invoke_model`)
+- Broad cloud try-on / generate / edit / video / understand adapters
+- **OpenAPI / Postman** media snapshots, docs, Gradio demos
+- Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2)
+- Web UI in [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) over MCP
 
-## Remaining — later
+## Next — Fashion ML Toolkit Core → v0.1.0
 
-- Quantization / distillation / serving recipes for local models
-- Fashion agents v1 (PDP, try-on QA, lookbook, model-swap, prompts)
-- Async / batch / caching DX improvements
-- Video VTON / 3D VTON exploration
-- Additional providers (Qwen-Image, more open weights)
+| Slice | Focus |
+|---|---|
+| **A — Data & prompts** | Versioned prompt packs, train-pack schema, `data` CLI helpers |
+| **B — Train** | Brand-style LoRA + one VTON/local LoRA path; `opentryon train` |
+| **C — Eval** | Fashion Bench v0, side-by-side reports; `opentryon eval` |
+| **D — Local VTON** | Productize **one** of CatVTON / IDM-VTON / OOTDiffusion |
+| **E — Workflows** | MCP-native Try-On QA *or* Fine-Tune Coach (task agent, not chatbot) |
+| **F — Efficiency card** | VRAM/latency table for the path we actually ship |
+
+Intermediate tags `0.0.4` / `0.0.5` as slices land; **v0.1.0** when A–E work end-to-end.
+
+Fashion-only for this phase. Prompt datasets, fashion datasets, workflows, and agentic fashion workflows are **in scope**. Generic multi-domain / full LLM–VLM platform work waits until fashion patterns prove out.
+
+## Later
+
+- Broader quantization / distillation / serving recipes
+- Full fashion agents suite (PDP, lookbook, router, return-risk, …)
+- Async / batch / caching DX · video VTON / 3D VTON
+- Adjacent domains only after fashion train/eval/agent recipes are solid
 
 ## Contribute
 
-Pick up a `good first issue`, follow the [new-model checklist](../advanced/new-model-checklist), or join [Discord](https://discord.gg/T5mPpZHxkY).
+Good first issues: prompt packs, bench pairs, docs, dry-run tests.  
+High-value: LoRA recipes, Fashion Bench metrics, first local VTON, first MCP workflow.
+
+Follow the [new-model checklist](../advanced/new-model-checklist) or join [Discord](https://discord.gg/T5mPpZHxkY).

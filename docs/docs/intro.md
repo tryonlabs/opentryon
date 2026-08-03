@@ -96,6 +96,7 @@ In this documentation, you'll find:
 - **[Unified CLI](getting-started/cli)**: Service → model → params
 - **[MCP Server](getting-started/mcp)**: Agent / IDE tool surface
 - **[OpenAPI & Postman](getting-started/openapi-swagger)**: Swagger for upstream media APIs
+- **[Fashion ML Engineer Path](getting-started/fashion-ml)**: Train → eval → invoke → workflow (toward v0.1.0)
 - **[Datasets Module](datasets/overview)**: Fashion-MNIST, VITON-HD, Subjects200K
 - **[API Reference](api-reference/overview)**: Adapters and provider docs
 - **[Examples](examples/basic-usage)**: Real-world usage examples

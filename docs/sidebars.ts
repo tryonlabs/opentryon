@@ -13,6 +13,7 @@ const sidebars: SidebarsConfig = {
         'getting-started/cli',
         'getting-started/mcp',
         'getting-started/openapi-swagger',
+        'getting-started/fashion-ml',
       ],
     },
     {

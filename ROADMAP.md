@@ -1,130 +1,180 @@
 # OpenTryOn Roadmap
 
-> **Last Updated**: 2 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/) · **Horizon**: Aug 2026 – early 2027
+> **Last Updated**: 3 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
+> **Horizon**: Aug 2026 – early 2027 · Fashion-first; other domains later
 
-This roadmap tracks what shipped in the toolkit and what remains. Product strategy detail lives in [`VISION.md`](VISION.md).
+This roadmap tracks what shipped and what comes next. Product strategy: [`VISION.md`](VISION.md).
+
+**Who we build for (priority):** fashion AI/ML engineers · fashion agent builders · fashion app builders · fashion companies (train + MCP) · CLI-first developers.
+
+**North star (v0.1.0):** an ML engineer can load a fashion train pack, fine-tune a small adapter, run garment/identity evals + a baseline bench, invoke the result via CLI/MCP, and run one agentic fashion workflow on top — without assembling five research repos by hand.
+
+---
 
 ## At a glance
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ SHIPPED — v0.0.3 (August 2026)                                          │
+│ SHIPPED — v0.0.3 (August 2026)  ·  Phase 0: invoke layer                │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ ✓ Unified `opentryon` CLI (registry-driven services + --dry-run)        │
-│ ✓ FastMCP server (tools auto-generated from the same registry)          │
-│ ✓ invoke_model() shared by CLI + MCP                                    │
-│ ✓ Media OpenAPI/Swagger snapshot + Postman collection                   │
+│ ✓ Unified `opentryon` CLI + FastMCP (same registry / invoke_model)      │
 │ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
+│ ✓ OpenAPI + Postman snapshots · docs · Gradio · tryon-studio via MCP    │
 │ ✓ Local extras: FLUX.2-dev Turbo, Kimi-VL, LLaVA-NeXT, BEN2             │
-│ ✓ Docs site, env.template, Gradio demos, tryon-studio via MCP           │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ NEXT — toolkit depth (near term)                                        │
+│ NEXT — v0.1.0 Fashion ML Toolkit Core (near term)                       │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ • Local OSS VTON (CatVTON / IDM-VTON / OOTDiffusion or FLUX-fill paths) │
-│ • Train / LoRA recipes + fashion fine-tune notebooks                    │
-│ • Prompt packs + lightweight garment/identity evals                     │
-│ • Deeper Studio (tryon-studio) wired to MCP                             │
-│ • More datasets (DeepFashion, FashionGen, …)                            │
+│ • Fashion prompt packs + train-pack schema / datasets                   │
+│ • Train / LoRA recipes (`opentryon train`) + notebooks                  │
+│ • Eval + Fashion Bench v0 (`opentryon eval`)                            │
+│ • One productized local OSS VTON path (CatVTON / IDM / OOT — pick one)  │
+│ • Fashion agentic workflows via MCP (Try-On QA or Fine-Tune Coach)      │
+│ • Efficiency card for that local path (VRAM / latency table)            │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ LATER — efficiency, agents, platform                                    │
+│ LATER — efficiency platform, agents suite, adjacent domains             │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ • Quantization / distillation / serving recipes for local models        │
-│ • Fashion agents v1 (PDP, try-on QA, lookbook, model-swap, prompts)     │
-│ • Async / batch / caching DX improvements                               │
-│ • Video VTON / 3D VTON exploration                                      │
-│ • Additional providers (Qwen-Image, more open weights, …)               │
+│ • Broader quantization / distillation / serving recipes                  │
+│ • Full fashion agents v1 (PDP, lookbook, router, return-risk, …)        │
+│ • Async / batch / caching DX · video VTON / 3D VTON                     │
+│ • Multi-domain packs only after fashion train/eval patterns prove out   │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Completed (through v0.0.3)
+## Completed (through v0.0.3) — Phase 0
 
 ### Developer surfaces
 - [x] **`opentryon` CLI** — `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`
 - [x] **MCP server** (`mcp-server/`) on FastMCP 3.x — one tool per registry model
 - [x] **Shared runner** — `tryon.cli.runner.invoke_model()` for CLI + MCP
 - [x] **Registry** — `tryon/cli/registry.py` as source of truth
-- [x] **OpenAPI / Swagger** — `openapi/opentryon-media.openapi.yaml` (upstream media APIs)
+- [x] **OpenAPI / Swagger** — `openapi/opentryon-media.openapi.yaml`
 - [x] **Postman** — `postman/opentryon-media.postman_collection.json`
-- [x] **Docs** — Docusaurus site; PyPI package `opentryon==0.0.3`
-- [x] **tryon-studio** — web UI in a separate repo, talks to OpenTryOn over MCP
+- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.3`
+- [x] **tryon-studio** — separate UI repo over MCP
 
-### Virtual try-on (cloud)
-- [x] FLUX VTO, Amazon Nova Canvas, Kling AI, Segmind
-- [x] Pruna P-Image-Try-On (multi-garment)
-- [x] FASHN Try-On Max & v1.6
-- [x] Nano Banana 2 Lite composition path
-
-### Image generate / edit
-- [x] Nano Banana family (incl. Pro / 2 / 2 Lite)
-- [x] FLUX.2 Pro / Flex (+ local Turbo)
-- [x] GPT Image, Luma Photon
-- [x] Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image
-- [x] Pruna P-Image, P-Image-Edit, P-Image-Upscale
-
-### Video
-- [x] Veo, Sora, Luma Ray 2 + Ray 3.2
-- [x] Seedance 2.5, Kling 3.0 / Omni / Turbo
-- [x] Grok Imagine Video 1.5, Gemini Omni Flash
-- [x] Pruna P-Video, P-Video-Replace, P-Video-Avatar, P-Video-Animate
-
-### Understanding & other
-- [x] Kimi K2.6 / K2.7 Code / K3 (API); Kimi-VL & LLaVA-NeXT (local)
-- [x] BEN2 background removal
-- [x] Datasets: Fashion-MNIST, VITON-HD, Subjects200K
-- [x] Preprocessing (garment / human / pose) + TryOnDiffusion research code
-- [x] Early LangChain agents (VTON, model-swap) + Gradio demos
-
----
-
-## Remaining / in progress
-
-### Near term (toolkit depth)
-- [ ] **Local OSS VTON** — CatVTON, IDM-VTON, OOTDiffusion (or FLUX-fill LoRA) under `tryon.models`
-- [ ] **Train / finetune** — documented LoRA/QLoRA recipes; brand-style fine-tune notebook
-- [ ] **Prompt collections** — versioned packs (try-on, catalog, lookbook, video)
-- [ ] **Evals** — garment fidelity / identity checklist + side-by-side runner
-- [ ] **Studio maturity** — orgs, comparison UI, export flows in [tryon-studio](https://github.com/tryonlabs/tryon-studio)
-- [ ] **Additional datasets** — DeepFashion, FashionGen, richer loaders
-
-### Medium term (efficiency & agents)
-- [ ] **Quantization / distillation** — 8-bit / 4-bit recipes; VRAM tables in docs
-- [ ] **Serving guidance** — batching, latency notes for local models
-- [ ] **Fashion agents v1** — Catalog PDP, Try-on QA, Lookbook director, Model-swap ops, Prompt librarian
-- [ ] **DX** — broader async support, optional caching / batch helpers
-- [ ] **Test coverage** — expand unit/integration coverage toward >85% on core paths
-
-### Exploring
-- [ ] Open-source **video VTON** / **3D VTON**
-- [ ] Additional providers (e.g. Qwen-Image, more HF/GitHub weights)
-- [ ] Stronger base-provider abstractions only where the registry pattern is insufficient
-- [ ] Commercial license clarity for adapters vs weights vs Studio
+### Fashion cloud / local (invoke)
+- [x] VTON: FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite
+- [x] Image: Nano Banana family, FLUX.2 (+ local Turbo), GPT Image, Luma Photon, Seedream, Ideogram, Grok Imagine Image, Pruna P-Image / Edit / Upscale
+- [x] Video: Veo, Sora, Luma Ray 2/3.2, Seedance, Kling 3 / Omni / Turbo, Grok Imagine Video, Gemini Omni, Pruna P-Video / Replace / Avatar / Animate
+- [x] Understand: Kimi K2.6 / K2.7 Code / K3; Kimi-VL & LLaVA-NeXT (local)
+- [x] BEN2, datasets (Fashion-MNIST, VITON-HD, Subjects200K), preprocessing, TryOnDiffusion research code
+- [x] Early LangChain agents + Gradio demos
 
 Skipped by design (for now): Ideogram-via-Pruna (use direct Ideogram adapter).
 
 ---
 
-## Success metrics (rolling)
+## Next — Fashion ML Toolkit Core → v0.1.0
+
+**Theme:** From “call any model” → “train, judge, and run fashion models like an engineer.”  
+CLI/MCP remain the distribution spine; new capabilities register the same way.
+
+### Slice A — Fashion data & prompt packs
+- [ ] Versioned **prompt packs** (try-on, PDP/catalog, lookbook, video, model-swap, QA rubrics)
+- [ ] **Train-pack schema** (`images/`, captions, splits, `license.md`, `cards.yaml`)
+- [ ] Fashion train packs on top of existing loaders (+ DressCode / brand-folder recipes)
+- [ ] CLI: `opentryon data validate|split|stats` (names TBD)
+
+### Slice B — Train / finetune
+- [ ] `tryon/train/` (or equivalent) + config-driven YAML recipes
+- [ ] **Brand-style image LoRA** (FLUX / SD family) end-to-end
+- [ ] **One VTON/local LoRA path** (prefer CatVTON-FLUX or FLUX-fill) 
+- [ ] Notebook + CLI: `opentryon train --config …`
+- [ ] Artifact layout: `runs/<id>/adapter`, metrics, sample grids
+
+### Slice C — Eval & Fashion Bench v0
+- [ ] Garment fidelity / identity / pose / artifact checklist (+ automated proxies where possible)
+- [ ] Side-by-side runner: cloud baseline vs local vs finetuned
+- [ ] Public **Fashion Bench v0** (fixed prompts + image pairs)
+- [ ] CLI: `opentryon eval run|report`
+
+### Slice D — Local OSS VTON (productize one)
+- [ ] Ship **one** of CatVTON / IDM-VTON / OOTDiffusion under `tryon.models` + `opentryon[local]`
+- [ ] Same invoke path as cloud adapters (agents don’t care where it runs)
+- [ ] Docs: install, VRAM, dry-run, known limits
+
+### Slice E — Fashion agentic workflows (MCP-native)
+- [ ] Task workflows (not chatbots) that call registry tools
+- [ ] First agent: **Try-On QA** *or* **Fine-Tune Coach** (lock one for v0.1.0)
+- [ ] Thin Python API + MCP exposure; Studio consumes later
+
+### Slice F — Efficiency card (thin slice)
+- [ ] For the shipped local VTON + LoRA path: VRAM / latency table
+- [ ] 8-bit / `torch.compile` notes only where real
+- [ ] Export adapter → reload in CLI/MCP guide
+
+### Suggested internal order
+| Order | Slice | Notes |
+|---|---|---|
+| 1 | A — Data + prompts | Unblocks train/eval |
+| 2 | B + C | Finetune and bench in parallel |
+| 3 | D | One ownable local VTON |
+| 4 | E | Agent on top of tools + evals |
+| 5 | F | Numbers for the path we actually ship |
+
+Intermediate tags: `0.0.4` / `0.0.5` as slices land; **v0.1.0** when A–E are usable end-to-end.
+
+### Conceptual package layout (target)
+```
+tryon/
+  cli/ api/ models/     # existing
+  train/                # NEW recipes / runners
+  eval/                 # NEW metrics / bench / reports
+  workflows/            # NEW agentic fashion graphs
+  prompts/              # NEW versioned prompt packs
+  datasets/             # expand train packs + cards
+```
+
+---
+
+## Later (after v0.1.0)
+
+### Efficiency & deploy platform
+- [ ] Broader quantization / distillation / pruning recipes
+- [ ] Serving guidance (batching, warm models, caching)
+- [ ] Published scorecards per supported local model family
+
+### Fashion agents suite
+- [ ] Catalog / PDP Optimizer, Lookbook Director, Provider Router, Return-Risk Advisor
+- [ ] Graph/loop patterns kept **fashion-workflow-specific** until the pattern is proven
+
+### DX & infra
+- [ ] Broader async / batch helpers
+- [ ] Test coverage toward >85% on core train/eval/invoke paths
+- [ ] Commercial license clarity (adapters vs weights vs Studio)
+
+### Exploring
+- [ ] Video VTON / 3D VTON
+- [ ] Additional providers (Qwen-Image, more HF weights)
+- [ ] VLM/LLM finetune recipes beyond the first fashion path
+- [ ] **Multi-domain** packs (beauty, home, …) only after fashion train/eval/agent patterns work
+
+---
+
+## Success metrics
 
 | Signal | Target |
 |---|---|
-| PyPI / install | `pip install opentryon` works without GPU deps; `[local]` optional |
-| Registry parity | Every CLI model has an MCP tool; dry-runs pass offline |
-| Docs | New adapters documented under `docs/docs/api-reference/` + CLI table |
-| Community | Monthly toolkit drops; Discord + LinkedIn engagement |
+| Invoke (already) | CLI ↔ MCP parity; dry-runs offline |
+| Train | One documented LoRA path runs on a stated GPU class |
+| Eval | Fashion Bench v0 report reproducible from a fresh clone |
+| Agents | ≥1 MCP workflow used by design partners / community examples |
+| Docs | “Fashion ML engineer quickstart” ([outline](docs/docs/getting-started/fashion-ml.md)) alongside “API caller quickstart” |
+| Community | Monthly toolkit drops; Discord + LinkedIn |
 
 ---
 
 ## Contributor focus
 
-**Good first issues:** docs/examples, dry-run tests for new adapters, type hints, error-message polish.
+**Good first issues:** prompt-pack PRs, bench image pairs, dry-run tests, docs/examples, type hints.
 
-**High-value next:** local OSS VTON adapters, LoRA fine-tune notebooks, eval scripts, tryon-studio ↔ MCP polish.
+**High-value next:** LoRA recipe hardening, Fashion Bench metrics, first local VTON adapter, Try-On QA or Fine-Tune Coach workflow.
 
 See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/new-model-checklist.md), and [VISION.md](VISION.md).
 
