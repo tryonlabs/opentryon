@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkopentryon_docs=globalThis.webpackChunkopentryon_docs||[]).push([[5571],{8350:s=>{s.exports=JSON.parse('{"name":"docusaurus-plugin-search-local","id":"default"}')}}]);
