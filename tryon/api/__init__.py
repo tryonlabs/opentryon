@@ -40,11 +40,16 @@ _LAZY_ATTRS = {
     "GeminiOmniAdapter": ".omni",
     "BEN2BackgroundRemoverAdapter": ".ben2",
     "KimiUnderstandAdapter": ".kimi",
+    "QwenUnderstandAdapter": ".qwen",
     "SeedanceAdapter": ".byteplus",
     "SeedreamAdapter": ".byteplus",
     "IdeogramAdapter": ".ideogram",
     "GrokImagineImageAdapter": ".xai",
     "GrokImagineVideoAdapter": ".xai",
+    "LTXVideoAdapter": ".ltx",
+    "HailuoVideoAdapter": ".minimax",
+    "WanVideoAdapter": ".wan",
+    "RunwayVideoAdapter": ".runway",
 }
 
 __all__ = sorted(_LAZY_ATTRS)

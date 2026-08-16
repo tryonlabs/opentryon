@@ -31,6 +31,9 @@ git checkout -b feature/your-feature-name
 - Follow PEP 8 style guidelines
 - Add tests for new features
 - Update documentation
+- For new cloud APIs or local models, follow
+  [Model Integration Guidelines](../advanced/model-integration-guidelines.md)
+  and the [new-model checklist](../advanced/new-model-checklist.md)
 
 ### 5. Test Your Changes
 

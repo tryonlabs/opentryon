@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Model integration guidelines** for agents: `docs/docs/advanced/model-integration-guidelines.md` (Path A first-party API vs Path B local/HF/Ollama/LM Studio/Unsloth)
+- **LTX-2.5 official API** (`tryon.api.ltx.LTXVideoAdapter`, CLI `--model ltx-2.5-api`): async V2 T2V/I2V with synced audio (`ltx-2-5-fast` / `ltx-2-5-pro`)
+- **LTX-2.5 local Diffusers** (`tryon.models.ltx25.LTX25Adapter`, CLI `--model ltx-2.5`): open-weight distilled T2V/I2V on CUDA (requires Diffusers from main + HF gated access)
+- **MiniMax Hailuo 2.3** (`tryon.api.minimax.HailuoVideoAdapter`, CLI `--model hailuo-2.3`): official API T2V/I2V (API-only; no open weights)
+- **Alibaba Wan dual-path**: API `WanVideoAdapter` (`wan-api`) + local Diffusers `Wan22Adapter` (`wan-2.2`, default TI2V-5B)
+- **Runway Gen-4.5** (`tryon.api.runway.RunwayVideoAdapter`, CLI `--model runway-gen4.5`): official API T2V/I2V (API-only; no open weights)
+- **Qwen3.8 dual-path (understand)**: Alibaba’s native multimodal flagship family for text + image + video → text
+  - **API** `QwenUnderstandAdapter` / CLI `--model qwen3.8-max` (DashScope OpenAI-compatible; `DASHSCOPE_API_KEY`)
+  - **Local** `Qwen38Adapter` / CLI `--model qwen3.8` (default HF `Qwen/Qwen3.8-27B`; optional `QWEN38_MODEL_ID`)
+  - Capabilities exposed via OpenTryOn: image & video understanding, thinking mode (`enable_thinking` / `--no-thinking`), reasoning depth (`reasoning_effort`: `xhigh` | `medium` | `low`)
+  - Series context (vendor): hosted Max is MoE ~2.4T/95B-active with ~1M context, long video (up to ~2h), function calling / tools on DashScope; open MoE `Qwen3.8-2.4T-A95B` is cluster-scale; OpenTryOn surfaces the understand path only
+  - Docs: `docs/docs/api-reference/qwen3.8.md`, `docs/docs/local-models/qwen3.8.md`; MCP tools `understand_qwen3_8_max`, `understand_qwen3_8`
+
 ## [0.0.3] - 2 August 2026
 
 ### Added

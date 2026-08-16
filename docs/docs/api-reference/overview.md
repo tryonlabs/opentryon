@@ -454,7 +454,13 @@ Also available via the CLI/MCP registry:
 | `LumaRay32Adapter` | `luma-ray-3.2` | [Luma Ray 3.2](luma-ray) |
 | `KlingVideoAdapter` | `kling-v3` / `kling-v3-omni` / `kling-v2-5-turbo` | [Kling Video](kling-video) |
 | `GrokImagineVideoAdapter` | `grok-imagine-video` | [Grok Imagine](grok-imagine) |
+| `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
+| `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
+| `WanVideoAdapter` | `wan-api` | [Wan](wan) |
+| `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
 | `SoraVideoAdapter` / `VeoAdapter` / `LumaAIVideoAdapter` | `sora` / `veo` / `luma-video` | existing pages |
+
+Local twins: `LTX25Adapter` (`ltx-2.5`), `Wan22Adapter` (`wan-2.2`).
 
 Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`).
 
@@ -517,6 +523,44 @@ print(result["text"])
 
 See [Kimi API Documentation](kimi) for complete details, or the open-weight
 [Kimi-VL local model](../local-models/kimi-vl.md) for GPU-only deployment.
+
+---
+
+### `QwenUnderstandAdapter`
+
+Adapter for Alibaba DashScope **Qwen3.8-Max** — native multimodal flagship
+(text + image + video → text) with thinking / `reasoning_effort`. OpenTryOn
+exposes the **understand** path (plus `chat()` for multi-turn/tools).
+
+```python
+from tryon.api import QwenUnderstandAdapter
+
+adapter = QwenUnderstandAdapter()  # qwen3.8-max by default
+
+result = adapter.understand_image(
+    "garment.jpg",
+    prompt="Describe this outfit: color, pattern, style, fit, and material."
+)
+print(result["text"])
+```
+
+**Parameters:**
+- `api_key` (str, optional): Defaults to `DASHSCOPE_API_KEY`
+- `model` (str, optional): `"qwen3.8-max"` (default)
+- `base_url` (str, optional): Defaults to `QWEN_BASE_URL` or the international DashScope compatible-mode URL
+
+**Methods:**
+- `understand_image(image, prompt, ...)` - Understand one or more images
+- `understand_video(video, prompt, ...)` - Understand video content
+- `understand(image=None, video=None, prompt=...)` - Single entry point accepting either/both
+- `chat(messages, tools=None, ...)` - Multi-turn/tool-calling escape hatch
+
+**Series capabilities (vendor):** ~1M context on Max, long video, coding/agent
+strengths, structured output and built-in tools on DashScope. Local open
+counterpart: `qwen3.8` (`Qwen/Qwen3.8-27B`).
+
+See [Qwen3.8-Max API Documentation](qwen3.8) for complete details, or the
+open-weight [Qwen3.8 local model](../local-models/qwen3.8.md) for GPU-only deployment.
 
 ---
 

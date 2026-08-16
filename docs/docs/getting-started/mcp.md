@@ -23,6 +23,21 @@ OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) serv
 - New registry models appear as tools with **zero hand-written MCP wrappers**
 - CLI and MCP cannot drift — one runner, one registry
 
+## Understand tools (including Qwen3.8)
+
+Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, and the
+**Qwen3.8** dual path:
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `understand_qwen3_8_max` | DashScope Qwen3.8-Max (text/image/video, thinking + `reasoning_effort`) | `DASHSCOPE_API_KEY` |
+| `understand_qwen3_8` | Local `Qwen/Qwen3.8-27B` | `pip install opentryon[local]` + GPU |
+
+Qwen3.8 is a native multimodal / coding / agent family; OpenTryOn’s MCP tools
+expose the **understand** entry point (image and/or video + prompt). Full
+capability notes: [Qwen3.8-Max](../api-reference/qwen3.8.md) and
+[Qwen3.8 local](../local-models/qwen3.8.md).
+
 ## Quick start
 
 ```bash
@@ -53,5 +68,7 @@ Full tool tables and architecture notes: [`mcp-server/README.md`](https://github
 ## Related
 
 - [Unified CLI](cli)
+- [Qwen3.8-Max understanding](../api-reference/qwen3.8)
+- [Qwen3.8 local model](../local-models/qwen3.8)
 - [Adding a new model](../advanced/new-model-checklist)
 - [Configuration](configuration)

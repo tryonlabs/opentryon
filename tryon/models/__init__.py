@@ -10,6 +10,10 @@ Available Models:
       Supports both text-to-image and image-to-image generation
     - KimiVLAdapter: Kimi-VL open-weight multimodal model (image/video
       understanding), the local counterpart to the Kimi K2.6/K2.7 Code APIs
+    - Qwen38Adapter: Qwen3.8-27B open-weight multimodal understanding,
+      the local counterpart to the hosted qwen3.8-max DashScope API
+    - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
+    - Wan22Adapter: Wan 2.2 open-weight text/image-to-video (Diffusers)
 
 Examples:
     Text-to-image generation:
@@ -41,8 +45,14 @@ Requirements:
 
 from .flux2_turbo import Flux2TurboAdapter
 from .kimi_vl import KimiVLAdapter
+from .ltx25 import LTX25Adapter
+from .qwen38 import Qwen38Adapter
+from .wan22 import Wan22Adapter
 
 __all__ = [
     "Flux2TurboAdapter",
     "KimiVLAdapter",
+    "LTX25Adapter",
+    "Qwen38Adapter",
+    "Wan22Adapter",
 ]

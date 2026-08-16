@@ -197,6 +197,24 @@ def check_kimi_dry_runs():
     print("\u2713 understand kimi-k2.6 / kimi-k2.7-code / kimi-k3 / kimi-vl --dry-run resolve the expected calls")
 
 
+def check_qwen_dry_runs():
+    for model_id, expect_kwarg in [
+        ("qwen3.8-max", "'reasoning_effort': 'xhigh'"),
+        ("qwen3.8", "'enable_thinking': True"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "understand", "--model", model_id,
+                "--image", "data/model-1.jpg",
+                "--prompt", "Describe the outfit",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        assert code == 0 and expect_kwarg in printed, printed
+    print("\u2713 understand qwen3.8-max / qwen3.8 --dry-run resolve the expected calls")
+
+
 def check_kimi_understand_requires_image_or_video():
     from tryon.api.kimi import KimiUnderstandAdapter
 
@@ -205,6 +223,18 @@ def check_kimi_understand_requires_image_or_video():
     except ValueError as e:
         assert "image" in str(e) and "video" in str(e)
         print("\u2713 KimiUnderstandAdapter.understand() rejects missing image/video")
+    else:
+        raise AssertionError("expected ValueError when neither image nor video is given")
+
+
+def check_qwen_understand_requires_image_or_video():
+    from tryon.api.qwen import QwenUnderstandAdapter
+
+    try:
+        QwenUnderstandAdapter(api_key="fake-key-for-validation-test").understand(prompt="hi")
+    except ValueError as e:
+        assert "image" in str(e) and "video" in str(e)
+        print("\u2713 QwenUnderstandAdapter.understand() rejects missing image/video")
     else:
         raise AssertionError("expected ValueError when neither image nor video is given")
 
@@ -279,6 +309,36 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "p-video-animate",
           "--video", "data/model-1.jpg", "--image", "data/model-1.jpg"],
          "PVideoAnimateAdapter", "generate_video_animate"),
+        (["video-generate", "--model", "ltx-2.5-api", "--prompt", "runway walk"],
+         "LTXVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "ltx-2.5-api", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "LTXVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "ltx-2.5", "--prompt", "runway walk"],
+         "LTX25Adapter", "generate_text_to_video"),
+        (["video-generate", "--model", "ltx-2.5", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "LTX25Adapter", "generate_image_to_video"),
+        (["video-generate", "--model", "hailuo-2.3", "--prompt", "runway walk"],
+         "HailuoVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "hailuo-2.3", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "HailuoVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "wan-api", "--prompt", "runway walk"],
+         "WanVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "wan-api", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "WanVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "wan-2.2", "--prompt", "runway walk"],
+         "Wan22Adapter", "generate_text_to_video"),
+        (["video-generate", "--model", "wan-2.2", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "Wan22Adapter", "generate_image_to_video"),
+        (["video-generate", "--model", "runway-gen4.5", "--prompt", "runway walk"],
+         "RunwayVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "runway-gen4.5", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "RunwayVideoAdapter", "generate_image_to_video"),
     ]
     for argv, expect_cls, expect_method in cases:
         buf = io.StringIO()
@@ -287,7 +347,7 @@ def check_new_media_models_dry_runs():
         printed = buf.getvalue()
         assert code == 0, printed
         assert expect_cls in printed and f".{expect_method}(" in printed, printed
-    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2/Pruna --dry-run calls resolve")
+    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2/Pruna/LTX/Hailuo/Wan/Runway --dry-run calls resolve")
 
 
 if __name__ == "__main__":
@@ -301,6 +361,8 @@ if __name__ == "__main__":
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()
+    check_qwen_dry_runs()
     check_kimi_understand_requires_image_or_video()
+    check_qwen_understand_requires_image_or_video()
     check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")

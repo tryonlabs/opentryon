@@ -7,12 +7,18 @@ OpenTryOn provides adapters for local inference models that run directly on your
 - **Customization**: Fine-tune models for your specific use case
 - **Offline capability**: Work without internet connectivity
 
+Adding a new local or API model? Start with
+[Model Integration Guidelines](../advanced/model-integration-guidelines.md).
+
 ## Available Models
 
 | Model | Type | VRAM Required | Speed | Use Case |
 |-------|------|--------------|-------|----------|
 | [FLUX.2-dev Turbo](./flux2-turbo) | Image Generation | 12GB+ | 6x faster | Fast text-to-image, image-to-image |
 | [Kimi-VL](./kimi-vl) | Image/Video Understanding | 24GB+ | - | Open-weight counterpart to the Kimi K2.6/K2.7 Code APIs |
+| [Qwen3.8](./qwen3.8) | Image/Video Understanding | ~50GB+ (bf16) | - | Open Qwen3.8-27B: multimodal understand + thinking; counterpart to DashScope Max |
+| [LTX-2.5](./ltx-2.5) | Video Generation | 16GB+ (24GB+ preferred) | Distilled few-step | Local T2V / I2V with synced audio |
+| [Wan 2.2](./wan-2.2) | Video Generation | ~12GB+ (TI2V-5B) | Moderate | Local T2V / I2V open weights |
 
 ## Requirements
 

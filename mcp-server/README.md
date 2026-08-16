@@ -21,7 +21,7 @@ This means:
 ```bash
 cd opentryon
 pip install -e .              # core (API-backed) models
-# or, to also enable local/GPU models (llava-next, kimi-vl, flux2-turbo, ben2):
+# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, flux2-turbo, ben2, ltx-2.5, wan-2.2):
 pip install -e ".[local]"
 
 cd mcp-server
@@ -153,13 +153,27 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 
 ### understand -- Image & video understanding / captioning
 
-| Tool | Model | Requires |
-|---|---|---|
-| `understand_llava_next` | LLaVA-NeXT (local VLM captioning) | local/GPU |
-| `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI multimodal understanding) | `MOONSHOT_API_KEY` |
-| `understand_kimi_k2_7_code` | Kimi K2.7 Code (coding + multimodal understanding) | `MOONSHOT_API_KEY` |
-| `understand_kimi_k3` | Kimi K3 (flagship multimodal reasoning) | `MOONSHOT_API_KEY` |
-| `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU |
+General-purpose multimodal understanding (not fashion-only). Useful for garments
+and lookbooks as well as documents, UI screenshots, product photos, and video clips.
+
+| Tool | Model | Requires | Notes |
+|---|---|---|---|
+| `understand_llava_next` | LLaVA-NeXT (local VLM captioning) | local/GPU | Fashion-oriented captioning helper |
+| `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI) | `MOONSHOT_API_KEY` | Image + video; optional thinking |
+| `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
+| `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |
+| `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
+| `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
+| `understand_qwen3_8` | Qwen3.8-27B (open-weight, local) | local/GPU | Dense open multimodal (`Qwen/Qwen3.8-27B`); thinking toggle; frame-sampled video |
+
+**Qwen3.8 via MCP:** both tools call the shared `understand` entry point (`image`
+and/or `video` + `prompt`). Hosted Max also accepts `enable_thinking` /
+`reasoning_effort` / `max_tokens`; local accepts `num_frames`, `max_new_tokens`,
+`temperature`, and `enable_thinking`. Vendor coding/agent/tool surfaces beyond
+understand remain on DashScope / self-hosted stacks — OpenTryOn exposes the
+vision-understanding path here. See
+[`docs/docs/api-reference/qwen3.8.md`](../docs/docs/api-reference/qwen3.8.md) and
+[`docs/docs/local-models/qwen3.8.md`](../docs/docs/local-models/qwen3.8.md).
 
 ### video-generate -- Text/image-to-video generation
 

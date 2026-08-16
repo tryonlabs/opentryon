@@ -16,6 +16,11 @@ This is the checklist we follow whenever a new model/provider (cloud API or
 open-weight/local) is added to OpenTryOn. Use it as a PR checklist -- most
 integrations touch every item below.
 
+**Before this checklist:** read the agent-facing decision guide
+[Model Integration Guidelines](./model-integration-guidelines.md)
+(Path A first-party API vs Path B local/HF/Ollama/LM Studio/Unsloth, dual-path
+rules, and adapter contracts).
+
 ## 1. Decide where the adapter lives
 
 | Kind | Location | Pattern |
