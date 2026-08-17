@@ -16,7 +16,7 @@ keywords:
 
 This page is the **outline** for AI/ML engineers who want to train, evaluate, and operate fashion models with OpenTryOn — not only call cloud APIs.
 
-**Status:** target path for **v0.1.0 (Fashion ML Toolkit Core)**. Invoke-layer pieces below work today on **v0.0.3**; train/eval/workflow sections are planned. See the [Roadmap](../community/roadmap).
+**Status:** target path for **v0.1.0 (Fashion ML Toolkit Core)**. Invoke-layer pieces below work today on **v0.0.4**; train/eval/workflow sections are planned. See the [Roadmap](../community/roadmap).
 
 ## Who this is for
 
@@ -32,7 +32,7 @@ If you only need to call providers, start with [Installation](installation) → 
 data / prompts  →  train (LoRA)  →  eval / bench  →  invoke (CLI/MCP)  →  fashion workflow
 ```
 
-| Step | Goal | Today (v0.0.3) | Toward v0.1.0 |
+| Step | Goal | Today (v0.0.4) | Toward v0.1.0 |
 |---|---|---|---|
 | **1. Data & prompts** | Train packs + versioned prompt packs | Dataset loaders (VITON-HD, …) | Schema, validate CLI, prompt packs |
 | **2. Train** | Brand-style / VTON LoRA | TryOnDiffusion research code | `opentryon train` + recipes/notebooks |

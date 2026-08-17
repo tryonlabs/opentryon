@@ -1,7 +1,7 @@
 # OpenTryOn Media OpenAPI / Swagger
 
 This folder holds an OpenAPI 3 snapshot of the **upstream** media endpoints
-wired into OpenTryOn adapters (as of **v0.0.3**):
+wired into OpenTryOn adapters (as of **v0.0.4**):
 
 - BytePlus ModelArk — Seedance video + Seedream image
 - Kling AI Open Platform — video 3.0 / Omni / Turbo

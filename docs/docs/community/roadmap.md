@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: Roadmap
-description: OpenTryOn roadmap — v0.0.3 invoke layer shipped; next is Fashion ML Toolkit Core toward v0.1.0
+description: OpenTryOn roadmap — v0.0.4 media expansion shipped; next is Fashion ML Toolkit Core toward v0.1.0
 ---
 
 # Roadmap
 
-> **Last Updated**: 3 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/) · **Next**: **v0.1.0 Fashion ML Toolkit Core**
+> **Last Updated**: 17 August 2026 · **Current release**: [v0.0.4](https://pypi.org/project/opentryon/0.0.4/) · **Next**: **v0.1.0 Fashion ML Toolkit Core**
 
 Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/ROADMAP.md) · Strategy: [`VISION.md`](https://github.com/tryonlabs/opentryon/blob/main/VISION.md)
 
@@ -14,12 +14,13 @@ Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/
 
 **v0.1.0 exit criteria:** train pack → LoRA finetune → garment/identity eval + Fashion Bench v0 → invoke via CLI/MCP → one agentic fashion workflow — without assembling five research repos. Outline: [Fashion ML Engineer Path](../getting-started/fashion-ml).
 
-## Shipped — v0.0.3 (Phase 0: invoke layer)
+## Shipped — v0.0.3 / v0.0.4 (Phase 0: invoke layer)
 
 - Unified **CLI** + **FastMCP** (shared registry / `invoke_model`)
 - Broad cloud try-on / generate / edit / video / understand adapters
+- **v0.0.4:** LTX-2.5 (API + local), Hailuo 2.3, Wan (API + local 2.2), Runway Gen-4.5, Qwen3.8 (API + local)
 - **OpenAPI / Postman** media snapshots, docs, Gradio demos
-- Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2)
+- Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2, LTX-2.5, Wan 2.2, Qwen3.8)
 - Web UI in [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) over MCP
 
 ## Next — Fashion ML Toolkit Core → v0.1.0

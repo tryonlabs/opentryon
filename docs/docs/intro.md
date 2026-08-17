@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.3 adds a unified CLI, FastMCP server, OpenAPI/Postman media snapshots, and a wide set of cloud try-on, image, video, and understanding models (Pruna, Seedance, Seedream, Kling 3, Luma Ray 3.2, Grok, Ideogram, FASHN, Kimi, and more).
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.4 adds LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, and Qwen3.8 understand (API + local) on top of the v0.0.3 CLI/MCP media surface.
 keywords:
   - virtual try-on
   - fashion AI
@@ -52,7 +52,7 @@ image: /img/opentryon-social-card.jpg
 
 # Welcome to OpenTryOn
 
-OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/)** on PyPI.
+OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.4](https://pypi.org/project/opentryon/0.0.4/)** on PyPI.
 
 ## 🎯 What is OpenTryOn?
 
@@ -64,12 +64,13 @@ OpenTryOn gives you three ways to run fashion AI models:
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
-## 🚀 Key Features (v0.0.3)
+## 🚀 Key Features (v0.0.4)
 
 ### Developer surfaces
 - Unified **registry-driven CLI** with `--dry-run`
 - **FastMCP** server — every registry model is a tool
 - **OpenAPI / Swagger** + **Postman** snapshots for upstream media APIs ([guide](getting-started/openapi-swagger))
+- **Model integration guidelines** for Path A (API) vs Path B (local)
 
 ### Virtual try-on
 Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, and Nano Banana 2 Lite composition.
@@ -78,10 +79,10 @@ Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Ima
 Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / Edit / Upscale**, plus local FLUX.2-dev Turbo.
 
 ### Video
-Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**.
+Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (API + local 2.2), **Runway Gen-4.5**.
 
 ### Understanding & other
-**Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.
+**Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.
 
 ### Interactive demos
 Gradio apps in-repo; the Next.js playground/studio UI lives in **tryon-studio** and talks to OpenTryOn over MCP.

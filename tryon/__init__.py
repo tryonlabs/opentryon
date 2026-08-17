@@ -31,5 +31,5 @@ Documentation: https://tryonlabs.github.io/opentryon/
 GitHub: https://github.com/tryonlabs/opentryon
 """
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 

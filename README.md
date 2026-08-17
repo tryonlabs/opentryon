@@ -7,7 +7,7 @@
 
 Open-source AI toolkit for fashion technology: virtual try-on, image/video generation & editing, multimodal understanding, background removal, preprocessing, datasets, and TryOnDiffusion research code.
 
-**Current release: [v0.0.3](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3)** — unified CLI, FastMCP server, expanded media providers (Pruna, Seedance/Seedream, Kling 3, Luma Ray 3.2, Grok, Ideogram, …).
+**Current release: [v0.0.4](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.4)** — LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, Qwen3.8 understand (API + local), plus the v0.0.3 CLI/MCP media surface.
 
 📚 **Full documentation:** [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)  
 API tutorials, configuration, examples, and agent guides live there — not in this README.
@@ -18,8 +18,8 @@ API tutorials, configuration, examples, and agent guides live there — not in t
 |---|---|
 | **Virtual try-on** | FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite |
 | **Generate / edit** | Nano Banana family, FLUX.2, GPT Image, Luma Photon, Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image, Pruna P-Image / Edit / Upscale; local FLUX.2-dev Turbo |
-| **Understand** | Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local) |
-| **Video** | Veo, Sora, Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni Flash, Pruna P-Video / Replace / Avatar / Animate |
+| **Understand** | Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local) |
+| **Video** | Veo, Sora, Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (API + local 2.2), **Runway Gen-4.5** |
 | **Other** | BEN2 background removal, garment/human preprocessing, fashion datasets, LangChain agents |
 
 ## Three ways to use it

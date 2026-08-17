@@ -28,4 +28,4 @@ step-by-step checklist at
 the `opentryon` CLI / MCP registry, and which docs to update).
 
 See also the project [ROADMAP.md](ROADMAP.md) for shipped vs remaining work
-(current release: **v0.0.3**).
+(current release: **v0.0.4**).

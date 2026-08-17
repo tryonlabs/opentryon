@@ -15,7 +15,7 @@ keywords:
 
 OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) server under `mcp-server/`. Every model in `tryon.cli.registry` becomes an MCP tool automatically — the same surface as the `opentryon` CLI, via `tryon.cli.runner.invoke_model()`.
 
-**Current release:** works with OpenTryOn **v0.0.3+** (`pip install -U opentryon`).
+**Current release:** works with OpenTryOn **v0.0.4+** (`pip install -U opentryon`).
 
 ## Why it matters
 

@@ -1,6 +1,6 @@
 # OpenTryOn Roadmap
 
-> **Last Updated**: 3 August 2026 · **Current release**: [v0.0.3](https://pypi.org/project/opentryon/0.0.3/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
+> **Last Updated**: 17 August 2026 · **Current release**: [v0.0.4](https://pypi.org/project/opentryon/0.0.4/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
 > **Horizon**: Aug 2026 – early 2027 · Fashion-first; other domains later
 
 This roadmap tracks what shipped and what comes next. Product strategy: [`VISION.md`](VISION.md).
@@ -15,12 +15,13 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ SHIPPED — v0.0.3 (August 2026)  ·  Phase 0: invoke layer                │
+│ SHIPPED — v0.0.3 / v0.0.4 (August 2026)  ·  Phase 0: invoke layer       │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ ✓ Unified `opentryon` CLI + FastMCP (same registry / invoke_model)      │
 │ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
+│ ✓ v0.0.4: LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, Qwen3.8   │
 │ ✓ OpenAPI + Postman snapshots · docs · Gradio · tryon-studio via MCP    │
-│ ✓ Local extras: FLUX.2-dev Turbo, Kimi-VL, LLaVA-NeXT, BEN2             │
+│ ✓ Local extras: FLUX.2 Turbo, Kimi-VL, LLaVA, BEN2, LTX, Wan, Qwen3.8   │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -46,7 +47,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 
 ---
 
-## Completed (through v0.0.3) — Phase 0
+## Completed (through v0.0.4) — Phase 0
 
 ### Developer surfaces
 - [x] **`opentryon` CLI** — `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`
@@ -55,14 +56,15 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 - [x] **Registry** — `tryon/cli/registry.py` as source of truth
 - [x] **OpenAPI / Swagger** — `openapi/opentryon-media.openapi.yaml`
 - [x] **Postman** — `postman/opentryon-media.postman_collection.json`
-- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.3`
+- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.4`
 - [x] **tryon-studio** — separate UI repo over MCP
+- [x] **Model integration guidelines** — Path A API vs Path B local
 
 ### Fashion cloud / local (invoke)
 - [x] VTON: FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite
 - [x] Image: Nano Banana family, FLUX.2 (+ local Turbo), GPT Image, Luma Photon, Seedream, Ideogram, Grok Imagine Image, Pruna P-Image / Edit / Upscale
-- [x] Video: Veo, Sora, Luma Ray 2/3.2, Seedance, Kling 3 / Omni / Turbo, Grok Imagine Video, Gemini Omni, Pruna P-Video / Replace / Avatar / Animate
-- [x] Understand: Kimi K2.6 / K2.7 Code / K3; Kimi-VL & LLaVA-NeXT (local)
+- [x] Video: Veo, Sora, Luma Ray 2/3.2, Seedance, Kling 3 / Omni / Turbo, Grok Imagine Video, Gemini Omni, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (API + local 2.2), **Runway Gen-4.5**
+- [x] Understand: Kimi K2.6 / K2.7 Code / K3; Kimi-VL & LLaVA-NeXT (local); **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local)
 - [x] BEN2, datasets (Fashion-MNIST, VITON-HD, Subjects200K), preprocessing, TryOnDiffusion research code
 - [x] Early LangChain agents + Gradio demos
 
@@ -180,4 +182,4 @@ See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/ne
 
 ---
 
-**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.3](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)
+**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.4](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.4) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)
