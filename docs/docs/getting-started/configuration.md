@@ -45,6 +45,9 @@ BFL_API_KEY=your_bfl_api_key
 
 # Moonshot AI (Kimi K2.6 / K2.7 Code multimodal understanding)
 MOONSHOT_API_KEY=your_moonshot_api_key
+
+# Alibaba DashScope (Wan video, Qwen3.8-Max understand, Qwen-Image generate/edit/VTON)
+DASHSCOPE_API_KEY=your_dashscope_api_key
 ```
 
 ### Datasets (Optional - Only if using HuggingFace datasets)
@@ -120,6 +123,33 @@ from tryon.datasets import FashionMNIST
 1. Sign up at [platform.kimi.ai](https://platform.kimi.ai/)
 2. Obtain your API key from the [API Keys console](https://platform.kimi.ai/console/api-keys)
 3. Add to `.env`: `MOONSHOT_API_KEY=your_key`
+
+### Alibaba DashScope (Qwen3.8, Qwen-Image, Wan)
+
+1. Sign up at [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/get-api-key)
+2. Create an API key for your region
+3. Add to `.env`:
+
+   ```env
+   DASHSCOPE_API_KEY=your_key
+   # Optional: QWEN_BASE_URL for Qwen3.8-Max chat (OpenAI-compatible)
+   # Optional: QWEN_IMAGE_BASE_URL for Qwen-Image T2I / I2I / VTON
+   ```
+
+   Same key covers `understand --model qwen3.8-max`, `generate|edit|vton --model qwen-image`, and `video-generate --model wan-api`.
+
+   Local open-weight twin (`pip install opentryon[local]`, CUDA, recent Diffusers):
+
+   ```env
+   # Optional overrides; defaults are the official HF snapshots
+   # QWEN_IMAGE_LOCAL_MODEL_ID=Qwen/Qwen-Image-2512
+   # QWEN_IMAGE_EDIT_MODEL_ID=Qwen/Qwen-Image-Edit-2511
+   # QWEN_IMAGE_LOCAL_PATH=/path/to/local/t2i-snapshot
+   # QWEN_IMAGE_EDIT_PATH=/path/to/local/edit-snapshot
+   ```
+
+   CLI: `opentryon generate|edit|vton --model qwen-image-local`. See
+   [Qwen-Image local](../local-models/qwen-image.md).
 
 ## Configuration Options
 

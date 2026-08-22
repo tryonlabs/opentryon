@@ -84,6 +84,13 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k2_6", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
+        ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
+        ("edit_qwen_image", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, False),
+        ("vton_qwen_image", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
+        ("generate_qwen_image_local", {"prompt": "editorial still", "dry_run": True}, True),
+        ("edit_qwen_image_local", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, True),
+        ("vton_qwen_image_local", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, True),
         ("video_generate_veo", {"prompt": "a cat", "image": "cat.jpg", "dry_run": True}, False),
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
         ("video_generate_seedance", {"prompt": "runway walk", "dry_run": True}, False),
@@ -146,6 +153,7 @@ async def check_list_opentryon_tools() -> None:
     assert "kimi-k2.6" in data["services"]["understand"]["models"]
     assert "kimi-k3" in data["services"]["understand"]["models"]
     assert "kimi-vl" in data["services"]["understand"]["models"]
+    assert "qwen3.8-max" in data["services"]["understand"]["models"]
 
     bad = await tool.run({"service": "not-a-service"})
     assert bad.structured_content["success"] is False

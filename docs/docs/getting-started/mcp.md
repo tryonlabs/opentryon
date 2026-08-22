@@ -33,9 +33,34 @@ Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, and the
 | `understand_qwen3_8_max` | DashScope Qwen3.8-Max (text/image/video, thinking + `reasoning_effort`) | `DASHSCOPE_API_KEY` |
 | `understand_qwen3_8` | Local `Qwen/Qwen3.8-27B` | `pip install opentryon[local]` + GPU |
 
+## Qwen-Image tools (generate / edit / VTON)
+
+Same DashScope key as Qwen3.8-Max. Image generation is **Qwen-Image**, not
+the Qwen3.8 VLM:
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `generate_qwen_image` | Qwen-Image 3.0 T2I (default `qwen-image-3.0-pro`) | `DASHSCOPE_API_KEY` |
+| `edit_qwen_image` | Qwen-Image I2I (1–3 refs) | `DASHSCOPE_API_KEY` |
+| `vton_qwen_image` | Person + garment composition | `DASHSCOPE_API_KEY` |
+
+Typical loop: `understand_qwen3_8_max` captions a garment, then
+`generate_qwen_image` or `vton_qwen_image` uses that description.
+
+Local Diffusers twin (`pip install opentryon[local]` + CUDA):
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `generate_qwen_image_local` | `Qwen/Qwen-Image-2512` T2I | GPU + recent Diffusers |
+| `edit_qwen_image_local` | `Qwen/Qwen-Image-Edit-2511` I2I | GPU + recent Diffusers |
+| `vton_qwen_image_local` | Edit-Plus person + garment | GPU + recent Diffusers |
+
+See [Qwen-Image local](../local-models/qwen-image.md).
+
 Qwen3.8 is a native multimodal / coding / agent family; OpenTryOn’s MCP tools
 expose the **understand** entry point (image and/or video + prompt). Full
-capability notes: [Qwen3.8-Max](../api-reference/qwen3.8.md) and
+capability notes: [Qwen3.8-Max](../api-reference/qwen3.8.md),
+[Qwen-Image](../api-reference/qwen-image.md), and
 [Qwen3.8 local](../local-models/qwen3.8.md).
 
 ## Quick start
@@ -69,6 +94,8 @@ Full tool tables and architecture notes: [`mcp-server/README.md`](https://github
 
 - [Unified CLI](cli)
 - [Qwen3.8-Max understanding](../api-reference/qwen3.8)
+- [Qwen-Image generate / edit / VTON](../api-reference/qwen-image)
+- [Qwen-Image local model](../local-models/qwen-image)
 - [Qwen3.8 local model](../local-models/qwen3.8)
 - [Adding a new model](../advanced/new-model-checklist)
 - [Configuration](configuration)

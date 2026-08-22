@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 🎨 Image — Qwen-Image generate / edit / VTON
+- **Qwen-Image 3.0** (`QwenImageAdapter` / CLI `--model qwen-image`): DashScope first-party T2I, I2I (1–3 refs), and person+garment virtual try-on
+  - Same `DASHSCOPE_API_KEY` as Qwen3.8-Max understand and Wan video
+  - Default `qwen-image-3.0-pro`; `--model-version` also accepts `qwen-image-3.0` / `qwen-image-2.0-pro` / `qwen-image-2.0`
+  - Thinking + prompt rewrite on by default (`--no-thinking`, `--no-prompt-extend`)
+  - MCP tools `generate_qwen_image`, `edit_qwen_image`, `vton_qwen_image`
+  - Docs: `docs/docs/api-reference/qwen-image.md` — compose with `understand --model qwen3.8-max` for caption → generate / try-on
+- **Qwen-Image local Diffusers** (`QwenImageLocalAdapter` / CLI `--model qwen-image-local`): open-weight dual-path
+  - **T2I** default `Qwen/Qwen-Image-2512` (`QwenImagePipeline`)
+  - **Edit / VTON** default `Qwen/Qwen-Image-Edit-2511` (`QwenImageEditPlusPipeline`, 1–3 refs)
+  - CPU offload on by default; CUDA required; MCP `generate_qwen_image_local`, `edit_qwen_image_local`, `vton_qwen_image_local`
+  - Docs: `docs/docs/local-models/qwen-image.md`
+
 ## [0.0.4] - 17 August 2026
 
 ### Added

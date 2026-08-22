@@ -239,6 +239,116 @@ def check_qwen_understand_requires_image_or_video():
         raise AssertionError("expected ValueError when neither image nor video is given")
 
 
+def check_qwen_image_dry_runs():
+    cases = [
+        (
+            ["generate", "--model", "qwen-image",
+             "--prompt", "editorial lookbook, linen trench"],
+            "generate_text_to_image",
+            "'enable_thinking': True",
+        ),
+        (
+            ["edit", "--model", "qwen-image",
+             "--images", "data/model-1.jpg",
+             "--prompt", "Change the outfit to a formal business suit"],
+            "generate_image_edit",
+            "'prompt_extend': True",
+        ),
+        (
+            ["vton", "--model", "qwen-image",
+             "--person-image", "data/model-1.jpg",
+             "--garment-image", "data/garment.png",
+             "--garment-description", "olive green bomber jacket"],
+            "generate_virtual_tryon",
+            "'enable_thinking': True",
+        ),
+    ]
+    for argv, expect_method, expect_kwarg in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "QwenImageAdapter" in printed and f".{expect_method}(" in printed, printed
+        assert expect_kwarg in printed, printed
+    print("\u2713 generate/edit/vton qwen-image --dry-run resolve the expected calls")
+
+
+def check_qwen_image_local_helpers():
+    from tryon.models.qwen_image.adapter import (
+        QwenImageLocalAdapter,
+        _uses_edit_plus,
+    )
+
+    assert _uses_edit_plus("Qwen/Qwen-Image-Edit-2511")
+    assert _uses_edit_plus("Qwen/Qwen-Image-Edit-2509")
+    assert not _uses_edit_plus("Qwen/Qwen-Image-Edit")
+    assert not _uses_edit_plus("Qwen/Qwen-Image-2512")
+    assert QwenImageLocalAdapter._resolve_hw(None, None, "16:9") == (1664, 928)
+    assert QwenImageLocalAdapter._resolve_hw(1024, 768, "1:1") == (1024, 768)
+    prompt = QwenImageLocalAdapter.build_tryon_prompt(
+        garment_description="olive green bomber jacket"
+    )
+    assert "olive green bomber jacket" in prompt
+    assert "first image" in prompt
+    print("\u2713 Qwen-Image local helpers resolve Edit-Plus, aspect map, and VTON prompt")
+
+
+def check_qwen_image_local_dry_runs():
+    cases = [
+        (
+            ["generate", "--model", "qwen-image-local",
+             "--prompt", "editorial lookbook, linen trench"],
+            "generate_text_to_image",
+            "'true_cfg_scale': 4.0",
+        ),
+        (
+            ["edit", "--model", "qwen-image-local",
+             "--images", "data/model-1.jpg",
+             "--prompt", "Change the outfit to a formal business suit"],
+            "generate_image_edit",
+            "'num_inference_steps': 40",
+        ),
+        (
+            ["vton", "--model", "qwen-image-local",
+             "--person-image", "data/model-1.jpg",
+             "--garment-image", "data/garment.png",
+             "--garment-description", "olive green bomber jacket"],
+            "generate_virtual_tryon",
+            "'true_cfg_scale': 4.0",
+        ),
+    ]
+    for argv, expect_method, expect_kwarg in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "QwenImageLocalAdapter" in printed and f".{expect_method}(" in printed, printed
+        assert expect_kwarg in printed, printed
+    print("\u2713 generate/edit/vton qwen-image-local --dry-run resolve the expected calls")
+
+
+def check_qwen_image_requires_prompt_and_tryon_inputs():
+    from tryon.api.qwen import QwenImageAdapter
+
+    adapter = QwenImageAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_text_to_image(prompt="")
+    except ValueError as e:
+        assert "prompt" in str(e)
+    else:
+        raise AssertionError("expected ValueError when prompt is empty")
+
+    try:
+        adapter.generate_virtual_tryon(person="data/model-1.jpg")
+    except ValueError as e:
+        assert "Garment" in str(e) or "garment" in str(e)
+    else:
+        raise AssertionError("expected ValueError when garment is missing")
+    print("\u2713 QwenImageAdapter rejects empty prompt and missing try-on garment")
+
+
 def check_kimi_k26_real_call():
     if not os.getenv("MOONSHOT_API_KEY"):
         print("\u26a0 skipping real API test: MOONSHOT_API_KEY not set")
@@ -362,7 +472,11 @@ if __name__ == "__main__":
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()
     check_qwen_dry_runs()
+    check_qwen_image_dry_runs()
+    check_qwen_image_local_helpers()
+    check_qwen_image_local_dry_runs()
     check_kimi_understand_requires_image_or_video()
     check_qwen_understand_requires_image_or_video()
+    check_qwen_image_requires_prompt_and_tryon_inputs()
     check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")

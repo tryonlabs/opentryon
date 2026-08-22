@@ -21,7 +21,7 @@ This means:
 ```bash
 cd opentryon
 pip install -e .              # core (API-backed) models
-# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, flux2-turbo, ben2, ltx-2.5, wan-2.2):
+# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, qwen-image-local, flux2-turbo, ben2, ltx-2.5, wan-2.2):
 pip install -e ".[local]"
 
 cd mcp-server
@@ -118,6 +118,9 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `vton_kling_ai` | Kling AI (Kolors Virtual Try-On) | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `vton_segmind` | Segmind Try-On Diffusion | `SEGMIND_API_KEY` |
 | `vton_p_image_tryon` | Pruna P-Image-Try-On | `PRUNA_API_KEY` |
+| `vton_nano_banana_2_lite` | Nano Banana 2 Lite (composition try-on) | `GEMINI_API_KEY` |
+| `vton_qwen_image` | Qwen-Image 3.0 (person + garment I2I) | `DASHSCOPE_API_KEY` |
+| `vton_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
 
 ### generate -- Text-to-image generation
 
@@ -135,6 +138,8 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_ideogram` | Ideogram 4.0 | `IDEOGRAM_API_KEY` |
 | `generate_grok_imagine_image` | xAI Grok Imagine Image Quality | `XAI_API_KEY` |
 | `generate_p_image` | Pruna P-Image | `PRUNA_API_KEY` |
+| `generate_qwen_image` | Qwen-Image 3.0 | `DASHSCOPE_API_KEY` |
+| `generate_qwen_image_local` | Qwen-Image-2512 (open-weight, local) | local/GPU |
 
 ### edit -- Image editing (image + instruction -> image)
 
@@ -150,6 +155,8 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_seedream` | ByteDance Seedream 5.0 Pro (edit / multi-ref) | `ARK_API_KEY` |
 | `edit_p_image_edit` | Pruna P-Image-Edit | `PRUNA_API_KEY` |
 | `edit_p_image_upscale` | Pruna P-Image-Upscale | `PRUNA_API_KEY` |
+| `edit_qwen_image` | Qwen-Image 3.0 (I2I, 1–3 refs) | `DASHSCOPE_API_KEY` |
+| `edit_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
 
 ### understand -- Image & video understanding / captioning
 
@@ -174,6 +181,12 @@ understand remain on DashScope / self-hosted stacks — OpenTryOn exposes the
 vision-understanding path here. See
 [`docs/docs/api-reference/qwen3.8.md`](../docs/docs/api-reference/qwen3.8.md) and
 [`docs/docs/local-models/qwen3.8.md`](../docs/docs/local-models/qwen3.8.md).
+Image generate / edit / VTON use the sibling Qwen-Image tools
+(`generate_qwen_image`, `edit_qwen_image`, `vton_qwen_image`) — see
+[`docs/docs/api-reference/qwen-image.md`](../docs/docs/api-reference/qwen-image.md).
+Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
+`vton_qwen_image_local` — see
+[`docs/docs/local-models/qwen-image.md`](../docs/docs/local-models/qwen-image.md).
 
 ### video-generate -- Text/image-to-video generation
 

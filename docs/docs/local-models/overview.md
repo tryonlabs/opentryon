@@ -17,6 +17,7 @@ Adding a new local or API model? Start with
 | [FLUX.2-dev Turbo](./flux2-turbo) | Image Generation | 12GB+ | 6x faster | Fast text-to-image, image-to-image |
 | [Kimi-VL](./kimi-vl) | Image/Video Understanding | 24GB+ | - | Open-weight counterpart to the Kimi K2.6/K2.7 Code APIs |
 | [Qwen3.8](./qwen3.8) | Image/Video Understanding | ~50GB+ (bf16) | - | Open Qwen3.8-27B: multimodal understand + thinking; counterpart to DashScope Max |
+| [Qwen-Image](./qwen-image) | Image Generation / Edit / VTON | ~40GB+ (bf16; offload default) | - | Open Qwen-Image-2512 T2I + Edit-2511 I2I; counterpart to DashScope qwen-image |
 | [LTX-2.5](./ltx-2.5) | Video Generation | 16GB+ (24GB+ preferred) | Distilled few-step | Local T2V / I2V with synced audio |
 | [Wan 2.2](./wan-2.2) | Video Generation | ~12GB+ (TI2V-5B) | Moderate | Local T2V / I2V open weights |
 

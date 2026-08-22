@@ -564,6 +564,40 @@ open-weight [Qwen3.8 local model](../local-models/qwen3.8.md) for GPU-only deplo
 
 ---
 
+### `QwenImageAdapter`
+
+Adapter for Alibaba DashScope **Qwen-Image 3.0** — text-to-image, image
+editing (1–3 refs), and person+garment virtual try-on. Same
+`DASHSCOPE_API_KEY` as `QwenUnderstandAdapter`.
+
+```python
+from tryon.api import QwenImageAdapter
+
+adapter = QwenImageAdapter()  # qwen-image-3.0-pro by default
+images = adapter.generate_text_to_image("editorial lookbook, linen trench")
+tryon = adapter.generate_virtual_tryon("person.jpg", "garment.jpg")
+```
+
+**Parameters:**
+- `api_key` (str, optional): Defaults to `DASHSCOPE_API_KEY`
+- `model` (str, optional): `"qwen-image-3.0-pro"` (default), `"qwen-image-3.0"`, `"qwen-image-2.0-pro"`, `"qwen-image-2.0"`
+- `base_url` (str, optional): Defaults to `QWEN_IMAGE_BASE_URL` or the international DashScope `/api/v1` host
+
+**Methods:**
+- `generate_text_to_image(prompt, size=None, n=1, ...)` — T2I
+- `generate_image_edit(image, prompt, ...)` — I2I (one image or a list of 1–3)
+- `generate_multi_image(images, prompt, ...)` — I2I composition
+- `generate_virtual_tryon(person, garment, garment_description=None, ...)` — VTON wrapper
+
+CLI: `opentryon generate|edit|vton --model qwen-image`. Pair with
+`understand --model qwen3.8-max` to caption a garment first. Local twin:
+`QwenImageLocalAdapter` / `--model qwen-image-local`
+([local docs](../local-models/qwen-image.md)).
+
+See [Qwen-Image API Documentation](qwen-image) for complete details.
+
+---
+
 ## Background Removal API
 
 ### `BEN2BackgroundRemoverAdapter`

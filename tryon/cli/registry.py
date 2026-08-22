@@ -71,6 +71,69 @@ def _img(flags, dest, help_, required=False, default=None):
     return Arg(flags=flags, dest=dest, help=help_, required=required, default=default)
 
 
+_QWEN_IMAGE_VERSIONS = [
+    "qwen-image-3.0-pro",
+    "qwen-image-3.0",
+    "qwen-image-2.0-pro",
+    "qwen-image-2.0",
+]
+
+
+def _qwen_image_common_args() -> List[Arg]:
+    return [
+        Arg(("--model-version",), "model_version", target="init", call_name="model",
+            default="qwen-image-3.0-pro", choices=_QWEN_IMAGE_VERSIONS,
+            help="Qwen-Image DashScope model id"),
+        Arg(("--size",), "size", help="Output size as width*height, e.g. 1024*1024"),
+        Arg(("--n",), "n", type=int, default=1, help="Number of images 1-6"),
+        Arg(("--negative-prompt",), "negative_prompt", help="What to avoid in the output"),
+        Arg(("--seed",), "seed", type=int, help="Seed for reproducibility"),
+        Arg(("--watermark",), "watermark", action="store_true", help="Add a Qwen-Image watermark"),
+        Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
+            help="Disable thinking mode (faster, lower quality)"),
+        Arg(("--no-prompt-extend",), "prompt_extend", action="store_false", default=True,
+            help="Use the prompt as-is without rewriting"),
+        Arg(("--prompt-extend-mode",), "prompt_extend_mode", default="direct",
+            choices=["direct", "agent"], help="Prompt rewrite mode (agent is T2I-only)"),
+    ]
+
+
+def _qwen_image_local_sample_args(*, t2i: bool) -> List[Arg]:
+    args: List[Arg] = []
+    if t2i:
+        args.extend([
+            Arg(("--aspect-ratio",), "aspect_ratio", default="1:1",
+                choices=["1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"],
+                help="Packed Qwen-Image resolution (overridden by --width/--height)"),
+            Arg(("--width",), "width", type=int, help="Output width (overrides --aspect-ratio)"),
+            Arg(("--height",), "height", type=int, help="Output height (overrides --aspect-ratio)"),
+            Arg(("--model-id",), "model_id", target="init",
+                help="T2I HF repo id or local path (default Qwen/Qwen-Image-2512)"),
+        ])
+    else:
+        args.extend([
+            Arg(("--guidance-scale",), "guidance_scale", type=float, default=1.0,
+                help="Edit-Plus guidance_scale (vendor default 1.0)"),
+            Arg(("--edit-model-id",), "edit_model_id", target="init",
+                help="Edit/VTON HF repo id or local path (default Qwen/Qwen-Image-Edit-2511)"),
+        ])
+    args.extend([
+        Arg(("--negative-prompt",), "negative_prompt", help="What to avoid in the output"),
+        Arg(("--seed",), "seed", type=int, help="Seed for reproducibility"),
+        Arg(("--steps",), "num_inference_steps", type=int, default=50 if t2i else 40,
+            help="Denoising steps (T2I default 50, edit/VTON default 40)"),
+        Arg(("--true-cfg-scale",), "true_cfg_scale", type=float, default=4.0,
+            help="True CFG scale (Qwen-Image default 4.0)"),
+        Arg(("--num-images",), "num_images", type=int, default=1, help="Number of images"),
+        Arg(("--dtype",), "dtype", target="init", default="bfloat16",
+            choices=["bfloat16", "float16", "float32"], help="Weight dtype"),
+        Arg(("--no-cpu-offload",), "cpu_offload", target="init",
+            action="store_false", default=True,
+            help="Disable CPU offload (needs ~40GB+ VRAM)"),
+    ])
+    return args
+
+
 # --------------------------------------------------------------------------
 # vton
 # --------------------------------------------------------------------------
@@ -202,6 +265,47 @@ _VTON = {
             Arg(("--output-format",), "output_format", default="png", choices=["png", "jpeg"]),
             Arg(("--model-name",), "model_name", default="tryon-max", choices=["tryon-max"],
                 help="FASHN model name (fixed for this registry entry)"),
+        ],
+    ),
+    "qwen-image": ModelSpec(
+        id="qwen-image",
+        label="Qwen-Image 3.0 (DashScope I2I virtual try-on)",
+        import_path="tryon.api.qwen",
+        class_name="QwenImageAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        env_hint="DASHSCOPE_API_KEY",
+        notes="Person + garment I2I via Qwen-Image (same DashScope key as qwen3.8-max). "
+        "Composition try-on, not a dedicated garment-fit model. Pair with "
+        "`understand --model qwen3.8-max` to caption the garment first.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_qwen_image_common_args(),
+        ],
+    ),
+    "qwen-image-local": ModelSpec(
+        id="qwen-image-local",
+        label="Qwen-Image-Edit-2511 (open-weight, local VTON)",
+        import_path="tryon.models.qwen_image",
+        class_name="QwenImageLocalAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        extra="local",
+        notes="Local Diffusers Edit-Plus (default Qwen/Qwen-Image-Edit-2511). "
+        "Person + garment I2I; needs CUDA + `pip install opentryon[local]` and "
+        "a recent Diffusers. ~40GB+ VRAM bf16; cpu_offload on by default. "
+        "Hosted twin: --model qwen-image.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_qwen_image_local_sample_args(t2i=False),
         ],
     ),
     "fashn-tryon-v1.6": ModelSpec(
@@ -356,6 +460,28 @@ _GENERATE = {
             Arg(("--model-version",), "model_version", target="init", call_name="model",
                 default="seedream-5-0-pro",
                 choices=["seedream-5-0-pro", "seedream-5-0-lite", "seedream-4-5", "seedream-4-0"]),
+        ],
+    ),
+    "qwen-image": ModelSpec(
+        id="qwen-image", label="Qwen-Image 3.0 (DashScope text-to-image)",
+        import_path="tryon.api.qwen", class_name="QwenImageAdapter",
+        method="generate_text_to_image", output_kind="images", env_hint="DASHSCOPE_API_KEY",
+        notes="Qwen-Image T2I. Same DASHSCOPE_API_KEY as understand qwen3.8-max. "
+        "Default qwen-image-3.0-pro; thinking + prompt rewrite on.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_qwen_image_common_args(),
+        ],
+    ),
+    "qwen-image-local": ModelSpec(
+        id="qwen-image-local", label="Qwen-Image-2512 (open-weight, local T2I)",
+        import_path="tryon.models.qwen_image", class_name="QwenImageLocalAdapter",
+        method="generate_text_to_image", output_kind="images", extra="local",
+        notes="Local Diffusers T2I (default Qwen/Qwen-Image-2512). Needs CUDA + "
+        "`pip install opentryon[local]` and a recent Diffusers. Hosted twin: --model qwen-image.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_qwen_image_local_sample_args(t2i=True),
         ],
     ),
     "ideogram": ModelSpec(
@@ -529,6 +655,31 @@ _EDIT = {
             Arg(("--model-version",), "model_version", target="init", call_name="model",
                 default="seedream-5-0-pro",
                 choices=["seedream-5-0-pro", "seedream-5-0-lite", "seedream-4-5", "seedream-4-0"]),
+        ],
+    ),
+    "qwen-image": ModelSpec(
+        id="qwen-image", label="Qwen-Image 3.0 (DashScope image edit / I2I)",
+        import_path="tryon.api.qwen", class_name="QwenImageAdapter",
+        method="generate_image_edit", output_kind="images", env_hint="DASHSCOPE_API_KEY",
+        notes="1–3 reference images + instruction. Same DASHSCOPE_API_KEY as qwen3.8-max.",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True,
+                help="1–3 reference images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_qwen_image_common_args(),
+        ],
+    ),
+    "qwen-image-local": ModelSpec(
+        id="qwen-image-local", label="Qwen-Image-Edit-2511 (open-weight, local I2I)",
+        import_path="tryon.models.qwen_image", class_name="QwenImageLocalAdapter",
+        method="generate_image_edit", output_kind="images", extra="local",
+        notes="Local Diffusers Edit-Plus (1–3 refs). Default Qwen/Qwen-Image-Edit-2511. "
+        "Needs CUDA + `pip install opentryon[local]`. Hosted twin: --model qwen-image.",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True,
+                help="1–3 reference images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_qwen_image_local_sample_args(t2i=False),
         ],
     ),
     "p-image-edit": ModelSpec(

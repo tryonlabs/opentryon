@@ -61,8 +61,8 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 - [x] **Model integration guidelines** — Path A API vs Path B local
 
 ### Fashion cloud / local (invoke)
-- [x] VTON: FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite
-- [x] Image: Nano Banana family, FLUX.2 (+ local Turbo), GPT Image, Luma Photon, Seedream, Ideogram, Grok Imagine Image, Pruna P-Image / Edit / Upscale
+- [x] VTON: FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local)
+- [x] Image: Nano Banana family, FLUX.2 (+ local Turbo), GPT Image, Luma Photon, Seedream, Ideogram, Grok Imagine Image, Pruna P-Image / Edit / Upscale, **Qwen-Image 3.0** (API) + **Qwen-Image-2512 / Edit-2511** (local)
 - [x] Video: Veo, Sora, Luma Ray 2/3.2, Seedance, Kling 3 / Omni / Turbo, Grok Imagine Video, Gemini Omni, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (API + local 2.2), **Runway Gen-4.5**
 - [x] Understand: Kimi K2.6 / K2.7 Code / K3; Kimi-VL & LLaVA-NeXT (local); **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local)
 - [x] BEN2, datasets (Fashion-MNIST, VITON-HD, Subjects200K), preprocessing, TryOnDiffusion research code
@@ -153,7 +153,7 @@ tryon/
 
 ### Exploring
 - [ ] Video VTON / 3D VTON
-- [ ] Additional providers (Qwen-Image, more HF weights)
+- [ ] Additional providers (more HF weights)
 - [ ] VLM/LLM finetune recipes beyond the first fashion path
 - [ ] **Multi-domain** packs (beauty, home, …) only after fashion train/eval/agent patterns work
 

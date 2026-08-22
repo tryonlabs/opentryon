@@ -19,8 +19,9 @@ Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/
 - Unified **CLI** + **FastMCP** (shared registry / `invoke_model`)
 - Broad cloud try-on / generate / edit / video / understand adapters
 - **v0.0.4:** LTX-2.5 (API + local), Hailuo 2.3, Wan (API + local 2.2), Runway Gen-4.5, Qwen3.8 (API + local)
+- Qwen-Image generate / edit / VTON (DashScope 3.0 + local Diffusers 2512 / Edit-2511)
 - **OpenAPI / Postman** media snapshots, docs, Gradio demos
-- Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2, LTX-2.5, Wan 2.2, Qwen3.8)
+- Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2, LTX-2.5, Wan 2.2, Qwen3.8, Qwen-Image)
 - Web UI in [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) over MCP
 
 ## Next — Fashion ML Toolkit Core → v0.1.0

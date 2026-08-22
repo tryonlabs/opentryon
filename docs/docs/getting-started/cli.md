@@ -28,9 +28,9 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite` |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image` |
-| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `qwen-image`, `qwen-image-local` (local) |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local) |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `llava-next` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `wan-api`, `wan-2.2`, `runway-gen4.5` |
 | `bg-remove` | Background removal | `ben2` (local) |
@@ -91,6 +91,21 @@ opentryon understand --model qwen3.8-max \
   --reasoning-effort medium
 opentryon understand --model qwen3.8 --image garment.jpg
 
+# Qwen-Image 3.0 (same DASHSCOPE_API_KEY): generate / edit / VTON
+opentryon generate --model qwen-image \
+  --prompt "editorial lookbook, linen trench on a sunlit terrace"
+opentryon edit --model qwen-image \
+  --images person.jpg --prompt "Change the jacket to black leather"
+opentryon vton --model qwen-image \
+  --person-image model.jpg --garment-image garment.jpg \
+  --garment-description "olive green bomber jacket"
+
+# Qwen-Image local Diffusers (needs GPU + opentryon[local])
+opentryon generate --model qwen-image-local \
+  --prompt "editorial lookbook, linen trench" --aspect-ratio 16:9
+opentryon vton --model qwen-image-local \
+  --person-image model.jpg --garment-image garment.jpg
+
 # Text-to-video
 opentryon video-generate --model veo \
   --prompt "A model walking a runway in slow motion" --duration 6
@@ -133,7 +148,7 @@ opentryon vton --model flux-vto \
 
 ## Local (GPU-only) Models
 
-Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `llava-next`, `ben2`, `ltx-2.5`, `wan-2.2`) need the
+Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `qwen-image-local`, `llava-next`, `ben2`, `ltx-2.5`, `wan-2.2`) need the
 `local` extra:
 
 ```bash
@@ -155,6 +170,8 @@ stack trace:
 - [Kimi K2.6 / K2.7 Code / K3 understanding](../api-reference/kimi.md)
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
 - [Qwen3.8-Max understanding](../api-reference/qwen3.8.md)
+- [Qwen-Image generation, edit, and try-on](../api-reference/qwen-image.md)
+- [Qwen-Image open-weight local model](../local-models/qwen-image.md)
 - [Qwen3.8 open-weight local model](../local-models/qwen3.8.md)
 - [Adding a new model to the CLI](../advanced/new-model-checklist.md)
 - [Roadmap](../community/roadmap)

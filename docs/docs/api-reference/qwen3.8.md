@@ -43,9 +43,9 @@ not a separate “VL-only” model ID.
 | Structured output / tools | Supported on DashScope | Function calling, built-in tools (search / code exec) on the hosted API |
 
 **OpenTryOn surface today:** `understand` (image and/or video + prompt), plus
-`chat()` as an escape hatch for multi-turn / tools. General-purpose — garments
-and lookbooks, and equally documents, UI screenshots, product photography, and
-runway/clips.
+`chat()` as an escape hatch for multi-turn / tools. Image generation and
+virtual try-on use the sibling **Qwen-Image** adapter
+([Qwen-Image docs](qwen-image.md)) — same `DASHSCOPE_API_KEY`.
 
 **Family lineup (vendor):**
 
@@ -125,6 +125,9 @@ Same registry models appear as MCP tools (no extra wiring):
 - `understand_qwen3_8_max` — DashScope API (`DASHSCOPE_API_KEY`)
 - `understand_qwen3_8` — local 27B ([local docs](../local-models/qwen3.8.md))
 
+Caption → generate / try-on (same key): `generate_qwen_image`,
+`edit_qwen_image`, `vton_qwen_image` — see [Qwen-Image](qwen-image.md).
+
 See [MCP Server](../getting-started/mcp.md) and
 [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md).
 
@@ -158,3 +161,5 @@ Return dict keys: `text`, `reasoning`, `model`, `usage`.
 - [Get API key](https://www.alibabacloud.com/help/en/model-studio/get-api-key)
 - [Alibaba Qwen3.8-Max announcement](https://www.alibabacloud.com/press-room/alibaba-unveils-qwen3-8-max)
 - [Open-weight Qwen3.8-27B](../local-models/qwen3.8.md)
+- [Qwen-Image generate / edit / VTON](qwen-image.md)
+- [Open-weight Qwen-Image local](../local-models/qwen-image.md)

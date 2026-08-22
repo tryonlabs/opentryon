@@ -41,6 +41,7 @@ _LAZY_ATTRS = {
     "BEN2BackgroundRemoverAdapter": ".ben2",
     "KimiUnderstandAdapter": ".kimi",
     "QwenUnderstandAdapter": ".qwen",
+    "QwenImageAdapter": ".qwen",
     "SeedanceAdapter": ".byteplus",
     "SeedreamAdapter": ".byteplus",
     "IdeogramAdapter": ".ideogram",
