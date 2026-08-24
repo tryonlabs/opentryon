@@ -134,6 +134,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Agents',
       items: [
+        'agents/planner-agent',
         'agents/agent-ideas-summary',
         'agents/agent-ideas',
         'agents/vton-agent',

@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import inspect
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
@@ -65,7 +66,10 @@ mcp = FastMCP(
         "Every generated tool accepts a `dry_run` boolean to preview the "
         "resolved adapter call without spending API credits or GPU time, "
         "and an `output_dir` string (default 'outputs') for where to save "
-        "any resulting images/video/JSON."
+        "any resulting images/video/JSON. "
+        "For TryOn Studio chat, call `planner_agent` first: it classifies "
+        "intent with a cheap LLM and delegates to the fashion, model_swap, "
+        "or vton specialist."
     ),
 )
 
@@ -230,7 +234,81 @@ def list_opentryon_tools(service: Optional[str] = None) -> Dict[str, Any]:
                 for model_id, spec in models.items()
             },
         }
+    result["agents"] = {
+        "planner_agent": {
+            "label": "Planner Agent",
+            "notes": "Classifies intent, then delegates to fashion / model_swap / vton.",
+            "requires_env": "OPENTRYON_AGENT_LLM_PROVIDER + provider API key (OPENAI_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY)",
+            "configured": config.is_configured(_planner_env_hint()),
+        }
+    }
     return result
+
+
+def _planner_env_hint() -> str:
+    provider = (os.getenv("OPENTRYON_AGENT_LLM_PROVIDER") or "openai").strip().lower()
+    if provider == "anthropic":
+        return "ANTHROPIC_API_KEY"
+    if provider == "google":
+        return "GEMINI_API_KEY"
+    return "OPENAI_API_KEY"
+
+
+@mcp.tool
+def planner_agent(
+    prompt: str,
+    person_image: Optional[str] = None,
+    garment_image: Optional[str] = None,
+    image: Optional[str] = None,
+    images: Optional[List[str]] = None,
+    dry_run: bool = False,
+) -> Dict[str, Any]:
+    """Main agent entrypoint for TryOn Studio and other MCP clients.
+
+    A cheap planner LLM (``OPENTRYON_PLANNER_LLM_MODEL``, default gpt-4o-mini)
+    classifies the prompt, then a specialist runs the work:
+
+    - **vton** — person + garment virtual try-on
+    - **model_swap** — new person, same outfit
+    - **fashion** — generate / edit / video from text
+
+    Image arguments accept a path, URL, or base64 string (same as other tools).
+    ``dry_run=true`` only returns the classified intent — no image APIs.
+
+    :param prompt: Natural-language user request.
+    :param person_image: Person / model photo (virtual try-on).
+    :param garment_image: Garment / cloth photo (virtual try-on).
+    :param image: Single reference photo (model swap or fashion edit).
+    :param images: Extra reference images.
+    :param dry_run: If true, classify only and skip the specialist.
+    """
+    try:
+        from tryon.agents.planner import run_planner
+
+        result = run_planner(
+            prompt,
+            person_image=person_image,
+            garment_image=garment_image,
+            image=image,
+            images=images,
+            dry_run=dry_run,
+        )
+        result.setdefault("success", True)
+        return result
+    except Exception as err:
+        return {
+            "success": False,
+            "intent": "clarify",
+            "agent": "planner",
+            "error": str(err),
+            "message": (
+                "Planner agent failed. Set OPENTRYON_AGENT_LLM_PROVIDER and the "
+                "matching API key in opentryon/.env, then restart MCP. "
+                f"({err})"
+            ),
+            "images_base64": [],
+            "dry_run": dry_run,
+        }
 
 
 @mcp.tool
@@ -261,7 +339,7 @@ def main() -> None:
     args = _build_arg_parser().parse_args()
 
     print(config.status_message(), file=sys.stderr)
-    print(f"\nStarting OpenTryOn MCP Server ({TOOL_COUNT} model tools + 2 discovery tools)...", file=sys.stderr)
+    print(f"\nStarting OpenTryOn MCP Server ({TOOL_COUNT} model tools + 2 discovery + planner_agent)...", file=sys.stderr)
 
     if args.transport == "stdio":
         mcp.run()

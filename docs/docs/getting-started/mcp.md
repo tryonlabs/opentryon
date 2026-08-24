@@ -19,7 +19,7 @@ OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) serv
 
 ## Why it matters
 
-- Agents in **Cursor**, **Claude Desktop**, or **[tryon-studio](https://github.com/tryonlabs/tryon-studio)** can call try-on, generate, edit, video, understand, and bg-remove tools directly
+- Agents in **Cursor**, **Claude Desktop**, or **[tryon-studio](https://github.com/tryonlabs/tryon-studio)** can call try-on, generate, edit, video, understand, and bg-remove tools directly. Studio **chat** goes through `planner_agent` (intent → fashion / model_swap / vton).
 - New registry models appear as tools with **zero hand-written MCP wrappers**
 - CLI and MCP cannot drift — one runner, one registry
 

@@ -34,9 +34,9 @@ def _count_registry_models() -> int:
 
 async def check_tool_count_matches_registry() -> None:
     tools = await server.mcp._list_tools()
-    expected = _count_registry_models() + 2  # + list_opentryon_tools, opentryon_status
+    expected = _count_registry_models() + 3  # + list_opentryon_tools, opentryon_status, planner_agent
     assert len(tools) == expected, f"expected {expected} tools, got {len(tools)}"
-    print(f"\u2713 {len(tools)} MCP tools registered ({_count_registry_models()} models + 2 discovery tools)")
+    print(f"\u2713 {len(tools)} MCP tools registered ({_count_registry_models()} models + 2 discovery + planner_agent)")
 
 
 async def check_every_model_has_a_tool() -> None:
@@ -160,6 +160,18 @@ async def check_list_opentryon_tools() -> None:
     print("\u2713 list_opentryon_tools lists models and rejects unknown services")
 
 
+async def check_planner_agent_schema() -> None:
+    tools = await server.mcp._list_tools()
+    names = {t.name for t in tools}
+    assert "planner_agent" in names
+    tool = await server.mcp.get_tool("planner_agent")
+    schema = tool.parameters
+    assert "prompt" in schema["required"]
+    for field in ("person_image", "garment_image", "image", "images", "dry_run"):
+        assert field in schema["properties"], field
+    print("\u2713 planner_agent is registered with prompt + optional image args")
+
+
 async def check_status_message_mentions_every_service() -> None:
     msg = server.config.status_message()
     for service in SERVICES:
@@ -177,6 +189,7 @@ async def main() -> None:
         check_alt_method_on_image_switches_method,
         check_unknown_service_and_model_errors,
         check_list_opentryon_tools,
+        check_planner_agent_schema,
         check_status_message_mentions_every_service,
     ]
     for check in checks:

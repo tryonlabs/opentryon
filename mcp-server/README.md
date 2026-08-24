@@ -99,6 +99,10 @@ Two meta tools are always available regardless of what's configured:
 - **`list_opentryon_tools(service=None)`** -- lists every service/model combination, its MCP tool name, which env var(s) it needs, and whether it's currently configured. Call this first.
 - **`opentryon_status()`** -- the same human-readable status report printed on startup.
 
+## Agent entrypoint
+
+- **`planner_agent(prompt, person_image=None, garment_image=None, image=None, images=None, dry_run=false)`** -- TryOn Studio chat entrypoint. A cheap LLM (`OPENTRYON_PLANNER_LLM_MODEL`) classifies intent, then delegates to the fashion, model-swap, or VTON specialist. `dry_run=true` returns the classification only. See [Planner Agent](../docs/docs/agents/planner-agent.md).
+
 ## Every generated tool accepts
 
 - All of the model's own parameters (mirrors `opentryon <service> --model <model> --help` exactly), with the same required/optional-ness, defaults, and choice/enum constraints as the CLI.

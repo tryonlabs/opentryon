@@ -159,7 +159,17 @@ def _package_result(spec: ModelSpec, result: Any, output_dir: Path, prefix: str)
         if isinstance(result, str):
             return {"output_kind": "video_bytes", "video_id": result, "downloaded": False}
         path = _save_video(result, output_dir, prefix)
-        return {"output_kind": "video_bytes", "output_path": str(path), "downloaded": True}
+        encoded = base64.b64encode(path.read_bytes()).decode("utf-8")
+        return {
+            "output_kind": "video_bytes",
+            "output_path": str(path),
+            "output_paths": [str(path)],
+            # Same remote-render contract as `images_base64`: Studio (and other
+            # MCP clients) can play the clip without filesystem access to
+            # `output_dir`.
+            "video_base64": encoded,
+            "downloaded": True,
+        }
 
     if spec.output_kind == "text":
         output_dir.mkdir(parents=True, exist_ok=True)

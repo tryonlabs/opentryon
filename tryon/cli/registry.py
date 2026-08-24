@@ -78,6 +78,24 @@ _QWEN_IMAGE_VERSIONS = [
     "qwen-image-2.0",
 ]
 
+# Keep in sync with tryon.api.nano_banana adapter ratio tables (registry stays
+# import-free, so this is a declared copy for CLI/MCP JSON Schema enums).
+_GEMINI_ASPECT_RATIOS = [
+    "1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9",
+]
+_LUMA_ASPECT_RATIOS = ["1:1", "3:4", "4:3", "9:16", "16:9", "9:21", "21:9"]
+_IDEOGRAM_ASPECT_RATIOS = [
+    "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "10:16", "16:10", "1:3", "3:1",
+]
+
+
+def _gemini_aspect_ratio() -> Arg:
+    return Arg(
+        ("--aspect-ratio",), "aspect_ratio",
+        choices=_GEMINI_ASPECT_RATIOS,
+        help="Gemini-supported aspect ratio",
+    )
+
 
 def _qwen_image_common_args() -> List[Arg]:
     return [
@@ -240,7 +258,7 @@ _VTON = {
             _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
             Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
             Arg(("--garment-description",), "garment_description", help="Short garment description used to build the default prompt"),
-            Arg(("--aspect-ratio",), "aspect_ratio", help="e.g. 1:1, 16:9, 9:16"),
+            _gemini_aspect_ratio(),
         ],
     ),
     "fashn-tryon-max": ModelSpec(
@@ -346,7 +364,7 @@ _VTON = {
 def _nano_banana_generate_args(with_resolution: bool, with_grounding: bool) -> List[Arg]:
     args = [
         Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
-        Arg(("--aspect-ratio",), "aspect_ratio", help="e.g. 1:1, 16:9, 9:16"),
+        _gemini_aspect_ratio(),
     ]
     if with_resolution:
         args.append(Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]))
@@ -443,7 +461,8 @@ _GENERATE = {
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
             Arg(("--model-version",), "model_version", call_name="model", default="photon-1", choices=["photon-1", "photon-flash-1"]),
-            Arg(("--aspect-ratio",), "aspect_ratio", help="e.g. 1:1, 16:9, 9:16"),
+            Arg(("--aspect-ratio",), "aspect_ratio", choices=_LUMA_ASPECT_RATIOS,
+                help="Luma Photon aspect ratio"),
         ],
     ),
     "seedream": ModelSpec(
@@ -493,11 +512,13 @@ _GENERATE = {
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
             Arg(("--rendering-speed",), "rendering_speed", default="DEFAULT",
                 choices=["TURBO", "DEFAULT", "QUALITY"]),
-            Arg(("--aspect-ratio",), "aspect_ratio", help="e.g. 1:1, 16:9, 9:16"),
+            Arg(("--aspect-ratio",), "aspect_ratio", choices=_IDEOGRAM_ASPECT_RATIOS,
+                help="Ideogram aspect ratio"),
             Arg(("--num-images",), "num_images", type=int, default=1),
             Arg(("--seed",), "seed", type=int),
             Arg(("--style-type",), "style_type"),
-            Arg(("--magic-prompt",), "magic_prompt", help="AUTO / ON / OFF"),
+            Arg(("--magic-prompt",), "magic_prompt", choices=["AUTO", "ON", "OFF"],
+                help="AUTO / ON / OFF"),
         ],
     ),
     "grok-imagine-image": ModelSpec(
@@ -546,7 +567,7 @@ _EDIT = {
         args=[
             _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
-            Arg(("--aspect-ratio",), "aspect_ratio"),
+            _gemini_aspect_ratio(),
         ],
     ),
     "nano-banana-pro": ModelSpec(
@@ -556,7 +577,7 @@ _EDIT = {
         args=[
             _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
-            Arg(("--aspect-ratio",), "aspect_ratio"),
+            _gemini_aspect_ratio(),
             Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]),
         ],
     ),
@@ -567,7 +588,7 @@ _EDIT = {
         args=[
             _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
-            Arg(("--aspect-ratio",), "aspect_ratio"),
+            _gemini_aspect_ratio(),
             Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]),
         ],
     ),
@@ -579,7 +600,7 @@ _EDIT = {
         args=[
             _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
-            Arg(("--aspect-ratio",), "aspect_ratio"),
+            _gemini_aspect_ratio(),
         ],
     ),
     "flux2-pro": ModelSpec(
