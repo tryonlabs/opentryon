@@ -210,6 +210,13 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_p_video_replace` | Pruna P-Video-Replace | `PRUNA_API_KEY` |
 | `video_generate_p_video_avatar` | Pruna P-Video-Avatar | `PRUNA_API_KEY` |
 | `video_generate_p_video_animate` | Pruna P-Video-Animate | `PRUNA_API_KEY` |
+| `video_generate_ltx_2_5_api` | LTX-2.5 (official API) | `LTX_API_KEY` |
+| `video_generate_ltx_2_5` | LTX-2.5 (local Diffusers) | local/GPU |
+| `video_generate_hailuo_2_3` | MiniMax Hailuo 2.3 | `MINIMAX_API_KEY` |
+| `video_generate_wan_api` | Alibaba Wan 2.x (DashScope) | `DASHSCOPE_API_KEY` |
+| `video_generate_wan_3_0` | Alibaba Wan 3.0 (DashScope) | `DASHSCOPE_API_KEY` |
+| `video_generate_wan_2_2` | Wan 2.2 (local Diffusers) | local/GPU |
+| `video_generate_runway_gen4_5` | Runway Gen-4.5 | `RUNWAYML_API_SECRET` |
 
 ### bg-remove -- Background removal
 

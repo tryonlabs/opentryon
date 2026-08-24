@@ -8,7 +8,7 @@ description: Open-weight Wan 2.2 text/image-to-video via Hugging Face Diffusers.
 
 Open-weight [Wan 2.2](https://github.com/Wan-Video/Wan2.2) via Diffusers. Default checkpoint: [`Wan-AI/Wan2.2-TI2V-5B-Diffusers`](https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B-Diffusers) (unified T2V + I2V, lower VRAM than A14B).
 
-Hosted twin: [Wan API](../api-reference/wan.md) (`--model wan-api`).
+Hosted twins: [Wan API](../api-reference/wan.md) (`--model wan-api` for 2.x, `--model wan-3.0` for Wan 3.0). Wan 3.0 has **no official open weights**; this Diffusers 2.2 checkpoint is still the self-host path.
 
 ## Requirements
 

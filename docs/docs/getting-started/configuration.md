@@ -136,7 +136,7 @@ from tryon.datasets import FashionMNIST
    # Optional: QWEN_IMAGE_BASE_URL for Qwen-Image T2I / I2I / VTON
    ```
 
-   Same key covers `understand --model qwen3.8-max`, `generate|edit|vton --model qwen-image`, and `video-generate --model wan-api`.
+   Same key covers `understand --model qwen3.8-max`, `generate|edit|vton --model qwen-image`, and `video-generate --model wan-api` / `wan-3.0`.
 
    Local open-weight twin (`pip install opentryon[local]`, CUDA, recent Diffusers):
 

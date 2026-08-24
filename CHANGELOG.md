@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎬 Video — Wan 3.0 hosted API
+- **Alibaba Wan 3.0** (`WanVideoAdapter` / CLI `--model wan-3.0`): first-party DashScope `wan3.0-video` (preview)
+  - Same `DASHSCOPE_API_KEY` / `WAN_API_BASE_URL` as `--model wan-api`
+  - T2V, first-frame I2V, first-last frame, document (`--file`) and webpage (`--link`); up to 30s, 480P/720P/1080P
+  - **No official open weights.** Local Wan remains `--model wan-2.2` (Diffusers TI2V-5B)
+  - MCP tool `video_generate_wan_3_0`
+  - Docs: `docs/docs/api-reference/wan.md`
+
 #### 🎨 Image — Qwen-Image generate / edit / VTON
 - **Qwen-Image 3.0** (`QwenImageAdapter` / CLI `--model qwen-image`): DashScope first-party T2I, I2I (1–3 refs), and person+garment virtual try-on
   - Same `DASHSCOPE_API_KEY` as Qwen3.8-Max understand and Wan video

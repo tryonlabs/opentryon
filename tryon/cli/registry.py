@@ -1319,8 +1319,8 @@ _VIDEO_GENERATE = {
         alt_image_dest="image",
         env_hint="DASHSCOPE_API_KEY",
         notes=(
-            "First-party Alibaba Wan via DashScope. Default wan2.6-t2v. "
-            "Set WAN_API_BASE_URL for China or workspace endpoints."
+            "First-party Alibaba Wan 2.x via DashScope. Default wan2.6-t2v. "
+            "Wan 3.0 is --model wan-3.0. Set WAN_API_BASE_URL for China or workspace endpoints."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", help="Text prompt"),
@@ -1330,7 +1330,7 @@ _VIDEO_GENERATE = {
                 "model_version",
                 call_name="model",
                 default="wan2.6-t2v",
-                help="e.g. wan2.6-t2v, wan2.7-t2v, wan2.2-t2v-plus, wan2.6-i2v",
+                help="e.g. wan2.6-t2v, wan2.7-t2v, wan2.2-t2v-plus, wan2.6-i2v, wan3.0-video",
             ),
             Arg(("--duration",), "duration", type=int, default=5),
             Arg(("--resolution",), "resolution", default="720P", help="720P / 1080P (newer models)"),
@@ -1338,6 +1338,69 @@ _VIDEO_GENERATE = {
             Arg(("--ratio",), "ratio", help="Optional aspect ratio e.g. 16:9"),
             Arg(("--negative-prompt",), "negative_prompt"),
             Arg(("--no-prompt-extend",), "prompt_extend", action="store_false", default=True),
+            Arg(("--watermark",), "watermark", action="store_true"),
+        ],
+    ),
+    "wan-3.0": ModelSpec(
+        id="wan-3.0",
+        label="Alibaba Wan 3.0 (DashScope API)",
+        import_path="tryon.api.wan",
+        class_name="WanVideoAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="DASHSCOPE_API_KEY",
+        notes=(
+            "First-party Wan 3.0 (wan3.0-video). Preview / invitation-gated. "
+            "T2V, first-frame I2V, first-last frame, document/URL-to-video. "
+            "No open weights; local Wan remains --model wan-2.2."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", help="Text prompt (or pair with --file/--link)"),
+            Arg(("--image",), "image", help="First-frame image (switches to I2V)", alt_only=True),
+            Arg(
+                ("--last-frame",),
+                "last_frame",
+                help="Last-frame image (requires --image)",
+                alt_only=True,
+            ),
+            Arg(
+                ("--file",),
+                "file",
+                help="Public HTTP(S)/OSS document URL (pdf/pptx/docx/…)",
+            ),
+            Arg(("--link",), "link", help="Public webpage URL (mutually exclusive with --file)"),
+            Arg(
+                ("--model-version",),
+                "model_version",
+                call_name="model",
+                default="wan3.0-video",
+                choices=["wan3.0-video", "wan3.0", "wan-3.0"],
+            ),
+            Arg(
+                ("--duration",),
+                "duration",
+                type=int,
+                default=5,
+                help="Seconds 2-30, or -1 for smart duration",
+            ),
+            Arg(
+                ("--resolution",),
+                "resolution",
+                default="720P",
+                choices=["480P", "720P", "1080P"],
+            ),
+            Arg(
+                ("--ratio",),
+                "ratio",
+                default="adaptive",
+                choices=["adaptive", "16:9", "4:3", "1:1", "3:4", "9:16"],
+            ),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--no-prompt-extend",), "prompt_extend", action="store_false", default=True),
+            Arg(("--no-audio",), "audio", action="store_false", default=True,
+                help="Generate a silent video"),
             Arg(("--watermark",), "watermark", action="store_true"),
         ],
     ),
@@ -1353,7 +1416,8 @@ _VIDEO_GENERATE = {
         extra="local",
         notes=(
             "Open weights Wan 2.2 via Diffusers. Default Wan-AI/Wan2.2-TI2V-5B-Diffusers. "
-            "Requires CUDA + recent diffusers."
+            "Requires CUDA + recent diffusers. Wan 3.0 has no official local weights; "
+            "use --model wan-3.0 for the hosted API."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),

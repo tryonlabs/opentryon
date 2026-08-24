@@ -1,11 +1,16 @@
 """
 Alibaba Wan video API adapter (first-party DashScope / Model Studio).
 
-Async video-synthesis for Wan 2.6 / 2.2 (and compatible IDs): submit with
+Async video-synthesis for Wan 2.x and Wan 3.0: submit with
 ``X-DashScope-Async: enable``, poll ``/tasks/{id}``, download ``video_url``.
+
+Wan 3.0 (``wan3.0-video``) uses ``input.media[]`` (first/last frame, file,
+link) instead of Wan 2.x ``img_url``. There are no official Wan 3.0 open
+weights; local inference stays on ``--model wan-2.2``.
 
 Docs:
   https://www.alibabacloud.com/help/en/model-studio/text-to-video-guide
+  https://help.aliyun.com/en/model-studio/wan3-video-generation-api-reference
   Legacy T2V: https://www.alibabacloud.com/help/en/model-studio/legacy-wan-text-to-video-api-reference
 
 Env:
@@ -32,7 +37,7 @@ import base64
 import io
 import os
 import time
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 from PIL import Image
@@ -49,7 +54,14 @@ MODEL_ALIASES = {
     "wan2.6-i2v": "wan2.6-i2v",
     "wan2.6-i2v-flash": "wan2.6-i2v-flash",
     "wan2.2-i2v-plus": "wan2.2-i2v-plus",
+    "wan3": "wan3.0-video",
+    "wan3.0": "wan3.0-video",
+    "wan-3": "wan3.0-video",
+    "wan-3.0": "wan3.0-video",
+    "wan3.0-video": "wan3.0-video",
 }
+
+WAN3_MODEL_IDS = {"wan3.0-video"}
 
 
 class WanVideoAdapter:
@@ -84,6 +96,11 @@ class WanVideoAdapter:
     def _resolve_model(model: str) -> str:
         key = (model or "").strip()
         return MODEL_ALIASES.get(key, key)
+
+    @classmethod
+    def _is_wan3_model(cls, model: str) -> bool:
+        resolved = cls._resolve_model(model)
+        return resolved in WAN3_MODEL_IDS or resolved.startswith("wan3")
 
     def _headers(self, async_enable: bool = False) -> Dict[str, str]:
         headers = {
@@ -126,6 +143,115 @@ class WanVideoAdapter:
             b64 = base64.b64encode(image.read()).decode("ascii")
             return f"data:image/jpeg;base64,{b64}"
         raise ValueError("Unsupported image input for Wan.")
+
+    @staticmethod
+    def _prepare_remote_url(value: str, kind: str) -> str:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"Wan 3.0 {kind} must be a public HTTP(S) or OSS URL.")
+        url = value.strip()
+        if url.startswith(("http://", "https://", "oss://")):
+            return url
+        raise ValueError(
+            f"Wan 3.0 {kind} must be a public HTTP(S) or OSS URL, not a local path."
+        )
+
+    def _wan3_parameters(
+        self,
+        *,
+        duration: int,
+        resolution: str,
+        ratio: Optional[str],
+        prompt_extend: bool,
+        watermark: bool,
+        audio: bool,
+        seed: Optional[int],
+    ) -> Dict[str, Any]:
+        parameters: Dict[str, Any] = {
+            "duration": int(duration),
+            "resolution": resolution,
+            "ratio": ratio or "adaptive",
+            "prompt_extend": bool(prompt_extend),
+            "watermark": bool(watermark),
+            "audio": bool(audio),
+        }
+        if seed is not None:
+            parameters["seed"] = int(seed)
+        return parameters
+
+    def _generate_wan3(
+        self,
+        *,
+        prompt: Optional[str],
+        model: str,
+        image: Optional[Union[str, io.BytesIO, Image.Image, bytes]] = None,
+        last_frame: Optional[Union[str, io.BytesIO, Image.Image, bytes]] = None,
+        file: Optional[str] = None,
+        link: Optional[str] = None,
+        media: Optional[List[Dict[str, Any]]] = None,
+        duration: int = 5,
+        resolution: str = "720P",
+        ratio: Optional[str] = None,
+        prompt_extend: bool = True,
+        watermark: bool = False,
+        audio: bool = True,
+        seed: Optional[int] = None,
+    ) -> bytes:
+        if media is not None:
+            media_items = list(media)
+        else:
+            media_items = []
+            if image is not None:
+                media_items.append(
+                    {"type": "first_frame", "url": self._prepare_image_uri(image)}
+                )
+            if last_frame is not None:
+                if image is None:
+                    raise ValueError(
+                        "Wan 3.0 last_frame requires a first-frame image "
+                        "(CLI: --image plus --last-frame)."
+                    )
+                media_items.append(
+                    {"type": "last_frame", "url": self._prepare_image_uri(last_frame)}
+                )
+            if file and link:
+                raise ValueError("Wan 3.0 file and link are mutually exclusive.")
+            if (file or link) and (image is not None or last_frame is not None):
+                raise ValueError(
+                    "Wan 3.0 file/link cannot be combined with first_frame/last_frame."
+                )
+            if file:
+                media_items.append(
+                    {"type": "file", "url": self._prepare_remote_url(file, "file")}
+                )
+            if link:
+                media_items.append(
+                    {"type": "link", "url": self._prepare_remote_url(link, "link")}
+                )
+
+        if not (prompt or "").strip() and not media_items:
+            raise ValueError("Wan 3.0 requires a prompt and/or media input.")
+
+        input_obj: Dict[str, Any] = {}
+        if prompt and prompt.strip():
+            input_obj["prompt"] = prompt.strip()
+        if media_items:
+            input_obj["media"] = media_items
+
+        payload: Dict[str, Any] = {
+            "model": model,
+            "input": input_obj,
+            "parameters": self._wan3_parameters(
+                duration=duration,
+                resolution=resolution,
+                ratio=ratio,
+                prompt_extend=prompt_extend,
+                watermark=watermark,
+                audio=audio,
+                seed=seed,
+            ),
+        }
+        task_id = self._submit(payload)
+        return self._download(self._poll(task_id))
 
     def _submit(self, payload: Dict[str, Any]) -> str:
         url = f"{self.base_url}/services/aigc/video-generation/video-synthesis"
@@ -201,10 +327,32 @@ class WanVideoAdapter:
         prompt_extend: bool = True,
         watermark: bool = False,
         negative_prompt: Optional[str] = None,
+        last_frame: Optional[Union[str, io.BytesIO, Image.Image, bytes]] = None,
+        file: Optional[str] = None,
+        link: Optional[str] = None,
+        media: Optional[List[Dict[str, Any]]] = None,
+        audio: bool = True,
+        seed: Optional[int] = None,
     ) -> bytes:
+        resolved = self._resolve_model(model) if model else self.model
+        if self._is_wan3_model(resolved):
+            return self._generate_wan3(
+                prompt=prompt,
+                model=resolved,
+                last_frame=last_frame,
+                file=file,
+                link=link,
+                media=media,
+                duration=duration,
+                resolution=resolution,
+                ratio=ratio,
+                prompt_extend=prompt_extend,
+                watermark=watermark,
+                audio=audio,
+                seed=seed,
+            )
         if not prompt:
             raise ValueError("prompt is required.")
-        resolved = self._resolve_model(model) if model else self.model
         payload: Dict[str, Any] = {
             "model": resolved,
             "input": {"prompt": prompt},
@@ -234,11 +382,35 @@ class WanVideoAdapter:
         duration: int = 5,
         resolution: str = "720P",
         size: Optional[str] = None,
+        ratio: Optional[str] = None,
         prompt_extend: bool = True,
         watermark: bool = False,
         negative_prompt: Optional[str] = None,
+        last_frame: Optional[Union[str, io.BytesIO, Image.Image, bytes]] = None,
+        file: Optional[str] = None,
+        link: Optional[str] = None,
+        media: Optional[List[Dict[str, Any]]] = None,
+        audio: bool = True,
+        seed: Optional[int] = None,
     ) -> bytes:
         resolved = self._resolve_model(model) if model else self.model
+        if self._is_wan3_model(resolved):
+            return self._generate_wan3(
+                prompt=prompt,
+                model=resolved,
+                image=image,
+                last_frame=last_frame,
+                file=file,
+                link=link,
+                media=media,
+                duration=duration,
+                resolution=resolution,
+                ratio=ratio,
+                prompt_extend=prompt_extend,
+                watermark=watermark,
+                audio=audio,
+                seed=seed,
+            )
         # Prefer an i2v model id when caller left the default t2v id.
         if resolved.endswith("-t2v") or resolved.endswith("-t2v-plus"):
             resolved = resolved.replace("-t2v-plus", "-i2v-plus").replace("-t2v", "-i2v")

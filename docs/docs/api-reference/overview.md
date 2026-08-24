@@ -456,11 +456,11 @@ Also available via the CLI/MCP registry:
 | `GrokImagineVideoAdapter` | `grok-imagine-video` | [Grok Imagine](grok-imagine) |
 | `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
 | `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
-| `WanVideoAdapter` | `wan-api` | [Wan](wan) |
+| `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
 | `SoraVideoAdapter` / `VeoAdapter` / `LumaAIVideoAdapter` | `sora` / `veo` / `luma-video` | existing pages |
 
-Local twins: `LTX25Adapter` (`ltx-2.5`), `Wan22Adapter` (`wan-2.2`).
+Local twins: `LTX25Adapter` (`ltx-2.5`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
 
 Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`).
 

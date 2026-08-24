@@ -31,6 +31,17 @@ def check_registry_has_no_flag_collisions():
     print("\u2713 registry: no reserved/duplicate flag collisions")
 
 
+def check_wan3_model_aliases():
+    from tryon.api.wan.adapter import WanVideoAdapter
+
+    assert WanVideoAdapter._resolve_model("wan3.0") == "wan3.0-video"
+    assert WanVideoAdapter._resolve_model("wan-3.0") == "wan3.0-video"
+    assert WanVideoAdapter._is_wan3_model("wan3.0-video")
+    assert WanVideoAdapter._is_wan3_model("wan3")
+    assert not WanVideoAdapter._is_wan3_model("wan2.6-t2v")
+    print("\u2713 Wan 3.0 aliases resolve to wan3.0-video")
+
+
 def check_every_model_parser_builds():
     count = 0
     for service, models in SERVICES.items():
@@ -439,6 +450,11 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "wan-api", "--prompt", "animate",
           "--image", "data/model-1.jpg"],
          "WanVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "wan-3.0", "--prompt", "runway walk"],
+         "WanVideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "wan-3.0", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "WanVideoAdapter", "generate_image_to_video"),
         (["video-generate", "--model", "wan-2.2", "--prompt", "runway walk"],
          "Wan22Adapter", "generate_text_to_video"),
         (["video-generate", "--model", "wan-2.2", "--prompt", "animate",
@@ -462,6 +478,7 @@ def check_new_media_models_dry_runs():
 
 if __name__ == "__main__":
     check_registry_has_no_flag_collisions()
+    check_wan3_model_aliases()
     check_every_model_parser_builds()
     check_flux_vto_dry_run()
     check_flux_vto_real_call()
