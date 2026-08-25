@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Planner is a super agent over the live registry.** `planner_agent` still has the same MCP arguments (Studio chat unchanged). After classify, it binds a **filtered** registry slice and calls `invoke_model` — the same runner MCP model tools use. Named models in the prompt (e.g. `wan-3.0`) pin that id. VTON / model-swap are recipes (defaults + outfit-preserving prompt rewrite), not LangChain `create_agent` loops. `tryon.tools` is frozen; do not add providers there.
+
+### Fixed
+
+- **Planner / Studio chat:** base64 photo uploads are materialized to 2048px temp files before `invoke_model` runs, so GPT-4o no longer 429s with `Request too large` / TPM on two phone images.
+
 ### Added
+
+#### 🤖 Planner — catalog-grounded help
+- **`help` intent** on `planner_agent`: greetings and “what can you do?” are answered from the live `tryon.cli.registry` catalog (not a vector RAG store). `out_of_scope` no longer returns “no fashion-related inputs”.
 
 #### 🎬 Video — Wan 3.0 hosted API
 - **Alibaba Wan 3.0** (`WanVideoAdapter` / CLI `--model wan-3.0`): first-party DashScope `wan3.0-video` (preview)

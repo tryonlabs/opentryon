@@ -1,11 +1,8 @@
 """
 Tools for Virtual Try-On Agent
 
-This module provides LangChain tools for each virtual try-on adapter,
-allowing the agent to select and use the appropriate adapter based on user input.
-
-Note: Tools store full image data in a global cache to avoid token limit issues
-when returning results to the LLM. The agent extracts images from this cache.
+DEPRECATED / frozen. Planner chat uses ``tryon.agents.planner.recipes`` +
+``invoke_model``. Do not add adapters here.
 """
 
 import json

@@ -1,16 +1,8 @@
 """
 Tools for Model Swap Agent
 
-This module provides LangChain tools for model swapping using multiple AI models:
-- Nano Banana (Gemini 2.5 Flash Image)
-- Nano Banana Pro (Gemini 3 Pro Image Preview)
-- FLUX 2 Pro
-- FLUX 2 Flex
-
-The tools allow intelligent extraction of person attributes from prompts and generate
-professional model-swapped images while preserving outfits.
-
-Note: Tools store full image data in a global cache to avoid token limit issues.
+DEPRECATED / frozen. Planner chat uses ``tryon.agents.planner.recipes.swap_prompt``
++ ``invoke_model``. Do not add adapters here.
 """
 
 import json

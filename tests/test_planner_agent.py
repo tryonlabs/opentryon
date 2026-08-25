@@ -27,6 +27,8 @@ def check_parse_plan_json_raw_and_fenced():
 
     plan = parse_plan_json('{"intent":"try_on","task":"x"}')
     assert plan.intent == "vton"
+    plan = parse_plan_json('{"intent":"capabilities","task":"what can you do"}')
+    assert plan.intent == "help"
     print("\u2713 parse_plan_json handles raw, fenced, and alias intents")
 
 
@@ -65,8 +67,11 @@ def check_vton_dry_run_routes():
     assert result["intent"] == "vton"
     assert result["agent"] == "vton"
     assert result["dry_run"] is True
-    assert "vton agent" in result["message"]
-    print("\u2713 vton with both images dry-runs to the vton agent")
+    assert result["service"] == "vton"
+    assert result["model"] == "kling-ai"
+    assert "invoke_model" in result["message"]
+    assert "KlingAIVTONAdapter" in (result.get("call") or "")
+    print("\u2713 vton with both images dry-runs kling-ai via invoke_model")
 
 
 def check_model_swap_and_fashion_dry_run():
@@ -74,12 +79,28 @@ def check_model_swap_and_fashion_dry_run():
         classifier=lambda **kwargs: Plan(intent="model_swap", task=kwargs["prompt"])
     ).run("Replace with a 30s athletic model", image="outfit.jpg", dry_run=True)
     assert swap["intent"] == "model_swap" and swap["agent"] == "model_swap"
+    assert swap["service"] == "edit" and swap["model"] == "nano-banana-pro"
+    assert "exact same outfit" in (swap.get("call") or "").lower() or swap.get("recipe") == "swap"
 
     fashion = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="fashion", task=kwargs["prompt"])
     ).run("Generate a red evening gown on a runway", dry_run=True)
     assert fashion["intent"] == "fashion" and fashion["agent"] == "fashion"
-    print("\u2713 model_swap and fashion dry-run to the matching agents")
+    assert fashion["service"] == "generate" and fashion["model"] == "nano-banana-pro"
+    print("\u2713 model_swap and fashion dry-run via invoke_model recipes")
+
+
+def check_named_model_wan_30_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="fashion", task=kwargs["prompt"])
+    )
+    result = agent.run("Generate a clip using wan-3.0", dry_run=True)
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["service"] == "video-generate"
+    assert result["model"] == "wan-3.0"
+    assert "WanVideoAdapter" in (result.get("call") or "")
+    print("\u2713 named-model chat dry-runs wan-3.0 via invoke_model")
 
 
 def check_out_of_scope_does_not_delegate():
@@ -90,20 +111,113 @@ def check_out_of_scope_does_not_delegate():
 
     def boom(*_a, **_k):
         called["n"] += 1
-        raise AssertionError("specialist should not run")
+        raise AssertionError("registry tool should not run")
 
-    agent._delegate = boom  # type: ignore[method-assign]
+    agent._execute = boom  # type: ignore[method-assign]
     result = agent.run("What's the weather in Paris?")
     assert result["intent"] == "out_of_scope"
     assert called["n"] == 0
-    print("\u2713 out_of_scope never calls a specialist")
+    assert "virtual try-on" in result["message"].lower() or "fashion" in result["message"].lower()
+    assert "no fashion-related inputs" not in result["message"].lower()
+    print("\u2713 out_of_scope never calls invoke_model")
+
+
+def check_help_answers_without_specialist():
+    from tryon.agents.planner.catalog import FALLBACK_HELP, capabilities_brief
+
+    brief = capabilities_brief()
+    assert "vton" in brief and "generate" in brief and "video-generate" in brief
+
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="help", reason="capability question", task=kwargs["prompt"])
+    )
+    called = {"n": 0}
+
+    def boom(*_a, **_k):
+        called["n"] += 1
+        raise AssertionError("registry tool should not run")
+
+    agent._execute = boom  # type: ignore[method-assign]
+    result = agent.run("What all tasks can you complete?")
+    assert result["success"] is True
+    assert result["intent"] == "help"
+    assert result["agent"] == "planner"
+    assert called["n"] == 0
+    assert "virtual try-on" in result["message"].lower() or "try-on" in result["message"].lower()
+    dry = agent.run("Hi", dry_run=True)
+    assert dry["intent"] == "help" and dry["dry_run"] is True
+    assert FALLBACK_HELP.startswith("Hi")
+    print("\u2713 help answers from the catalog and never calls invoke_model")
+
+
+def check_normalize_help_markdown():
+    from tryon.agents.planner.catalog import normalize_help_markdown
+
+    messy = (
+        "Hello! Here are a few things I can help you with:\n"
+        "\n"
+        "-\n"
+        "**Virtual Try-On**\n"
+        ": Compose a garment onto a person image.\n"
+        "-\n"
+        "**Image Generation**\n"
+        ": Create images from text prompts.\n"
+        "-\n"
+        "Let me know what you'd like to do!\n"
+    )
+    out = normalize_help_markdown(messy)
+    assert "- **Virtual Try-On**: Compose a garment onto a person image." in out
+    assert "- **Image Generation**: Create images from text prompts." in out
+    assert "\n-\n" not in f"\n{out}\n"
+    assert not any(line.strip() == "-" for line in out.splitlines())
+    assert "- Let me know" not in out
+    print("\u2713 help markdown collapses hyphen / label / description onto one line")
+
+
+def check_strip_emojis():
+    from tryon.agents.planner.catalog import normalize_help_markdown, strip_emojis
+
+    assert strip_emojis("Yes, I can generate an image! 🎨 To get started:") == (
+        "Yes, I can generate an image! To get started:"
+    )
+    cleaned = normalize_help_markdown(
+        "Absolutely! Here's what I can do: 😊\n- **Virtual Try-On** — compose a garment."
+    )
+    assert "😊" not in cleaned and "🎨" not in cleaned
+    assert "Here's what I can do:" in cleaned
+    print("\u2713 emoji are stripped from planner replies")
 
 
 def check_required_inputs():
     assert required_inputs("vton") == ("person_image", "garment_image")
     assert required_inputs("model_swap") == ("image",)
+    assert required_inputs("edit") == ("image",)
+    assert required_inputs("bg_remove") == ("image",)
     assert required_inputs("fashion") == ()
+    assert required_inputs("video") == ()
+    assert required_inputs("help") == ()
     print("\u2713 required_inputs per intent")
+
+
+def check_bind_filters_registry_slice():
+    from tryon.agents.planner.bind import match_named_model, pick_model, slice_for_intent
+
+    vton = slice_for_intent("vton")
+    assert all(item.service == "vton" for item in vton)
+    assert any(item.model == "kling-ai" for item in vton)
+    assert not any(item.model == "wan-3.0" for item in vton)
+
+    fashion = slice_for_intent("fashion")
+    services = {item.service for item in fashion}
+    assert services == {"generate", "edit", "video-generate"}
+    named = match_named_model("use wan-3.0 please", fashion)
+    assert named is not None and named.model == "wan-3.0" and named.service == "video-generate"
+
+    picked = pick_model("video", "runway gen 4.5 clip")
+    assert picked is not None and picked.model == "runway-gen4.5"
+    default_vton = pick_model("vton", "try this on")
+    assert default_vton is not None and default_vton.model == "kling-ai"
+    print("\u2713 bind filters slices and pins named models")
 
 
 def check_encode_images_png_bytes():
@@ -118,15 +232,62 @@ def check_encode_images_png_bytes():
     print("\u2713 encode_images round-trips PNG bytes to base64")
 
 
+def check_materialize_image_downscales_base64():
+    import base64
+    import io
+    from PIL import Image
+    from tryon.agents.planner.media import (
+        cleanup_materialized,
+        materialize_image,
+        specialist_error_message,
+    )
+
+    assert materialize_image(None) is None
+    assert materialize_image("person.jpg") == "person.jpg"
+    assert materialize_image("https://cdn.example/a.jpg") == "https://cdn.example/a.jpg"
+
+    tiny = io.BytesIO()
+    Image.new("RGB", (8, 8), (255, 0, 0)).save(tiny, format="PNG")
+    temps: list[str] = []
+    encoded = base64.b64encode(tiny.getvalue()).decode()
+    path = materialize_image(encoded, temps)
+    assert path and os.path.isfile(path) and path != encoded
+    cleanup_materialized(temps)
+    assert not os.path.isfile(path)
+
+    buf = io.BytesIO()
+    Image.new("RGB", (3000, 1200), (10, 20, 30)).save(buf, format="JPEG")
+    temps = []
+    path = materialize_image(base64.b64encode(buf.getvalue()).decode(), temps)
+    with Image.open(path) as img:
+        assert max(img.size) <= 2048
+        assert img.size[0] == 2048
+    cleanup_materialized(temps)
+
+    err = (
+        "Error code: 429 - {'error': {'message': 'Request too large for gpt-4o "
+        "on tokens per min (TPM): Limit 30000, Requested 139669.', "
+        "'code': 'rate_limit_exceeded'}}"
+    )
+    assert "2048" in specialist_error_message(err)
+    print("\u2713 chat base64 uploads become downscaled temp files, not LLM tokens")
+
+
 def main():
     check_parse_plan_json_raw_and_fenced()
     check_parse_rejects_unknown_intent()
     check_vton_without_images_clarifies()
     check_vton_dry_run_routes()
     check_model_swap_and_fashion_dry_run()
+    check_named_model_wan_30_dry_run()
     check_out_of_scope_does_not_delegate()
+    check_help_answers_without_specialist()
+    check_normalize_help_markdown()
+    check_strip_emojis()
     check_required_inputs()
+    check_bind_filters_registry_slice()
     check_encode_images_png_bytes()
+    check_materialize_image_downscales_base64()
     print("\nAll planner agent checks passed.")
 
 

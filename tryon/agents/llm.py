@@ -1,8 +1,8 @@
-"""Shared LLM construction for OpenTryOn agents.
+"""Shared LLM construction for the OpenTryOn planner.
 
-Specialist agents (fashion / model-swap / vton) use ``OPENTRYON_AGENT_LLM_*``.
-The planner uses a cheaper model via ``OPENTRYON_PLANNER_LLM_MODEL`` so intent
-routing does not spend a frontier-model call.
+The cheap intent model is ``OPENTRYON_PLANNER_LLM_MODEL`` (fallback:
+``OPENTRYON_AGENT_LLM_MODEL``). Fashion / VTON / model-swap facades call
+``invoke_model`` and do not use this module.
 """
 
 from __future__ import annotations

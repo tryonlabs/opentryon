@@ -68,8 +68,9 @@ mcp = FastMCP(
         "and an `output_dir` string (default 'outputs') for where to save "
         "any resulting images/video/JSON. "
         "For TryOn Studio chat, call `planner_agent` first: it classifies "
-        "intent with a cheap LLM and delegates to the fashion, model_swap, "
-        "or vton specialist."
+        "intent with a cheap LLM, then runs a filtered slice of these same "
+        "registry tools via invoke_model. Capability screens call the model "
+        "tools directly."
     ),
 )
 
@@ -237,7 +238,7 @@ def list_opentryon_tools(service: Optional[str] = None) -> Dict[str, Any]:
     result["agents"] = {
         "planner_agent": {
             "label": "Planner Agent",
-            "notes": "Classifies intent, then delegates to fashion / model_swap / vton.",
+            "notes": "Classifies intent, then runs a filtered registry slice via invoke_model (same tools as MCP model tools).",
             "requires_env": "OPENTRYON_AGENT_LLM_PROVIDER + provider API key (OPENAI_API_KEY / ANTHROPIC_API_KEY / GEMINI_API_KEY)",
             "configured": config.is_configured(_planner_env_hint()),
         }
@@ -266,21 +267,24 @@ def planner_agent(
     """Main agent entrypoint for TryOn Studio and other MCP clients.
 
     A cheap planner LLM (``OPENTRYON_PLANNER_LLM_MODEL``, default gpt-4o-mini)
-    classifies the prompt, then a specialist runs the work:
+    classifies the prompt, then runs a **filtered slice** of the same registry
+    tools this server exposes (via ``invoke_model``):
 
+    - **help** — greetings and “what can you do?” (answered from the live registry catalog)
     - **vton** — person + garment virtual try-on
     - **model_swap** — new person, same outfit
-    - **fashion** — generate / edit / video from text
+    - **generate / edit / video / fashion** — image or video from text (named models like ``wan-3.0`` pin the registry id)
+    - **understand / bg_remove** — caption or background removal
 
     Image arguments accept a path, URL, or base64 string (same as other tools).
-    ``dry_run=true`` only returns the classified intent — no image APIs.
+    ``dry_run=true`` classifies and resolves the registry call without hitting an image API.
 
     :param prompt: Natural-language user request.
     :param person_image: Person / model photo (virtual try-on).
     :param garment_image: Garment / cloth photo (virtual try-on).
     :param image: Single reference photo (model swap or fashion edit).
     :param images: Extra reference images.
-    :param dry_run: If true, classify only and skip the specialist.
+    :param dry_run: If true, classify and resolve the registry call without running it.
     """
     try:
         from tryon.agents.planner import run_planner

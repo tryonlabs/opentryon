@@ -101,7 +101,7 @@ Two meta tools are always available regardless of what's configured:
 
 ## Agent entrypoint
 
-- **`planner_agent(prompt, person_image=None, garment_image=None, image=None, images=None, dry_run=false)`** -- TryOn Studio chat entrypoint. A cheap LLM (`OPENTRYON_PLANNER_LLM_MODEL`) classifies intent, then delegates to the fashion, model-swap, or VTON specialist. `dry_run=true` returns the classification only. See [Planner Agent](../docs/docs/agents/planner-agent.md).
+- **`planner_agent(prompt, person_image=None, garment_image=None, image=None, images=None, dry_run=false)`** -- TryOn Studio chat entrypoint. A cheap LLM (`OPENTRYON_PLANNER_LLM_MODEL`) classifies intent (**help**, VTON, model-swap, generate/edit/video, …) then runs a **filtered slice** of the same registry tools listed below via `invoke_model`. Named models in the prompt (e.g. `wan-3.0`) pin the registry id. `dry_run=true` resolves the call without hitting an image API. Capability screens still call the model tools directly. See [Planner Agent](../docs/docs/agents/planner-agent.md).
 
 ## Every generated tool accepts
 

@@ -1,6 +1,12 @@
 # OpenTryOn Tools Module
 
-This module provides a comprehensive set of LangChain-compatible tools for building AI agents that can perform various fashion tech and virtual try-on tasks.
+> **Frozen.** This LangChain `@tool` catalog is **deprecated**. New work
+> belongs in `tryon/cli/registry.py` (CLI + MCP + planner `invoke_model`).
+> Do not add providers here.
+
+This module is a leftover LangChain-compatible tool pack from v0.0.2.
+The usage examples below are **historical** — they do not describe the live
+planner or MCP path.
 
 ## Overview
 

@@ -20,7 +20,7 @@ API tutorials, configuration, examples, and agent guides live there — not in t
 | **Generate / edit** | Nano Banana family, FLUX.2, GPT Image, Luma Photon, Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image, Pruna P-Image / Edit / Upscale, **Qwen-Image** (API + local); local FLUX.2-dev Turbo |
 | **Understand** | Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local) |
 | **Video** | Veo, Sora, Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (API + local 2.2), **Runway Gen-4.5** |
-| **Other** | BEN2 background removal, garment/human preprocessing, fashion datasets, LangChain agents |
+| **Other** | BEN2 background removal, garment/human preprocessing, fashion datasets, planner agent (registry `invoke_model`) |
 
 ## Three ways to use it
 

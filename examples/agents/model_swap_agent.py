@@ -174,8 +174,8 @@ Use Cases:
     except ValueError as e:
         print(f"\nError initializing agent: {e}")
         print("\nPlease ensure:")
-        print("  1. Required LLM API key is set in environment variables or --llm-api-key")
-        print("  2. LangChain dependencies are installed: pip install langchain langchain-openai langchain-anthropic langchain-google-genai")
+        print("  1. Image API keys for the chosen registry model are set in .env")
+        print("  2. For chat routing, use PlannerAgent (examples/agents/planner_agent.py)")
         if args.model in ['nano_banana', 'nano_banana_pro']:
             print(f"  3. Gemini API key is set for {args.model}: GEMINI_API_KEY")
         elif args.model in ['flux2_pro', 'flux2_flex']:

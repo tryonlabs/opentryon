@@ -141,8 +141,8 @@ Examples:
     except ValueError as e:
         print(f"\n✗ Error initializing agent: {e}")
         print("\nPlease ensure:")
-        print("  1. Required LLM API key is set in environment variables or --llm-api-key")
-        print("  2. LangChain dependencies are installed: pip install langchain langchain-openai langchain-anthropic langchain-google-genai")
+        print("  1. Image / VTON API keys for the chosen registry model are set in .env")
+        print("  2. For chat routing, use PlannerAgent (examples/agents/planner_agent.py)")
         return 1
     except Exception as e:
         print(f"\n✗ Unexpected error initializing agent: {e}")

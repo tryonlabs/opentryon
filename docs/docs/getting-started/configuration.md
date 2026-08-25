@@ -58,6 +58,16 @@ DASHSCOPE_API_KEY=your_dashscope_api_key
 HF_DATASETS_CACHE=path/to/cache
 ```
 
+### Planner / Studio chat (optional — only if you use `planner_agent`)
+
+The cheap intent model is separate from image/VTON/video keys. See [Planner Agent](../agents/planner-agent.md).
+
+```env
+OPENTRYON_AGENT_LLM_PROVIDER=openai
+OPENTRYON_PLANNER_LLM_MODEL=gpt-4o-mini
+# OPENAI_API_KEY=...   # or ANTHROPIC_API_KEY / GEMINI_API_KEY
+```
+
 **Note**: You only need to configure the APIs and features you plan to use. For example:
 - **Preprocessing only**: Only U2Net checkpoints required
 - **API integrations only**: Only API keys required (no local models needed)

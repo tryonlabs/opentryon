@@ -1,36 +1,15 @@
 """
 OpenTryOn Tools Module
 
-This module provides a comprehensive set of LangChain-compatible tools for building
-AI agents that can perform various fashion tech and virtual try-on tasks.
+DEPRECATED: frozen LangChain ``@tool`` wrappers from v0.0.2. Do not add new
+tools here. Planner chat and MCP both use ``tryon.cli.registry`` +
+``invoke_model``. These wrappers remain only so old example scripts that
+import ``get_tool_output_cache`` keep importing.
 
-The tools are organized by category:
-- Virtual Try-On: Tools for trying on garments on models
-- Image Generation: Tools for generating fashion images
-- Video Generation: Tools for generating fashion videos
-- Model Swap: Tools for swapping models while preserving outfits
-- Image Editing: Tools for editing and composing images
-- Fashion: Tools for fashion-specific preprocessing and analysis
+Prefer::
 
-All tools follow a consistent pattern:
-- Use LangChain's @tool decorator
-- Include Pydantic schemas for input validation
-- Store full outputs in a global cache to avoid token limits
-- Return JSON strings with metadata and cache keys
-
-Usage:
-    from tryon.tools import get_all_tools, get_virtual_tryon_tools, get_image_generation_tools
-    
-    # Get all tools
-    all_tools = get_all_tools()
-    
-    # Get tools by category
-    vton_tools = get_virtual_tryon_tools()
-    image_tools = get_image_generation_tools()
-    video_tools = get_video_generation_tools()
-    model_swap_tools = get_model_swap_tools()
-    editing_tools = get_image_editing_tools()
-    fashion_tools = get_fashion_tools()
+    from tryon.cli.runner import invoke_model
+    invoke_model("vton", "kling-ai", source_image=..., reference_image=..., dry_run=True)
 """
 
 from .virtual_tryon import (

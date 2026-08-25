@@ -38,7 +38,7 @@ data / prompts  →  train (LoRA)  →  eval / bench  →  invoke (CLI/MCP)  →
 | **2. Train** | Brand-style / VTON LoRA | TryOnDiffusion research code | `opentryon train` + recipes/notebooks |
 | **3. Eval** | Garment/identity quality | Manual / ad-hoc | Fashion Bench v0 + `opentryon eval` |
 | **4. Invoke** | Same path for cloud & local | CLI + MCP registry | + productized local OSS VTON |
-| **5. Workflow** | Task agents, not chatbots | Early LangChain agents | Try-On QA or Fine-Tune Coach via MCP |
+| **5. Workflow** | Task agents, not chatbots | Planner over live MCP registry | Try-On QA or Fine-Tune Coach via MCP |
 
 ## What you can do now
 

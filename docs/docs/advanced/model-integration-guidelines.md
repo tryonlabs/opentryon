@@ -19,7 +19,7 @@ keywords:
 **Audience:** humans and coding agents adding a model to OpenTryOn.
 
 **Canonical mechanical checklist:** [Adding a New Model Integration](./new-model-checklist.md)  
-**Runtime defaults:** repo root [`AGENTS.md`](../../../../AGENTS.md)
+**Runtime defaults:** repo root [`AGENTS.md`](https://github.com/tryonlabs/opentryon/blob/main/AGENTS.md)
 
 This document is the **decision + architecture** layer. The checklist is the **file-by-file** layer. Do both.
 

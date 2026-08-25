@@ -11,11 +11,12 @@ from tryon.agents.planner import PlannerAgent
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Planner Agent — classify a request and delegate to fashion / model_swap / vton.",
+        description="Planner Agent — classify a request and run a filtered registry tool.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   python planner_agent.py --prompt "Generate a red evening gown on a runway" --dry-run
+  python planner_agent.py --prompt "Generate a clip using wan-3.0" --dry-run
   python planner_agent.py --prompt "Try this shirt on the model" --person person.jpg --garment shirt.jpg
   python planner_agent.py --prompt "Replace with a 30s athletic model" --image outfit.jpg
         """,
@@ -24,7 +25,7 @@ Examples:
     parser.add_argument("--person", default=None, help="Person / model image (VTON)")
     parser.add_argument("--garment", default=None, help="Garment image (VTON)")
     parser.add_argument("-i", "--image", default=None, help="Reference image (model swap / fashion)")
-    parser.add_argument("--dry-run", action="store_true", help="Classify only; do not run the specialist")
+    parser.add_argument("--dry-run", action="store_true", help="Classify and resolve invoke_model without calling an image API")
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("-o", "--output", default=None, help="Write the JSON result to this path")
     args = parser.parse_args()

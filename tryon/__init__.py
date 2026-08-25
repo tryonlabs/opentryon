@@ -7,7 +7,7 @@ This package provides tools for:
 - Video Generation (Sora, Veo, Luma AI)
 - Background Removal (BEN2)
 - Garment Preprocessing (segmentation, extraction)
-- AI Agents (VTOnAgent, ModelSwapAgent, FashionAgent)
+- AI Agents (PlannerAgent over the live registry; VTOnAgent / ModelSwapAgent / FashionAgent are thin recipes)
 
 Modules:
     tryon.api       - Cloud API adapters (remote inference)
