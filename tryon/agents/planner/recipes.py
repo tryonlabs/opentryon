@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
 
 from tryon.agents.planner.bind import pick_model, slice_for_intent
+from tryon.agents.planner.plan import current_utterance
 from tryon.cli.registry import ModelSpec
 from tryon.cli.runner import invoke_model
 
@@ -27,9 +28,23 @@ GARMENT_DESTS = {
     "cloth_image",
     "product_image",
 }
-IMAGE_DESTS = {"image", "start_image"}
+IMAGE_DESTS = {"image", "start_image", "images", "input_image"}
 PROMPT_DESTS = {"prompt", "garment_description"}
 VIDEO_DESTS = {"video"}
+
+
+def _unique_paths(*groups: Optional[Sequence[str] | str]) -> List[str]:
+    ordered: List[str] = []
+    seen = set()
+    for group in groups:
+        if group is None:
+            continue
+        values = [group] if isinstance(group, str) else list(group)
+        for path in values:
+            if path and path not in seen:
+                seen.add(path)
+                ordered.append(path)
+    return ordered
 
 
 def swap_prompt(task: str) -> str:
@@ -72,7 +87,11 @@ def invoke_kwargs(
         elif dest in GARMENT_DESTS and garment_image:
             value = [garment_image] if arg.nargs in ("+", "*") else garment_image
         elif dest in IMAGE_DESTS and ref:
-            value = ref
+            packed = _unique_paths(image, person_image, extras)
+            if arg.nargs in ("+", "*"):
+                value = packed or [ref]
+            else:
+                value = packed[0] if packed else ref
         elif dest in PROMPT_DESTS and prompt:
             value = prompt
         elif dest in VIDEO_DESTS and ref:
@@ -104,13 +123,20 @@ def prepare_call(
     image: Optional[str] = None,
     images: Optional[Sequence[str]] = None,
     hinted_model: Optional[str] = None,
+    mention_text: Optional[str] = None,
 ) -> PreparedCall:
-    """Pick a registry model for this intent and build invoke_model kwargs."""
+    """Pick a registry model for this intent and build invoke_model kwargs.
+
+    ``mention_text`` is the original user prompt (plus task) used to detect a
+    named model. Classifier ``hinted_model`` is ignored unless that name also
+    appears in the user text.
+    """
     slice_ = slice_for_intent(intent)
     has_image = bool(image or person_image or images)
+    haystack = current_utterance(mention_text or "") or current_utterance(task or "") or task
     picked = pick_model(
         intent,
-        task,
+        haystack,
         hinted=hinted_model,
         has_image=has_image,
         slice_=slice_,
@@ -165,6 +191,7 @@ def run_recipe(
     image: Optional[str] = None,
     images: Optional[Sequence[str]] = None,
     hinted_model: Optional[str] = None,
+    mention_text: Optional[str] = None,
     dry_run: bool = False,
 ) -> Dict[str, Any]:
     """Facade used by VTOnAgent / FashionAgent / ModelSwapAgent."""
@@ -176,6 +203,7 @@ def run_recipe(
         image=image,
         images=images,
         hinted_model=hinted_model,
+        mention_text=mention_text,
     )
     result = execute_call(prepared, dry_run=dry_run)
     payload = {

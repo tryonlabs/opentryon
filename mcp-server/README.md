@@ -99,6 +99,13 @@ Two meta tools are always available regardless of what's configured:
 - **`list_opentryon_tools(service=None)`** -- lists every service/model combination, its MCP tool name, which env var(s) it needs, and whether it's currently configured. Call this first.
 - **`opentryon_status()`** -- the same human-readable status report printed on startup.
 
+## API keys (host `.env`)
+
+Studio Connect and other MCP clients can inspect and upsert keys **on this machine**. Secrets are written to `opentryon/.env` (mode `0600`) and applied to the running process. Tools never return secret values.
+
+- **`list_api_keys()`** -- unique env vars from the registry, grouped by provider, with `configured` true/false and which models they unlock.
+- **`set_api_keys(keys)`** -- `{ "GEMINI_API_KEY": "..." }` (Kling/AWS send both vars in one call). Unknown names are rejected. Most adapters pick up the new value without a restart.
+
 ## Agent entrypoint
 
 - **`planner_agent(prompt, person_image=None, garment_image=None, image=None, images=None, dry_run=false)`** -- TryOn Studio chat entrypoint. A cheap LLM (`OPENTRYON_PLANNER_LLM_MODEL`) classifies intent (**help**, VTON, model-swap, generate/edit/video, …) then runs a **filtered slice** of the same registry tools listed below via `invoke_model`. Named models in the prompt (e.g. `wan-3.0`) pin the registry id. `dry_run=true` resolves the call without hitting an image API. Capability screens still call the model tools directly. See [Planner Agent](../docs/docs/agents/planner-agent.md).
@@ -256,9 +263,10 @@ Checks (all offline, no API keys or GPU required):
 - `alt_method_on_image` models (veo/sora/luma-video) switch from text-to-video to image-to-video only when an image is supplied
 - unknown service/model and missing-local-extra cases return structured errors instead of raising
 - the two discovery tools (`list_opentryon_tools`, `opentryon_status`) work and reject invalid input
+- `list_api_keys` / `set_api_keys` report provider status and upsert a temp `.env` without echoing secrets
 
 ## Troubleshooting
 
 - **"requires local ML dependencies that aren't installed"** -- run `pip install opentryon[local]` in the same environment the server runs in, and make sure you have a CUDA GPU for the local models that need one.
 - **A tool call returns `{"success": false, "error": "..."}`** -- this is by design: adapter/API errors are caught and returned as structured data rather than crashing the MCP connection. Check `error` (and `traceback` for real failures) for details, or call `opentryon_status` to check whether the required API key is set.
-- **Tool not appearing** -- restart the server after editing `.env` or the registry; tools are built once at import time.
+- **Tool not appearing** -- restart the server after editing the registry; tools are built once at import time. API keys set via `set_api_keys` (or Connect) update this process immediately.

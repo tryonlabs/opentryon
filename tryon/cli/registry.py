@@ -1482,7 +1482,7 @@ _BG_REMOVE = {
         method="remove_background", output_kind="images", extra="local",
         notes="Local GPU/CPU inference. Requires `pip install opentryon[local]`.",
         args=[
-            _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
+            _img(("--image", "-i"), "image", "Input image (path, URL, or base64)", required=True),
             Arg(("--refine",), "refine", action="store_true", help="Refined foreground enhancement"),
         ],
     ),

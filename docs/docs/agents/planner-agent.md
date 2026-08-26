@@ -12,36 +12,56 @@ keywords:
 
 # Planner Agent
 
-The **planner** is the main entrypoint for OpenTryOn agents (including TryOn Studio chat). It uses a **small LLM** to classify the user request, then either **answers a help question from the live model catalog** or **runs a filtered slice of the same tools the MCP server exposes** (`invoke_model`).
+The **planner** is the main entrypoint for OpenTryOn agents (including TryOn Studio chat). It uses a **small LLM** to classify the user request, then either **answers a help question from the live model catalog** or **runs one of the same tools the MCP server exposes** (`invoke_model`).
 
 Capability screens (Image, VTON, Video, …) still call MCP model tools directly. Chat only calls `planner_agent`. Studio does not grow a second tool-calling loop.
 
 ```
 user query  →  PlannerAgent (cheap LLM classify)
                  ├─ help / clarify / out_of_scope
-                 ├─ bind filtered registry slice (never all ~66 tools at once)
+                 ├─ bind: named model (full catalog) OR capability default
                  └─ invoke_model(service, model, **kwargs)
                       same runner as MCP `vton_kling_ai`, `video_generate_wan_3_0`, …
+                      recipes: vton (person + garment), model_swap (outfit rewrite)
 ```
 
-There is **no vector RAG index**. Help is grounded in `tryon.cli.registry`. Named models in the prompt (for example `wan-3.0`) pin that registry id, so chat can run tools the capability UI already has.
+There is **no vector RAG index**. Help is grounded in `tryon.cli.registry`.
 
-VTON and model-swap are **recipes** (defaults + outfit-preserving prompt rewrite), not LangChain agents.
+## Model choice
 
-| Intent | Typical inputs | Default tool |
+Each capability has a **default model**. The planner uses that default unless the user names a model in the prompt.
+
+| Task | Intent | Default |
 |---|---|---|
-| `vton` | person image + garment image | `vton` / `kling-ai` |
-| `model_swap` | outfit photo + new-person description | `edit` / `nano-banana-pro` |
-| `generate` / `fashion` | text prompt | `generate` / `nano-banana-pro` |
-| `edit` | image + instruction | `edit` / `nano-banana-pro` |
-| `video` | text, optional first frame | `video-generate` / `sora` |
-| `understand` | image or video URL | `understand` / `kimi-k2.6` |
-| `bg_remove` | image | `bg-remove` / `ben2` |
-| `multi_step` | two or more tools (e.g. BG then try-on) | classified; **currently one** `invoke_model` (default generate) |
-| `clarify` | missing files | planner asks |
+| Virtual try-on | `vton` | `vton` / `kling-ai` |
+| Image generation | `generate` / `fashion` | `generate` / `nano-banana-pro` |
+| Image editing | `edit` | `edit` / `nano-banana-pro` |
+| Model swap | `model_swap` | `edit` / `nano-banana-pro` |
+| Image understanding | `understand` | `understand` / `kimi-k2.6` |
+| Video generation | `video` | `video-generate` / `sora` |
+| Background remove | `bg_remove` | `bg-remove` / `ben2` |
+
+- **User named a model** (for example `wan-3.0`, `flux2-pro`, `kling-ai`) → that registry id **only**, even if it lives in another capability. An unknown name is **not** replaced by the default; the planner asks you to pick a real id.
+- **No model named** → the default in the table.
+- The classifier must leave `model` empty unless the user named one. A leaked default in `plan.model` is ignored unless that id also appears in the prompt.
+
+The planner can use **any** registry tool for a turn (named models search the full catalog). Recipes (`VTOnAgent`, `FashionAgent`, `ModelSwapAgent`) are thin facades over the same `invoke_model` path. A `multi_step` intent is recognized but does **not** yet chain tools — it binds a wide slice and runs a single `invoke_model`.
+
+| Intent | Typical inputs | Tool path |
+|---|---|---|
+| `vton` | person image + garment image | recipe → default or named VTON model |
+| `model_swap` | outfit photo + new-person description | recipe (outfit-preserving rewrite) |
+| `generate` / `fashion` | text prompt | `invoke_model` |
+| `edit` | image + instruction | `invoke_model` |
+| `video` | text, optional first frame | `invoke_model` |
+| `understand` | image or video URL | `invoke_model` |
+| `bg_remove` | image | `invoke_model` |
+| `multi_step` | two or more tools (e.g. BG then try-on) | one `invoke_model` today |
+| `help` | greetings, how-to, or an unsupported ask (e.g. 3D world) | apology + closest tasks we can run; no `invoke_model` |
+| `clarify` | missing files | planner asks for the photo(s), not “missing inputs” |
 | `out_of_scope` | unrelated | planner declines |
 
-`FashionAgent`, `VTOnAgent`, and `ModelSwapAgent` remain as thin Python facades over the same recipes for example scripts. Prefer `PlannerAgent` for new code. A `multi_step` intent is recognized but does **not** yet chain tools — it binds a wide slice and runs a single `invoke_model`.
+`FashionAgent`, `VTOnAgent`, and `ModelSwapAgent` remain as thin Python facades over the same recipes for example scripts. Prefer `PlannerAgent` for new code.
 
 ## Environment
 

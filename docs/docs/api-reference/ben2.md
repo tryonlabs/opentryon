@@ -12,7 +12,7 @@ BEN2 uses a transformer-based architecture with window attention mechanisms for 
 - **Automatic Weight Download**: Weights automatically downloaded from [Hugging Face](https://huggingface.co/PramaLLC/BEN2)
 - **Foreground Refinement**: Optional refinement for higher quality edges
 - **Batch Processing**: Process multiple images efficiently
-- **Flexible Input**: Accepts file paths, URLs, BytesIO, or PIL Images
+- **Flexible Input**: Accepts file paths, URLs, bytes, base64 (Studio/MCP uploads), BytesIO, or PIL Images
 - **GPU Acceleration**: CUDA support for faster processing
 
 ## Requirements

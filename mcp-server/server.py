@@ -63,6 +63,8 @@ mcp = FastMCP(
         "Call `list_opentryon_tools` first to discover every available "
         "service/model combination, which environment variable(s) each one "
         "needs, and whether it is already configured in this environment. "
+        "Call `list_api_keys` / `set_api_keys` to inspect or upsert keys in "
+        "the host `.env` (never returns secret values). "
         "Every generated tool accepts a `dry_run` boolean to preview the "
         "resolved adapter call without spending API credits or GPU time, "
         "and an `output_dir` string (default 'outputs') for where to save "
@@ -323,6 +325,30 @@ def opentryon_status() -> str:
     return config.status_message()
 
 
+@mcp.tool
+def list_api_keys() -> Dict[str, Any]:
+    """List API-key environment variables grouped by provider.
+
+    Reports which keys are set on this MCP host and which models they unlock.
+    Never returns secret values — only names and configured true/false.
+    """
+    return config.list_api_keys()
+
+
+@mcp.tool
+def set_api_keys(keys: Dict[str, str]) -> Dict[str, Any]:
+    """Write allowed API keys into the host ``.env`` and this process.
+
+    Keys are upserted into ``opentryon/.env`` (mode 0600) and ``os.environ``
+    so adapters pick them up without a restart. Unknown names are rejected.
+    Never echoes secret values.
+
+    :param keys: Mapping of env var name to value, e.g.
+        ``{"GEMINI_API_KEY": "..."}``. Kling/AWS need both vars in one call.
+    """
+    return config.set_api_keys(keys)
+
+
 TOOL_COUNT = register_model_tools(mcp)
 
 
@@ -343,7 +369,11 @@ def main() -> None:
     args = _build_arg_parser().parse_args()
 
     print(config.status_message(), file=sys.stderr)
-    print(f"\nStarting OpenTryOn MCP Server ({TOOL_COUNT} model tools + 2 discovery + planner_agent)...", file=sys.stderr)
+    print(
+        f"\nStarting OpenTryOn MCP Server ({TOOL_COUNT} model tools + 2 discovery "
+        f"+ 2 key tools + planner_agent)...",
+        file=sys.stderr,
+    )
 
     if args.transport == "stdio":
         mcp.run()

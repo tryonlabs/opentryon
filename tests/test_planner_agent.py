@@ -11,7 +11,14 @@ import sys
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 
-from tryon.agents.planner.plan import Plan, parse_plan_json, required_inputs
+from tryon.agents.planner.plan import (
+    Plan,
+    clarify_message,
+    is_capability_question,
+    is_unsupported_request,
+    parse_plan_json,
+    required_inputs,
+)
 from tryon.agents.planner.agent import PlannerAgent
 from tryon.agents.planner.media import encode_images, encode_one_image
 
@@ -193,14 +200,114 @@ def check_required_inputs():
     assert required_inputs("model_swap") == ("image",)
     assert required_inputs("edit") == ("image",)
     assert required_inputs("bg_remove") == ("image",)
+    assert required_inputs("understand") == ("image",)
     assert required_inputs("fashion") == ()
     assert required_inputs("video") == ()
     assert required_inputs("help") == ()
     print("\u2713 required_inputs per intent")
 
 
+def check_understand_without_image_clarifies():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"])
+    )
+    result = agent.run("What do you see in this photo?", dry_run=True)
+    assert result["intent"] == "clarify"
+    assert result["success"] is True
+    assert "image" in result["missing_inputs"]
+    assert "attach" in result["message"].lower()
+    assert "missing inputs" not in result["message"].lower()
+    print("\u2713 understand without an image asks to attach one")
+
+
+def check_capability_questions_are_help():
+    assert is_capability_question("Can you perform image understanding?")
+    assert is_capability_question("Can you edit an image?")
+    assert is_capability_question("Current request: Can you edit an image?\nQuick action: edit")
+    assert not is_capability_question("Edit this photo to make the sky blue")
+
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"], reason="run understand")
+    )
+    called = {"n": 0}
+
+    def boom(*_a, **_k):
+        called["n"] += 1
+        raise AssertionError("registry tool should not run")
+
+    agent._execute = boom  # type: ignore[method-assign]
+    result = agent.run("Can you perform image understanding?")
+    assert result["intent"] == "help"
+    assert result["success"] is True
+    assert called["n"] == 0
+
+    edit = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="edit", task=kwargs["prompt"], reason="missing inputs")
+    )
+    edit._execute = boom  # type: ignore[method-assign]
+    asked = edit.run("Can you edit an image?")
+    assert asked["intent"] == "help"
+    assert called["n"] == 0
+    print("\u2713 capability questions become help, not invoke or 'missing inputs'")
+
+
+def check_unsupported_generate_is_help():
+    from tryon.agents.planner.catalog import FALLBACK_UNSUPPORTED
+
+    assert is_unsupported_request("Can you generate a 3d World?")
+    assert is_unsupported_request("Current request: generate a 3D scene\nPrevious turns: hi")
+    assert not is_unsupported_request("Generate a red evening gown on a runway")
+
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="generate", task=kwargs["prompt"])
+    )
+    called = {"n": 0}
+
+    def boom(*_a, **_k):
+        called["n"] += 1
+        raise AssertionError("registry tool should not run")
+
+    agent._execute = boom  # type: ignore[method-assign]
+    result = agent.run("Can you generate a 3d World?")
+    assert result["intent"] == "help"
+    assert result["success"] is True
+    assert called["n"] == 0
+    lowered = result["message"].lower()
+    assert "sorry" in lowered
+    assert "image generate" in lowered or "generate" in lowered
+    assert FALLBACK_UNSUPPORTED.startswith("Sorry")
+    print("\u2713 unsupported generate asks apologize and list related tasks")
+
+
+def check_clarify_message_is_human():
+    assert "garment" in clarify_message("vton", ["person_image", "garment_image"]).lower()
+    assert "attach" in clarify_message("edit", ["image"]).lower()
+    assert clarify_message("edit", ["image"]).lower() != "missing inputs"
+    print("\u2713 clarify copy asks for the file instead of 'missing inputs'")
+
+
+def check_llm_clarify_junk_reason_is_rewritten():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="clarify", reason="missing inputs", missing_inputs=[])
+    )
+    result = agent.run("Can you edit an image?")
+    assert result["intent"] == "help"
+    result2 = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="clarify", reason="missing inputs", missing_inputs=["image"])
+    ).run("Edit this photo")
+    assert result2["intent"] == "clarify"
+    assert "attach" in result2["message"].lower()
+    assert "missing inputs" not in result2["message"].lower()
+    print("\u2713 classifier 'missing inputs' is rewritten")
+
+
 def check_bind_filters_registry_slice():
-    from tryon.agents.planner.bind import match_named_model, pick_model, slice_for_intent
+    from tryon.agents.planner.bind import (
+        NamedModelUnknown,
+        match_named_model,
+        pick_model,
+        slice_for_intent,
+    )
 
     vton = slice_for_intent("vton")
     assert all(item.service == "vton" for item in vton)
@@ -218,6 +325,107 @@ def check_bind_filters_registry_slice():
     default_vton = pick_model("vton", "try this on")
     assert default_vton is not None and default_vton.model == "kling-ai"
     print("\u2713 bind filters slices and pins named models")
+
+    assert pick_model("generate", "a red evening gown").model == "nano-banana-pro"
+    assert pick_model("edit", "make the sky blue").model == "nano-banana-pro"
+    assert pick_model("understand", "what is in this photo").model == "kimi-k2.6"
+    assert pick_model("video", "runway walk clip").model == "sora"
+    assert pick_model("bg_remove", "remove the background").model == "ben2"
+    named_gen = pick_model("generate", "Generate a clip using wan-3.0")
+    assert named_gen is not None and named_gen.model == "wan-3.0"
+    leaked = pick_model("generate", "a red evening gown", hinted="wan-3.0")
+    assert leaked is not None and leaked.model == "nano-banana-pro"
+    try:
+        pick_model("generate", "use foobar-9000 please", hinted="foobar-9000")
+    except NamedModelUnknown as exc:
+        assert exc.name == "foobar-9000"
+    else:
+        raise AssertionError("expected NamedModelUnknown")
+    gpt = pick_model(
+        "edit",
+        "edit this image using gpt-image. Change male to female in this image.",
+        hinted="nano-banana-pro",
+    )
+    assert gpt is not None and gpt.model == "gpt-image" and gpt.service == "edit"
+
+    polluted = pick_model(
+        "edit",
+        "Current request: edit this image using gpt-image. Change male to female.\n"
+        "Previous turns (context only; classify the Current request):\n"
+        "Assistant: Completed via generate/nano-banana-pro.",
+        hinted="nano-banana-pro",
+    )
+    assert polluted is not None and polluted.model == "gpt-image"
+
+    from tryon.agents.planner.recipes import prepare_call
+
+    prepared = prepare_call(
+        "edit",
+        "Change male to female",
+        image="photo.jpg",
+        mention_text="edit this image using gpt-image.",
+        hinted_model="nano-banana-pro",
+    )
+    assert prepared.model == "gpt-image" and prepared.service == "edit"
+    assert prepared.kwargs.get("images") == ["photo.jpg"]
+
+    flux = prepare_call(
+        "edit",
+        "Change the garment to a saree",
+        image="photo.jpg",
+        mention_text="Edit this image using flux 2 pro model.",
+    )
+    assert flux.model == "flux2-pro" and flux.service == "edit"
+    assert flux.kwargs.get("input_image") == "photo.jpg"
+    print("\u2713 unnamed tasks use capability defaults; named model is exclusive")
+
+
+def check_capability_defaults_via_planner():
+    generate = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="generate", task=kwargs["prompt"], model="wan-3.0")
+    ).run("Generate a red evening gown", dry_run=True)
+    assert generate["model"] == "nano-banana-pro"
+    assert generate["service"] == "generate"
+
+    video = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="video", task=kwargs["prompt"])
+    ).run("Make a short runway clip", dry_run=True)
+    assert video["model"] == "sora" and video["service"] == "video-generate"
+
+    understand = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"])
+    ).run("What is in this photo?", image="photo.jpg", dry_run=True)
+    assert understand["model"] == "kimi-k2.6" and understand["service"] == "understand"
+
+    edit = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="edit", task=kwargs["prompt"])
+    ).run("Make the sky blue", image="photo.jpg", dry_run=True)
+    assert edit["model"] == "nano-banana-pro" and edit["service"] == "edit"
+
+    named = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="generate", task=kwargs["prompt"], model="wan-3.0")
+    ).run("Generate a clip using wan-3.0", dry_run=True)
+    assert named["model"] == "wan-3.0" and named["service"] == "video-generate"
+
+    gpt_edit = PlannerAgent(
+        classifier=lambda **kwargs: Plan(
+            intent="edit", task="Change male to female", model="nano-banana-pro"
+        )
+    ).run(
+        "edit this image using gpt-image. Change male to female in this image.",
+        image="photo.jpg",
+        dry_run=True,
+    )
+    assert gpt_edit["model"] == "gpt-image" and gpt_edit["service"] == "edit"
+
+    unknown = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="generate", task=kwargs["prompt"], model="foobar-9000")
+    ).run("Generate a look using foobar-9000", dry_run=True)
+    assert unknown["intent"] == "clarify"
+    assert unknown["success"] is True
+    assert "foobar-9000" in unknown["message"]
+    assert unknown.get("model") in (None, "")
+    print("\u2713 planner defaults vs named vs unknown model")
 
 
 def check_encode_images_png_bytes():
@@ -270,6 +478,20 @@ def check_materialize_image_downscales_base64():
         "'code': 'rate_limit_exceeded'}}"
     )
     assert "2048" in specialist_error_message(err)
+    moon = specialist_error_message(
+        "ValueError: Moonshot API key must be provided either as a parameter "
+        "or through the MOONSHOT_API_KEY environment variable."
+    )
+    assert "MOONSHOT_API_KEY" in moon
+    assert "opentryon/.env" in moon
+    assert "ValueError" not in moon
+    quota = specialist_error_message(
+        "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, "
+        "'message': 'You exceeded your current quota.\\n* Quota exceeded', "
+        "'status': 'RESOURCE_EXHAUSTED'}}"
+    )
+    assert "\n" in quota
+    assert '"code": 429' in quota
     print("\u2713 chat base64 uploads become downscaled temp files, not LLM tokens")
 
 
@@ -285,7 +507,13 @@ def main():
     check_normalize_help_markdown()
     check_strip_emojis()
     check_required_inputs()
+    check_understand_without_image_clarifies()
+    check_capability_questions_are_help()
+    check_unsupported_generate_is_help()
+    check_clarify_message_is_human()
+    check_llm_clarify_junk_reason_is_rewritten()
     check_bind_filters_registry_slice()
+    check_capability_defaults_via_planner()
     check_encode_images_png_bytes()
     check_materialize_image_downscales_base64()
     print("\nAll planner agent checks passed.")

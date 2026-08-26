@@ -34,9 +34,12 @@ def _count_registry_models() -> int:
 
 async def check_tool_count_matches_registry() -> None:
     tools = await server.mcp._list_tools()
-    expected = _count_registry_models() + 3  # + list_opentryon_tools, opentryon_status, planner_agent
+    expected = _count_registry_models() + 5  # + list, status, planner, list_api_keys, set_api_keys
     assert len(tools) == expected, f"expected {expected} tools, got {len(tools)}"
-    print(f"\u2713 {len(tools)} MCP tools registered ({_count_registry_models()} models + 2 discovery + planner_agent)")
+    print(
+        f"\u2713 {len(tools)} MCP tools registered "
+        f"({_count_registry_models()} models + 2 discovery + 2 key tools + planner_agent)"
+    )
 
 
 async def check_every_model_has_a_tool() -> None:
@@ -180,6 +183,82 @@ async def check_status_message_mentions_every_service() -> None:
     print("\u2713 opentryon_status covers every service")
 
 
+async def check_list_and_set_api_keys() -> None:
+    import json
+    import os
+    import stat
+    import tempfile
+    from pathlib import Path
+
+    secret = "test-secret-do-not-echo-xyz"
+    names = {t.name for t in await server.mcp._list_tools()}
+    assert "list_api_keys" in names and "set_api_keys" in names
+
+    list_tool = await server.mcp.get_tool("list_api_keys")
+    listed = (await list_tool.run({})).structured_content
+    assert listed["success"] is True
+    providers = listed["providers"]
+    ids = [p["id"] for p in providers]
+    assert ids[:4] == ["agent", "openai", "anthropic", "gemini"], ids[:4]
+    gemini = next(p for p in providers if p["id"] == "gemini")
+    assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"
+    assert any(u["service"] == "generate" for u in gemini["unlocks"])
+    dump = json.dumps(listed)
+    assert secret not in dump
+    assert not any("value" in var for p in providers for var in p["vars"])
+
+    set_tool = await server.mcp.get_tool("set_api_keys")
+    schema = set_tool.parameters
+    assert "keys" in schema["properties"] or "keys" in schema.get("required", []), schema
+
+    previous_path = os.environ.get("OPENTRYON_ENV_PATH")
+    previous_gemini = os.environ.get("GEMINI_API_KEY")
+    with tempfile.TemporaryDirectory() as tmp:
+        env_path = Path(tmp) / ".env"
+        os.environ["OPENTRYON_ENV_PATH"] = str(env_path)
+        os.environ.pop("GEMINI_API_KEY", None)
+        try:
+            before = (await list_tool.run({})).structured_content
+            gemini_before = next(p for p in before["providers"] if p["id"] == "gemini")
+            assert gemini_before["configured"] is False
+
+            rejected = (await set_tool.run({"keys": {"PATH": "/tmp"}})).structured_content
+            assert rejected["success"] is False
+            assert "Unknown" in rejected["error"]
+            assert secret not in json.dumps(rejected)
+
+            newline = (
+                await set_tool.run({"keys": {"GEMINI_API_KEY": "line1\nline2"}})
+            ).structured_content
+            assert newline["success"] is False
+
+            saved = (
+                await set_tool.run({"keys": {"GEMINI_API_KEY": secret}})
+            ).structured_content
+            assert saved["success"] is True, saved
+            assert saved["updated"] == ["GEMINI_API_KEY"]
+            assert secret not in json.dumps(saved)
+            assert os.environ.get("GEMINI_API_KEY") == secret
+            assert env_path.exists()
+            mode = stat.S_IMODE(env_path.stat().st_mode)
+            assert mode == 0o600, oct(mode)
+            text = env_path.read_text(encoding="utf-8")
+            assert "GEMINI_API_KEY=" in text
+            gemini_after = next(p for p in saved["providers"] if p["id"] == "gemini")
+            assert gemini_after["configured"] is True
+            assert server.config.is_configured("GEMINI_API_KEY") is True
+        finally:
+            if previous_path is None:
+                os.environ.pop("OPENTRYON_ENV_PATH", None)
+            else:
+                os.environ["OPENTRYON_ENV_PATH"] = previous_path
+            if previous_gemini is None:
+                os.environ.pop("GEMINI_API_KEY", None)
+            else:
+                os.environ["GEMINI_API_KEY"] = previous_gemini
+    print("\u2713 list_api_keys / set_api_keys upsert host .env without echoing secrets")
+
+
 async def main() -> None:
     checks = [
         check_tool_count_matches_registry,
@@ -192,6 +271,7 @@ async def main() -> None:
         check_list_opentryon_tools,
         check_planner_agent_schema,
         check_status_message_mentions_every_service,
+        check_list_and_set_api_keys,
     ]
     for check in checks:
         await check()

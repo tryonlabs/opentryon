@@ -3,7 +3,7 @@
 from .agent import PlannerAgent, run_planner
 from .plan import Plan, parse_plan_json
 from .catalog import capabilities_brief
-from .bind import pick_model, slice_for_intent
+from .bind import NamedModelUnknown, pick_model, slice_for_intent
 from .recipes import prepare_call, run_recipe
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "capabilities_brief",
     "pick_model",
     "slice_for_intent",
+    "NamedModelUnknown",
     "prepare_call",
     "run_recipe",
 ]

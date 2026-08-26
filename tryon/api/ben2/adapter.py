@@ -2,6 +2,7 @@ import torch
 from PIL import Image
 import io
 import os
+import base64
 import requests
 import warnings
 import huggingface_hub
@@ -62,36 +63,49 @@ class BEN2BackgroundRemoverAdapter:
             )
             print("Download complete.")
 
-    def load_image(self, input_data: Union[str, io.BytesIO, Image.Image]) -> Image.Image:
+    @staticmethod
+    def load_image(input_data: Union[str, bytes, bytearray, io.BytesIO, Image.Image]) -> Image.Image:
         """
         Normalizes ANY supported input into a valid PIL Image (RGB).
         Supports:
             - URL (http/https)
             - Local file path
+            - Raw bytes
             - BytesIO / file-like
             - PIL Image
+            - Base64 string or ``data:image/...;base64,...`` (Studio / MCP uploads)
         """
-        # URL
-        if isinstance(input_data, str) and input_data.startswith(("http://", "https://")):
-            resp = requests.get(input_data, timeout=10)
-            resp.raise_for_status()
-            image = Image.open(io.BytesIO(resp.content))
-
-        # Local file
-        elif isinstance(input_data, str) and os.path.exists(input_data):
-            image = Image.open(input_data)
-
-        # BytesIO / file-like
+        if isinstance(input_data, Image.Image):
+            image = input_data
+        elif isinstance(input_data, (bytes, bytearray, memoryview)):
+            image = Image.open(io.BytesIO(bytes(input_data)))
         elif hasattr(input_data, "read"):
             input_data.seek(0)
             image = Image.open(input_data)
-
-        # Already PIL
-        elif isinstance(input_data, Image.Image):
-            image = input_data
-
+        elif isinstance(input_data, str) and input_data.startswith(("http://", "https://")):
+            resp = requests.get(input_data, timeout=10)
+            resp.raise_for_status()
+            image = Image.open(io.BytesIO(resp.content))
+        elif isinstance(input_data, str) and os.path.exists(input_data):
+            image = Image.open(input_data)
+        elif isinstance(input_data, str):
+            raw = input_data.strip()
+            if raw.startswith("data:") and "," in raw:
+                raw = raw.split(",", 1)[1]
+            try:
+                decoded = base64.b64decode(raw, validate=False)
+                image = Image.open(io.BytesIO(decoded))
+                image.load()
+            except Exception as exc:
+                raise ValueError(
+                    "Unsupported image input type. Pass a file path, URL, "
+                    "PIL Image, bytes, or base64 string."
+                ) from exc
         else:
-            raise ValueError("Unsupported image input type")
+            raise ValueError(
+                "Unsupported image input type. Pass a file path, URL, "
+                "PIL Image, bytes, or base64 string."
+            )
 
         if image.mode != "RGB":
             image = image.convert("RGB")
@@ -101,7 +115,7 @@ class BEN2BackgroundRemoverAdapter:
 
     def remove_background(
         self,
-        image: Union[str, io.BytesIO, Image.Image],
+        image: Union[str, bytes, bytearray, io.BytesIO, Image.Image],
         refine: bool = False
     ) -> List[Image.Image]:
 

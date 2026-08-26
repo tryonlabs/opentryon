@@ -78,6 +78,7 @@ Discovery tools:
 
 - `list_opentryon_tools` — list services / models / tool names / env readiness
 - `opentryon_status` — configuration status report
+- `list_api_keys` / `set_api_keys` — inspect or upsert host `.env` keys (never returns secret values). TryOn Studio Connect uses these.
 
 Every generated tool accepts `dry_run` and `output_dir`, matching the CLI.
 

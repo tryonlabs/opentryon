@@ -19,7 +19,6 @@ STUDIO_SURFACES = (
     "Understand",
     "Video",
     "BG Remove",
-    "Prompt builder",
 )
 
 FALLBACK_HELP = (
@@ -35,6 +34,17 @@ FALLBACK_HELP = (
     "API keys stay in `opentryon/.env`, not in this chat."
 )
 
+FALLBACK_UNSUPPORTED = (
+    "Sorry — that isn't something I can do.\n\n"
+    "Closest things I can help with:\n"
+    "- **Image generate** — 2D fashion or product images from a text prompt\n"
+    "- **Image edit** — change an existing photo (attach one)\n"
+    "- **Video** — short clips from text or a first frame\n"
+    "- **Virtual try-on** — put a garment on a person photo\n"
+    "- **Background remove** — cut the subject out of a photo\n\n"
+    "Ask for one of those and I'll run it."
+)
+
 
 def capabilities_brief(*, models_per_service: int = 14) -> str:
     """Compact, always-current list of services and registry model ids."""
@@ -45,7 +55,13 @@ def capabilities_brief(*, models_per_service: int = 14) -> str:
         "The planner is a super agent over the live registry "
         "(same tools as MCP model tools, filtered by intent). Recipes: "
         "vton (person + garment), model_swap (outfit photo + new-person text), "
-        "generate / edit / video / understand / bg-remove.",
+        "generate / edit / video / understand / bg-remove. "
+        "If the user names a model, use that id only. Otherwise use the "
+        "capability default.",
+        "",
+        "Capability defaults (unnamed): "
+        "vton → kling-ai; generate/edit/fashion → nano-banana-pro; "
+        "video → sora; understand → kimi-k2.6; bg-remove → ben2.",
         "",
         "Live registry (service → models):",
     ]
@@ -55,6 +71,26 @@ def capabilities_brief(*, models_per_service: int = 14) -> str:
         extra = f" (+{len(ids) - models_per_service} more)" if len(ids) > models_per_service else ""
         help_text = SERVICE_HELP.get(service, "")
         lines.append(f"- {service}: {help_text}. Models: {shown}{extra}")
+    return "\n".join(lines)
+
+
+def models_brief() -> str:
+    """Compact id list for the classifier — copy into plan.model only if named."""
+    from tryon.agents.planner.bind import DEFAULT_MODEL
+
+    lines = [
+        "Registry model ids (copy into \"model\" ONLY if the user named one; otherwise \"\"):",
+    ]
+    for service, models in SERVICES.items():
+        lines.append(f"- {service}: " + ", ".join(models.keys()))
+    lines.append(
+        "Defaults if unnamed: "
+        + "; ".join(
+            f"{intent}={svc}/{mid}"
+            for intent, (svc, mid) in DEFAULT_MODEL.items()
+            if intent not in ("fashion", "model_swap", "multi_step")
+        )
+    )
     return "\n".join(lines)
 
 

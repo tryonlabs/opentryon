@@ -4,10 +4,12 @@ Classifies the user query with a cheap LLM, then either answers a help
 question from the live registry catalog or runs a **filtered slice** of the
 same tools the MCP server exposes (via ``invoke_model``).
 
-Capability screens still call MCP model tools directly. Chat only calls
-``planner_agent``. Named models in the prompt (e.g. ``wan-3.0``) pin the
-registry id. VTON / model-swap are recipes (defaults + prompt rewrite), not
-LangChain agents.
+The planner is allowed to use every registry tool, but binds one model per
+turn: a user-named id (exclusive) or the capability default. Recipes
+(VTON / model-swap) rewrite kwargs; other intents call ``invoke_model``
+directly. Named models in the prompt (e.g. ``wan-3.0``) pin the registry
+id from the full catalog. VTON / model-swap are recipes (defaults +
+prompt rewrite), not LangChain agents.
 """
 
 from __future__ import annotations
@@ -19,7 +21,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from tryon.agents.llm import agent_llm_model, agent_llm_provider, chat_model
 from tryon.agents.planner.catalog import (
     FALLBACK_HELP,
+    FALLBACK_UNSUPPORTED,
     capabilities_brief,
+    models_brief,
     normalize_help_markdown,
     out_of_scope_message,
     strip_emojis,
@@ -31,12 +35,18 @@ from tryon.agents.planner.media import (
     specialist_error_message,
 )
 from tryon.agents.planner.plan import (
+    ACTION_INTENTS,
     Plan,
+    clarify_message,
+    current_utterance,
+    is_capability_question,
+    is_unsupported_request,
     parse_plan_json,
     present_inputs,
     required_inputs,
 )
 from tryon.agents.planner.recipes import execute_call, prepare_call
+from tryon.agents.planner.bind import NamedModelUnknown, unknown_model_message
 
 ClassifyFn = Callable[..., Plan]
 
@@ -61,10 +71,10 @@ Intents:
 - "understand": caption or ask about an image / video URL.
 - "bg_remove": remove background. Needs an image.
 - "fashion": catch-all generate/edit/video when the modality is unclear.
-- "multi_step": user clearly wants two or more tools in sequence (e.g. remove BG then try-on).
-- "help": greetings, small talk, or questions about what this product can do — capabilities, models, how to use try-on / generate / video / understand / bg-remove, which screens exist. Not a request to produce an image or video yet.
+- "multi_step": user clearly wants two or more tools in sequence (e.g. remove BG then try-on). The planner may use any registry tool or recipe (vton / model_swap / generate / edit / video / understand / bg_remove) for the primary step.
+- "help": greetings, small talk, questions about what this product can do, or a request we cannot perform (3D worlds, games, CAD, audio, code, websites). Not a request to produce an in-scope image or video yet.
 - "clarify": the task is a generation/try-on/swap job but a required input is missing. List missing_inputs.
-- "out_of_scope": clearly unrelated (weather, math homework, general coding, news). Do not use this for greetings or product questions.
+- "out_of_scope": clearly unrelated (weather, math homework, general coding, news). Do not use this for greetings or product questions. Use "help" (not this) when they asked for a creative job we simply do not support.
 
 JSON shape:
 {"intent":"vton|model_swap|generate|edit|video|understand|bg_remove|fashion|multi_step|help|clarify|out_of_scope","reason":"short","task":"rewritten specialist prompt","model":"","missing_inputs":[]}
@@ -72,11 +82,18 @@ JSON shape:
 Rules:
 - "reason" and "task" are plain text — no emoji.
 - "Hi", "hello", "what can you do?", "what tasks?", "which models?" → "help".
+- "Can you edit an image?", "Can you perform image understanding?", "do you support try-on?" with no files → "help" (explain), not the action.
+- We only do 2D fashion/product images, short video, virtual try-on, model-swap, image/video understanding, and background remove. We do not create 3D worlds, 3D models, games, CAD, audio, music, code, or websites.
+- If they ask for something we cannot do — even if they say "generate", "create", or "can you" — use "help". Do NOT run generate/edit/video. The help reply will apologize and list the closest supported tasks.
+- "Can you generate a 3d world?", "make a 3D scene", "generate a game" → "help". "Generate a red evening gown" → "generate".
 - Prefer "vton" when a person photo AND a garment photo are present (or clearly implied) and the user wants to try the garment on.
 - Prefer "model_swap" when there is one outfit photo and the user wants a different person/model in that same outfit.
 - "Generate a model wearing X" from text only is "generate" or "fashion", not vton.
-- If the user names a model (wan-3.0, hailuo, kling-ai, nano-banana-pro, sora, …) copy that id into "model".
+- Leave "model" as "" unless the user explicitly named a registry id or alias (wan-3.0, hailuo, kling-ai, nano-banana-pro, sora, flux2-pro, kimi-k2.6, …). Copy that id exactly. Do NOT fill in a default.
+- If they named a model, that is the only model to run. If they did not, the planner uses the capability default.
 - "How do I try a shirt on?" with no images is "help" (explain), not vton, unless they are clearly asking you to run try-on now.
+- Classify the Current request. Previous turns are context only.
+- "understand" / "edit" / "bg_remove" / "vton" only when they want you to run that job now. If a required file is missing, use "clarify" and list missing_inputs with a short ask — never set reason to just "missing inputs".
 - Copy the user's request into "task" (cleaned), do not invent new creative direction.
 """
 
@@ -96,6 +113,10 @@ Do not invent models, APIs, or features that are not in the catalog.
 Do not ask for API keys (they stay in opentryon/.env).
 If they greet you, greet back and offer 3–5 things you can do.
 If they ask how to run a task, say what to type and which photos to attach.
+If they asked for something we cannot do (3D worlds or models, games, CAD, audio, code, websites):
+- Open with a short apology that names what we cannot do.
+- Then list 3–5 supported tasks closest to what they asked (for a generate-like ask: image generate, video, edit, virtual try-on).
+- Do not pretend a tool ran. Do not invent 3D or game features.
 """
 
 
@@ -173,7 +194,8 @@ class PlannerAgent:
                 f"extra_images={len(images) if images else 0}\n"
                 f"person_image: {_content_preview(person_image)}\n"
                 f"garment_image: {_content_preview(garment_image)}\n"
-                f"image: {_content_preview(image)}"
+                f"image: {_content_preview(image)}\n\n"
+                f"{models_brief()}"
             )
             reply = self.llm.invoke(
                 [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=user)]
@@ -182,22 +204,42 @@ class PlannerAgent:
             plan = parse_plan_json(text)
         if not plan.task:
             plan.task = prompt
-        return self._apply_input_gates(plan, available)
+        return self._apply_input_gates(plan, available, prompt)
 
-    def _apply_input_gates(self, plan: Plan, available: dict) -> Plan:
+    def _apply_input_gates(self, plan: Plan, available: dict, prompt: str) -> Plan:
+        if plan.intent == "clarify":
+            if is_capability_question(prompt):
+                plan.intent = "help"
+                plan.missing_inputs = []
+                plan.reason = "Capability question — explain instead of running."
+                return plan
+            plan.reason = clarify_message("", plan.missing_inputs)
+            return plan
+        if plan.intent in ACTION_INTENTS and is_unsupported_request(prompt):
+            plan.intent = "help"
+            plan.missing_inputs = []
+            plan.reason = "Unsupported task — apologize and list related things we can do."
+            return plan
         needed = required_inputs(plan.intent)
         missing = [name for name in needed if not available.get(name)]
-        if missing:
-            original = plan.intent
-            plan.intent = "clarify"
-            plan.missing_inputs = missing
-            plan.reason = plan.reason or f"The {original} task needs: {', '.join(missing)}."
+        if not missing:
+            return plan
+        if is_capability_question(prompt):
+            plan.intent = "help"
+            plan.missing_inputs = []
+            plan.reason = "Capability question with no files — explain instead of running."
+            return plan
+        original = plan.intent
+        plan.intent = "clarify"
+        plan.missing_inputs = missing
+        plan.reason = clarify_message(original, missing)
         return plan
 
     def _answer_help(self, prompt: str) -> str:
         catalog = capabilities_brief()
+        fallback = FALLBACK_UNSUPPORTED if is_unsupported_request(prompt) else FALLBACK_HELP
         if self.llm is None:
-            return FALLBACK_HELP
+            return fallback
         try:
             reply = self.llm.invoke(
                 [
@@ -205,7 +247,7 @@ class PlannerAgent:
                     HumanMessage(
                         content=(
                             f"Capability catalog:\n{catalog}\n\n"
-                            f"User: {prompt}\n\n"
+                            f"User: {current_utterance(prompt) or prompt}\n\n"
                             "Write the assistant reply now. No emoji."
                         )
                     ),
@@ -213,14 +255,15 @@ class PlannerAgent:
             )
             text = reply.content if isinstance(reply.content, str) else str(reply.content)
             text = normalize_help_markdown(text)
-            return text or FALLBACK_HELP
+            return text or fallback
         except Exception:
-            return FALLBACK_HELP
+            return fallback
 
     def _execute(
         self,
         plan: Plan,
         *,
+        prompt: str,
         person_image: Optional[str],
         garment_image: Optional[str],
         image: Optional[str],
@@ -229,12 +272,13 @@ class PlannerAgent:
     ) -> Dict[str, Any]:
         prepared = prepare_call(
             plan.intent,
-            plan.task or "",
+            plan.task or prompt,
             person_image=person_image,
             garment_image=garment_image,
             image=image,
             images=images,
             hinted_model=plan.model or None,
+            mention_text=prompt,
         )
         result = execute_call(prepared, dry_run=dry_run)
         result["service"] = prepared.service
@@ -317,8 +361,7 @@ class PlannerAgent:
             return _clean_payload(payload)
 
         if plan.intent == "clarify":
-            needed = ", ".join(plan.missing_inputs) or "more detail"
-            payload["message"] = plan.reason or f"I need {needed} before I can run this."
+            payload["message"] = plan.reason or clarify_message("", plan.missing_inputs)
             return _clean_payload(payload)
 
         temps: List[str] = []
@@ -330,12 +373,21 @@ class PlannerAgent:
             ]
             result = self._execute(
                 plan,
+                prompt=prompt,
                 person_image=materialize_image(person_image, temps),
                 garment_image=materialize_image(garment_image, temps),
                 image=materialize_image(image, temps),
                 images=materialized_images or None,
                 dry_run=dry_run,
             )
+        except NamedModelUnknown as exc:
+            payload["success"] = True
+            payload["intent"] = "clarify"
+            payload["agent"] = "planner"
+            payload["message"] = unknown_model_message(
+                exc.name, exc.intent, exc.available
+            )
+            return _clean_payload(payload)
         finally:
             cleanup_materialized(temps)
 

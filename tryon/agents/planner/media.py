@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import io
 import os
+import re
 import tempfile
 from typing import Any, Iterable, List, Optional, Tuple
 
@@ -210,4 +211,39 @@ def specialist_error_message(raw: str) -> str:
             "OpenTryOn MCP server so uploads are downscaled to 2048px, then retry. "
             "If it still fails, attach images around 2000px on the long edge."
         )
-    return text
+    if "moonshot" in lowered or "moonshot_api_key" in lowered:
+        return (
+            "Image understanding needs a Moonshot key. Add MOONSHOT_API_KEY "
+            "to opentryon/.env, restart MCP, attach a photo, and ask again. "
+            "You can also name another understand model (for example qwen3.8-max) "
+            "if that key is set."
+        )
+    env_match = re.search(r"\b([A-Z][A-Z0-9_]+_API_KEY)\b", text)
+    if env_match and ("must be provided" in lowered or "environment variable" in lowered):
+        env_name = env_match.group(1)
+        return (
+            f"This model needs {env_name} in opentryon/.env. Add the key, "
+            "restart MCP, then try again."
+        )
+    return _pretty_provider_error(text)
+
+
+def _pretty_provider_error(text: str) -> str:
+    """Unescape and indent ClientError / dict payloads so chat can show the full log."""
+    import ast
+    import json
+
+    brace = text.find("{")
+    if brace == -1:
+        return text.replace("\\n", "\n").replace("\\t", "\t")
+    prefix = text[:brace].strip().rstrip(".:")
+    blob = text[brace:]
+    try:
+        parsed = ast.literal_eval(blob)
+    except Exception:
+        try:
+            parsed = json.loads(blob)
+        except Exception:
+            return text.replace("\\n", "\n").replace("\\t", "\t")
+    body = json.dumps(parsed, indent=2, default=str, ensure_ascii=False)
+    return f"{prefix}\n\n{body}" if prefix else body
