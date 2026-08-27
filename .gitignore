@@ -161,6 +161,9 @@ cython_debug/
 
 u2net_cloth_segm.pth
 u2net_segm.pth
+*.pth
+# Hugging Face / adapter downloads that land under the MCP cwd
+mcp-server/tryon/
 
 data
 outputs
