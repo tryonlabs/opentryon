@@ -89,6 +89,9 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
         ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
+        ("generate_muse_image", {"prompt": "editorial still", "dry_run": True}, False),
+        ("edit_muse_image", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, False),
+        ("vton_muse_image", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
         ("edit_qwen_image", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, False),
         ("vton_qwen_image", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
         ("generate_qwen_image_local", {"prompt": "editorial still", "dry_run": True}, True),
@@ -97,6 +100,8 @@ async def check_dry_run_calls() -> None:
         ("video_generate_veo", {"prompt": "a cat", "image": "cat.jpg", "dry_run": True}, False),
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
         ("video_generate_wan_3_0", {"prompt": "runway walk", "dry_run": True}, False),
+        ("video_generate_minimax_h3", {"prompt": "runway walk", "dry_run": True}, False),
+        ("video_generate_minimax_h3_local", {"prompt": "runway walk", "dry_run": True}, True),
         ("video_generate_seedance", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_luma_ray_3_2", {"prompt": "dolly shot", "dry_run": True}, False),
         ("video_generate_kling_v3", {"prompt": "fashion pan", "dry_run": True}, False),
@@ -200,6 +205,21 @@ async def check_list_and_set_api_keys() -> None:
     providers = listed["providers"]
     ids = [p["id"] for p in providers]
     assert ids[:4] == ["agent", "openai", "anthropic", "gemini"], ids[:4]
+    by_id = {p["id"]: p for p in providers}
+    assert "meta" in by_id and "minimax" in by_id, ids
+    assert by_id["meta"]["vars"][0]["name"] == "MODEL_API_KEY"
+    assert by_id["minimax"]["vars"][0]["name"] == "MINIMAX_API_KEY"
+    assert any(
+        u["service"] == "generate" and u["model"] == "muse-image"
+        for u in by_id["meta"]["unlocks"]
+    )
+    assert any(
+        u["service"] == "video-generate" and u["model"] == "minimax-h3"
+        for u in by_id["minimax"]["unlocks"]
+    )
+    allowed = server.config.allowed_env_names()
+    assert "MODEL_API_KEY" in allowed and "MINIMAX_API_KEY" in allowed
+    assert "META_MODEL_API_KEY" in allowed and "MUSE_API_KEY" in allowed
     gemini = next(p for p in providers if p["id"] == "gemini")
     assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"
     assert any(u["service"] == "generate" for u in gemini["unlocks"])
@@ -213,10 +233,18 @@ async def check_list_and_set_api_keys() -> None:
 
     previous_path = os.environ.get("OPENTRYON_ENV_PATH")
     previous_gemini = os.environ.get("GEMINI_API_KEY")
+    previous_model = os.environ.get("MODEL_API_KEY")
+    previous_meta_alias = os.environ.get("META_MODEL_API_KEY")
+    previous_muse_alias = os.environ.get("MUSE_API_KEY")
+    previous_minimax = os.environ.get("MINIMAX_API_KEY")
     with tempfile.TemporaryDirectory() as tmp:
         env_path = Path(tmp) / ".env"
         os.environ["OPENTRYON_ENV_PATH"] = str(env_path)
         os.environ.pop("GEMINI_API_KEY", None)
+        os.environ.pop("MODEL_API_KEY", None)
+        os.environ.pop("META_MODEL_API_KEY", None)
+        os.environ.pop("MUSE_API_KEY", None)
+        os.environ.pop("MINIMAX_API_KEY", None)
         try:
             before = (await list_tool.run({})).structured_content
             gemini_before = next(p for p in before["providers"] if p["id"] == "gemini")
@@ -247,6 +275,22 @@ async def check_list_and_set_api_keys() -> None:
             gemini_after = next(p for p in saved["providers"] if p["id"] == "gemini")
             assert gemini_after["configured"] is True
             assert server.config.is_configured("GEMINI_API_KEY") is True
+
+            muse_minimax = (
+                await set_tool.run(
+                    {"keys": {"MODEL_API_KEY": secret + "-muse", "MINIMAX_API_KEY": secret + "-h3"}}
+                )
+            ).structured_content
+            assert muse_minimax["success"] is True, muse_minimax
+            assert set(muse_minimax["updated"]) == {"MODEL_API_KEY", "MINIMAX_API_KEY"}
+            assert secret not in json.dumps(muse_minimax)
+            text = env_path.read_text(encoding="utf-8")
+            assert "MODEL_API_KEY=" in text and "MINIMAX_API_KEY=" in text
+            after_ids = {p["id"]: p for p in muse_minimax["providers"]}
+            assert after_ids["meta"]["configured"] is True
+            assert after_ids["minimax"]["configured"] is True
+            assert server.config.is_configured("MODEL_API_KEY") is True
+            assert server.config.is_configured("MINIMAX_API_KEY") is True
         finally:
             if previous_path is None:
                 os.environ.pop("OPENTRYON_ENV_PATH", None)
@@ -256,6 +300,22 @@ async def check_list_and_set_api_keys() -> None:
                 os.environ.pop("GEMINI_API_KEY", None)
             else:
                 os.environ["GEMINI_API_KEY"] = previous_gemini
+            if previous_model is None:
+                os.environ.pop("MODEL_API_KEY", None)
+            else:
+                os.environ["MODEL_API_KEY"] = previous_model
+            if previous_meta_alias is None:
+                os.environ.pop("META_MODEL_API_KEY", None)
+            else:
+                os.environ["META_MODEL_API_KEY"] = previous_meta_alias
+            if previous_muse_alias is None:
+                os.environ.pop("MUSE_API_KEY", None)
+            else:
+                os.environ["MUSE_API_KEY"] = previous_muse_alias
+            if previous_minimax is None:
+                os.environ.pop("MINIMAX_API_KEY", None)
+            else:
+                os.environ["MINIMAX_API_KEY"] = previous_minimax
     print("\u2713 list_api_keys / set_api_keys upsert host .env without echoing secrets")
 
 

@@ -456,13 +456,14 @@ Also available via the CLI/MCP registry:
 | `GrokImagineVideoAdapter` | `grok-imagine-video` | [Grok Imagine](grok-imagine) |
 | `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
 | `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
+| `MiniMaxH3Adapter` | `minimax-h3` | [MiniMax H3](minimax-h3) |
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
 | `SoraVideoAdapter` / `VeoAdapter` / `LumaAIVideoAdapter` | `sora` / `veo` / `luma-video` | existing pages |
 
-Local twins: `LTX25Adapter` (`ltx-2.5`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
+Local twins: `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
 
-Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`).
+Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video).
 
 ### `GeminiOmniAdapter`
 

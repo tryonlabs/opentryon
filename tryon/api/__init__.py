@@ -49,6 +49,8 @@ _LAZY_ATTRS = {
     "GrokImagineVideoAdapter": ".xai",
     "LTXVideoAdapter": ".ltx",
     "HailuoVideoAdapter": ".minimax",
+    "MiniMaxH3Adapter": ".minimax",
+    "MuseImageAdapter": ".muse",
     "WanVideoAdapter": ".wan",
     "RunwayVideoAdapter": ".runway",
 }

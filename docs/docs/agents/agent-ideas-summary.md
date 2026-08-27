@@ -243,7 +243,7 @@ We're building an open-source ecosystem together, and we need your help!
 
 1. **Explore Ideas**: Review all 24+ agent ideas
 2. **Choose Your Agent**: Pick an agent to build or contribute
-3. **Join Discussions**: Participate in GitHub Discussions
+3. **Open an issue**: Ask questions on [GitHub Issues](https://github.com/tryonlabs/opentryon/issues)
 4. **Start Building**: Begin implementation using OpenTryOn's SDK
 5. **Share Progress**: Keep the community updated
 6. **Contribute**: Submit your agent to the repository
@@ -257,7 +257,7 @@ We're building an open-source ecosystem together, and we need your help!
 5. **Foster Community**: Encourage collaboration and sharing
 
 :::info Need Help?
-- **GitHub Discussions**: [Ask questions](https://github.com/tryonlabs/opentryon/discussions)
+- **GitHub Issues**: [Ask questions](https://github.com/tryonlabs/opentryon/issues)
 - **Discord**: [Join the conversation](https://discord.gg/T5mPpZHxkY)
 - **Contributing Guide**: [Learn how to contribute](/community/contributing)
 :::

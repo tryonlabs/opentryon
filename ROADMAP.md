@@ -20,6 +20,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 │ ✓ Unified `opentryon` CLI + FastMCP (same registry / invoke_model)      │
 │ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
 │ ✓ v0.0.4: LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, Qwen3.8   │
+│ ✓ Unreleased: MiniMax H3 dual-path · Muse Image API (Video N/A)         │
 │ ✓ OpenAPI + Postman snapshots · docs · Gradio · tryon-studio via MCP    │
 │ ✓ Local extras: FLUX.2 Turbo, Kimi-VL, LLaVA, BEN2, LTX, Wan, Qwen3.8   │
 └─────────────────────────────────────────────────────────────────────────┘

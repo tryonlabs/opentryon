@@ -798,7 +798,7 @@ We're building an open-source ecosystem of Fashion AI Agents, and we need your h
 - **Pick an Agent**: Choose any agent from the list above
 - **Start Building**: Use your preferred framework (LangChain, AutoGPT, etc.)
 - **Share Progress**: Keep the community updated on your progress
-- **Get Support**: Ask questions in our Discord or GitHub Discussions
+- **Get Support**: Ask questions in our Discord or GitHub Issues
 
 **Getting Started**:
 1. Review the agent specifications above
@@ -889,7 +889,7 @@ Agents built with OpenTryOn can be deployed on TryOn AI platform for production 
 
 1. **Explore Ideas**: Review all 24+ agent ideas above
 2. **Choose Your Agent**: Pick an agent to build or contribute
-3. **Join Discussions**: Participate in GitHub Discussions
+3. **Open an issue**: Ask questions on [GitHub Issues](https://github.com/tryonlabs/opentryon/issues)
 4. **Start Building**: Begin implementation using OpenTryOn SDK
 5. **Share Progress**: Keep the community updated
 6. **Contribute**: Submit your agent to the repository
@@ -959,7 +959,7 @@ Share this vision on LinkedIn, Twitter, Discord, Telegram, and other platforms. 
 
 ## Questions?
 
-- **GitHub Discussions**: [Ask questions](https://github.com/tryonlabs/opentryon/discussions)
+- **GitHub Issues**: [Ask questions](https://github.com/tryonlabs/opentryon/issues)
 - **Discord**: [Join the conversation](https://discord.gg/T5mPpZHxkY)
 - **Email**: Contact us through GitHub
 

@@ -28,11 +28,11 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local` |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `qwen-image`, `qwen-image-local` (local) |
-| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local) |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `muse-image` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `llava-next` (local) |
-| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5` |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
 Models marked "local" run on your own GPU and require
@@ -122,6 +122,8 @@ opentryon video-generate --model p-video-animate --video driver.mp4 --image subj
 opentryon video-generate --model ltx-2.5-api --prompt "runway walk, soft light" --duration 8 --resolution 1920x1080
 opentryon video-generate --model ltx-2.5 --prompt "runway walk at dusk, camera tracking" --width 960 --height 544 --num-frames 121
 opentryon video-generate --model hailuo-2.3 --prompt "runway walk [Tracking shot]" --duration 6 --resolution 1080P
+opentryon video-generate --model minimax-h3 --prompt "runway walk at dusk" --duration 5 --resolution 2K --ratio 16:9
+opentryon video-generate --model minimax-h3-local --prompt "runway walk at dusk" --width 960 --height 544 --num-frames 124
 opentryon video-generate --model wan-api --prompt "runway walk" --duration 5 --resolution 720P
 opentryon video-generate --model wan-3.0 --prompt "runway walk at dusk" --duration 8 --resolution 720P
 opentryon video-generate --model wan-2.2 --prompt "runway walk at dusk" --num-frames 81
@@ -132,6 +134,9 @@ opentryon generate --model seedream --prompt "editorial sneaker still" --size 2K
 opentryon generate --model ideogram --prompt 'Poster "SUMMER 2026"' --rendering-speed QUALITY
 opentryon generate --model grok-imagine-image --prompt "street-art collage" --aspect-ratio 16:9
 opentryon generate --model p-image --prompt "luxury knitwear flatlay" --aspect-ratio 1:1
+opentryon generate --model muse-image --prompt "editorial runway still, dusk" --size 1024x1536
+opentryon edit --model muse-image --images look.jpg --prompt "black leather jacket, keep pose"
+opentryon vton --model muse-image --person-image model.jpg --garment-image garment.png
 opentryon edit --model p-image-edit --images photo.jpg --prompt "clean studio background"
 opentryon edit --model p-image-upscale --image photo.jpg --target 8
 
@@ -149,7 +154,7 @@ opentryon vton --model flux-vto \
 
 ## Local (GPU-only) Models
 
-Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `qwen-image-local`, `llava-next`, `ben2`, `ltx-2.5`, `wan-2.2`) need the
+Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `qwen-image-local`, `llava-next`, `ben2`, `ltx-2.5`, `minimax-h3-local`, `wan-2.2`) need the
 `local` extra:
 
 ```bash

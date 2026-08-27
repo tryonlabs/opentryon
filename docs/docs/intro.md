@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.4 adds LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, and Qwen3.8 understand (API + local) on top of the v0.0.3 CLI/MCP media surface.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.4 adds LTX-2.5, Hailuo 2.3, MiniMax H3 (API + local), Wan dual-path, Runway Gen-4.5, and Qwen3.8 understand (API + local) on top of the v0.0.3 CLI/MCP media surface.
 keywords:
   - virtual try-on
   - fashion AI
@@ -35,6 +35,9 @@ keywords:
   - Kimi K2.7 Code
   - Kimi K3
   - Moonshot AI
+  - MiniMax H3
+  - Muse Image
+  - Hailuo
   - multimodal understanding
   - opentryon CLI
   - MCP
@@ -59,7 +62,7 @@ OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on
 OpenTryOn gives you three ways to run fashion AI models:
 
 1. **CLI** — `opentryon <service> --model <model> …`
-2. **MCP server** — tools for Cursor, Claude, and [tryon-studio](https://github.com/tryonlabs/tryon-studio)
+2. **MCP server** — tools for Cursor, Claude, and [tryon-studio](getting-started/mcp)
 3. **Python APIs** — `tryon.api` adapters + `invoke_model()`
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
@@ -73,13 +76,13 @@ Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 - **Model integration guidelines** for Path A (API) vs Path B (local)
 
 ### Virtual try-on
-Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, Nano Banana 2 Lite composition, and **Qwen-Image** (API + local).
+Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, Nano Banana 2 Lite composition, **Qwen-Image** (API + local), and **Muse Image** composition.
 
 ### Image generate / edit
-Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / Edit / Upscale**, **Qwen-Image** (DashScope 3.0 + local 2512/Edit-2511), plus local FLUX.2-dev Turbo.
+Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / Edit / Upscale**, **Qwen-Image** (DashScope 3.0 + local 2512/Edit-2511), **Muse Image**, plus local FLUX.2-dev Turbo.
 
 ### Video
-Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (2.x API + **Wan 3.0** API + local 2.2), **Runway Gen-4.5**.
+Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3** (API + local), **Wan** (2.x API + **Wan 3.0** API + local 2.2), **Runway Gen-4.5**.
 
 ### Understanding & other
 **Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.

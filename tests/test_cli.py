@@ -360,6 +360,44 @@ def check_qwen_image_requires_prompt_and_tryon_inputs():
     print("\u2713 QwenImageAdapter rejects empty prompt and missing try-on garment")
 
 
+def check_minimax_h3_requires_prompt():
+    from tryon.api.minimax import MiniMaxH3Adapter
+    from tryon.models.minimax_h3.adapter import snap_num_frames
+
+    adapter = MiniMaxH3Adapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_text_to_video(prompt="")
+    except ValueError as e:
+        assert "prompt" in str(e)
+    else:
+        raise AssertionError("expected ValueError when MiniMax H3 prompt is empty")
+
+    assert snap_num_frames(120) == 124
+    assert snap_num_frames(124) == 124
+    assert snap_num_frames(400) == 362
+    print("\u2713 MiniMaxH3Adapter rejects empty prompt; local frame snap stays on 17*n+5")
+
+
+def check_muse_image_requires_prompt():
+    from tryon.api.muse import MuseImageAdapter
+
+    adapter = MuseImageAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_text_to_image(prompt="")
+    except ValueError as e:
+        assert "prompt" in str(e)
+    else:
+        raise AssertionError("expected ValueError when Muse Image prompt is empty")
+
+    try:
+        adapter.generate_virtual_tryon(person="data/model-1.jpg", garment=None)
+    except (ValueError, TypeError) as e:
+        assert "Garment" in str(e) or "garment" in str(e) or "required" in str(e).lower()
+    else:
+        raise AssertionError("expected error when Muse Image try-on garment is missing")
+    print("\u2713 MuseImageAdapter rejects empty prompt and missing try-on garment")
+
+
 def check_kimi_k26_real_call():
     if not os.getenv("MOONSHOT_API_KEY"):
         print("\u26a0 skipping real API test: MOONSHOT_API_KEY not set")
@@ -387,6 +425,14 @@ def check_new_media_models_dry_runs():
          "IdeogramAdapter", "generate_text_to_image"),
         (["generate", "--model", "grok-imagine-image", "--prompt", "studio product shot"],
          "GrokImagineImageAdapter", "generate_text_to_image"),
+        (["generate", "--model", "muse-image", "--prompt", "editorial fashion still"],
+         "MuseImageAdapter", "generate_text_to_image"),
+        (["edit", "--model", "muse-image", "--prompt", "swap outfit",
+          "--images", "data/model-1.jpg"],
+         "MuseImageAdapter", "generate_image_edit"),
+        (["vton", "--model", "muse-image",
+          "--person-image", "data/model-1.jpg", "--garment-image", "data/garment.png"],
+         "MuseImageAdapter", "generate_virtual_tryon"),
         (["edit", "--model", "seedream", "--prompt", "swap outfit",
           "--images", "data/model-1.jpg"],
          "SeedreamAdapter", "generate_image_edit"),
@@ -445,6 +491,16 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "hailuo-2.3", "--prompt", "animate",
           "--image", "data/model-1.jpg"],
          "HailuoVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "minimax-h3", "--prompt", "runway walk"],
+         "MiniMaxH3Adapter", "generate_text_to_video"),
+        (["video-generate", "--model", "minimax-h3", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "MiniMaxH3Adapter", "generate_image_to_video"),
+        (["video-generate", "--model", "minimax-h3-local", "--prompt", "runway walk"],
+         "MiniMaxH3LocalAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "minimax-h3-local", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "MiniMaxH3LocalAdapter", "generate_image_to_video"),
         (["video-generate", "--model", "wan-api", "--prompt", "runway walk"],
          "WanVideoAdapter", "generate_text_to_video"),
         (["video-generate", "--model", "wan-api", "--prompt", "animate",
@@ -473,7 +529,7 @@ def check_new_media_models_dry_runs():
         printed = buf.getvalue()
         assert code == 0, printed
         assert expect_cls in printed and f".{expect_method}(" in printed, printed
-    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2/Pruna/LTX/Hailuo/Wan/Runway --dry-run calls resolve")
+    print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2/Pruna/LTX/Hailuo/MiniMax-H3/Muse/Wan/Runway --dry-run calls resolve")
 
 
 if __name__ == "__main__":
@@ -495,5 +551,7 @@ if __name__ == "__main__":
     check_kimi_understand_requires_image_or_video()
     check_qwen_understand_requires_image_or_video()
     check_qwen_image_requires_prompt_and_tryon_inputs()
+    check_minimax_h3_requires_prompt()
+    check_muse_image_requires_prompt()
     check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")

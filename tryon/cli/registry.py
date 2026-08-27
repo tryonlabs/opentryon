@@ -116,6 +116,51 @@ def _qwen_image_common_args() -> List[Arg]:
     ]
 
 
+def _muse_image_common_args() -> List[Arg]:
+    return [
+        Arg(("--n",), "n", type=int, default=1, help="Number of images 1-10"),
+        Arg(
+            ("--size",),
+            "size",
+            help='Aspect hint as WxH e.g. 1024x1536 (not exact pixels; omit for default)',
+        ),
+        Arg(
+            ("--output-format",),
+            "output_format",
+            default="webp",
+            choices=["webp", "png", "jpeg"],
+        ),
+        Arg(
+            ("--reasoning-strength",),
+            "reasoning_strength",
+            default="high",
+            choices=["high", "low"],
+            help="high = self-refine (default); low = single pass",
+        ),
+        Arg(
+            ("--no-image-search",),
+            "enable_image_search",
+            action="store_false",
+            default=True,
+            help="Disable built-in visual web search",
+        ),
+        Arg(
+            ("--no-web-search",),
+            "enable_web_search",
+            action="store_false",
+            default=True,
+            help="Disable built-in factual web search",
+        ),
+        Arg(
+            ("--no-shell",),
+            "enable_shell",
+            action="store_false",
+            default=True,
+            help="Disable built-in code/layout tool",
+        ),
+    ]
+
+
 def _qwen_image_local_sample_args(*, t2i: bool) -> List[Arg]:
     args: List[Arg] = []
     if t2i:
@@ -326,6 +371,28 @@ _VTON = {
             *_qwen_image_local_sample_args(t2i=False),
         ],
     ),
+    "muse-image": ModelSpec(
+        id="muse-image",
+        label="Muse Image (Meta Model API, composition try-on)",
+        import_path="tryon.api.muse",
+        class_name="MuseImageAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        env_hint="MODEL_API_KEY",
+        notes=(
+            "Person + garment composition via Muse Image multi-ref edit. "
+            "Not a dedicated garment-fit model. Same MODEL_API_KEY as generate/edit --model muse-image. "
+            "Muse Video has no API yet."
+        ),
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_muse_image_common_args(),
+        ],
+    ),
     "fashn-tryon-v1.6": ModelSpec(
         id="fashn-tryon-v1.6",
         label="FASHN Virtual Try-On v1.6",
@@ -452,6 +519,23 @@ _GENERATE = {
             Arg(("--background",), "background", default="auto"),
             Arg(("--n",), "n", type=int, default=1, help="Number of images"),
             Arg(("--model-version",), "model_version", target="init", default="gpt-image-1.5"),
+        ],
+    ),
+    "muse-image": ModelSpec(
+        id="muse-image",
+        label="Muse Image (Meta Model API)",
+        import_path="tryon.api.muse",
+        class_name="MuseImageAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        env_hint="MODEL_API_KEY",
+        notes=(
+            "First-party Meta Muse Image (muse-image-1.0). Agentic search/code on by default. "
+            "No open weights. Muse Video has no developer API yet."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_muse_image_common_args(),
         ],
     ),
     "luma-image": ModelSpec(
@@ -660,6 +744,21 @@ _EDIT = {
             Arg(("--input-fidelity",), "input_fidelity", default="low", choices=["low", "high"]),
             Arg(("--n",), "n", type=int, default=1),
             Arg(("--model-version",), "model_version", target="init", default="gpt-image-1.5"),
+        ],
+    ),
+    "muse-image": ModelSpec(
+        id="muse-image",
+        label="Muse Image (Meta Model API, edit / multi-ref)",
+        import_path="tryon.api.muse",
+        class_name="MuseImageAdapter",
+        method="generate_image_edit",
+        output_kind="images",
+        env_hint="MODEL_API_KEY",
+        notes="One or more reference images + instruction. Same MODEL_API_KEY as generate --model muse-image.",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True, help="One or more input images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_muse_image_common_args(),
         ],
     ),
     "seedream": ModelSpec(
@@ -1289,8 +1388,9 @@ _VIDEO_GENERATE = {
         alt_image_dest="image",
         env_hint="MINIMAX_API_KEY",
         notes=(
-            "First-party MiniMax Hailuo 2.3 T2V/I2V. No open weights. "
-            "Camera moves via [Tracking shot] style commands in the prompt."
+            "First-party MiniMax Hailuo 2.3 T2V/I2V. No open weights for 2.3. "
+            "Camera moves via [Tracking shot] style commands in the prompt. "
+            "H3 dual-path is --model minimax-h3 / minimax-h3-local."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", help="Text prompt (required for T2V)"),
@@ -1306,6 +1406,94 @@ _VIDEO_GENERATE = {
             Arg(("--resolution",), "resolution", default="768P", choices=["512P", "720P", "768P", "1080P"]),
             Arg(("--no-prompt-optimizer",), "prompt_optimizer", action="store_false", default=True),
             Arg(("--fast-pretreatment",), "fast_pretreatment", action="store_true"),
+        ],
+    ),
+    "minimax-h3": ModelSpec(
+        id="minimax-h3",
+        label="MiniMax H3 (official API)",
+        import_path="tryon.api.minimax",
+        class_name="MiniMaxH3Adapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="MINIMAX_API_KEY",
+        notes=(
+            "First-party MiniMax H3 (Hailuo 3) via V2 video_generation. "
+            "T2V / first-last I2V with native stereo audio, 4–15s, 768P/2K. "
+            "Same MINIMAX_API_KEY as hailuo-2.3. Local twin: --model minimax-h3-local."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt (required, max 7000 chars)"),
+            Arg(("--image",), "image", help="First-frame image (switches to I2V)", alt_only=True),
+            Arg(
+                ("--last-frame",),
+                "last_frame",
+                help="Last-frame image (I2V last-only, or pair with --image)",
+            ),
+            Arg(
+                ("--duration",),
+                "duration",
+                type=int,
+                default=5,
+                choices=list(range(4, 16)),
+                help="Seconds 4-15",
+            ),
+            Arg(
+                ("--resolution",),
+                "resolution",
+                default="2K",
+                choices=["768P", "2K"],
+            ),
+            Arg(
+                ("--ratio",),
+                "ratio",
+                default="16:9",
+                choices=["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+                help="Required for T2V (cannot be adaptive). Ignored for I2V.",
+            ),
+        ],
+    ),
+    "minimax-h3-local": ModelSpec(
+        id="minimax-h3-local",
+        label="MiniMax H3 (local Diffusers)",
+        import_path="tryon.models.minimax_h3",
+        class_name="MiniMaxH3LocalAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        extra="local",
+        notes=(
+            "Open weights via Hugging Face Diffusers ModularPipeline (CUDA + diffusers from main). "
+            "768p H3-Base only — 2K regenerate is not open-sourced. "
+            "Community License excludes US/EU/UK/South Korea for local weights."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--image",), "image", help="Optional first-frame still (switches to I2V)", alt_only=True),
+            Arg(
+                ("--last-frame",),
+                "last_frame",
+                call_name="last_image",
+                help="Optional last-frame still",
+            ),
+            Arg(("--width",), "width", type=int, default=960, help="Width (divisible by 32)"),
+            Arg(("--height",), "height", type=int, default=544, help="Height (divisible by 32)"),
+            Arg(
+                ("--num-frames",),
+                "num_frames",
+                type=int,
+                default=124,
+                help="Frame count; snapped to 17*n+5 in the ~5–15s window at 24fps (e.g. 124)",
+            ),
+            Arg(("--seed",), "seed", type=int, help="RNG seed"),
+            Arg(
+                ("--model-id",),
+                "model_id",
+                target="init",
+                help="HF repo id or local path (default MiniMaxAI/MiniMax-H3)",
+            ),
         ],
     ),
     "wan-api": ModelSpec(

@@ -17,6 +17,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎨 Image — Muse Image (Meta Model API)
+- **Muse Image** (`MuseImageAdapter` / CLI `--model muse-image`): first-party Meta Model API `muse-image-1.0`
+  - Same `MODEL_API_KEY` (aliases `META_MODEL_API_KEY` / `MUSE_API_KEY`)
+  - T2I, I2I / multi-ref compose, composition VTON; $0.01/image; agentic search on by default
+  - **No open weights.** Muse Glimmer is a separate text VLM, not an image generator
+  - MCP tools `generate_muse_image`, `edit_muse_image`, `vton_muse_image`
+  - Docs: `docs/docs/api-reference/muse-image.md`
+- **Muse Video is not integrable yet.** Consumer preview only ([announcement](https://ai.meta.com/blog/introducing-muse-image-muse-video-msl/)); Meta Model API has video *understanding* (Muse Spark), not video *generation*. No `--model muse-video`. Docs: `docs/docs/api-reference/muse-video.md`
+
+#### 🎬 Video — MiniMax H3 (API + local)
+- **MiniMax H3** (`MiniMaxH3Adapter` / CLI `--model minimax-h3`): first-party V2 `POST /v2/video_generation`
+  - Same `MINIMAX_API_KEY` as Hailuo 2.3; **does not** reuse the Hailuo 2.3 V1 adapter
+  - T2V, first/last-frame I2V, optional reference-to-video in Python; 4–15s, 768P/2K, native stereo audio
+  - MCP tool `video_generate_minimax_h3`
+  - Docs: `docs/docs/api-reference/minimax-h3.md`
+- **MiniMax H3 local Diffusers** (`MiniMaxH3LocalAdapter` / CLI `--model minimax-h3-local`): open-weight dual-path
+  - `MiniMaxAI/MiniMax-H3` via `ModularPipeline` (`t2va` / `fl2va`); 768p H3-Base (2K regenerate is not open-sourced)
+  - CUDA + Diffusers from main; ComponentsManager CPU offload by default
+  - Community License excludes US/EU/UK/South Korea for local weights; hosted API is globally available
+  - MCP tool `video_generate_minimax_h3_local`
+  - Docs: `docs/docs/local-models/minimax-h3.md`
+
 #### 🤖 Planner — catalog-grounded help
 - **`help` intent** on `planner_agent`: greetings and “what can you do?” are answered from the live `tryon.cli.registry` catalog (not a vector RAG store). `out_of_scope` no longer returns “no fashion-related inputs”.
 

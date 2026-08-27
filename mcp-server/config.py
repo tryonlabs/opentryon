@@ -30,7 +30,14 @@ _EXTRA_ENV_NAMES = (
     "BYTEPLUS_ARK_API_KEY",
     "WAN_API_KEY",
     "RUNWAY_API_KEY",
+    "META_MODEL_API_KEY",
+    "MUSE_API_KEY",
 )
+
+# Registry env_hint name -> names that also count as configured (adapter aliases).
+_VAR_ALIASES: Dict[str, Tuple[str, ...]] = {
+    "MODEL_API_KEY": ("MODEL_API_KEY", "META_MODEL_API_KEY", "MUSE_API_KEY"),
+}
 
 # (id, label, docs_url, env var names, optional notes). Order is the Connect rail.
 _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
@@ -62,6 +69,21 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://aistudio.google.com/app/apikey",
         ("GEMINI_API_KEY",),
         "Also used by Studio chat when OPENTRYON_AGENT_LLM_PROVIDER=google.",
+    ),
+    (
+        "meta",
+        "Muse Image (Meta)",
+        "https://dev.meta.ai/docs/authentication",
+        ("MODEL_API_KEY",),
+        "Official env name for Muse Image (generate, edit, composition VTON). "
+        "META_MODEL_API_KEY / MUSE_API_KEY also work. Muse Video has no API yet.",
+    ),
+    (
+        "minimax",
+        "MiniMax (Hailuo 2.3 / H3)",
+        "https://platform.minimax.io/user-center/basic-information/interface-key",
+        ("MINIMAX_API_KEY",),
+        "One key for Hailuo 2.3 and MiniMax H3 video. Local H3 needs no key.",
     ),
     (
         "moonshot",
@@ -162,13 +184,6 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "",
     ),
     (
-        "minimax",
-        "MiniMax",
-        "https://platform.minimax.io/user-center/basic-information/interface-key",
-        ("MINIMAX_API_KEY",),
-        "",
-    ),
-    (
         "runway",
         "Runway",
         "https://dev.runwayml.com/",
@@ -202,11 +217,12 @@ def is_configured(env_hint: Optional[str]) -> Optional[bool]:
     names = env_names_from_hint(env_hint)
     if not names:
         return None
-    return all(os.getenv(name) for name in names)
+    return all(_is_var_configured(name) for name in names)
 
 
 def _is_var_configured(name: str) -> bool:
-    return bool(os.getenv(name))
+    aliases = _VAR_ALIASES.get(name, (name,))
+    return any(bool(os.getenv(alias)) for alias in aliases)
 
 
 def allowed_env_names() -> frozenset[str]:

@@ -6,7 +6,7 @@ description: First-party MiniMax Hailuo 2.3 text-to-video and image-to-video.
 
 # Hailuo 2.3 (MiniMax official API)
 
-First-party [MiniMax](https://platform.minimax.io/) Hailuo 2.3 video generation. **API only** — no open-weight / local deployment path exists for Hailuo.
+First-party [MiniMax](https://platform.minimax.io/) Hailuo 2.3 video generation. **API only for this model** — Hailuo 2.3 has no open weights. MiniMax **H3** (Hailuo 3) is a separate dual-path: [API](./minimax-h3.md) (`--model minimax-h3`) and [local Diffusers](../local-models/minimax-h3.md) (`--model minimax-h3-local`).
 
 | CLI model | API model | Modes |
 |---|---|---|

@@ -124,16 +124,7 @@ const config: Config = {
       tagName: 'link',
       attributes: {
         rel: 'canonical',
-        href: 'https://tryonlabs.github.io',
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'alternate',
-        type: 'application/rss+xml',
-        title: 'OpenTryOn Documentation',
-        href: 'https://tryonlabs.github.io/opentryon/feed.xml',
+        href: 'https://tryonlabs.github.io/opentryon',
       },
     },
   ],

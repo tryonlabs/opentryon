@@ -48,6 +48,12 @@ MOONSHOT_API_KEY=your_moonshot_api_key
 
 # Alibaba DashScope (Wan video, Qwen3.8-Max understand, Qwen-Image generate/edit/VTON)
 DASHSCOPE_API_KEY=your_dashscope_api_key
+
+# MiniMax Hailuo 2.3 + MiniMax H3 video (same key; H3 uses V2)
+MINIMAX_API_KEY=your_minimax_api_key
+
+# Meta Model API (Muse Image generate/edit/vton)
+MODEL_API_KEY=your_meta_model_api_key
 ```
 
 ### Datasets (Optional - Only if using HuggingFace datasets)
@@ -160,6 +166,23 @@ from tryon.datasets import FashionMNIST
 
    CLI: `opentryon generate|edit|vton --model qwen-image-local`. See
    [Qwen-Image local](../local-models/qwen-image.md).
+
+### MiniMax (Hailuo 2.3 + H3)
+
+1. Sign up at [MiniMax Open Platform](https://platform.minimax.io/)
+2. Create an interface key from [API keys](https://platform.minimax.io/user-center/basic-information/interface-key)
+3. Add to `.env`: `MINIMAX_API_KEY=your_key`
+
+   Same key covers `video-generate --model hailuo-2.3` (V1) and `video-generate --model minimax-h3` (V2 H3). H3 on the API is billed as pay-as-you-go video.
+
+   Local open-weight twin (`pip install opentryon[local]`, CUDA, Diffusers from main): `--model minimax-h3-local`. The Community License for those weights excludes US/EU/UK/South Korea unless separately authorized. See [MiniMax H3 local](../local-models/minimax-h3.md).
+
+### Meta Model API (Muse Image)
+
+1. Create a key in the [Model API dashboard](https://dev.meta.ai/docs/authentication)
+2. Add to `.env`: `MODEL_API_KEY=your_key` (aliases: `META_MODEL_API_KEY`, `MUSE_API_KEY`)
+
+   Covers `generate|edit|vton --model muse-image`. **Muse Video has no developer API or open weights** yet.
 
 ## Configuration Options
 

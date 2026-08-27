@@ -19,7 +19,7 @@ OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) serv
 
 ## Why it matters
 
-- Agents in **Cursor**, **Claude Desktop**, or **[tryon-studio](https://github.com/tryonlabs/tryon-studio)** can call try-on, generate, edit, video, understand, and bg-remove tools directly. Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
+- Agents in **Cursor**, **Claude Desktop**, or **tryon-studio** can call try-on, generate, edit, video, understand, and bg-remove tools directly. Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
 - New registry models appear as tools with **zero hand-written MCP wrappers**
 - CLI and MCP cannot drift — one runner, one registry
 
@@ -63,6 +63,30 @@ capability notes: [Qwen3.8-Max](../api-reference/qwen3.8.md),
 [Qwen-Image](../api-reference/qwen-image.md), and
 [Qwen3.8 local](../local-models/qwen3.8.md).
 
+## MiniMax H3 tools (video)
+
+Same `MINIMAX_API_KEY` as Hailuo 2.3. H3 is a **dual path** (hosted V2 vs local Diffusers); Hailuo 2.3 stays API-only.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `video_generate_minimax_h3` | MiniMax H3 official V2 API (T2V / I2V, 4–15s, 768P/2K) | `MINIMAX_API_KEY` |
+| `video_generate_minimax_h3_local` | Open-weight `MiniMaxAI/MiniMax-H3` (768p H3-Base) | `pip install opentryon[local]` + CUDA + Diffusers from main |
+| `video_generate_hailuo_2_3` | MiniMax Hailuo 2.3 (V1) | `MINIMAX_API_KEY` |
+
+See [MiniMax H3 API](../api-reference/minimax-h3.md) and [MiniMax H3 local](../local-models/minimax-h3.md).
+
+## Muse Image tools (generate / edit / VTON)
+
+First-party Meta Model API (`MODEL_API_KEY`). **No local twin.** Muse Video is not on the API yet.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `generate_muse_image` | Muse Image T2I (`muse-image-1.0`) | `MODEL_API_KEY` |
+| `edit_muse_image` | Muse Image I2I / multi-ref | `MODEL_API_KEY` |
+| `vton_muse_image` | Person + garment composition | `MODEL_API_KEY` |
+
+See [Muse Image](../api-reference/muse-image.md) and [Muse Video (not available)](../api-reference/muse-video.md).
+
 ## Quick start
 
 ```bash
@@ -99,5 +123,8 @@ Full tool tables and architecture notes: [`mcp-server/README.md`](https://github
 - [Qwen-Image generate / edit / VTON](../api-reference/qwen-image)
 - [Qwen-Image local model](../local-models/qwen-image)
 - [Qwen3.8 local model](../local-models/qwen3.8)
+- [MiniMax H3 API](../api-reference/minimax-h3)
+- [MiniMax H3 local](../local-models/minimax-h3)
+- [Muse Image](../api-reference/muse-image)
 - [Adding a new model](../advanced/new-model-checklist)
 - [Configuration](configuration)

@@ -132,6 +132,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `vton_nano_banana_2_lite` | Nano Banana 2 Lite (composition try-on) | `GEMINI_API_KEY` |
 | `vton_qwen_image` | Qwen-Image 3.0 (person + garment I2I) | `DASHSCOPE_API_KEY` |
 | `vton_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
+| `vton_muse_image` | Muse Image (composition try-on) | `MODEL_API_KEY` |
 
 ### generate -- Text-to-image generation
 
@@ -151,6 +152,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_p_image` | Pruna P-Image | `PRUNA_API_KEY` |
 | `generate_qwen_image` | Qwen-Image 3.0 | `DASHSCOPE_API_KEY` |
 | `generate_qwen_image_local` | Qwen-Image-2512 (open-weight, local) | local/GPU |
+| `generate_muse_image` | Muse Image (Meta Model API) | `MODEL_API_KEY` |
 
 ### edit -- Image editing (image + instruction -> image)
 
@@ -168,6 +170,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_p_image_upscale` | Pruna P-Image-Upscale | `PRUNA_API_KEY` |
 | `edit_qwen_image` | Qwen-Image 3.0 (I2I, 1–3 refs) | `DASHSCOPE_API_KEY` |
 | `edit_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
+| `edit_muse_image` | Muse Image (Meta Model API, edit / multi-ref) | `MODEL_API_KEY` |
 
 ### understand -- Image & video understanding / captioning
 
@@ -220,6 +223,8 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_ltx_2_5_api` | LTX-2.5 (official API) | `LTX_API_KEY` |
 | `video_generate_ltx_2_5` | LTX-2.5 (local Diffusers) | local/GPU |
 | `video_generate_hailuo_2_3` | MiniMax Hailuo 2.3 | `MINIMAX_API_KEY` |
+| `video_generate_minimax_h3` | MiniMax H3 (official API) | `MINIMAX_API_KEY` |
+| `video_generate_minimax_h3_local` | MiniMax H3 (local Diffusers) | local/GPU |
 | `video_generate_wan_api` | Alibaba Wan 2.x (DashScope) | `DASHSCOPE_API_KEY` |
 | `video_generate_wan_3_0` | Alibaba Wan 3.0 (DashScope) | `DASHSCOPE_API_KEY` |
 | `video_generate_wan_2_2` | Wan 2.2 (local Diffusers) | local/GPU |

@@ -15,6 +15,7 @@ Available Models:
     - QwenImageLocalAdapter: Qwen-Image-2512 T2I + Qwen-Image-Edit-2511
       I2I/VTON, the local counterpart to the hosted qwen-image DashScope API
     - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
+    - MiniMaxH3LocalAdapter: MiniMax H3 open-weight text/image-to-video with stereo audio
     - Wan22Adapter: Wan 2.2 open-weight text/image-to-video (Diffusers)
 
 Examples:
@@ -48,6 +49,7 @@ Requirements:
 from .flux2_turbo import Flux2TurboAdapter
 from .kimi_vl import KimiVLAdapter
 from .ltx25 import LTX25Adapter
+from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
 from .qwen_image import QwenImageLocalAdapter
 from .wan22 import Wan22Adapter
@@ -56,6 +58,7 @@ __all__ = [
     "Flux2TurboAdapter",
     "KimiVLAdapter",
     "LTX25Adapter",
+    "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",
     "QwenImageLocalAdapter",
     "Wan22Adapter",
