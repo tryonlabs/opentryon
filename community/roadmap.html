@@ -8,10 +8,9 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"OpenTryOn Documentation","description":"Complete documentation for OpenTryOn - an open-source AI toolkit for fashion technology and virtual try-on applications","author":{"@type":"Organization","name":"TryOn Labs"},"publisher":{"@type":"Organization","name":"TryOn Labs","logo":{"@type":"ImageObject","url":"https://tryonlabs.github.io/opentryon/img/logo.png"}},"datePublished":"2024-01-01","dateModified":"2025-11-19"}</script>
 <meta name="description" content="OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), datasets (Fashion-MNIST, VITON-HD), garment segmentation, pose estimation, and TryOnDiffusion implementation.">
 <meta name="generator" content="Docusaurus">
-<link rel="canonical" href="https://tryonlabs.github.io">
-<link rel="alternate" type="application/rss+xml" title="OpenTryOn Documentation" href="https://tryonlabs.github.io/opentryon/feed.xml"><link rel="stylesheet" href="/opentryon/assets/css/styles.0ecc2d9e.css">
-<script src="/opentryon/assets/js/runtime~main.ef9bb82c.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.141478cc.js" defer="defer"></script>
+<link rel="canonical" href="https://tryonlabs.github.io/opentryon"><link rel="stylesheet" href="/opentryon/assets/css/styles.0ecc2d9e.css">
+<script src="/opentryon/assets/js/runtime~main.b061c0ce.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.59f0ae4c.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -29,10 +28,12 @@
 <li class="">Unified <strong>CLI</strong> + <strong>FastMCP</strong> (shared registry / <code>invoke_model</code>)</li>
 <li class="">Broad cloud try-on / generate / edit / video / understand adapters</li>
 <li class=""><strong>v0.0.4:</strong> LTX-2.5 (API + local), Hailuo 2.3, Wan (API + local 2.2), Runway Gen-4.5, Qwen3.8 (API + local)</li>
+<li class="">MiniMax H3 dual-path (official V2 API + local Diffusers) on Unreleased</li>
+<li class="">Muse Image on Unreleased (Meta Model API). Muse Video: no API/weights yet</li>
 <li class="">Qwen-Image generate / edit / VTON (DashScope 3.0 + local Diffusers 2512 / Edit-2511)</li>
 <li class=""><strong>OpenAPI / Postman</strong> media snapshots, docs, Gradio demos</li>
 <li class="">Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2, LTX-2.5, Wan 2.2, Qwen3.8, Qwen-Image)</li>
-<li class="">Web UI in <a href="https://github.com/tryonlabs/tryon-studio" target="_blank" rel="noopener noreferrer" class=""><code>tryon-studio</code></a> over MCP</li>
+<li class="">Web UI in <strong>tryon-studio</strong> over <a class="" href="/opentryon/getting-started/mcp">MCP</a></li>
 </ul>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="next--fashion-ml-toolkit-core--v010">Next — Fashion ML Toolkit Core → v0.1.0<a href="#next--fashion-ml-toolkit-core--v010" class="hash-link" aria-label="Direct link to Next — Fashion ML Toolkit Core → v0.1.0" title="Direct link to Next — Fashion ML Toolkit Core → v0.1.0" translate="no">​</a></h2>
 <table><thead><tr><th>Slice</th><th>Focus</th></tr></thead><tbody><tr><td><strong>A — Data &amp; prompts</strong></td><td>Versioned prompt packs, train-pack schema, <code>data</code> CLI helpers</td></tr><tr><td><strong>B — Train</strong></td><td>Brand-style LoRA + one VTON/local LoRA path; <code>opentryon train</code></td></tr><tr><td><strong>C — Eval</strong></td><td>Fashion Bench v0, side-by-side reports; <code>opentryon eval</code></td></tr><tr><td><strong>D — Local VTON</strong></td><td>Productize <strong>one</strong> of CatVTON / IDM-VTON / OOTDiffusion</td></tr><tr><td><strong>E — Workflows</strong></td><td>MCP-native Try-On QA <em>or</em> Fine-Tune Coach (task agent, not chatbot)</td></tr><tr><td><strong>F — Efficiency card</strong></td><td>VRAM/latency table for the path we actually ship</td></tr></tbody></table>
