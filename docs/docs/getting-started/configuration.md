@@ -54,6 +54,9 @@ MINIMAX_API_KEY=your_minimax_api_key
 
 # Meta Model API (Muse Image generate/edit/vton)
 MODEL_API_KEY=your_meta_model_api_key
+
+# Pruna AI (P-Image, P-Image-Ideogram, P-Image-Edit, try-on, P-Video family)
+PRUNA_API_KEY=your_pruna_api_key
 ```
 
 ### Datasets (Optional - Only if using HuggingFace datasets)

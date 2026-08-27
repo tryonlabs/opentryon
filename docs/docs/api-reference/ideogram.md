@@ -12,6 +12,8 @@ keywords:
 
 Hosted Ideogram 4.0 via [`POST /v1/ideogram-v4/generate`](https://developer.ideogram.ai/ideogram-api/api-overview).
 
+For **P-Image-Ideogram** (Pruna × Ideogram, five `thinking` levels), use [`generate --model p-image-ideogram`](p-image-ideogram) and `PRUNA_API_KEY` — that is a different model, not this Ideogram 4.0 adapter.
+
 ## Environment
 
 ```bash

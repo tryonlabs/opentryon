@@ -29,7 +29,7 @@ opentryon <service> --model <model> [params...]
 | Service | What it does | Models |
 |---|---|---|
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `muse-image` |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `llava-next` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5` |
@@ -134,6 +134,7 @@ opentryon generate --model seedream --prompt "editorial sneaker still" --size 2K
 opentryon generate --model ideogram --prompt 'Poster "SUMMER 2026"' --rendering-speed QUALITY
 opentryon generate --model grok-imagine-image --prompt "street-art collage" --aspect-ratio 16:9
 opentryon generate --model p-image --prompt "luxury knitwear flatlay" --aspect-ratio 1:1
+opentryon generate --model p-image-ideogram --prompt 'Poster "ATELIER NOIR"' --thinking high --image-size 2K
 opentryon generate --model muse-image --prompt "editorial runway still, dusk" --size 1024x1536
 opentryon edit --model muse-image --images look.jpg --prompt "black leather jacket, keep pose"
 opentryon vton --model muse-image --person-image model.jpg --garment-image garment.png

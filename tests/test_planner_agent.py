@@ -320,6 +320,11 @@ def check_bind_filters_registry_slice():
     named = match_named_model("use wan-3.0 please", fashion)
     assert named is not None and named.model == "wan-3.0" and named.service == "video-generate"
 
+    pii = pick_model("generate", "poster with p-image-ideogram")
+    assert pii is not None and pii.model == "p-image-ideogram" and pii.service == "generate"
+    ideo = pick_model("generate", "poster with ideogram")
+    assert ideo is not None and ideo.model == "ideogram"
+
     picked = pick_model("video", "runway gen 4.5 clip")
     assert picked is not None and picked.model == "runway-gen4.5"
     default_vton = pick_model("vton", "try this on")

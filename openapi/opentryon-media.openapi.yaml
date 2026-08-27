@@ -243,7 +243,7 @@ paths:
   /v1/predictions:
     post:
       tags: [Pruna]
-      summary: Create Pruna prediction (Model header selects p-image / p-image-edit / p-image-upscale / p-video / p-video-replace / p-video-avatar / p-video-animate / …)
+      summary: Create Pruna prediction (Model header selects p-image / p-image-ideogram / p-image-edit / p-image-upscale / p-video / p-video-replace / p-video-avatar / p-video-animate / …)
       parameters:
         - in: header
           name: apikey
@@ -257,6 +257,7 @@ paths:
             type: string
             enum:
               - p-image
+              - p-image-ideogram
               - p-image-edit
               - p-image-upscale
               - p-image-try-on
@@ -287,6 +288,15 @@ paths:
                   input:
                     prompt: Editorial fashion still
                     aspect_ratio: "3:4"
+              pImageIdeogram:
+                summary: p-image-ideogram
+                value:
+                  input:
+                    prompt: Lookbook cover. Exact visible text only "ATELIER NOIR"
+                    thinking: high
+                    image_size: 2K
+                    aspect_ratio: "3:4"
+                    prompt_upsampling: true
               pVideo:
                 summary: p-video
                 value:

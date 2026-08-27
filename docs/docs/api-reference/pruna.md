@@ -1,10 +1,11 @@
 ---
 sidebar_position: 8
 title: Pruna AI
-description: Pruna P-Image, P-Image-Edit, P-Image-Upscale, P-Image-Try-On, P-Video, P-Video-Replace, P-Video-Avatar, and P-Video-Animate
+description: Pruna P-Image, P-Image-Ideogram, P-Image-Edit, P-Image-Upscale, P-Image-Try-On, P-Video, P-Video-Replace, P-Video-Avatar, and P-Video-Animate
 keywords:
   - pruna
   - p-image
+  - p-image-ideogram
   - p-image-edit
   - p-image-upscale
   - p-image-try-on
@@ -22,6 +23,7 @@ OpenTryOn integrates Pruna's unified predictions API (`POST /v1/predictions` wit
 | Model | CLI | Adapter | Role |
 |---|---|---|---|
 | `p-image` | `generate --model p-image` | `PImageAdapter` | Ultra-fast text-to-image |
+| `p-image-ideogram` | `generate --model p-image-ideogram` | `PImageIdeogramAdapter` | Pruna × Ideogram T2I (thinking levels) |
 | `p-image-edit` | `edit --model p-image-edit` | `PImageEditAdapter` | Edit / compose 1–5 images |
 | `p-image-upscale` | `edit --model p-image-upscale` | `PImageUpscaleAdapter` | Upscale to 1–128 MP |
 | `p-image-try-on` | `vton --model p-image-tryon` | `PImageTryOnAdapter` | Multi-garment virtual try-on |
@@ -32,9 +34,9 @@ OpenTryOn integrates Pruna's unified predictions API (`POST /v1/predictions` wit
 
 **Auth:** `PRUNA_API_KEY` (optional `PRUNA_BASE_URL`). Key is sent as the `apikey` header.
 
-**Docs:** [Pruna model guides](https://docs.api.pruna.ai/guides/models)
+**Docs:** [Pruna model guides](https://docs.api.pruna.ai/guides/models) · [P-Image-Ideogram](https://docs.pruna.ai/en/stable/docs_pruna_endpoints/performance_models/p-image-ideogram.html)
 
-Ideogram-via-Pruna is skipped — use `opentryon generate --model ideogram` instead.
+Ideogram **4.0** via Pruna is skipped — use `opentryon generate --model ideogram` (`IDEOGRAM_API_KEY`). **P-Image-Ideogram** is a different model: `opentryon generate --model p-image-ideogram` (`PRUNA_API_KEY`). Full notes: [P-Image-Ideogram](p-image-ideogram).
 
 ## Shared client
 
@@ -55,6 +57,10 @@ export PRUNA_API_KEY="your_api_key"
 opentryon generate --model p-image \
   --prompt "editorial fashion still, soft window light" \
   --aspect-ratio 3:4
+
+opentryon generate --model p-image-ideogram \
+  --prompt 'Lookbook cover. Exact visible text only: "ATELIER NOIR"' \
+  --thinking high --image-size 2K --aspect-ratio 3:4
 
 # Multi-image edit
 opentryon edit --model p-image-edit \
@@ -111,6 +117,7 @@ load_dotenv()
 from tryon.api.pruna import (
     PImageAdapter,
     PImageEditAdapter,
+    PImageIdeogramAdapter,
     PImageUpscaleAdapter,
     PVideoAdapter,
     PVideoAnimateAdapter,
@@ -125,6 +132,13 @@ images = PImageAdapter().generate_text_to_image(
     aspect_ratio="1:1",
 )
 images[0].save("out.png")
+
+ideogram = PImageIdeogramAdapter().generate_text_to_image(
+    prompt='Lookbook cover. Exact visible text only: "ATELIER NOIR"',
+    thinking="high",
+    image_size="2K",
+)
+ideogram[0].save("p-image-ideogram.jpg")
 
 # Edit
 edited = PImageEditAdapter().generate_image_edit(
@@ -170,6 +184,12 @@ animated = PVideoAnimateAdapter().generate_video_animate(
 ### P-Image
 - Required: `prompt`
 - Optional: `aspect_ratio` (incl. `custom` + `width`/`height`), `seed`, `prompt_upsampling`, LoRA fields
+
+### P-Image-Ideogram
+- Required: `prompt` (natural language or Ideogram 4.0 JSON)
+- Optional: `thinking` (`very-low` … `very-high`, default `high`), `image_size` (`1K`/`2K`), `aspect_ratio` (default `1:1`), `prompt_upsampling` (default on)
+- Typography: `high` or `very-high` at 2K; `--no-prompt-upsampling` for final JSON specs
+- See [P-Image-Ideogram](p-image-ideogram)
 
 ### P-Image-Edit
 - Required: `prompt`, 1–5 images

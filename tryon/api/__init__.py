@@ -24,6 +24,7 @@ _LAZY_ATTRS = {
     "FashnVTONAdapter": ".vton",
     "PImageAdapter": ".pruna",
     "PImageEditAdapter": ".pruna",
+    "PImageIdeogramAdapter": ".pruna",
     "PImageUpscaleAdapter": ".pruna",
     "PVideoAdapter": ".pruna",
     "PVideoReplaceAdapter": ".pruna",

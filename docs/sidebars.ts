@@ -60,6 +60,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/nova-canvas',
         'api-reference/segmind',
         'api-reference/pruna',
+        'api-reference/p-image-ideogram',
         'api-reference/fashn',
         'api-reference/flux2',
         'api-reference/nano-banana',

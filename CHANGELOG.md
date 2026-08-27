@@ -17,6 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎨 Image — P-Image-Ideogram (Pruna × Ideogram)
+- **P-Image-Ideogram** (`PImageIdeogramAdapter` / CLI `--model p-image-ideogram`): Pruna predictions `Model: p-image-ideogram`
+  - Same `PRUNA_API_KEY` as the rest of the P-Image family (not `IDEOGRAM_API_KEY`)
+  - Five `thinking` levels (`very-low` … `very-high`, default `high`); `1K`/`2K`; prompt upsampling on by default
+  - **Not** Ideogram 4.0 (`--model ideogram`). Ideogram’s first-party P-Image-Ideogram endpoint is not duplicated
+  - MCP tool `generate_p_image_ideogram`; Studio Image generate after MCP restart
+  - Docs: `docs/docs/api-reference/p-image-ideogram.md`
+
 #### 🎨 Image — Muse Image (Meta Model API)
 - **Muse Image** (`MuseImageAdapter` / CLI `--model muse-image`): first-party Meta Model API `muse-image-1.0`
   - Same `MODEL_API_KEY` (aliases `META_MODEL_API_KEY` / `MUSE_API_KEY`)

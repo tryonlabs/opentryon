@@ -69,6 +69,18 @@ async def check_choices_become_enum() -> None:
     # optional field with choices -> {"anyOf": [{"enum": [...]}, {"type": "null"}]}
     enums = [b["enum"] for b in prop.get("anyOf", [prop]) if "enum" in b]
     assert enums and set(enums[0]) == {"jpeg", "png", "webp"}, prop
+
+    ideogram = await server.mcp.get_tool("generate_p_image_ideogram")
+    thinking = ideogram.parameters["properties"]["thinking"]
+    thinking_enums = [b["enum"] for b in thinking.get("anyOf", [thinking]) if "enum" in b]
+    assert thinking_enums and set(thinking_enums[0]) == {
+        "very-low",
+        "low",
+        "medium",
+        "high",
+        "very-high",
+    }, thinking
+    assert "prompt_upsampling" in ideogram.parameters["properties"]
     print("\u2713 Arg.choices are exposed as a JSON schema enum")
 
 
@@ -90,6 +102,7 @@ async def check_dry_run_calls() -> None:
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
         ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
         ("generate_muse_image", {"prompt": "editorial still", "dry_run": True}, False),
+        ("generate_p_image_ideogram", {"prompt": "atelier noir poster", "dry_run": True}, False),
         ("edit_muse_image", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, False),
         ("vton_muse_image", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
         ("edit_qwen_image", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, False),
@@ -216,6 +229,11 @@ async def check_list_and_set_api_keys() -> None:
     assert any(
         u["service"] == "video-generate" and u["model"] == "minimax-h3"
         for u in by_id["minimax"]["unlocks"]
+    )
+    assert "pruna" in by_id
+    assert any(
+        u["service"] == "generate" and u["model"] == "p-image-ideogram"
+        for u in by_id["pruna"]["unlocks"]
     )
     allowed = server.config.allowed_env_names()
     assert "MODEL_API_KEY" in allowed and "MINIMAX_API_KEY" in allowed

@@ -42,6 +42,22 @@ def check_wan3_model_aliases():
     print("\u2713 Wan 3.0 aliases resolve to wan3.0-video")
 
 
+def check_p_image_ideogram_thinking_aliases():
+    from tryon.api.pruna.p_image_ideogram import _normalize_thinking
+
+    assert _normalize_thinking("high") == "high"
+    assert _normalize_thinking("very-low") == "very low"
+    assert _normalize_thinking("VERY_HIGH") == "very high"
+    assert _normalize_thinking("very low") == "very low"
+    try:
+        _normalize_thinking("ultra")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected invalid thinking to raise")
+    print("\u2713 P-Image-Ideogram thinking aliases map to Pruna strings")
+
+
 def check_every_model_parser_builds():
     count = 0
     for service, models in SERVICES.items():
@@ -456,6 +472,8 @@ def check_new_media_models_dry_runs():
          "GrokImagineVideoAdapter", "generate_image_to_video"),
         (["generate", "--model", "p-image", "--prompt", "knitwear flatlay"],
          "PImageAdapter", "generate_text_to_image"),
+        (["generate", "--model", "p-image-ideogram", "--prompt", "atelier noir poster"],
+         "PImageIdeogramAdapter", "generate_text_to_image"),
         (["edit", "--model", "p-image-edit", "--prompt", "studio background",
           "--images", "data/model-1.jpg"],
          "PImageEditAdapter", "generate_image_edit"),
@@ -535,6 +553,7 @@ def check_new_media_models_dry_runs():
 if __name__ == "__main__":
     check_registry_has_no_flag_collisions()
     check_wan3_model_aliases()
+    check_p_image_ideogram_thinking_aliases()
     check_every_model_parser_builds()
     check_flux_vto_dry_run()
     check_flux_vto_real_call()

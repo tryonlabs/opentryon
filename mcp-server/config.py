@@ -132,7 +132,7 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Pruna AI",
         "https://dashboard.pruna.ai/login",
         ("PRUNA_API_KEY",),
-        "",
+        "P-Image, P-Image-Ideogram, P-Image-Edit, try-on, and P-Video family.",
     ),
     (
         "segmind",

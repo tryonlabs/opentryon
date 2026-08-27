@@ -87,6 +87,16 @@ First-party Meta Model API (`MODEL_API_KEY`). **No local twin.** Muse Video is n
 
 See [Muse Image](../api-reference/muse-image.md) and [Muse Video (not available)](../api-reference/muse-video.md).
 
+## P-Image-Ideogram (generate)
+
+Same `PRUNA_API_KEY` as the rest of the Pruna family. **Not** Ideogram 4.0 (`generate_ideogram` / `IDEOGRAM_API_KEY`).
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `generate_p_image_ideogram` | Pruna `Model: p-image-ideogram` (thinking very-low–very-high, 1K/2K) | `PRUNA_API_KEY` |
+
+See [P-Image-Ideogram](../api-reference/p-image-ideogram.md).
+
 ## Quick start
 
 ```bash
@@ -126,5 +136,6 @@ Full tool tables and architecture notes: [`mcp-server/README.md`](https://github
 - [MiniMax H3 API](../api-reference/minimax-h3)
 - [MiniMax H3 local](../local-models/minimax-h3)
 - [Muse Image](../api-reference/muse-image)
+- [P-Image-Ideogram](../api-reference/p-image-ideogram)
 - [Adding a new model](../advanced/new-model-checklist)
 - [Configuration](configuration)

@@ -249,7 +249,7 @@ images = adapter.generate_and_decode(
 - `generate(person_image, garment_images, ...)` - Generate a virtual try-on result (returns a URL)
 - `generate_and_decode(person_image, garment_images, ...)` - Generate and decode to PIL Images
 
-See [Pruna AI Documentation](pruna) for complete details (also covers `PImageAdapter`, `PImageEditAdapter`, `PImageUpscaleAdapter`, `PVideoAdapter`, `PVideoReplaceAdapter`, `PVideoAvatarAdapter`, `PVideoAnimateAdapter`).
+See [Pruna AI Documentation](pruna) for complete details (also covers `PImageAdapter`, `PImageIdeogramAdapter`, `PImageEditAdapter`, `PImageUpscaleAdapter`, `PVideoAdapter`, `PVideoReplaceAdapter`, `PVideoAvatarAdapter`, `PVideoAnimateAdapter`). Dedicated page: [P-Image-Ideogram](p-image-ideogram).
 
 ---
 
@@ -463,7 +463,7 @@ Also available via the CLI/MCP registry:
 
 Local twins: `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
 
-Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video).
+Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `PImageIdeogramAdapter` (`p-image-ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video).
 
 ### `GeminiOmniAdapter`
 

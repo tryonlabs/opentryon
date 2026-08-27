@@ -8,7 +8,7 @@ wired into OpenTryOn adapters (as of **v0.0.4**):
 - Luma Agents API — Ray 3.2
 - xAI — Grok Imagine Image + Video 1.5
 - Ideogram — 4.0 generate
-- Pruna — `/v1/predictions` + `/v1/files` (p-image, p-image-edit, p-image-upscale, p-video, p-video-replace, p-video-avatar, p-video-animate, p-image-try-on)
+- Pruna — `/v1/predictions` + `/v1/files` (p-image, p-image-ideogram, p-image-edit, p-image-upscale, p-video, p-video-replace, p-video-avatar, p-video-animate, p-image-try-on)
 
 Companion Postman collection: [`../postman/opentryon-media.postman_collection.json`](../postman/opentryon-media.postman_collection.json).
 

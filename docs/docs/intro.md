@@ -79,7 +79,7 @@ Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, Nano Banana 2 Lite composition, **Qwen-Image** (API + local), and **Muse Image** composition.
 
 ### Image generate / edit
-Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / Edit / Upscale**, **Qwen-Image** (DashScope 3.0 + local 2512/Edit-2511), **Muse Image**, plus local FLUX.2-dev Turbo.
+Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / P-Image-Ideogram / Edit / Upscale**, **Qwen-Image** (DashScope 3.0 + local 2512/Edit-2511), **Muse Image**, plus local FLUX.2-dev Turbo.
 
 ### Video
 Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3** (API + local), **Wan** (2.x API + **Wan 3.0** API + local 2.2), **Runway Gen-4.5**.

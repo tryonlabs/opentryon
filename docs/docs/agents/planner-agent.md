@@ -41,7 +41,7 @@ Each capability has a **default model**. The planner uses that default unless th
 | Video generation | `video` | `video-generate` / `sora` |
 | Background remove | `bg_remove` | `bg-remove` / `ben2` |
 
-- **User named a model** (for example `wan-3.0`, `flux2-pro`, `kling-ai`) → that registry id **only**, even if it lives in another capability. An unknown name is **not** replaced by the default; the planner asks you to pick a real id.
+- **User named a model** (for example `wan-3.0`, `flux2-pro`, `p-image-ideogram`) → that registry id **only**, even if it lives in another capability. An unknown name is **not** replaced by the default; the planner asks you to pick a real id. `p-image-ideogram` pins Pruna’s model; a bare `ideogram` still pins Ideogram 4.0.
 - **No model named** → the default in the table.
 - The classifier must leave `model` empty unless the user named one. A leaked default in `plan.model` is ignored unless that id also appears in the prompt.
 

@@ -150,6 +150,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_ideogram` | Ideogram 4.0 | `IDEOGRAM_API_KEY` |
 | `generate_grok_imagine_image` | xAI Grok Imagine Image Quality | `XAI_API_KEY` |
 | `generate_p_image` | Pruna P-Image | `PRUNA_API_KEY` |
+| `generate_p_image_ideogram` | P-Image-Ideogram (Pruna × Ideogram) | `PRUNA_API_KEY` |
 | `generate_qwen_image` | Qwen-Image 3.0 | `DASHSCOPE_API_KEY` |
 | `generate_qwen_image_local` | Qwen-Image-2512 (open-weight, local) | local/GPU |
 | `generate_muse_image` | Muse Image (Meta Model API) | `MODEL_API_KEY` |

@@ -637,6 +637,35 @@ _GENERATE = {
             Arg(("--lora-scale",), "lora_scale", type=float, help="LoRA strength (-1 to 3)"),
         ],
     ),
+    "p-image-ideogram": ModelSpec(
+        id="p-image-ideogram", label="P-Image-Ideogram (Pruna × Ideogram)",
+        import_path="tryon.api.pruna", class_name="PImageIdeogramAdapter",
+        method="generate_text_to_image", output_kind="images", env_hint="PRUNA_API_KEY",
+        notes="Pruna predictions Model: p-image-ideogram. Thinking very low–very high "
+        "(default high). Use 2K + high/very high for typography. Prompt upsampling on by default.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True,
+                help="Natural language or Ideogram 4.0 JSON prompt"),
+            Arg(("--thinking",), "thinking", default="high",
+                choices=["very-low", "low", "medium", "high", "very-high"],
+                help="Quality / cost / latency (Pruna: very low–very high). Default high. Pair high or very-high with 2K for text."),
+            Arg(("--image-size",), "image_size", default="1K", choices=["1K", "2K"],
+                help="Resolution budget (ignored when --aspect-ratio custom)"),
+            Arg(("--aspect-ratio",), "aspect_ratio", default="1:1",
+                choices=["1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "custom"]),
+            Arg(("--width",), "width", type=int,
+                help="Custom width (multiple of 16, max 2560); requires --aspect-ratio custom"),
+            Arg(("--height",), "height", type=int,
+                help="Custom height (multiple of 16, max 2560); requires --aspect-ratio custom"),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--no-prompt-upsampling",), "prompt_upsampling", action="store_false",
+                default=True, help="Pass the raw prompt (needed for exact on-image text / JSON specs)"),
+            Arg(("--output-format",), "output_format", default="jpg",
+                choices=["jpg", "png", "webp"]),
+            Arg(("--output-quality",), "output_quality", type=int,
+                help="JPEG/WebP quality 0–100 (default 80)"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
