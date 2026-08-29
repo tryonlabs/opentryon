@@ -163,7 +163,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Open an issue before large changes; pref
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=tryonlabs/opentryon&type=date&legend=top-left)](https://www.star-history.com/#tryonlabs/opentryon&type=date&legend=top-left)
+[![Star History Chart](https://star-history.dera.page/svg?repos=tryonlabs/opentryon&type=date&legend=top-left)](https://star-history.dera.page/#tryonlabs/opentryon&type=date&legend=top-left)
 
 ---
 
