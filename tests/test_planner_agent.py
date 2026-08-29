@@ -130,6 +130,29 @@ def check_named_model_nvidia_nim_dry_run():
     print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni")
 
 
+def check_named_model_google_vton_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="vton", task=kwargs["prompt"], reason="try-on")
+    )
+    result = agent.run(
+        "Try the garment using google-vton",
+        person_image="person.jpg",
+        garment_image="shirt.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["service"] == "vton"
+    assert result["model"] == "google-vton"
+    assert "GoogleVTONAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    vton = slice_for_intent("vton")
+    pinned = match_named_model("use virtual-try-on-001 on this look", vton)
+    assert pinned is not None and pinned.model == "google-vton"
+    print("\u2713 named-model chat dry-runs google-vton and pins virtual-try-on-001")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -528,6 +551,7 @@ def main():
     check_model_swap_and_fashion_dry_run()
     check_named_model_wan_30_dry_run()
     check_named_model_nvidia_nim_dry_run()
+    check_named_model_google_vton_dry_run()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()

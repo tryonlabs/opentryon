@@ -12,7 +12,7 @@ keywords:
 
 `VTOnAgent` is a **thin Python facade** over the live registry. It is not a LangChain tool loop. For Studio chat, call [`PlannerAgent`](./planner-agent.md) / MCP `planner_agent`.
 
-Default model: **`kling-ai`**. A named model in the prompt (FASHN, FLUX VTO, Segmind, Qwen-Image, …) pins that VTON registry id.
+Default model: **`kling-ai`**. A named model in the prompt (Google VTO, FASHN, FLUX VTO, Segmind, Qwen-Image, …) pins that VTON registry id.
 
 ```python
 from tryon.agents.vton import VTOnAgent

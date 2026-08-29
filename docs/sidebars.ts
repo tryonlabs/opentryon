@@ -57,6 +57,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/preprocessing',
         'api-reference/diffusion',
         'api-reference/kling-ai',
+        'api-reference/google-vton',
         'api-reference/nova-canvas',
         'api-reference/segmind',
         'api-reference/pruna',

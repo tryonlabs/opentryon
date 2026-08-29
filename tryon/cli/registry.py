@@ -220,6 +220,41 @@ _VTON = {
             Arg(("--output-format",), "output_format", default="webp", choices=["jpeg", "png", "webp"], help="Output image format"),
         ],
     ),
+    "google-vton": ModelSpec(
+        id="google-vton",
+        label="Google Virtual Try-On (Vertex virtual-try-on-001)",
+        import_path="tryon.api.vton.google_vton",
+        class_name="GoogleVTONAdapter",
+        method="generate_and_decode",
+        output_kind="images",
+        env_hint="GOOGLE_CLOUD_PROJECT",
+        notes=(
+            "Dedicated Vertex / Gemini Enterprise try-on. Not Nano Banana and not "
+            "GEMINI_API_KEY. Requires ADC (`gcloud auth application-default login` "
+            "or GOOGLE_APPLICATION_CREDENTIALS). Optional GOOGLE_CLOUD_LOCATION "
+            "(default global)."
+        ),
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image", "--product-image"), "garment",
+                 "Garment/product image (path or URL)", required=True),
+            Arg(("--project",), "project", target="init", help="GCP project id (default: GOOGLE_CLOUD_PROJECT)"),
+            Arg(("--location",), "location", target="init", help="Vertex location (default: GOOGLE_CLOUD_LOCATION or global)"),
+            Arg(("--num-images",), "number_of_images", type=int, default=1, help="Number of outputs 1-4"),
+            Arg(("--seed",), "seed", type=int, help="Seed for reproducibility"),
+            Arg(("--person-generation",), "person_generation", default="allow_adult",
+                choices=["dont_allow", "allow_adult", "allow_all"],
+                help="Person policy (shopper photos: allow_adult)"),
+            Arg(("--safety-filter-level",), "safety_filter_level",
+                choices=["block_low_and_above", "block_medium_and_above", "block_only_high", "block_none"],
+                help="Vertex safety filter"),
+            Arg(("--no-watermark",), "add_watermark", action="store_false", default=True,
+                help="Disable SynthID / C2PA watermark (on by default)"),
+            Arg(("--output-mime-type",), "output_mime_type", default="image/png",
+                choices=["image/png", "image/jpeg"], help="Output MIME type"),
+            Arg(("--output-gcs-uri",), "output_gcs_uri", help="Optional gs:// prefix to store outputs"),
+        ],
+    ),
     "nova-canvas": ModelSpec(
         id="nova-canvas",
         label="Amazon Nova Canvas",

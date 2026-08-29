@@ -34,7 +34,7 @@ Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/
 | **A — Data & prompts** | Versioned prompt packs, train-pack schema, `data` CLI helpers |
 | **B — Train** | Brand-style LoRA + one VTON/local LoRA path; `opentryon train` |
 | **C — Eval** | Fashion Bench v0, side-by-side reports; `opentryon eval` |
-| **D — Local VTON** | Productize **one** of CatVTON / IDM-VTON / OOTDiffusion |
+| **D — Local VTON** | Productize **one** of Leffa / CatVTON / IDM-VTON / OOTDiffusion — candidate queue: [Integrate next](integrate-next#wave-2--virtual-try-on-fashion--d2c--marketplace) |
 | **E — Workflows** | MCP-native Try-On QA *or* Fine-Tune Coach (task agent, not chatbot) |
 | **F — Efficiency card** | VRAM/latency table for the path we actually ship |
 

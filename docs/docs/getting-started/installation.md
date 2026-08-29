@@ -118,6 +118,9 @@ AMAZON_NOVA_REGION=us-east-1
 # Google Gemini (Nano Banana Image Generation)
 GEMINI_API_KEY=your_gemini_api_key
 
+# Google Vertex Virtual Try-On (not GEMINI_API_KEY)
+GOOGLE_CLOUD_PROJECT=your_gcp_project_id
+
 # BFL AI (FLUX.2 Image Generation)
 BFL_API_KEY=your_bfl_api_key
 ```

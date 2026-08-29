@@ -53,6 +53,12 @@ _ALIASES: Tuple[Tuple[str, str, Optional[str]], ...] = (
     # needle, model_id, optional service constraint
     ("kling ai", "kling-ai", "vton"),
     ("kolors", "kling-ai", "vton"),
+    ("virtual-try-on-001", "google-vton", "vton"),
+    ("imagen virtual try-on", "google-vton", "vton"),
+    ("vertex try-on", "google-vton", "vton"),
+    ("vertex vton", "google-vton", "vton"),
+    ("google vton", "google-vton", "vton"),
+    ("google-vton", "google-vton", "vton"),
     ("fashn", "fashn-tryon-max", "vton"),
     ("flux vto", "flux-vto", "vton"),
     ("nova canvas", "nova-canvas", "vton"),

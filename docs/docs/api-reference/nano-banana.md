@@ -376,6 +376,8 @@ images[0].save("result.png")
 
 Also available from the `opentryon` CLI / MCP server as `vton --model nano-banana-2-lite`.
 
+This is **composition** try-on via the Gemini Developer API (`GEMINI_API_KEY`). Dedicated Google Cloud Virtual Try-On is `--model google-vton` (Vertex `virtual-try-on-001`, ADC + `GOOGLE_CLOUD_PROJECT`). See [Google Virtual Try-On](google-vton).
+
 ## Command Line Usage
 
 Use the `image_gen.py` script for command-line image generation:

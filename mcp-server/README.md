@@ -125,6 +125,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | Tool | Model | Requires |
 |---|---|---|
 | `vton_flux_vto` | Black Forest Labs FLUX VTO | `BFL_API_KEY` |
+| `vton_google_vton` | Google Vertex Virtual Try-On (`virtual-try-on-001`) | `GOOGLE_CLOUD_PROJECT` + ADC |
 | `vton_nova_canvas` | Amazon Nova Canvas | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` |
 | `vton_kling_ai` | Kling AI (Kolors Virtual Try-On) | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `vton_segmind` | Segmind Try-On Diffusion | `SEGMIND_API_KEY` |
