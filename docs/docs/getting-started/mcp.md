@@ -75,6 +75,18 @@ Same `MINIMAX_API_KEY` as Hailuo 2.3. H3 is a **dual path** (hosted V2 vs local 
 
 See [MiniMax H3 API](../api-reference/minimax-h3.md) and [MiniMax H3 local](../local-models/minimax-h3.md).
 
+## NVIDIA NIM tools (understand + video)
+
+Same `NVIDIA_API_KEY` for Nemotron Omni, Cosmos 3 Reasoner, and Cosmos 3 Generator.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `understand_nemotron_omni` | Nemotron 3 Nano Omni (image / video / audio) | `NVIDIA_API_KEY` |
+| `understand_cosmos3_reasoner` | Cosmos 3 Reasoner (physical-world VLM) | `NVIDIA_API_KEY` |
+| `video_generate_cosmos3` | Cosmos 3 Generator nano (T2V / I2V) | `NVIDIA_API_KEY` |
+
+See [NVIDIA NIM](../api-reference/nvidia-nim.md).
+
 ## Muse Image tools (generate / edit / VTON)
 
 First-party Meta Model API (`MODEL_API_KEY`). **No local twin.** Muse Video is not on the API yet.

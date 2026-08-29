@@ -110,6 +110,26 @@ def check_named_model_wan_30_dry_run():
     print("\u2713 named-model chat dry-runs wan-3.0 via invoke_model")
 
 
+def check_named_model_nvidia_nim_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="video", task=kwargs["prompt"])
+    )
+    result = agent.run("Generate a clip using cosmos3", dry_run=True)
+    assert result["success"] is True
+    assert result["service"] == "video-generate"
+    assert result["model"] == "cosmos3"
+    assert "Cosmos3VideoAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    fashion = slice_for_intent("fashion")
+    pinned = match_named_model("describe this with cosmos3-reasoner", fashion)
+    assert pinned is not None and pinned.model == "cosmos3-reasoner"
+    omni = match_named_model("use nemotron-omni on this photo", fashion)
+    assert omni is not None and omni.model == "nemotron-omni"
+    print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -507,6 +527,7 @@ def main():
     check_vton_dry_run_routes()
     check_model_swap_and_fashion_dry_run()
     check_named_model_wan_30_dry_run()
+    check_named_model_nvidia_nim_dry_run()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()

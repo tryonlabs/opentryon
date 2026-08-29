@@ -20,7 +20,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 │ ✓ Unified `opentryon` CLI + FastMCP (same registry / invoke_model)      │
 │ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
 │ ✓ v0.0.4: LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, Qwen3.8   │
-│ ✓ Unreleased: MiniMax H3 dual-path · Muse Image API (Video N/A)         │
+│ ✓ Unreleased: MiniMax H3 · Muse Image · NVIDIA NIM (Omni / Cosmos 3)    │
 │ ✓ OpenAPI + Postman snapshots · docs · Gradio · tryon-studio via MCP    │
 │ ✓ Local extras: FLUX.2 Turbo, Kimi-VL, LLaVA, BEN2, LTX, Wan, Qwen3.8   │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -178,6 +178,8 @@ tryon/
 **Good first issues:** prompt-pack PRs, bench image pairs, dry-run tests, docs/examples, type hints.
 
 **High-value next:** LoRA recipe hardening, Fashion Bench metrics, first local VTON adapter, Try-On QA or Fine-Tune Coach workflow.
+
+**Vendor / model queue** (not a v0.1.0 commitment): [docs/docs/community/integrate-next.md](docs/docs/community/integrate-next.md) — NVIDIA Nemotron Omni + Cosmos 3 first, then CatVTON, then new services (LipSync, TRELLIS).
 
 See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/new-model-checklist.md), and [VISION.md](VISION.md).
 

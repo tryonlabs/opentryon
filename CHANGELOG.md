@@ -17,6 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🧠 Understand + 🎬 Video — NVIDIA NIM (Nemotron Omni, Cosmos 3)
+- **Nemotron 3 Nano Omni** (`NemotronOmniUnderstandAdapter` / CLI `--model nemotron-omni`): hosted NIM chat (`nvidia/nemotron-3-nano-omni-30b-a3b-reasoning`)
+  - Image, video, and audio understand; `NVIDIA_API_KEY`; thinking on by default
+  - MCP tool `understand_nemotron_omni`
+- **Cosmos 3 Reasoner** (`Cosmos3ReasonerAdapter` / CLI `--model cosmos3-reasoner`): physical-world VLM (`nvidia/cosmos3-nano-reasoner`)
+  - Same key; MCP tool `understand_cosmos3_reasoner`
+- **Cosmos 3 Generator nano** (`Cosmos3VideoAdapter` / CLI `--model cosmos3`): T2V / I2V via NIM infer (`b64_video`)
+  - Optional `COSMOS3_INFER_URL` for a self-hosted Generator container
+  - MCP tool `video_generate_cosmos3`
+  - Docs: `docs/docs/api-reference/nvidia-nim.md`
+
 #### 🎨 Image — P-Image-Ideogram (Pruna × Ideogram)
 - **P-Image-Ideogram** (`PImageIdeogramAdapter` / CLI `--model p-image-ideogram`): Pruna predictions `Model: p-image-ideogram`
   - Same `PRUNA_API_KEY` as the rest of the P-Image family (not `IDEOGRAM_API_KEY`)

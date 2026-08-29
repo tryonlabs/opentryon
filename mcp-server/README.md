@@ -187,6 +187,8 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
 | `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
 | `understand_qwen3_8` | Qwen3.8-27B (open-weight, local) | local/GPU | Dense open multimodal (`Qwen/Qwen3.8-27B`); thinking toggle; frame-sampled video |
+| `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |
+| `understand_cosmos3_reasoner` | Cosmos 3 Reasoner (NVIDIA NIM) | `NVIDIA_API_KEY` | Physical-world image/video QA |
 
 **Qwen3.8 via MCP:** both tools call the shared `understand` entry point (`image`
 and/or `video` + `prompt`). Hosted Max also accepts `enable_thinking` /
@@ -230,6 +232,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_wan_3_0` | Alibaba Wan 3.0 (DashScope) | `DASHSCOPE_API_KEY` |
 | `video_generate_wan_2_2` | Wan 2.2 (local Diffusers) | local/GPU |
 | `video_generate_runway_gen4_5` | Runway Gen-4.5 | `RUNWAYML_API_SECRET` |
+| `video_generate_cosmos3` | NVIDIA Cosmos 3 Generator nano | `NVIDIA_API_KEY` |
 
 ### bg-remove -- Background removal
 

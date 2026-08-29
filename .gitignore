@@ -175,3 +175,8 @@ AGENTS.md
 
 # Local social / marketing drafts (do not commit)
 social-media/
+
+# Cursor local state — keep project skills in git
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**

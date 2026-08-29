@@ -52,6 +52,9 @@ DASHSCOPE_API_KEY=your_dashscope_api_key
 # MiniMax Hailuo 2.3 + MiniMax H3 video (same key; H3 uses V2)
 MINIMAX_API_KEY=your_minimax_api_key
 
+# NVIDIA NIM (Nemotron Omni understand, Cosmos 3 Reasoner, Cosmos 3 Generator)
+NVIDIA_API_KEY=your_nvidia_api_key
+
 # Meta Model API (Muse Image generate/edit/vton)
 MODEL_API_KEY=your_meta_model_api_key
 
@@ -179,6 +182,13 @@ from tryon.datasets import FashionMNIST
    Same key covers `video-generate --model hailuo-2.3` (V1) and `video-generate --model minimax-h3` (V2 H3). H3 on the API is billed as pay-as-you-go video.
 
    Local open-weight twin (`pip install opentryon[local]`, CUDA, Diffusers from main): `--model minimax-h3-local`. The Community License for those weights excludes US/EU/UK/South Korea unless separately authorized. See [MiniMax H3 local](../local-models/minimax-h3.md).
+
+### NVIDIA NIM (Nemotron / Cosmos)
+
+1. Create a key at [build.nvidia.com](https://build.nvidia.com)
+2. Add to `.env`: `NVIDIA_API_KEY=your_key`
+
+   Same key covers `understand --model nemotron-omni`, `understand --model cosmos3-reasoner`, and `video-generate --model cosmos3`. Optional `COSMOS3_INFER_URL` points a self-hosted Generator NIM at `http://127.0.0.1:8000/v1/infer`. See [NVIDIA NIM](../api-reference/nvidia-nim.md).
 
 ### Meta Model API (Muse Image)
 

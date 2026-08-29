@@ -459,6 +459,7 @@ Also available via the CLI/MCP registry:
 | `MiniMaxH3Adapter` | `minimax-h3` | [MiniMax H3](minimax-h3) |
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
+| `Cosmos3VideoAdapter` | `cosmos3` | [NVIDIA NIM](nvidia-nim) |
 | `SoraVideoAdapter` / `VeoAdapter` / `LumaAIVideoAdapter` | `sora` / `veo` / `luma-video` | existing pages |
 
 Local twins: `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
@@ -562,6 +563,22 @@ counterpart: `qwen3.8` (`Qwen/Qwen3.8-27B`).
 
 See [Qwen3.8-Max API Documentation](qwen3.8) for complete details, or the
 open-weight [Qwen3.8 local model](../local-models/qwen3.8.md) for GPU-only deployment.
+
+---
+
+### `NemotronOmniUnderstandAdapter` / `Cosmos3ReasonerAdapter` / `Cosmos3VideoAdapter`
+
+NVIDIA NIM Path A (`NVIDIA_API_KEY`). Omni and Reasoner are OpenAI-compatible
+chat understand models; Cosmos 3 Generator is T2V/I2V infer (`b64_video`).
+
+```python
+from tryon.api.nvidia import NemotronOmniUnderstandAdapter, Cosmos3VideoAdapter
+
+print(NemotronOmniUnderstandAdapter().understand(image="garment.jpg")["text"])
+mp4 = Cosmos3VideoAdapter().generate_text_to_video("runway walk at dusk")
+```
+
+See [NVIDIA NIM](nvidia-nim).
 
 ---
 

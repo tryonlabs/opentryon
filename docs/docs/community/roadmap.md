@@ -20,6 +20,7 @@ Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/
 - Broad cloud try-on / generate / edit / video / understand adapters
 - **v0.0.4:** LTX-2.5 (API + local), Hailuo 2.3, Wan (API + local 2.2), Runway Gen-4.5, Qwen3.8 (API + local)
 - MiniMax H3 dual-path (official V2 API + local Diffusers) on Unreleased
+- NVIDIA NIM Wave 1 on Unreleased: `nemotron-omni`, `cosmos3-reasoner`, `cosmos3`
 - Muse Image on Unreleased (Meta Model API). Muse Video: no API/weights yet
 - Qwen-Image generate / edit / VTON (DashScope 3.0 + local Diffusers 2512 / Edit-2511)
 - **OpenAPI / Postman** media snapshots, docs, Gradio demos
@@ -52,5 +53,7 @@ Fashion-only for this phase. Prompt datasets, fashion datasets, workflows, and a
 
 Good first issues: prompt packs, bench pairs, docs, dry-run tests.  
 High-value: LoRA recipes, Fashion Bench metrics, first local VTON, first MCP workflow.
+
+Vendor / model queue (separate from these slices): [Integrate next](integrate-next).
 
 Follow the [new-model checklist](../advanced/new-model-checklist) or join [Discord](https://discord.gg/T5mPpZHxkY).

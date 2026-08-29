@@ -242,6 +242,68 @@ def check_qwen_dry_runs():
     print("\u2713 understand qwen3.8-max / qwen3.8 --dry-run resolve the expected calls")
 
 
+def check_nvidia_nim_dry_runs():
+    cases = [
+        (
+            ["understand", "--model", "nemotron-omni",
+             "--image", "data/model-1.jpg", "--prompt", "Describe the outfit"],
+            "NemotronOmniUnderstandAdapter",
+            "understand",
+            "'enable_thinking': True",
+        ),
+        (
+            ["understand", "--model", "cosmos3-reasoner",
+             "--image", "data/model-1.jpg", "--prompt", "What is happening?"],
+            "Cosmos3ReasonerAdapter",
+            "understand",
+            None,
+        ),
+        (
+            ["video-generate", "--model", "cosmos3", "--prompt", "runway walk"],
+            "Cosmos3VideoAdapter",
+            "generate_text_to_video",
+            None,
+        ),
+        (
+            ["video-generate", "--model", "cosmos3", "--prompt", "animate",
+             "--image", "data/model-1.jpg"],
+            "Cosmos3VideoAdapter",
+            "generate_image_to_video",
+            None,
+        ),
+    ]
+    for argv, expect_cls, expect_method, expect_kwarg in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert expect_cls in printed and f".{expect_method}(" in printed, printed
+        if expect_kwarg:
+            assert expect_kwarg in printed, printed
+    print("\u2713 understand nemotron-omni / cosmos3-reasoner and video-generate cosmos3 --dry-run resolve")
+
+
+def check_nvidia_understand_requires_media():
+    from tryon.api.nvidia import NemotronOmniUnderstandAdapter, Cosmos3ReasonerAdapter
+
+    try:
+        NemotronOmniUnderstandAdapter(api_key="fake-key-for-validation-test").understand(prompt="hi")
+    except ValueError as e:
+        assert "image" in str(e) and "video" in str(e) and "audio" in str(e)
+    else:
+        raise AssertionError("expected ValueError when Nemotron Omni has no media")
+
+    try:
+        Cosmos3ReasonerAdapter(api_key="fake-key-for-validation-test").understand(prompt="hi")
+    except ValueError as e:
+        assert "image" in str(e) and "video" in str(e)
+        assert "audio" not in str(e)
+    else:
+        raise AssertionError("expected ValueError when Cosmos Reasoner has no media")
+    print("\u2713 NVIDIA understand adapters reject missing media")
+
+
 def check_kimi_understand_requires_image_or_video():
     from tryon.api.kimi import KimiUnderstandAdapter
 
@@ -539,6 +601,11 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "runway-gen4.5", "--prompt", "animate",
           "--image", "data/model-1.jpg"],
          "RunwayVideoAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "cosmos3", "--prompt", "runway walk"],
+         "Cosmos3VideoAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "cosmos3", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "Cosmos3VideoAdapter", "generate_image_to_video"),
     ]
     for argv, expect_cls, expect_method in cases:
         buf = io.StringIO()
@@ -564,11 +631,13 @@ if __name__ == "__main__":
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()
     check_qwen_dry_runs()
+    check_nvidia_nim_dry_runs()
     check_qwen_image_dry_runs()
     check_qwen_image_local_helpers()
     check_qwen_image_local_dry_runs()
     check_kimi_understand_requires_image_or_video()
     check_qwen_understand_requires_image_or_video()
+    check_nvidia_understand_requires_media()
     check_qwen_image_requires_prompt_and_tryon_inputs()
     check_minimax_h3_requires_prompt()
     check_muse_image_requires_prompt()

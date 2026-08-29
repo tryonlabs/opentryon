@@ -93,6 +93,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "",
     ),
     (
+        "nvidia",
+        "NVIDIA NIM (Nemotron / Cosmos)",
+        "https://build.nvidia.com",
+        ("NVIDIA_API_KEY",),
+        "One key for Nemotron Omni understand, Cosmos 3 Reasoner understand, "
+        "and Cosmos 3 Generator video. Optional COSMOS3_INFER_URL for a self-hosted Generator NIM.",
+    ),
+    (
         "bfl",
         "Black Forest Labs",
         "https://docs.bfl.ai/",

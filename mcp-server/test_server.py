@@ -100,6 +100,8 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_nemotron_omni", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_cosmos3_reasoner", {"video": "clip.mp4", "prompt": "what happens?", "dry_run": True}, False),
         ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
         ("generate_muse_image", {"prompt": "editorial still", "dry_run": True}, False),
         ("generate_p_image_ideogram", {"prompt": "atelier noir poster", "dry_run": True}, False),
@@ -114,6 +116,7 @@ async def check_dry_run_calls() -> None:
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
         ("video_generate_wan_3_0", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3", {"prompt": "runway walk", "dry_run": True}, False),
+        ("video_generate_cosmos3", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3_local", {"prompt": "runway walk", "dry_run": True}, True),
         ("video_generate_seedance", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_luma_ray_3_2", {"prompt": "dolly shot", "dry_run": True}, False),
@@ -235,8 +238,19 @@ async def check_list_and_set_api_keys() -> None:
         u["service"] == "generate" and u["model"] == "p-image-ideogram"
         for u in by_id["pruna"]["unlocks"]
     )
+    assert "nvidia" in by_id
+    assert by_id["nvidia"]["vars"][0]["name"] == "NVIDIA_API_KEY"
+    assert any(
+        u["service"] == "understand" and u["model"] == "nemotron-omni"
+        for u in by_id["nvidia"]["unlocks"]
+    )
+    assert any(
+        u["service"] == "video-generate" and u["model"] == "cosmos3"
+        for u in by_id["nvidia"]["unlocks"]
+    )
     allowed = server.config.allowed_env_names()
     assert "MODEL_API_KEY" in allowed and "MINIMAX_API_KEY" in allowed
+    assert "NVIDIA_API_KEY" in allowed
     assert "META_MODEL_API_KEY" in allowed and "MUSE_API_KEY" in allowed
     gemini = next(p for p in providers if p["id"] == "gemini")
     assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"
