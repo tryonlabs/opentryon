@@ -87,6 +87,16 @@ Same `NVIDIA_API_KEY` for Nemotron Omni, Cosmos 3 Reasoner, and Cosmos 3 Generat
 
 See [NVIDIA NIM](../api-reference/nvidia-nim.md).
 
+## Google Virtual Try-On (Vertex)
+
+Dedicated person + product try-on. **Not** `GEMINI_API_KEY` / Nano Banana.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `vton_google_vton` | Vertex `virtual-try-on-001` | `GOOGLE_CLOUD_PROJECT` + ADC |
+
+See [Google Virtual Try-On](../api-reference/google-vton.md).
+
 ## Muse Image tools (generate / edit / VTON)
 
 First-party Meta Model API (`MODEL_API_KEY`). **No local twin.** Muse Video is not on the API yet.

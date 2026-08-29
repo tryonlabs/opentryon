@@ -196,6 +196,33 @@ See [Kling AI API Documentation](kling-ai) for complete details.
 
 ---
 
+### `GoogleVTONAdapter`
+
+Dedicated Vertex AI Virtual Try-On (`virtual-try-on-001`). Person + product images; **not** Gemini API / Nano Banana.
+
+```python
+from tryon.api import GoogleVTONAdapter
+
+adapter = GoogleVTONAdapter()  # GOOGLE_CLOUD_PROJECT + ADC
+
+images = adapter.generate_and_decode(
+    person="person.jpg",
+    garment="sweater.jpg",
+    number_of_images=1,
+)
+```
+
+**Parameters:**
+- `project` (str, optional): GCP project. Defaults to `GOOGLE_CLOUD_PROJECT`
+- `location` (str, optional): Vertex location. Defaults to `GOOGLE_CLOUD_LOCATION` or `global`
+
+**Methods:**
+- `generate_and_decode(person, garment, ...)` - Generate and decode to PIL Images
+
+See [Google Virtual Try-On](google-vton) for auth, CLI, and MCP.
+
+---
+
 ### `AmazonNovaCanvasVTONAdapter`
 
 Adapter for Amazon Nova Canvas Virtual Try-On through AWS Bedrock.

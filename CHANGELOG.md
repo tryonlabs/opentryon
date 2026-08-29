@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 👗 Virtual try-on — Google Vertex (`virtual-try-on-001`)
+- **Google Virtual Try-On** (`GoogleVTONAdapter` / CLI `--model google-vton`): first-party Vertex / Gemini Enterprise `recontext_image`
+  - Dedicated person + product try-on; **not** Nano Banana and **not** `GEMINI_API_KEY`
+  - Auth: `GOOGLE_CLOUD_PROJECT` + Application Default Credentials (`gcloud auth application-default login` or `GOOGLE_APPLICATION_CREDENTIALS`)
+  - 1–4 samples; C2PA/SynthID watermark on by default; MCP tool `vton_google_vton`
+  - Docs: `docs/docs/api-reference/google-vton.md`
+
 #### 🧠 Understand + 🎬 Video — NVIDIA NIM (Nemotron Omni, Cosmos 3)
 - **Nemotron 3 Nano Omni** (`NemotronOmniUnderstandAdapter` / CLI `--model nemotron-omni`): hosted NIM chat (`nvidia/nemotron-3-nano-omni-30b-a3b-reasoning`)
   - Image, video, and audio understand; `NVIDIA_API_KEY`; thinking on by default

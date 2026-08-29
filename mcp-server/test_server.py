@@ -240,6 +240,12 @@ async def check_list_and_set_api_keys() -> None:
     )
     assert "nvidia" in by_id
     assert by_id["nvidia"]["vars"][0]["name"] == "NVIDIA_API_KEY"
+    assert "vertex" in by_id
+    assert by_id["vertex"]["vars"][0]["name"] == "GOOGLE_CLOUD_PROJECT"
+    assert any(
+        u["service"] == "vton" and u["model"] == "google-vton"
+        for u in by_id["vertex"]["unlocks"]
+    )
     assert any(
         u["service"] == "understand" and u["model"] == "nemotron-omni"
         for u in by_id["nvidia"]["unlocks"]
@@ -251,6 +257,8 @@ async def check_list_and_set_api_keys() -> None:
     allowed = server.config.allowed_env_names()
     assert "MODEL_API_KEY" in allowed and "MINIMAX_API_KEY" in allowed
     assert "NVIDIA_API_KEY" in allowed
+    assert "GOOGLE_CLOUD_PROJECT" in allowed
+    assert "GOOGLE_CLOUD_LOCATION" in allowed
     assert "META_MODEL_API_KEY" in allowed and "MUSE_API_KEY" in allowed
     gemini = next(p for p in providers if p["id"] == "gemini")
     assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"

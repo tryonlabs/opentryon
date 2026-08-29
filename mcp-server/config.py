@@ -27,6 +27,8 @@ _EXTRA_ENV_NAMES = (
     "OPENTRYON_AGENT_LLM_API_KEY",
     "ANTHROPIC_API_KEY",
     "GOOGLE_API_KEY",
+    "GOOGLE_CLOUD_LOCATION",
+    "GOOGLE_APPLICATION_CREDENTIALS",
     "BYTEPLUS_ARK_API_KEY",
     "WAN_API_KEY",
     "RUNWAY_API_KEY",
@@ -68,7 +70,18 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Google Gemini",
         "https://aistudio.google.com/app/apikey",
         ("GEMINI_API_KEY",),
-        "Also used by Studio chat when OPENTRYON_AGENT_LLM_PROVIDER=google.",
+        "Also used by Studio chat when OPENTRYON_AGENT_LLM_PROVIDER=google. "
+        "Does not unlock Vertex Virtual Try-On (google-vton).",
+    ),
+    (
+        "vertex",
+        "Google Vertex Virtual Try-On",
+        "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001",
+        ("GOOGLE_CLOUD_PROJECT",),
+        "GCP project id, not GEMINI_API_KEY. Also run "
+        "`gcloud auth application-default login` (or set "
+        "GOOGLE_APPLICATION_CREDENTIALS). Optional GOOGLE_CLOUD_LOCATION "
+        "(default global).",
     ),
     (
         "meta",

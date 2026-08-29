@@ -14,7 +14,7 @@ One key, `NVIDIA_API_KEY` from [build.nvidia.com](https://build.nvidia.com), unl
 | `cosmos3-reasoner` | `understand` | `Cosmos3ReasonerAdapter` | `nvidia/cosmos3-nano-reasoner` |
 | `cosmos3` | `video-generate` | `Cosmos3VideoAdapter` | Cosmos 3 Generator nano (`POST` infer, `b64_video`) |
 
-Nemotron is **understanding / agents**, not T2I or VTON. Cosmos 3 Generator is **physics-aware T2V / I2V**. There is no NVIDIA VTON NIM — local OSS VTON stays on the [integrate-next](../community/integrate-next.md) Wave 2 list.
+Nemotron is **understanding / agents**, not T2I or VTON. Cosmos 3 Generator is **physics-aware T2V / I2V**. There is no NVIDIA VTON NIM — dedicated try-on APIs and local weights stay on the [integrate-next](../community/integrate-next.md) Wave 2 list.
 
 Official docs:
 

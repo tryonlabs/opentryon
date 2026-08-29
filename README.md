@@ -16,7 +16,7 @@ API tutorials, configuration, examples, and agent guides live there — not in t
 
 | Category | Highlights |
 |---|---|
-| **Virtual try-on** | FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local), **Muse Image** (composition) |
+| **Virtual try-on** | FLUX VTO, **Google Vertex VTO**, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local), **Muse Image** (composition) |
 | **Generate / edit** | Nano Banana family, FLUX.2, GPT Image, Luma Photon, Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image, Pruna P-Image / **P-Image-Ideogram** / Edit / Upscale, **Qwen-Image** (API + local), **Muse Image**; local FLUX.2-dev Turbo |
 | **Understand** | Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local) |
 | **Video** | Veo, Sora, Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3** (API + local), **Wan** (API + local 2.2), **Runway Gen-4.5** |

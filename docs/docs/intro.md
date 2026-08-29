@@ -76,7 +76,7 @@ Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 - **Model integration guidelines** for Path A (API) vs Path B (local)
 
 ### Virtual try-on
-Cloud adapters including FLUX VTO, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, Nano Banana 2 Lite composition, **Qwen-Image** (API + local), and **Muse Image** composition.
+Cloud adapters including FLUX VTO, **Google Vertex Virtual Try-On**, Nova Canvas, Kling AI, Segmind, **Pruna P-Image-Try-On**, **FASHN**, Nano Banana 2 Lite composition, **Qwen-Image** (API + local), and **Muse Image** composition.
 
 ### Image generate / edit
 Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / P-Image-Ideogram / Edit / Upscale**, **Qwen-Image** (DashScope 3.0 + local 2512/Edit-2511), **Muse Image**, plus local FLUX.2-dev Turbo.

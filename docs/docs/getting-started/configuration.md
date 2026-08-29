@@ -40,6 +40,10 @@ AMAZON_NOVA_MODEL_ID=amazon.nova-canvas-v1:0  # Optional
 # Google Gemini (Nano Banana Image Generation)
 GEMINI_API_KEY=your_gemini_api_key
 
+# Google Vertex Virtual Try-On (virtual-try-on-001) — not GEMINI_API_KEY
+GOOGLE_CLOUD_PROJECT=your_gcp_project_id
+# GOOGLE_CLOUD_LOCATION=global
+
 # BFL AI (FLUX.2 Image Generation)
 BFL_API_KEY=your_bfl_api_key
 

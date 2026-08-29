@@ -173,6 +173,24 @@ def check_fashn_dry_runs():
     print("\u2713 vton fashn-tryon-max / fashn-tryon-v1.6 --dry-run resolve the expected calls")
 
 
+def check_google_vton_dry_run():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "vton", "--model", "google-vton",
+            "--person-image", "data/model-1.jpg",
+            "--garment-image", "data/garment.png",
+            "--num-images", "2",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    print(printed, end="")
+    assert code == 0, printed
+    assert "GoogleVTONAdapter" in printed and "generate_and_decode" in printed, printed
+    assert "'number_of_images': 2" in printed, printed
+    print("\u2713 vton google-vton --dry-run resolves the expected call")
+
+
 def check_gemini_omni_dry_runs():
     cases = [
         (
@@ -627,6 +645,7 @@ if __name__ == "__main__":
     check_p_image_tryon_dry_run()
     check_nano_banana_2_lite_dry_runs()
     check_fashn_dry_runs()
+    check_google_vton_dry_run()
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()
