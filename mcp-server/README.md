@@ -126,6 +126,9 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 |---|---|---|
 | `vton_flux_vto` | Black Forest Labs FLUX VTO | `BFL_API_KEY` |
 | `vton_google_vton` | Google Vertex Virtual Try-On (`virtual-try-on-001`) | `GOOGLE_CLOUD_PROJECT` + ADC |
+| `vton_outfitanyone_plus` | Alibaba OutfitAnyone-Plus (`aitryon-plus`) | Beijing `DASHSCOPE_API_KEY` |
+| `vton_photoroom_vton` | Photoroom Virtual Try-On | `PHOTOROOM_API_KEY` |
+| `vton_photoroom_virtual_model` | Photoroom Virtual Model (flat-lay → on-model) | `PHOTOROOM_API_KEY` |
 | `vton_nova_canvas` | Amazon Nova Canvas | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` |
 | `vton_kling_ai` | Kling AI (Kolors Virtual Try-On) | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `vton_segmind` | Segmind Try-On Diffusion | `SEGMIND_API_KEY` |

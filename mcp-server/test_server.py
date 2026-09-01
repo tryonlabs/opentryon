@@ -92,6 +92,9 @@ async def check_dry_run_calls() -> None:
         ("vton_nano_banana_2_lite", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
         ("vton_fashn_tryon_max", {"model_image": "p.jpg", "product_image": "g.jpg", "dry_run": True}, False),
         ("vton_fashn_tryon_v1_6", {"model_image": "p.jpg", "product_image": "g.jpg", "dry_run": True}, False),
+        ("vton_outfitanyone_plus", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
+        ("vton_photoroom_vton", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, False),
+        ("vton_photoroom_virtual_model", {"garment": "g.jpg", "dry_run": True}, False),
         ("generate_nano_banana", {"prompt": "a red dress", "dry_run": True}, False),
         ("generate_nano_banana_2_lite", {"prompt": "a red dress", "dry_run": True}, False),
         ("edit_nano_banana_2_lite", {"image": "p.jpg", "prompt": "make it blue", "dry_run": True}, False),
@@ -246,6 +249,20 @@ async def check_list_and_set_api_keys() -> None:
         u["service"] == "vton" and u["model"] == "google-vton"
         for u in by_id["vertex"]["unlocks"]
     )
+    assert "photoroom" in by_id
+    assert by_id["photoroom"]["vars"][0]["name"] == "PHOTOROOM_API_KEY"
+    assert any(
+        u["service"] == "vton" and u["model"] == "photoroom-vton"
+        for u in by_id["photoroom"]["unlocks"]
+    )
+    assert any(
+        u["service"] == "vton" and u["model"] == "photoroom-virtual-model"
+        for u in by_id["photoroom"]["unlocks"]
+    )
+    assert any(
+        u["service"] == "vton" and u["model"] == "outfitanyone-plus"
+        for u in by_id["dashscope"]["unlocks"]
+    )
     assert any(
         u["service"] == "understand" and u["model"] == "nemotron-omni"
         for u in by_id["nvidia"]["unlocks"]
@@ -259,6 +276,7 @@ async def check_list_and_set_api_keys() -> None:
     assert "NVIDIA_API_KEY" in allowed
     assert "GOOGLE_CLOUD_PROJECT" in allowed
     assert "GOOGLE_CLOUD_LOCATION" in allowed
+    assert "PHOTOROOM_API_KEY" in allowed
     assert "META_MODEL_API_KEY" in allowed and "MUSE_API_KEY" in allowed
     gemini = next(p for p in providers if p["id"] == "gemini")
     assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"

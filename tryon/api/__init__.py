@@ -23,6 +23,8 @@ _LAZY_ATTRS = {
     "PImageTryOnAdapter": ".vton",
     "FashnVTONAdapter": ".vton",
     "GoogleVTONAdapter": ".vton",
+    "OutfitAnyonePlusAdapter": ".vton",
+    "PhotoroomVTONAdapter": ".vton",
     "PImageAdapter": ".pruna",
     "PImageEditAdapter": ".pruna",
     "PImageIdeogramAdapter": ".pruna",

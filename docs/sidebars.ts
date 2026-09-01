@@ -58,6 +58,8 @@ const sidebars: SidebarsConfig = {
         'api-reference/diffusion',
         'api-reference/kling-ai',
         'api-reference/google-vton',
+        'api-reference/outfitanyone-plus',
+        'api-reference/photoroom',
         'api-reference/nova-canvas',
         'api-reference/segmind',
         'api-reference/pruna',

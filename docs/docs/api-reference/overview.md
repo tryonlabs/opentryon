@@ -223,6 +223,56 @@ See [Google Virtual Try-On](google-vton) for auth, CLI, and MCP.
 
 ---
 
+### `OutfitAnyonePlusAdapter`
+
+Dedicated Alibaba DashScope try-on (`aitryon-plus`). Beijing-region key. **Not** Qwen-Image composition.
+
+```python
+from tryon.api import OutfitAnyonePlusAdapter
+
+adapter = OutfitAnyonePlusAdapter()  # DASHSCOPE_API_KEY (Beijing)
+
+images = adapter.generate_and_decode(
+    person="person.jpg",
+    garment="top.jpeg",
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): Defaults to `DASHSCOPE_API_KEY`
+- `base_url` (str, optional): Defaults to `OUTFITANYONE_BASE_URL` or China DashScope
+
+**Methods:**
+- `generate_and_decode(person, garment, top_garment=..., bottom_garment=..., restore_face=True, resolution=-1)`
+
+See [OutfitAnyone-Plus](outfitanyone-plus) for auth, CLI, and MCP.
+
+---
+
+### `PhotoroomVTONAdapter`
+
+Photoroom Image Editing API — shopper Virtual Try-On and catalog Virtual Model (`POST /v2/edit`).
+
+```python
+from tryon.api import PhotoroomVTONAdapter
+
+adapter = PhotoroomVTONAdapter()  # PHOTOROOM_API_KEY
+worn = adapter.generate_and_decode(person="selfie.jpg", garment="dress.jpg")
+catalog = adapter.generate_virtual_model(garment="flatlay.jpg", preset_model="avery")
+```
+
+**Parameters:**
+- `api_key` (str, optional): Defaults to `PHOTOROOM_API_KEY`
+- `base_url` (str, optional): Defaults to `PHOTOROOM_BASE_URL` or `https://image-api.photoroom.com`
+
+**Methods:**
+- `generate_and_decode(person, garment, mode="try-on", ...)`
+- `generate_virtual_model(garment, ...)`
+
+See [Photoroom](photoroom) for auth, CLI, and MCP.
+
+---
+
 ### `AmazonNovaCanvasVTONAdapter`
 
 Adapter for Amazon Nova Canvas Virtual Try-On through AWS Bedrock.

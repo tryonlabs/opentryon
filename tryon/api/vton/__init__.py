@@ -11,10 +11,14 @@ from .flux_vto import FluxVTONAdapter
 from .p_image_tryon import PImageTryOnAdapter
 from .fashn import FashnVTONAdapter
 from .google_vton import GoogleVTONAdapter
+from .outfitanyone import OutfitAnyonePlusAdapter
+from .photoroom import PhotoroomVTONAdapter
 
 __all__ = [
     "FluxVTONAdapter",
     "PImageTryOnAdapter",
     "FashnVTONAdapter",
     "GoogleVTONAdapter",
+    "OutfitAnyonePlusAdapter",
+    "PhotoroomVTONAdapter",
 ]

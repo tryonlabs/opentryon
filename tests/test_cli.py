@@ -191,6 +191,56 @@ def check_google_vton_dry_run():
     print("\u2713 vton google-vton --dry-run resolves the expected call")
 
 
+def check_outfitanyone_plus_dry_run():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "vton", "--model", "outfitanyone-plus",
+            "--person-image", "data/model-1.jpg",
+            "--garment-image", "data/garment.png",
+            "--resolution", "1024",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    print(printed, end="")
+    assert code == 0, printed
+    assert "OutfitAnyonePlusAdapter" in printed and "generate_and_decode" in printed, printed
+    assert "'resolution': 1024" in printed, printed
+    print("\u2713 vton outfitanyone-plus --dry-run resolves the expected call")
+
+
+def check_photoroom_dry_runs():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "vton", "--model", "photoroom-vton",
+            "--person-image", "data/model-1.jpg",
+            "--garment-image", "data/garment.png",
+            "--pose", "standing",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    print(printed, end="")
+    assert code == 0, printed
+    assert "PhotoroomVTONAdapter" in printed and "generate_and_decode" in printed, printed
+    assert "'mode': 'try-on'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "vton", "--model", "photoroom-virtual-model",
+            "--garment-image", "data/garment.png",
+            "--preset-model", "avery",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    print(printed, end="")
+    assert code == 0, printed
+    assert "PhotoroomVTONAdapter" in printed and "generate_virtual_model" in printed, printed
+    assert "'preset_model': 'avery'" in printed, printed
+    print("\u2713 vton photoroom-vton / photoroom-virtual-model --dry-run resolve the expected calls")
+
+
 def check_gemini_omni_dry_runs():
     cases = [
         (
@@ -646,6 +696,8 @@ if __name__ == "__main__":
     check_nano_banana_2_lite_dry_runs()
     check_fashn_dry_runs()
     check_google_vton_dry_run()
+    check_outfitanyone_plus_dry_run()
+    check_photoroom_dry_runs()
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()

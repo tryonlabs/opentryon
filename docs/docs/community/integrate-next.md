@@ -14,7 +14,7 @@ Living **candidate queue** for new adapters. This is not a commitment and it is 
 | [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/ROADMAP.md) | Product slices (train / eval / one local VTON / agents) |
 | [`.cursor/skills/integrate-model/`](https://github.com/tryonlabs/opentryon/tree/main/.cursor/skills/integrate-model) | How to integrate once you pick a row |
 
-**Surveyed:** 29 August 2026 · Sources: [build.nvidia.com/models](https://build.nvidia.com/models), [Google `virtual-try-on-001`](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001), [Alibaba OutfitAnyone-Plus](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api), [CatVTON](https://github.com/Zheng-Chong/CatVTON/), [Leffa](https://github.com/franciszzj/Leffa), [Nemotron](https://www.nvidia.com/en-us/ai-data-science/foundation-models/nemotron/), [Cosmos 3](https://docs.nvidia.com/cosmos/latest/cosmos3/index.html).
+**Surveyed:** 29 August 2026 · Sources: [build.nvidia.com/models](https://build.nvidia.com/models), [Google `virtual-try-on-001`](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001), [Alibaba OutfitAnyone-Plus](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api), [Photoroom Virtual Try-On](https://docs.photoroom.com/image-editing-api-plus-plan/virtual-try-on), [CatVTON](https://github.com/Zheng-Chong/CatVTON/), [Leffa](https://github.com/franciszzj/Leffa), [Nemotron](https://www.nvidia.com/en-us/ai-data-science/foundation-models/nemotron/), [Cosmos 3](https://docs.nvidia.com/cosmos/latest/cosmos3/index.html).
 
 **How to use:** pick a `next` row → follow the [integrate-model skill](https://github.com/tryonlabs/opentryon/blob/main/.cursor/skills/integrate-model/SKILL.md) (Path A first-party API, Path B local). After ship, move the row to **Shipped** and bump the date.
 
@@ -75,6 +75,8 @@ NVIDIA has **no** dedicated VTON NIM. Product roadmap Slice D is still: pick **o
 |---|---|---|---|
 | `flux-vto` | Black Forest Labs | Dedicated VTON API | First-party FLUX VTO |
 | `google-vton` | Google Cloud Vertex | Dedicated VTON API | `virtual-try-on-001`; ADC + `GOOGLE_CLOUD_PROJECT`, not `GEMINI_API_KEY` |
+| `outfitanyone-plus` | Alibaba Cloud Model Studio | Dedicated VTON API | `aitryon-plus`; Beijing-region `DASHSCOPE_API_KEY`, not Qwen-Image compose |
+| `photoroom-vton` / `photoroom-virtual-model` | Photoroom | Dedicated VTON + catalog API | Image Editing `/v2/edit`; shopper try-on **or** flat-lay → on-model |
 | `nova-canvas` | Amazon Bedrock | Dedicated VTON API | Garment classes incl. footwear |
 | `kling-ai` | Kuaishou (Kling / Kolors) | Dedicated VTON API | First-party Kolors v1 / v1.5 |
 | `fashn-tryon-max` / `fashn-tryon-v1.6` | FASHN | Dedicated VTON API | Fashion suite; v1.6 is the fast e-comm path |
@@ -91,8 +93,8 @@ Prefer first-party APIs. Related catalog jobs (product→model, model-swap, pars
 | Candidate | Vendor durability | Task | Suggested id | Why | Status |
 |---|---|---|---|---|---|
 | **Google `virtual-try-on-001`** | Google Cloud (GA 20 Jan 2026; listed discontinue 20 Jan 2027) | Shopper / catalog image VTON | `google-vton` | Dedicated Vertex / Gemini Enterprise predict API. Person + product image, 1–4 samples, C2PA watermark. Auth is **ADC / GCP project**, not `GEMINI_API_KEY`. Distinct from Nano Banana compose. [Docs](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001) | shipped |
-| **Alibaba OutfitAnyone-Plus (`aitryon-plus`)** | Alibaba Cloud Model Studio | Image VTON + combo top/bottom | `outfitanyone` | Dedicated DashScope try-on (async). Top, bottoms, dress, face restore, parsing companion `aitryon-parsing-v1`. Same company as Qwen; **Beijing-region key**, not the Qwen-Image compose path. [Docs](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api) | `next` |
-| **Photoroom Virtual Try-On / Virtual Model** | Photoroom (widely used e-comm photo API) | Fitting room **or** garment→lifestyle model | `photoroom-vton` | API-first catalog/shopper flows. Virtual Model is “flat-lay in, on-model out” (no person photo). Complements dedicated person+SKU VTON. [Product](https://www.photoroom.com/tools/virtual-try-on) | `next` |
+| **Alibaba OutfitAnyone-Plus (`aitryon-plus`)** | Alibaba Cloud Model Studio | Image VTON + combo top/bottom | `outfitanyone-plus` | Dedicated DashScope try-on (async). Top, bottoms, dress, face restore, parsing companion `aitryon-parsing-v1`. Same company as Qwen; **Beijing-region key**, not the Qwen-Image compose path. [Docs](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api) | shipped |
+| **Photoroom Virtual Try-On / Virtual Model** | Photoroom (widely used e-comm photo API) | Fitting room **or** garment→lifestyle model | `photoroom-vton` / `photoroom-virtual-model` | API-first catalog/shopper flows. Virtual Model is “flat-lay in, on-model out” (no person photo). Complements dedicated person+SKU VTON. [API](https://docs.photoroom.com/image-editing-api-plus-plan/virtual-try-on) · [Product](https://www.photoroom.com/tools/virtual-model) | shipped |
 | Pixelcut Try-On | Pixelcut (e-comm photo; Shopify-heavy) | Image VTON + garment transfer | `pixelcut-vton` | REST `/v1/try-on`; upper/lower/full. Smaller than Google/Alibaba. [API](https://www.pixelcut.ai/api/try-on) | `watch` |
 | Fitroom | Specialist startup | Combo top+bottom in one request | `fitroom` | Strong e-comm DX; weaker long-term vendor signal. | `watch` |
 | Claid | Specialist | Catalog try-on | — | Photo-API vendor; overlap with Photoroom. | `watch` |
@@ -157,7 +159,7 @@ Pick **one** for v0.1.0 Slice D (`tryon.models` + `opentryon[local]`). Many rese
 
 ### Virtual try-on
 
-NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX VTO, **Google Vertex**, Amazon Nova, Kling, FASHN, Pruna). Next **APIs:** Alibaba `aitryon-plus`, Photoroom. Next **local weights:** Leffa (MIT, commercial-friendlier) or CatVTON (Slice D efficiency pick, CC BY-NC-SA). Full tables: Wave 2 above.
+NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX VTO, **Google Vertex**, **OutfitAnyone-Plus**, **Photoroom**, Amazon Nova, Kling, FASHN, Pruna). Next **local weights:** Leffa (MIT, commercial-friendlier) or CatVTON (Slice D efficiency pick, CC BY-NC-SA). Full tables: Wave 2 above.
 
 ### Text-to-video
 
@@ -206,18 +208,17 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 
 1. ~~`nemotron-omni` / `cosmos3` / `cosmos3-reasoner`~~ **shipped** (Path A, 29 Aug 2026).
 2. ~~`google-vton`~~ **shipped** (Path A Vertex `virtual-try-on-001`, 29 Aug 2026).
-3. **VTON Path A (when asked):** `outfitanyone` — dedicated DashScope try-on, not composition I2I.
+3. ~~`outfitanyone-plus` / `photoroom-vton` / `photoroom-virtual-model`~~ **shipped** (Path A, 29 Aug 2026).
 4. **VTON Path B (v0.1.0 Slice D):** pick **one** — `leffa` if commercial D2C self-host matters (MIT); `catvton` if the goal is &lt;8GB OSS demos (CC BY-NC-SA). Do not ship both in the first local VTON slice.
-5. Optional catalog/on-model: Photoroom Virtual Model if a customer asks for flat-lay → lifestyle without a shopper photo.
-6. **New services** only after one local VTON: LipSync (A2V), TRELLIS (3D).
-7. **SANA-Sprint** if we want a fast local T2I that is not another FLUX/Qwen clone.
-8. Optional: `nemotron-omni-local` if someone will run 30B-A3B.
+5. **New services** only after one local VTON: LipSync (A2V), TRELLIS (3D).
+6. **SANA-Sprint** if we want a fast local T2I that is not another FLUX/Qwen clone.
+7. Optional: `nemotron-omni-local` if someone will run 30B-A3B.
 
 ---
 
 ## Shipped (do not re-add)
 
-Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image, Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3, Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8, BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`). Full table: CLI `--help` / registry. **No dedicated local VTON weights yet** — see Wave 2 Path B.
+Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image, Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3, Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8, BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`). Full table: CLI `--help` / registry. **No dedicated local VTON weights yet** — see Wave 2 Path B.
 
 ---
 

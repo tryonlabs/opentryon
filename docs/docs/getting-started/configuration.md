@@ -50,8 +50,11 @@ BFL_API_KEY=your_bfl_api_key
 # Moonshot AI (Kimi K2.6 / K2.7 Code multimodal understanding)
 MOONSHOT_API_KEY=your_moonshot_api_key
 
-# Alibaba DashScope (Wan video, Qwen3.8-Max understand, Qwen-Image generate/edit/VTON)
+# Alibaba DashScope (Wan, Qwen3.8-Max, Qwen-Image, OutfitAnyone-Plus)
 DASHSCOPE_API_KEY=your_dashscope_api_key
+
+# Photoroom Virtual Try-On + Virtual Model
+PHOTOROOM_API_KEY=your_photoroom_api_key
 
 # MiniMax Hailuo 2.3 + MiniMax H3 video (same key; H3 uses V2)
 MINIMAX_API_KEY=your_minimax_api_key
@@ -162,7 +165,7 @@ from tryon.datasets import FashionMNIST
    # Optional: QWEN_IMAGE_BASE_URL for Qwen-Image T2I / I2I / VTON
    ```
 
-   Same key covers `understand --model qwen3.8-max`, `generate|edit|vton --model qwen-image`, and `video-generate --model wan-api` / `wan-3.0`.
+   Same key covers `understand --model qwen3.8-max`, `generate|edit|vton --model qwen-image`, `video-generate --model wan-api` / `wan-3.0`, and **Beijing-region** `vton --model outfitanyone-plus` (`aitryon-plus`). International keys used for Qwen/Wan do not unlock OutfitAnyone-Plus.
 
    Local open-weight twin (`pip install opentryon[local]`, CUDA, recent Diffusers):
 
@@ -176,6 +179,16 @@ from tryon.datasets import FashionMNIST
 
    CLI: `opentryon generate|edit|vton --model qwen-image-local`. See
    [Qwen-Image local](../local-models/qwen-image.md).
+
+### Photoroom (Virtual Try-On / Virtual Model)
+
+1. Activate the API at [app.photoroom.com/api](https://app.photoroom.com/api)
+2. Add to `.env`: `PHOTOROOM_API_KEY=your_key`
+3. Optional watermarked tests: prefix the key with `sandbox_` or set `PHOTOROOM_SANDBOX=1`
+
+   Covers `vton --model photoroom-vton` (shopper photo + product) and
+   `vton --model photoroom-virtual-model` (flat-lay → on-model). Plus / Enterprise
+   Image Editing API. See [Photoroom](../api-reference/photoroom.md).
 
 ### MiniMax (Hailuo 2.3 + H3)
 

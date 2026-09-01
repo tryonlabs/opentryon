@@ -28,7 +28,7 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `muse-image` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `muse-image` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local) |
@@ -60,6 +60,16 @@ opentryon vton --model flux-vto \
 # Google Vertex dedicated try-on (ADC + GOOGLE_CLOUD_PROJECT; not GEMINI_API_KEY)
 opentryon vton --model google-vton \
   --person-image model.png --garment-image garment.png
+
+# Alibaba OutfitAnyone-Plus (Beijing DASHSCOPE_API_KEY; not Qwen-Image)
+opentryon vton --model outfitanyone-plus \
+  --person-image model.png --garment-image garment.png
+
+# Photoroom shopper try-on / catalog virtual model
+opentryon vton --model photoroom-vton \
+  --person-image selfie.jpg --garment-image dress.jpg
+opentryon vton --model photoroom-virtual-model \
+  --garment-image flatlay.jpg --preset-model avery
 
 # Text-to-image
 opentryon generate --model nano-banana-pro \
@@ -189,6 +199,8 @@ stack trace:
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
 - [Qwen3.8-Max understanding](../api-reference/qwen3.8.md)
 - [Qwen-Image generation, edit, and try-on](../api-reference/qwen-image.md)
+- [OutfitAnyone-Plus dedicated try-on](../api-reference/outfitanyone-plus.md)
+- [Photoroom Virtual Try-On / Virtual Model](../api-reference/photoroom.md)
 - [Qwen-Image open-weight local model](../local-models/qwen-image.md)
 - [Qwen3.8 open-weight local model](../local-models/qwen3.8.md)
 - [Adding a new model to the CLI](../advanced/new-model-checklist.md)

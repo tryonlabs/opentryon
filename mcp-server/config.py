@@ -74,6 +74,15 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Does not unlock Vertex Virtual Try-On (google-vton).",
     ),
     (
+        "photoroom",
+        "Photoroom",
+        "https://app.photoroom.com/api",
+        ("PHOTOROOM_API_KEY",),
+        "Image Editing API Plus. Unlocks photoroom-vton (shopper try-on) and "
+        "photoroom-virtual-model (flat-lay → on-model). Prefix the key with "
+        "sandbox_ for watermarked tests.",
+    ),
+    (
         "vertex",
         "Google Vertex Virtual Try-On",
         "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001",
@@ -132,7 +141,8 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Alibaba DashScope",
         "https://www.alibabacloud.com/help/en/model-studio/get-api-key",
         ("DASHSCOPE_API_KEY",),
-        "",
+        "Same key for Qwen3.8-Max, Qwen-Image, and Wan. OutfitAnyone-Plus "
+        "(outfitanyone-plus / aitryon-plus) needs a China Beijing-region key.",
     ),
     (
         "aws",

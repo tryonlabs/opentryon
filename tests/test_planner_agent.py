@@ -153,6 +153,43 @@ def check_named_model_google_vton_dry_run():
     print("\u2713 named-model chat dry-runs google-vton and pins virtual-try-on-001")
 
 
+def check_named_model_outfitanyone_and_photoroom_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="vton", task=kwargs["prompt"], reason="try-on")
+    )
+    result = agent.run(
+        "Try the garment using aitryon-plus",
+        person_image="person.jpg",
+        garment_image="shirt.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["service"] == "vton"
+    assert result["model"] == "outfitanyone-plus"
+    assert "OutfitAnyonePlusAdapter" in (result.get("call") or "")
+
+    result = agent.run(
+        "Dress this SKU with photoroom-vton",
+        person_image="person.jpg",
+        garment_image="shirt.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["model"] == "photoroom-vton"
+    assert "PhotoroomVTONAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    vton = slice_for_intent("vton")
+    plus = match_named_model("use outfitanyone-plus on this look", vton)
+    assert plus is not None and plus.model == "outfitanyone-plus"
+    vm = match_named_model("use photoroom virtual model for this flat lay", vton)
+    assert vm is not None and vm.model == "photoroom-virtual-model"
+    bare = match_named_model("use photoroom on this look", vton)
+    assert bare is not None and bare.model == "photoroom-vton"
+    print("\u2713 named-model chat dry-runs outfitanyone-plus / photoroom and pins virtual-model")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -552,6 +589,7 @@ def main():
     check_named_model_wan_30_dry_run()
     check_named_model_nvidia_nim_dry_run()
     check_named_model_google_vton_dry_run()
+    check_named_model_outfitanyone_and_photoroom_dry_run()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()
