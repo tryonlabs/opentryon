@@ -190,6 +190,40 @@ def check_named_model_outfitanyone_and_photoroom_dry_run():
     print("\u2713 named-model chat dry-runs outfitanyone-plus / photoroom and pins virtual-model")
 
 
+def check_named_model_leffa_and_catvton_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="vton", task=kwargs["prompt"], reason="try-on")
+    )
+    result = agent.run(
+        "Try this on with leffa",
+        person_image="person.jpg",
+        garment_image="shirt.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["model"] == "leffa"
+    assert "LeffaAdapter" in (result.get("call") or "")
+
+    result = agent.run(
+        "Use catvton on this look",
+        person_image="person.jpg",
+        garment_image="shirt.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["model"] == "catvton"
+    assert "CatVTONAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    vton = slice_for_intent("vton")
+    leffa = match_named_model("use leffa on this look", vton)
+    assert leffa is not None and leffa.model == "leffa"
+    cat = match_named_model("use cat vton please", vton)
+    assert cat is not None and cat.model == "catvton"
+    print("\u2713 named-model chat dry-runs leffa / catvton")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -590,6 +624,7 @@ def main():
     check_named_model_nvidia_nim_dry_run()
     check_named_model_google_vton_dry_run()
     check_named_model_outfitanyone_and_photoroom_dry_run()
+    check_named_model_leffa_and_catvton_dry_run()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()

@@ -273,6 +273,21 @@ See [Photoroom](photoroom) for auth, CLI, and MCP.
 
 ---
 
+### `LeffaAdapter` / `CatVTONAdapter`
+
+Dedicated **local** virtual try-on (GPU, `pip install opentryon[local]`). Not composition I2I.
+
+```python
+from tryon.models import LeffaAdapter, CatVTONAdapter
+
+LeffaAdapter().generate_and_decode("person.jpg", "garment.jpg")
+CatVTONAdapter().generate_and_decode("person.jpg", "garment.jpg")
+```
+
+See [Leffa](../local-models/leffa.md) and [CatVTON](../local-models/catvton.md). CatVTON weights are **CC BY-NC-SA 4.0**.
+
+---
+
 ### `AmazonNovaCanvasVTONAdapter`
 
 Adapter for Amazon Nova Canvas Virtual Try-On through AWS Bedrock.

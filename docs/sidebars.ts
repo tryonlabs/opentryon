@@ -102,6 +102,8 @@ const sidebars: SidebarsConfig = {
         'local-models/ltx-2.5',
         'local-models/minimax-h3',
         'local-models/wan-2.2',
+        'local-models/leffa',
+        'local-models/catvton',
       ],
     },
     {

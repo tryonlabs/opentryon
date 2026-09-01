@@ -8,11 +8,13 @@ BytePlus ModelArk async content-generation tasks:
   GET  {base}/contents/generations/tasks/{id}
 
 Official catalog (as of 2026):
-  - Seedance 2.5  — up to 30s single-pass storytelling (ModelArk rollout)
+  - Seedance 2.5  — up to 30s single-pass storytelling
+    (ModelArk id ``dreamina-seedance-2-5-260628``)
   - Seedance 2.0  — Standard / Fast / Mini variants
 
 Product: https://seed.bytedance.com/en/seedance2_5
-Docs:    https://docs.byteplus.com/en/docs/ModelArk/
+Docs:    https://docs.byteplus.com/en/docs/ModelArk/1520757
+         https://docs.byteplus.com/en/docs/ModelArk/1901652
 
 Env:
   ARK_API_KEY or BYTEPLUS_ARK_API_KEY
@@ -31,11 +33,12 @@ from PIL import Image
 
 DEFAULT_BASE_URL = "https://ark.ap-southeast.bytepluses.com/api/v3"
 
-# ModelArk model IDs. Seedance 2.5 opens via ModelArk as the public rollout
-# progresses; Seedance 2.0 IDs are the currently documented production IDs.
+# ModelArk model IDs. Seedance 2.5 production id is dreamina-seedance-2-5-260628
+# (BytePlus ModelArk / LAS video-gen docs, 2026).
 SEEDANCE_MODELS = {
-    "seedance-2-5": "seedance-2-5",
-    "seedance-2.5": "seedance-2-5",
+    "seedance-2-5": "dreamina-seedance-2-5-260628",
+    "seedance-2.5": "dreamina-seedance-2-5-260628",
+    "dreamina-seedance-2-5-260628": "dreamina-seedance-2-5-260628",
     "dreamina-seedance-2-0-260128": "dreamina-seedance-2-0-260128",
     "dreamina-seedance-2-0-fast-260128": "dreamina-seedance-2-0-fast-260128",
     "dreamina-seedance-2-0-mini-260615": "dreamina-seedance-2-0-mini-260615",
@@ -191,6 +194,7 @@ class SeedanceAdapter:
             content.append({
                 "type": "image_url",
                 "image_url": {"url": self._image_to_url_or_data(image)},
+                "role": "first_frame",
             })
         if end_image is not None:
             content.append({

@@ -122,8 +122,8 @@ Pick **one** for v0.1.0 Slice D (`tryon.models` + `opentryon[local]`). Many rese
 
 | Candidate | Origin | Suggested id | VRAM / notes | License (typical) | Status |
 |---|---|---|---|---|---|
-| **Leffa** | CVPR 2025; HF `franciszzj/Leffa` | `leffa` | Diffusers; VITON-HD + DressCode try-on + pose transfer; strong **detail/logo** story | Code **MIT**; confirm weight card for commercial D2C | `next` |
-| **CatVTON** + **CatVTON-FLUX** LoRA | ICLR 2025; FLUX.1-Fill LoRA ~37M | `catvton` | &lt;8GB @ 1024×768; roadmap Slice D default for efficiency; LoRA story for Slice B | **CC BY-NC-SA 4.0** (code + checkpoints); FLUX-Fill base has its own terms | `next` |
+| **Leffa** | CVPR 2025; HF `franciszzj/Leffa` | `leffa` | Diffusers; VITON-HD + DressCode try-on + pose transfer; strong **detail/logo** story | Code **MIT**; confirm weight card for commercial D2C | shipped |
+| **CatVTON** + **CatVTON-FLUX** LoRA | ICLR 2025; FLUX.1-Fill LoRA ~37M | `catvton` | &lt;8GB @ 1024×768; SD 1.5 concatenation pipeline (FLUX LoRA weights exist; official FLUX infer code not released) | **CC BY-NC-SA 4.0** (code + checkpoints); FLUX-Fill base has its own terms | shipped |
 | IDM-VTON | ECCV 2024; `yisol/IDM-VTON` | `idm-vton` | Higher fidelity; ~18–24GB typical | **CC BY-NC-SA** | `watch` |
 | OOTDiffusion | `levihsu/OOTDiffusion` | `ootdiffusion` | Community baseline; setup scripts already under `tryon/` | Check repo | `watch` |
 | FitDiT | Tencent-affiliated DiT; `BoyuanJiang/FitDiT` | `fitdit` | High garment-detail DiT; ComfyUI exists | **CC BY-NC-SA**; commercial via Tencent Cloud | `watch` |
@@ -159,7 +159,7 @@ Pick **one** for v0.1.0 Slice D (`tryon.models` + `opentryon[local]`). Many rese
 
 ### Virtual try-on
 
-NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX VTO, **Google Vertex**, **OutfitAnyone-Plus**, **Photoroom**, Amazon Nova, Kling, FASHN, Pruna). Next **local weights:** Leffa (MIT, commercial-friendlier) or CatVTON (Slice D efficiency pick, CC BY-NC-SA). Full tables: Wave 2 above.
+NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX VTO, **Google Vertex**, **OutfitAnyone-Plus**, **Photoroom**, Amazon Nova, Kling, FASHN, Pruna). Local weights shipped: **Leffa** (`leffa`, MIT code) and **CatVTON** (`catvton`, CC BY-NC-SA). Full tables: Wave 2 above.
 
 ### Text-to-video
 
@@ -209,7 +209,7 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 1. ~~`nemotron-omni` / `cosmos3` / `cosmos3-reasoner`~~ **shipped** (Path A, 29 Aug 2026).
 2. ~~`google-vton`~~ **shipped** (Path A Vertex `virtual-try-on-001`, 29 Aug 2026).
 3. ~~`outfitanyone-plus` / `photoroom-vton` / `photoroom-virtual-model`~~ **shipped** (Path A, 29 Aug 2026).
-4. **VTON Path B (v0.1.0 Slice D):** pick **one** — `leffa` if commercial D2C self-host matters (MIT); `catvton` if the goal is &lt;8GB OSS demos (CC BY-NC-SA). Do not ship both in the first local VTON slice.
+4. ~~`leffa` / `catvton`~~ **shipped** (Path B local VTON, 1 Sep 2026).
 5. **New services** only after one local VTON: LipSync (A2V), TRELLIS (3D).
 6. **SANA-Sprint** if we want a fast local T2I that is not another FLUX/Qwen clone.
 7. Optional: `nemotron-omni-local` if someone will run 30B-A3B.
@@ -218,7 +218,7 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 
 ## Shipped (do not re-add)
 
-Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image, Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3, Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8, BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`). Full table: CLI `--help` / registry. **No dedicated local VTON weights yet** — see Wave 2 Path B.
+Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image, Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3, Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8, BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
 
 ---
 

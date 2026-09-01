@@ -10,12 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Planner is a super agent over the live registry.** `planner_agent` still has the same MCP arguments (Studio chat unchanged). After classify, it binds a **filtered** registry slice and calls `invoke_model` — the same runner MCP model tools use. Named models in the prompt (e.g. `wan-3.0`) pin that id. VTON / model-swap are recipes (defaults + outfit-preserving prompt rewrite), not LangChain `create_agent` loops. `tryon.tools` is frozen; do not add providers there.
+- **Seedance 2.5** default `--model-version seedance-2-5` maps to official ModelArk id `dreamina-seedance-2-5-260628` ([product page](https://seed.bytedance.com/en/seedance2_5)). Image-to-video first frame uses `role: first_frame`.
 
 ### Fixed
 
 - **Planner / Studio chat:** base64 photo uploads are materialized to 2048px temp files before `invoke_model` runs, so GPT-4o no longer 429s with `Request too large` / TPM on two phone images.
 
 ### Added
+
+#### 👗 Virtual try-on — local weights (Leffa + CatVTON)
+- **Leffa** (`LeffaAdapter` / CLI `--model leffa`): CVPR 2025 dedicated local VTON ([franciszzj/Leffa](https://github.com/franciszzj/Leffa))
+  - VITON-HD / DressCode checkpoints + pose transfer; MIT code (confirm HF weight card for commercial D2C)
+  - MCP tool `vton_leffa`. Docs: `docs/docs/local-models/leffa.md`
+- **CatVTON** (`CatVTONAdapter` / CLI `--model catvton`): ICLR 2025 concatenation VTON ([zhengchong/CatVTON](https://huggingface.co/zhengchong/CatVTON))
+  - SD 1.5 inpainting + attention adapters; typically &lt;8GB @ 1024×768
+  - **CC BY-NC-SA 4.0** — not for commercial D2C. MCP tool `vton_catvton`. Docs: `docs/docs/local-models/catvton.md`
 
 #### 👗 Virtual try-on — OutfitAnyone-Plus + Photoroom
 - **Alibaba OutfitAnyone-Plus** (`OutfitAnyonePlusAdapter` / CLI `--model outfitanyone-plus`): first-party DashScope `aitryon-plus`
@@ -128,7 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### 🎬 Video / 🎨 Image — new provider models
-- **ByteDance Seedance 2.5** (`tryon.api.byteplus.SeedanceAdapter`): ModelArk async video (`opentryon video-generate --model seedance`). Variants: Seedance 2.5 + Seedance 2.0 Standard/Fast/Mini
+- **ByteDance Seedance 2.5** (`tryon.api.byteplus.SeedanceAdapter`): ModelArk id `dreamina-seedance-2-5-260628` (CLI `--model-version seedance-2-5`). Product: [Seedance 2.5](https://seed.bytedance.com/en/seedance2_5).
 - **ByteDance Seedream 5.0 Pro** (`SeedreamAdapter`): ModelArk image generate + edit/multi-ref (`opentryon generate|edit --model seedream`)
 - **Luma Ray 3.2** (`tryon.api.lumaAI.LumaRay32Adapter`): Agents API T2V/I2V with HDR (`opentryon video-generate --model luma-ray-3.2`)
 - **Kling 3.0 / 3.0 Omni / 2.5 Turbo** (`tryon.api.kling_video.KlingVideoAdapter`): official Open Platform video endpoints (`kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`)

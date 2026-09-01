@@ -42,6 +42,15 @@ def check_wan3_model_aliases():
     print("\u2713 Wan 3.0 aliases resolve to wan3.0-video")
 
 
+def check_seedance_25_model_id():
+    from tryon.api.byteplus.seedance import SeedanceAdapter
+
+    assert SeedanceAdapter._resolve_model("seedance-2-5") == "dreamina-seedance-2-5-260628"
+    assert SeedanceAdapter._resolve_model("seedance-2.5") == "dreamina-seedance-2-5-260628"
+    assert SeedanceAdapter._resolve_model("dreamina-seedance-2-5-260628") == "dreamina-seedance-2-5-260628"
+    print("\u2713 Seedance 2.5 aliases resolve to dreamina-seedance-2-5-260628")
+
+
 def check_p_image_ideogram_thinking_aliases():
     from tryon.api.pruna.p_image_ideogram import _normalize_thinking
 
@@ -674,6 +683,12 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "cosmos3", "--prompt", "animate",
           "--image", "data/model-1.jpg"],
          "Cosmos3VideoAdapter", "generate_image_to_video"),
+        (["vton", "--model", "leffa",
+          "--person-image", "data/model-1.jpg", "--garment-image", "data/garment.png"],
+         "LeffaAdapter", "generate_and_decode"),
+        (["vton", "--model", "catvton",
+          "--person-image", "data/model-1.jpg", "--garment-image", "data/garment.png"],
+         "CatVTONAdapter", "generate_and_decode"),
     ]
     for argv, expect_cls, expect_method in cases:
         buf = io.StringIO()
@@ -688,6 +703,7 @@ def check_new_media_models_dry_runs():
 if __name__ == "__main__":
     check_registry_has_no_flag_collisions()
     check_wan3_model_aliases()
+    check_seedance_25_model_id()
     check_p_image_ideogram_thinking_aliases()
     check_every_model_parser_builds()
     check_flux_vto_dry_run()

@@ -115,6 +115,8 @@ async def check_dry_run_calls() -> None:
         ("generate_qwen_image_local", {"prompt": "editorial still", "dry_run": True}, True),
         ("edit_qwen_image_local", {"image": ["p.jpg"], "prompt": "make it blue", "dry_run": True}, True),
         ("vton_qwen_image_local", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, True),
+        ("vton_leffa", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, True),
+        ("vton_catvton", {"person": "p.jpg", "garment": "g.jpg", "dry_run": True}, True),
         ("video_generate_veo", {"prompt": "a cat", "image": "cat.jpg", "dry_run": True}, False),
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
         ("video_generate_wan_3_0", {"prompt": "runway walk", "dry_run": True}, False),

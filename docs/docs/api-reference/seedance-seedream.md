@@ -36,7 +36,7 @@ export ARK_API_KEY=...
 
 | `--model-version` | Notes |
 |---|---|
-| `seedance-2-5` | Up to ~30s storytelling; ModelArk rollout |
+| `seedance-2-5` / `dreamina-seedance-2-5-260628` | Up to ~30s storytelling (official ModelArk id) |
 | `seedance-2-0` / `dreamina-seedance-2-0-260128` | Production 2.0 Standard |
 | `seedance-2-0-fast` / `dreamina-seedance-2-0-fast-260128` | Faster 2.0 |
 | `seedance-2-0-mini` / `dreamina-seedance-2-0-mini-260615` | Lightweight 2.0 |
@@ -92,6 +92,6 @@ images[0].save("out.png")
 
 ## Notes
 
-- Seedance 2.5 public ModelArk IDs may lag the consumer app rollout; if `seedance-2-5` is not yet provisioned on your project, use a Seedance 2.0 `--model-version` ID.
+- Seedance 2.5 public ModelArk id is `dreamina-seedance-2-5-260628` (CLI `--model-version seedance-2-5` maps to it). Activate the model in the BytePlus console before calling.
 - Auth uses `Authorization: Bearer $ARK_API_KEY`.
 - Async video tasks are polled until completion, then the MP4 is downloaded.
