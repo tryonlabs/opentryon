@@ -57,6 +57,15 @@ Local Diffusers twin (`pip install opentryon[local]` + CUDA):
 
 See [Qwen-Image local](../local-models/qwen-image.md).
 
+## Local dedicated VTON (Leffa + CatVTON)
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `vton_leffa` | franciszzj/Leffa (CVPR 2025) | GPU + `opentryon[local]` |
+| `vton_catvton` | zhengchong/CatVTON (ICLR 2025, CC BY-NC-SA) | GPU + `opentryon[local]` |
+
+See [Leffa](../local-models/leffa.md) and [CatVTON](../local-models/catvton.md).
+
 Qwen3.8 is a native multimodal / coding / agent family; OpenTryOn’s MCP tools
 expose the **understand** entry point (image and/or video + prompt). Full
 capability notes: [Qwen3.8-Max](../api-reference/qwen3.8.md),

@@ -180,6 +180,13 @@ from tryon.datasets import FashionMNIST
    CLI: `opentryon generate|edit|vton --model qwen-image-local`. See
    [Qwen-Image local](../local-models/qwen-image.md).
 
+### Local dedicated VTON (Leffa / CatVTON)
+
+No API key. Needs `pip install opentryon[local]` and a CUDA GPU.
+
+- `vton --model leffa` — [Leffa](../local-models/leffa.md). Optional `LEFFA_HOME` / `LEFFA_CKPT`.
+- `vton --model catvton` — [CatVTON](../local-models/catvton.md) (**CC BY-NC-SA 4.0**). Optional `CATVTON_BASE_MODEL` if the SD 1.5 inpainting repo is gated.
+
 ### Photoroom (Virtual Try-On / Virtual Model)
 
 1. Activate the API at [app.photoroom.com/api](https://app.photoroom.com/api)

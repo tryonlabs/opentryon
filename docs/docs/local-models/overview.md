@@ -21,6 +21,8 @@ Adding a new local or API model? Start with
 | [LTX-2.5](./ltx-2.5) | Video Generation | 16GB+ (24GB+ preferred) | Distilled few-step | Local T2V / I2V with synced audio |
 | [MiniMax H3](./minimax-h3) | Video Generation | 80GB+ preferred (offload; ~75GB host RAM if int8) | Heavy | Local T2V / I2V with stereo audio (768p base) |
 | [Wan 2.2](./wan-2.2) | Video Generation | ~12GB+ (TI2V-5B) | Moderate | Local T2V / I2V open weights (Wan 3.0 is API-only) |
+| [Leffa](./leffa) | Virtual Try-On | 12GB+ recommended | ~6s on A100 | Dedicated local VTON (CVPR 2025; MIT code) |
+| [CatVTON](./catvton) | Virtual Try-On | &lt;8GB @ 1024×768 | Moderate | Concatenation VTON (ICLR 2025; **CC BY-NC-SA**) |
 
 ## Requirements
 

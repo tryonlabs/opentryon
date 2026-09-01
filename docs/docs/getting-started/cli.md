@@ -28,7 +28,7 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `muse-image` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `muse-image` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local) |
@@ -126,12 +126,17 @@ opentryon generate --model qwen-image-local \
 opentryon vton --model qwen-image-local \
   --person-image model.jpg --garment-image garment.jpg
 
+# Dedicated local VTON (needs GPU + opentryon[local])
+opentryon vton --model leffa --person-image model.jpg --garment-image garment.jpg
+opentryon vton --model catvton --person-image model.jpg --garment-image garment.jpg
+
 # Text-to-video
 opentryon video-generate --model veo \
   --prompt "A model walking a runway in slow motion" --duration 6
 
 # Seedance 2.5 / Kling 3.0 / Ray 3.2 / Grok Imagine Video / Pruna P-Video
 opentryon video-generate --model seedance --prompt "10s lookbook walk" --duration 10
+# Seedance 2.5 ModelArk id is dreamina-seedance-2-5-260628 (--model-version seedance-2-5)
 opentryon video-generate --model kling-v3 --prompt "atelier pan" --mode pro --sound on
 opentryon video-generate --model luma-ray-3.2 --prompt "dolly through mist" --resolution 720p
 opentryon video-generate --model grok-imagine-video --prompt "cinematic push-in" --duration 6
@@ -176,7 +181,7 @@ opentryon vton --model flux-vto \
 
 ## Local (GPU-only) Models
 
-Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `qwen-image-local`, `llava-next`, `ben2`, `ltx-2.5`, `minimax-h3-local`, `wan-2.2`) need the
+Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `qwen-image-local`, `leffa`, `catvton`, `llava-next`, `ben2`, `ltx-2.5`, `minimax-h3-local`, `wan-2.2`) need the
 `local` extra:
 
 ```bash

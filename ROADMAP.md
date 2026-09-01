@@ -31,7 +31,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 │ • Fashion prompt packs + train-pack schema / datasets                   │
 │ • Train / LoRA recipes (`opentryon train`) + notebooks                  │
 │ • Eval + Fashion Bench v0 (`opentryon eval`)                            │
-│ • One productized local OSS VTON path (Leffa / CatVTON / IDM / OOT — pick one)  │
+│ • ~~One productized local OSS VTON path~~ — **Leffa** + **CatVTON** shipped │
 │ • Fashion agentic workflows via MCP (Try-On QA or Fine-Tune Coach)      │
 │ • Efficiency card for that local path (VRAM / latency table)            │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -97,10 +97,10 @@ CLI/MCP remain the distribution spine; new capabilities register the same way.
 - [ ] Public **Fashion Bench v0** (fixed prompts + image pairs)
 - [ ] CLI: `opentryon eval run|report`
 
-### Slice D — Local OSS VTON (productize one)
-- [ ] Ship **one** of Leffa / CatVTON / IDM-VTON / OOTDiffusion under `tryon.models` + `opentryon[local]` (candidates + licenses: [integrate-next](docs/docs/community/integrate-next.md))
-- [ ] Same invoke path as cloud adapters (agents don’t care where it runs)
-- [ ] Docs: install, VRAM, dry-run, known limits
+### Slice D — Local OSS VTON
+- [x] Ship **Leffa** (`leffa`) and **CatVTON** (`catvton`) under `tryon.models` + `opentryon[local]` (licenses: MIT code vs CC BY-NC-SA — [integrate-next](docs/docs/community/integrate-next.md))
+- [x] Same invoke path as cloud adapters (CLI / MCP / planner `invoke_model`)
+- [x] Docs: install, VRAM, dry-run, known limits (`docs/docs/local-models/leffa.md`, `catvton.md`)
 
 ### Slice E — Fashion agentic workflows (MCP-native)
 - [ ] Task workflows (not chatbots) that call registry tools
@@ -177,9 +177,9 @@ tryon/
 
 **Good first issues:** prompt-pack PRs, bench image pairs, dry-run tests, docs/examples, type hints.
 
-**High-value next:** LoRA recipe hardening, Fashion Bench metrics, first local VTON adapter, Try-On QA or Fine-Tune Coach workflow.
+**High-value next:** LoRA recipe hardening, Fashion Bench metrics, Try-On QA or Fine-Tune Coach workflow.
 
-**Vendor / model queue** (not a v0.1.0 commitment): [docs/docs/community/integrate-next.md](docs/docs/community/integrate-next.md) — NVIDIA Wave 1, Google Vertex VTO, OutfitAnyone-Plus, and Photoroom shipped; next is one local VTON weight, then new services (LipSync, TRELLIS).
+**Vendor / model queue** (not a v0.1.0 commitment): [docs/docs/community/integrate-next.md](docs/docs/community/integrate-next.md) — NVIDIA Wave 1, Google Vertex VTO, OutfitAnyone-Plus, Photoroom, **Leffa**, and **CatVTON** shipped; next is new services (LipSync, TRELLIS).
 
 See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/new-model-checklist.md), and [VISION.md](VISION.md).
 

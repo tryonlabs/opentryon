@@ -21,7 +21,7 @@ This means:
 ```bash
 cd opentryon
 pip install -e .              # core (API-backed) models
-# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, qwen-image-local, flux2-turbo, ben2, ltx-2.5, wan-2.2):
+# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, qwen-image-local, leffa, catvton, flux2-turbo, ben2, ltx-2.5, wan-2.2):
 pip install -e ".[local]"
 
 cd mcp-server
@@ -136,6 +136,8 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `vton_nano_banana_2_lite` | Nano Banana 2 Lite (composition try-on) | `GEMINI_API_KEY` |
 | `vton_qwen_image` | Qwen-Image 3.0 (person + garment I2I) | `DASHSCOPE_API_KEY` |
 | `vton_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
+| `vton_leffa` | Leffa (CVPR 2025 local VTON) | local/GPU |
+| `vton_catvton` | CatVTON (ICLR 2025 local VTON, CC BY-NC-SA) | local/GPU |
 | `vton_muse_image` | Muse Image (composition try-on) | `MODEL_API_KEY` |
 
 ### generate -- Text-to-image generation

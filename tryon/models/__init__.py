@@ -14,6 +14,8 @@ Available Models:
       the local counterpart to the hosted qwen3.8-max DashScope API
     - QwenImageLocalAdapter: Qwen-Image-2512 T2I + Qwen-Image-Edit-2511
       I2I/VTON, the local counterpart to the hosted qwen-image DashScope API
+    - LeffaAdapter: CVPR 2025 dedicated local VTON (VITON-HD / DressCode)
+    - CatVTONAdapter: ICLR 2025 concatenation VTON (<8GB @ 1024x768; CC BY-NC-SA)
     - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
     - MiniMaxH3LocalAdapter: MiniMax H3 open-weight text/image-to-video with stereo audio
     - Wan22Adapter: Wan 2.2 open-weight text/image-to-video (Diffusers)
@@ -46,8 +48,10 @@ Requirements:
     - diffusers >= 0.29.0
 """
 
+from .catvton import CatVTONAdapter
 from .flux2_turbo import Flux2TurboAdapter
 from .kimi_vl import KimiVLAdapter
+from .leffa import LeffaAdapter
 from .ltx25 import LTX25Adapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
@@ -55,8 +59,10 @@ from .qwen_image import QwenImageLocalAdapter
 from .wan22 import Wan22Adapter
 
 __all__ = [
+    "CatVTONAdapter",
     "Flux2TurboAdapter",
     "KimiVLAdapter",
+    "LeffaAdapter",
     "LTX25Adapter",
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",
