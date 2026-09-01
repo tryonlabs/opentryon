@@ -97,6 +97,27 @@ Dedicated person + product try-on. **Not** `GEMINI_API_KEY` / Nano Banana.
 
 See [Google Virtual Try-On](../api-reference/google-vton.md).
 
+## OutfitAnyone-Plus (DashScope, Beijing)
+
+Dedicated Alibaba try-on. **Not** Qwen-Image composition. Needs a China Beijing-region `DASHSCOPE_API_KEY`.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `vton_outfitanyone_plus` | `aitryon-plus` | Beijing `DASHSCOPE_API_KEY` |
+
+See [OutfitAnyone-Plus](../api-reference/outfitanyone-plus.md).
+
+## Photoroom (Virtual Try-On / Virtual Model)
+
+Image Editing API Plus. Same `PHOTOROOM_API_KEY`. Prefix with `sandbox_` for watermarked tests.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `vton_photoroom_vton` | Shopper try-on (`virtualModel.model.custom`) | `PHOTOROOM_API_KEY` |
+| `vton_photoroom_virtual_model` | Catalog on-model (preset or custom) | `PHOTOROOM_API_KEY` |
+
+See [Photoroom](../api-reference/photoroom.md).
+
 ## Muse Image tools (generate / edit / VTON)
 
 First-party Meta Model API (`MODEL_API_KEY`). **No local twin.** Muse Video is not on the API yet.

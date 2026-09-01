@@ -21,6 +21,10 @@ is Alibaba's hosted image model on DashScope / Model Studio. OpenTryOn
 integrates it via `QwenImageAdapter` for **text-to-image**, **image editing
 (I2I, 1–3 refs)**, and **virtual try-on** (person + garment composition).
 
+This is **composition** I2I, not Alibaba's dedicated try-on. Dedicated
+OutfitAnyone-Plus is `--model outfitanyone-plus` (`aitryon-plus`, Beijing
+region). See [OutfitAnyone-Plus](outfitanyone-plus).
+
 Qwen3.8 (understand) and Qwen-Image (generate / edit / vton) share
 `DASHSCOPE_API_KEY` but use different endpoints:
 

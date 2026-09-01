@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 👗 Virtual try-on — OutfitAnyone-Plus + Photoroom
+- **Alibaba OutfitAnyone-Plus** (`OutfitAnyonePlusAdapter` / CLI `--model outfitanyone-plus`): first-party DashScope `aitryon-plus`
+  - Dedicated person + flat-lay try-on (top, bottoms, combo, dress). **Not** Qwen-Image composition
+  - Auth: Beijing-region `DASHSCOPE_API_KEY`. Async create + poll. Local files uploaded to temp OSS
+  - MCP tool `vton_outfitanyone_plus`
+  - Docs: `docs/docs/api-reference/outfitanyone-plus.md`
+- **Photoroom Virtual Try-On / Virtual Model** (`PhotoroomVTONAdapter` / CLI `--model photoroom-vton` and `photoroom-virtual-model`)
+  - First-party Image Editing API `POST /v2/edit`. Shopper try-on **or** flat-lay → on-model
+  - Auth: `PHOTOROOM_API_KEY` (`sandbox_` prefix for watermarked tests)
+  - MCP tools `vton_photoroom_vton`, `vton_photoroom_virtual_model`
+  - Docs: `docs/docs/api-reference/photoroom.md`
+
 #### 👗 Virtual try-on — Google Vertex (`virtual-try-on-001`)
 - **Google Virtual Try-On** (`GoogleVTONAdapter` / CLI `--model google-vton`): first-party Vertex / Gemini Enterprise `recontext_image`
   - Dedicated person + product try-on; **not** Nano Banana and **not** `GEMINI_API_KEY`

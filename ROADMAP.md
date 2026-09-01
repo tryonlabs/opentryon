@@ -179,7 +179,7 @@ tryon/
 
 **High-value next:** LoRA recipe hardening, Fashion Bench metrics, first local VTON adapter, Try-On QA or Fine-Tune Coach workflow.
 
-**Vendor / model queue** (not a v0.1.0 commitment): [docs/docs/community/integrate-next.md](docs/docs/community/integrate-next.md) — NVIDIA Wave 1 and Google Vertex VTO shipped; next is OutfitAnyone-Plus and one local VTON weight, then new services (LipSync, TRELLIS).
+**Vendor / model queue** (not a v0.1.0 commitment): [docs/docs/community/integrate-next.md](docs/docs/community/integrate-next.md) — NVIDIA Wave 1, Google Vertex VTO, OutfitAnyone-Plus, and Photoroom shipped; next is one local VTON weight, then new services (LipSync, TRELLIS).
 
 See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/new-model-checklist.md), and [VISION.md](VISION.md).
 

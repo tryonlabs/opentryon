@@ -87,6 +87,27 @@ _LUMA_ASPECT_RATIOS = ["1:1", "3:4", "4:3", "9:16", "16:9", "9:21", "21:9"]
 _IDEOGRAM_ASPECT_RATIOS = [
     "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "10:16", "16:10", "1:3", "3:1",
 ]
+# Keep in sync with tryon.api.vton.photoroom (registry stays import-free).
+_PHOTOROOM_PRESETS = [
+    "avery", "sam", "taylor", "kendall", "jordan", "casey", "maya", "reece",
+    "lena", "julia", "jackson", "sophia", "emma", "ava", "zoe", "fiona",
+]
+_PHOTOROOM_SCENES = [
+    "random", "street", "bedroom", "sunset", "factory", "studio",
+    "coloredstudio", "concretestudio", "beach", "tropical", "library",
+    "forest", "businessdistrict", "countryside", "flowers", "goldenlight",
+    "mountain", "pool", "latincity", "cafe", "asiancity", "nightlights",
+    "desert",
+]
+_PHOTOROOM_POSES = [
+    "random", "standing", "34turn", "powerstance", "walkingforward",
+    "handinpocket", "crossedarms", "back", "overtheshoulder", "seated",
+    "adjustingclothing", "playfulspin",
+]
+_PHOTOROOM_SIZES = [
+    "PORTRAIT_HD_16_9", "PORTRAIT_HD_4_3", "PORTRAIT_HD_3_2", "SQUARE_HD",
+    "LANDSCAPE_HD_3_2", "LANDSCAPE_HD_4_3", "LANDSCAPE_HD_16_9",
+]
 
 
 def _gemini_aspect_ratio() -> Arg:
@@ -253,6 +274,106 @@ _VTON = {
             Arg(("--output-mime-type",), "output_mime_type", default="image/png",
                 choices=["image/png", "image/jpeg"], help="Output MIME type"),
             Arg(("--output-gcs-uri",), "output_gcs_uri", help="Optional gs:// prefix to store outputs"),
+        ],
+    ),
+    "outfitanyone-plus": ModelSpec(
+        id="outfitanyone-plus",
+        label="Alibaba OutfitAnyone-Plus (aitryon-plus)",
+        import_path="tryon.api.vton.outfitanyone",
+        class_name="OutfitAnyonePlusAdapter",
+        method="generate_and_decode",
+        output_kind="images",
+        env_hint="DASHSCOPE_API_KEY",
+        notes=(
+            "Dedicated DashScope try-on (aitryon-plus). Beijing-region key only. "
+            "Not Qwen-Image composition. Public HTTP(S) URLs, or local files "
+            "uploaded to DashScope temp OSS. Optional --bottom-garment-image "
+            "for top+bottoms combo. Dress/jumpsuit: garment only."
+        ),
+        args=[
+            _img(("--person-image", "--model-image"), "person",
+                 "Full-body front-facing person image (path or public URL)", required=True),
+            _img(("--garment-image", "--cloth-image", "--top-garment-image"), "garment",
+                 "Flat-lay top or dress (path or public URL)", required=False),
+            _img(("--bottom-garment-image",), "bottom_garment",
+                 "Optional flat-lay bottoms (path or public URL)"),
+            Arg(("--no-restore-face",), "restore_face", action="store_false", default=True,
+                help="Generate a random face (default: keep the original face)"),
+            Arg(("--resolution",), "resolution", type=int, default=-1,
+                choices=[-1, 1024, 1280],
+                help="-1 match person; 1024 = 576x1024; 1280 = 720x1280"),
+            Arg(("--base-url",), "base_url", target="init",
+                help="DashScope /api/v1 host (default: China Beijing)"),
+        ],
+    ),
+    "photoroom-vton": ModelSpec(
+        id="photoroom-vton",
+        label="Photoroom Virtual Try-On",
+        import_path="tryon.api.vton.photoroom",
+        class_name="PhotoroomVTONAdapter",
+        method="generate_and_decode",
+        output_kind="images",
+        env_hint="PHOTOROOM_API_KEY",
+        notes=(
+            "Shopper photo + product photo via Image Editing API /v2/edit. "
+            "Not Virtual Model (flat-lay → generated model). Prefix the key "
+            "with sandbox_ for watermarked tests."
+        ),
+        args=[
+            _img(("--person-image", "--model-image"), "person",
+                 "Shopper / custom model photo (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image", "--product-image"), "garment",
+                 "Clothing product image (path or URL)", required=True),
+            Arg(("--scene",), "scene", default="random",
+                choices=list(_PHOTOROOM_SCENES), help="Preset scene (default random)"),
+            Arg(("--pose",), "pose", default="standing",
+                choices=list(_PHOTOROOM_POSES),
+                help="Pose (docs recommend standing for try-on)"),
+            Arg(("--size",), "size", default="PORTRAIT_HD_3_2",
+                choices=list(_PHOTOROOM_SIZES), help="Output aspect / HD size"),
+            Arg(("--prompt",), "prompt", help="Optional style hint, e.g. street style"),
+            Arg(("--scene-image",), "scene_image", help="Optional custom scene image"),
+            Arg(("--additional-product-images",), "additional_product_images", nargs="+",
+                help="Extra angles of the same product"),
+            Arg(("--remove-background",), "remove_background", action="store_true",
+                help="Strip the generated scene (off by default)"),
+            Arg(("--mode",), "mode", default="try-on", choices=["try-on"],
+                help="Fixed: shopper Virtual Try-On"),
+        ],
+    ),
+    "photoroom-virtual-model": ModelSpec(
+        id="photoroom-virtual-model",
+        label="Photoroom Virtual Model",
+        import_path="tryon.api.vton.photoroom",
+        class_name="PhotoroomVTONAdapter",
+        method="generate_virtual_model",
+        output_kind="images",
+        env_hint="PHOTOROOM_API_KEY",
+        notes=(
+            "Flat-lay / product photo → on-model catalog shot. No shopper "
+            "photo required. Optional --person-image uses a custom model "
+            "instead of --preset-model (default avery)."
+        ),
+        args=[
+            _img(("--garment-image", "--cloth-image", "--product-image"), "garment",
+                 "Product / flat-lay image (path or URL)", required=True),
+            _img(("--person-image", "--model-image"), "person",
+                 "Optional custom model photo (overrides --preset-model)"),
+            Arg(("--preset-model",), "preset_model", default="avery",
+                choices=list(_PHOTOROOM_PRESETS),
+                help="Photoroom preset model when no custom person is passed"),
+            Arg(("--scene",), "scene", default="random",
+                choices=list(_PHOTOROOM_SCENES), help="Preset scene"),
+            Arg(("--pose",), "pose", default="standing",
+                choices=list(_PHOTOROOM_POSES), help="Pose"),
+            Arg(("--size",), "size", default="PORTRAIT_HD_3_2",
+                choices=list(_PHOTOROOM_SIZES), help="Output aspect / HD size"),
+            Arg(("--prompt",), "prompt", help="Optional style hint, e.g. street style"),
+            Arg(("--scene-image",), "scene_image", help="Optional custom scene image"),
+            Arg(("--additional-product-images",), "additional_product_images", nargs="+",
+                help="Extra angles of the same product"),
+            Arg(("--remove-background",), "remove_background", action="store_true",
+                help="Strip the generated scene (off by default)"),
         ],
     ),
     "nova-canvas": ModelSpec(
