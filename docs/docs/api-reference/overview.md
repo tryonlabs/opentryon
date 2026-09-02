@@ -658,6 +658,23 @@ open-weight [Qwen3.8 local model](../local-models/qwen3.8.md) for GPU-only deplo
 
 ---
 
+### `Hy4Adapter`
+
+Tencent **Hy4 preview** (770B MoE LLM) via TokenHub or a local vLLM/SGLang
+OpenAI server. Same class for `--model hy4-preview` and `hy4-preview-local`.
+
+```python
+from tryon.api import Hy4Adapter
+
+adapter = Hy4Adapter()  # TOKENHUB_API_KEY
+result = adapter.understand(prompt="Write a lookbook caption for a linen trench.")
+print(result["text"])
+```
+
+See [Hy4 TokenHub](hy4) and [Hy4 local](../local-models/hy4.md).
+
+---
+
 ### `NemotronOmniUnderstandAdapter` / `Cosmos3ReasonerAdapter` / `Cosmos3VideoAdapter`
 
 NVIDIA NIM Path A (`NVIDIA_API_KEY`). Omni and Reasoner are OpenAI-compatible

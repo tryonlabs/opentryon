@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🧠 Understanding — Tencent Hy4 preview
+- **Hy4 preview** (`Hy4Adapter` / CLI `--model hy4-preview` and `hy4-preview-local`): 770B MoE text LLM ([product](https://hy.tencent.ai/research/hy4-preview))
+  - Path A: Tencent Cloud TokenHub OpenAI Chat Completions (`TOKENHUB_API_KEY`, model `hy4-preview`)
+  - Path B: official vLLM/SGLang Docker, then the same OpenAI client (`HY4_BASE_URL`; not in-process 770B)
+  - MCP tools `understand_hy4_preview`, `understand_hy4_preview_local`
+  - Docs: `docs/docs/api-reference/hy4.md`, `docs/docs/local-models/hy4.md`
+
 #### 👗 Virtual try-on — local weights (Leffa + CatVTON)
 - **Leffa** (`LeffaAdapter` / CLI `--model leffa`): CVPR 2025 dedicated local VTON ([franciszzj/Leffa](https://github.com/franciszzj/Leffa))
   - VITON-HD / DressCode checkpoints + pose transfer; MIT code (confirm HF weight card for commercial D2C)

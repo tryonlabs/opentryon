@@ -23,15 +23,17 @@ OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) serv
 - New registry models appear as tools with **zero hand-written MCP wrappers**
 - CLI and MCP cannot drift — one runner, one registry
 
-## Understand tools (including Qwen3.8)
+## Understand tools (including Qwen3.8 and Hy4)
 
-Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, and the
-**Qwen3.8** dual path:
+Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, the
+**Qwen3.8** dual path, and **Hy4 preview** (TokenHub LLM + local vLLM/SGLang):
 
 | MCP tool | Backend | Needs |
 |---|---|---|
 | `understand_qwen3_8_max` | DashScope Qwen3.8-Max (text/image/video, thinking + `reasoning_effort`) | `DASHSCOPE_API_KEY` |
 | `understand_qwen3_8` | Local `Qwen/Qwen3.8-27B` | `pip install opentryon[local]` + GPU |
+| `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
+| `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |
 
 ## Qwen-Image tools (generate / edit / VTON)
 
@@ -182,6 +184,8 @@ Full tool tables and architecture notes: [`mcp-server/README.md`](https://github
 - [Planner Agent](../agents/planner-agent)
 - [Unified CLI](cli)
 - [Qwen3.8-Max understanding](../api-reference/qwen3.8)
+- [Hy4 preview TokenHub](../api-reference/hy4)
+- [Hy4 local vLLM/SGLang](../local-models/hy4)
 - [Qwen-Image generate / edit / VTON](../api-reference/qwen-image)
 - [Qwen-Image local model](../local-models/qwen-image)
 - [Qwen3.8 local model](../local-models/qwen3.8)

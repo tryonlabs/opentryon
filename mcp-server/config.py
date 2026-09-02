@@ -30,6 +30,7 @@ _EXTRA_ENV_NAMES = (
     "GOOGLE_CLOUD_LOCATION",
     "GOOGLE_APPLICATION_CREDENTIALS",
     "BYTEPLUS_ARK_API_KEY",
+    "TENCENT_TOKENHUB_API_KEY",
     "WAN_API_KEY",
     "RUNWAY_API_KEY",
     "META_MODEL_API_KEY",
@@ -39,6 +40,7 @@ _EXTRA_ENV_NAMES = (
 # Registry env_hint name -> names that also count as configured (adapter aliases).
 _VAR_ALIASES: Dict[str, Tuple[str, ...]] = {
     "MODEL_API_KEY": ("MODEL_API_KEY", "META_MODEL_API_KEY", "MUSE_API_KEY"),
+    "TOKENHUB_API_KEY": ("TOKENHUB_API_KEY", "TENCENT_TOKENHUB_API_KEY"),
 }
 
 # (id, label, docs_url, env var names, optional notes). Order is the Connect rail.
@@ -192,6 +194,15 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://console.byteplus.com/",
         ("ARK_API_KEY",),
         "",
+    ),
+    (
+        "tokenhub",
+        "Tencent TokenHub (Hy4 preview)",
+        "https://www.tencentcloud.com/document/product/1300/80695",
+        ("TOKENHUB_API_KEY",),
+        "OpenAI-compatible Chat Completions. Unlocks understand hy4-preview. "
+        "Optional TOKENHUB_BASE_URL (default tokenhub-intl). TENCENT_TOKENHUB_API_KEY also works. "
+        "hy4-preview-local needs a local vLLM/SGLang server, not this key.",
     ),
     (
         "xai",

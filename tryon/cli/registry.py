@@ -71,6 +71,29 @@ def _img(flags, dest, help_, required=False, default=None):
     return Arg(flags=flags, dest=dest, help=help_, required=required, default=default)
 
 
+def _hy4_understand_args(*, endpoint: str) -> List[Arg]:
+    """Shared CLI flags for TokenHub Hy4 and the local vLLM/SGLang twin."""
+    return [
+        Arg(("--prompt", "-p"), "prompt", help="Text prompt (required unless --image is set)"),
+        Arg(("--image", "-i"), "image", help="Optional image (OpenAI vision part; Hy4 is a text LLM)"),
+        Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
+            help="Disable Hy4 deep reasoning (TokenHub thinking.type=disabled / local no_think)"),
+        Arg(("--reasoning-effort",), "reasoning_effort", default="high",
+            choices=["high", "medium", "low"], help="Reasoning depth (Hy4 default high)"),
+        Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+        Arg(("--temperature",), "temperature", type=float, default=0.9,
+            help="Sampling temperature (official default 0.9)"),
+        Arg(("--top-p",), "top_p", type=float, default=1.0, help="Nucleus sampling (official default 1.0)"),
+        Arg(("--hy-model",), "hy_model", target="init", call_name="model", default="hy4-preview",
+            choices=["hy4-preview"], help="Hy4 model id"),
+        Arg(("--endpoint",), "endpoint", target="init", default=endpoint,
+            choices=["tokenhub", "local"],
+            help="tokenhub = Tencent Cloud TokenHub; local = vLLM/SGLang OpenAI server"),
+        Arg(("--base-url",), "base_url", target="init",
+            help="Override TokenHub or HY4_BASE_URL"),
+    ]
+
+
 _QWEN_IMAGE_VERSIONS = [
     "qwen-image-3.0-pro",
     "qwen-image-3.0",
@@ -1245,6 +1268,37 @@ _UNDERSTAND = {
                 help="Prefix the documented Cosmos Reasoner reasoning hint"),
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
         ],
+    ),
+    "hy4-preview": ModelSpec(
+        id="hy4-preview",
+        label="Tencent Hy4 preview (TokenHub LLM, 770B MoE)",
+        import_path="tryon.api.hy",
+        class_name="Hy4Adapter",
+        method="understand",
+        output_kind="text",
+        env_hint="TOKENHUB_API_KEY",
+        notes=(
+            "Tencent Cloud TokenHub OpenAI Chat Completions (model hy4-preview). "
+            "Text LLM with 1M context; optional image as a vision part. Not VTON/video-gen. "
+            "Local twin: --model hy4-preview-local (vLLM/SGLang). "
+            "See https://hy.tencent.ai/research/hy4-preview"
+        ),
+        args=_hy4_understand_args(endpoint="tokenhub"),
+    ),
+    "hy4-preview-local": ModelSpec(
+        id="hy4-preview-local",
+        label="Tencent Hy4 preview (local vLLM/SGLang)",
+        import_path="tryon.api.hy",
+        class_name="Hy4Adapter",
+        method="understand",
+        output_kind="text",
+        notes=(
+            "OpenAI-compatible client for a self-hosted Hy4 server "
+            "(official vLLM image vllm/vllm-openai:hy4-preview or SGLang). "
+            "Weights tencent/Hy4-preview-FP8; TP=8, ~770GB+ FP8 — not in-process Transformers. "
+            "Default HY4_BASE_URL=http://127.0.0.1:8000/v1. Hosted twin: --model hy4-preview."
+        ),
+        args=_hy4_understand_args(endpoint="local"),
     ),
 }
 

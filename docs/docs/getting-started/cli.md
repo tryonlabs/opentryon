@@ -31,7 +31,7 @@ opentryon <service> --model <model> [params...]
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `muse-image` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
-| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local) |
+| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
@@ -104,6 +104,12 @@ opentryon understand --model qwen3.8-max \
   --image garment.jpg --prompt "Describe this outfit." \
   --reasoning-effort medium
 opentryon understand --model qwen3.8 --image garment.jpg
+
+# Tencent Hy4 preview (TokenHub LLM; optional --image)
+opentryon understand --model hy4-preview \
+  --prompt "Write a 3-sentence lookbook caption for a linen trench."
+# Local vLLM/SGLang twin (HY4_BASE_URL, no TokenHub key)
+opentryon understand --model hy4-preview-local --prompt "Hello"
 
 # NVIDIA NIM (same NVIDIA_API_KEY): Nemotron Omni + Cosmos 3 Reasoner
 opentryon understand --model nemotron-omni \
@@ -203,6 +209,8 @@ stack trace:
 - [Kimi K2.6 / K2.7 Code / K3 understanding](../api-reference/kimi.md)
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
 - [Qwen3.8-Max understanding](../api-reference/qwen3.8.md)
+- [Hy4 preview TokenHub](../api-reference/hy4.md)
+- [Hy4 local vLLM/SGLang](../local-models/hy4.md)
 - [Qwen-Image generation, edit, and try-on](../api-reference/qwen-image.md)
 - [OutfitAnyone-Plus dedicated try-on](../api-reference/outfitanyone-plus.md)
 - [Photoroom Virtual Try-On / Virtual Model](../api-reference/photoroom.md)

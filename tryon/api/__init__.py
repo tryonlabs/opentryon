@@ -43,6 +43,7 @@ _LAZY_ATTRS = {
     "VeoAdapter": ".veo",
     "GeminiOmniAdapter": ".omni",
     "BEN2BackgroundRemoverAdapter": ".ben2",
+    "Hy4Adapter": ".hy",
     "KimiUnderstandAdapter": ".kimi",
     "NemotronOmniUnderstandAdapter": ".nvidia",
     "Cosmos3ReasonerAdapter": ".nvidia",

@@ -319,6 +319,48 @@ def check_qwen_dry_runs():
     print("\u2713 understand qwen3.8-max / qwen3.8 --dry-run resolve the expected calls")
 
 
+def check_hy4_dry_runs():
+    for model_id, expect_endpoint in [
+        ("hy4-preview", "'endpoint': 'tokenhub'"),
+        ("hy4-preview-local", "'endpoint': 'local'"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "understand", "--model", model_id,
+                "--prompt", "Describe a linen trench for a lookbook.",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "Hy4Adapter" in printed and ".understand(" in printed, printed
+        assert expect_endpoint in printed, printed
+        assert "'enable_thinking': True" in printed, printed
+        assert "'reasoning_effort': 'high'" in printed, printed
+    print("\u2713 understand hy4-preview / hy4-preview-local --dry-run resolve the expected calls")
+
+
+def check_hy4_requires_prompt_or_image():
+    from tryon.api.hy import Hy4Adapter
+
+    try:
+        Hy4Adapter(api_key="fake-key-for-validation-test").understand()
+    except ValueError as e:
+        assert "prompt" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Hy4 has no prompt or image")
+
+    try:
+        Hy4Adapter(api_key="fake-key-for-validation-test").understand(
+            prompt="hi", video="clip.mp4"
+        )
+    except ValueError as e:
+        assert "video" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Hy4 is given video")
+    print("\u2713 Hy4Adapter.understand() requires prompt; rejects video")
+
+
 def check_nvidia_nim_dry_runs():
     cases = [
         (
@@ -718,12 +760,14 @@ if __name__ == "__main__":
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()
     check_qwen_dry_runs()
+    check_hy4_dry_runs()
     check_nvidia_nim_dry_runs()
     check_qwen_image_dry_runs()
     check_qwen_image_local_helpers()
     check_qwen_image_local_dry_runs()
     check_kimi_understand_requires_image_or_video()
     check_qwen_understand_requires_image_or_video()
+    check_hy4_requires_prompt_or_image()
     check_nvidia_understand_requires_media()
     check_qwen_image_requires_prompt_and_tryon_inputs()
     check_minimax_h3_requires_prompt()

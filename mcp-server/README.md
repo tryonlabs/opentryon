@@ -193,6 +193,8 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
 | `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
 | `understand_qwen3_8` | Qwen3.8-27B (open-weight, local) | local/GPU | Dense open multimodal (`Qwen/Qwen3.8-27B`); thinking toggle; frame-sampled video |
+| `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
+| `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |
 | `understand_cosmos3_reasoner` | Cosmos 3 Reasoner (NVIDIA NIM) | `NVIDIA_API_KEY` | Physical-world image/video QA |
 
@@ -204,6 +206,12 @@ understand remain on DashScope / self-hosted stacks — OpenTryOn exposes the
 vision-understanding path here. See
 [`docs/docs/api-reference/qwen3.8.md`](../docs/docs/api-reference/qwen3.8.md) and
 [`docs/docs/local-models/qwen3.8.md`](../docs/docs/local-models/qwen3.8.md).
+**Hy4 via MCP:** TokenHub (`understand_hy4_preview`) needs `TOKENHUB_API_KEY`.
+The local twin (`understand_hy4_preview_local`) talks to a vLLM/SGLang OpenAI
+server (`HY4_BASE_URL`); it does not load 770B in-process. See
+[`docs/docs/api-reference/hy4.md`](../docs/docs/api-reference/hy4.md) and
+[`docs/docs/local-models/hy4.md`](../docs/docs/local-models/hy4.md).
+
 Image generate / edit / VTON use the sibling Qwen-Image tools
 (`generate_qwen_image`, `edit_qwen_image`, `vton_qwen_image`) — see
 [`docs/docs/api-reference/qwen-image.md`](../docs/docs/api-reference/qwen-image.md).

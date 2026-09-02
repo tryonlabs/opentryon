@@ -224,6 +224,38 @@ def check_named_model_leffa_and_catvton_dry_run():
     print("\u2713 named-model chat dry-runs leffa / catvton")
 
 
+def check_named_model_hy4_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"], reason="caption")
+    )
+    result = agent.run(
+        "Caption this look with hy4-preview",
+        image="garment.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["model"] == "hy4-preview"
+    assert "Hy4Adapter" in (result.get("call") or "")
+
+    result = agent.run(
+        "Use hy4-preview-local on this photo",
+        image="garment.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["model"] == "hy4-preview-local"
+    assert "Hy4Adapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    understand = slice_for_intent("understand")
+    api = match_named_model("use hy4-preview please", understand)
+    assert api is not None and api.model == "hy4-preview"
+    local = match_named_model("use hy4 local on this", understand)
+    assert local is not None and local.model == "hy4-preview-local"
+    print("\u2713 named-model chat dry-runs hy4-preview / hy4-preview-local")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -625,6 +657,7 @@ def main():
     check_named_model_google_vton_dry_run()
     check_named_model_outfitanyone_and_photoroom_dry_run()
     check_named_model_leffa_and_catvton_dry_run()
+    check_named_model_hy4_dry_run()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()

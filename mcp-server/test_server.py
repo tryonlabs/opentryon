@@ -103,6 +103,8 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_hy4_preview", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_hy4_preview_local", {"prompt": "hello", "dry_run": True}, False),
         ("understand_nemotron_omni", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_cosmos3_reasoner", {"video": "clip.mp4", "prompt": "what happens?", "dry_run": True}, False),
         ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
@@ -273,12 +275,20 @@ async def check_list_and_set_api_keys() -> None:
         u["service"] == "video-generate" and u["model"] == "cosmos3"
         for u in by_id["nvidia"]["unlocks"]
     )
+    assert "tokenhub" in by_id
+    assert by_id["tokenhub"]["vars"][0]["name"] == "TOKENHUB_API_KEY"
+    assert any(
+        u["service"] == "understand" and u["model"] == "hy4-preview"
+        for u in by_id["tokenhub"]["unlocks"]
+    )
     allowed = server.config.allowed_env_names()
     assert "MODEL_API_KEY" in allowed and "MINIMAX_API_KEY" in allowed
     assert "NVIDIA_API_KEY" in allowed
     assert "GOOGLE_CLOUD_PROJECT" in allowed
     assert "GOOGLE_CLOUD_LOCATION" in allowed
     assert "PHOTOROOM_API_KEY" in allowed
+    assert "TOKENHUB_API_KEY" in allowed
+    assert "TENCENT_TOKENHUB_API_KEY" in allowed
     assert "META_MODEL_API_KEY" in allowed and "MUSE_API_KEY" in allowed
     gemini = next(p for p in providers if p["id"] == "gemini")
     assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"

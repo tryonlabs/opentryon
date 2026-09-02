@@ -50,6 +50,10 @@ BFL_API_KEY=your_bfl_api_key
 # Moonshot AI (Kimi K2.6 / K2.7 Code multimodal understanding)
 MOONSHOT_API_KEY=your_moonshot_api_key
 
+# Tencent TokenHub (Hy4 preview LLM) — not Moonshot / DashScope
+TOKENHUB_API_KEY=your_tokenhub_api_key
+# TOKENHUB_BASE_URL=https://tokenhub-intl.tencentcloudmaas.com/v1
+
 # Alibaba DashScope (Wan, Qwen3.8-Max, Qwen-Image, OutfitAnyone-Plus)
 DASHSCOPE_API_KEY=your_dashscope_api_key
 
@@ -152,6 +156,15 @@ from tryon.datasets import FashionMNIST
 1. Sign up at [platform.kimi.ai](https://platform.kimi.ai/)
 2. Obtain your API key from the [API Keys console](https://platform.kimi.ai/console/api-keys)
 3. Add to `.env`: `MOONSHOT_API_KEY=your_key`
+
+### Tencent TokenHub (Hy4 preview)
+
+1. Follow [TokenHub Chat Completions](https://www.tencentcloud.com/document/product/1300/80695) and create an API key
+2. Add to `.env`: `TOKENHUB_API_KEY=your_key`
+3. Optional: `TENCENT_TOKENHUB_API_KEY` (alias) or `TOKENHUB_BASE_URL` (default international endpoint)
+4. Local weights twin (`hy4-preview-local`) does **not** use this key — serve vLLM/SGLang and set `HY4_BASE_URL`
+
+See [Hy4 TokenHub](../api-reference/hy4.md) and [Hy4 local](../local-models/hy4.md).
 
 ### Alibaba DashScope (Qwen3.8, Qwen-Image, Wan)
 
