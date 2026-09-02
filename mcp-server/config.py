@@ -518,6 +518,9 @@ def status_message() -> str:
                 local_count += 1
                 lines.append(f"  {model_id:<20} local (no API key needed)")
                 continue
+            if info["configured"] is None:
+                lines.append(f"  {model_id:<20} self-hosted (no API key)")
+                continue
             total_api += 1
             if info["configured"]:
                 ready += 1

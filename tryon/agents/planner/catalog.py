@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 
 from tryon.cli.registry import SERVICE_HELP, SERVICES
+from tryon.agents.planner.plan import current_utterance
 
 STUDIO_SURFACES = (
     "Connect (MCP status)",
@@ -46,7 +47,7 @@ FALLBACK_UNSUPPORTED = (
 )
 
 
-def capabilities_brief(*, models_per_service: int = 14) -> str:
+def capabilities_brief(*, models_per_service: int = 40) -> str:
     """Compact, always-current list of services and registry model ids."""
     lines = [
         "You are answering as the OpenTryOn planner inside TryOn Studio.",
@@ -72,6 +73,96 @@ def capabilities_brief(*, models_per_service: int = 14) -> str:
         help_text = SERVICE_HELP.get(service, "")
         lines.append(f"- {service}: {help_text}. Models: {shown}{extra}")
     return "\n".join(lines)
+
+
+_STUDIO_SCREEN = {
+    "vton": "VTON",
+    "generate": "Image (Generate)",
+    "edit": "Image (Edit)",
+    "understand": "Understand",
+    "video-generate": "Video",
+    "bg-remove": "BG Remove",
+}
+
+_INFO_QUESTION = re.compile(
+    r"\b("
+    r"what(?:'s| is| are)|whats|"
+    r"who is|"
+    r"tell me about|"
+    r"explain|"
+    r"how (?:does|do i (?:use|run|enable|call))|"
+    r"do you (?:have|support|include)|"
+    r"is there|"
+    r"info(?:rmation)? (?:on|about)"
+    r")\b",
+    re.I,
+)
+
+
+def lookup_named_model(prompt: str):
+    """Resolve a registry model the user mentioned, if any."""
+    from tryon.agents.planner.bind import all_bound_models, match_named_model
+
+    text = current_utterance(prompt)
+    if not text:
+        return None
+    return match_named_model(text, all_bound_models())
+
+
+def is_named_model_question(prompt: str) -> bool:
+    """True when they asked *about* a registry model, not to run a job with it."""
+    text = current_utterance(prompt)
+    if not text or not _INFO_QUESTION.search(text):
+        return False
+    return lookup_named_model(text) is not None
+
+
+def named_model_cards(prompt: str) -> str:
+    """Grounding block so the help LLM cannot miss a named registry id."""
+    hit = lookup_named_model(prompt)
+    if hit is None:
+        return ""
+    env = hit.spec.env_hint or (
+        "local GPU (pip install opentryon[local])"
+        if hit.spec.extra == "local"
+        else "self-hosted OpenAI server / no Connect key"
+    )
+    lines = [
+        "Named model from the live registry (this IS available in OpenTryOn):",
+        f"- id: {hit.model}",
+        f"- service: {hit.service} (Studio screen: {_STUDIO_SCREEN.get(hit.service, hit.service)})",
+        f"- label: {hit.spec.label}",
+        f"- env: {env}",
+    ]
+    if hit.spec.notes:
+        lines.append(f"- notes: {hit.spec.notes.strip()}")
+    lines.append(
+        "Hyphenated registry ids match the same words with spaces "
+        "(hy4-preview = Hy4 preview). Do not say we lack this model."
+    )
+    return "\n".join(lines)
+
+
+def named_model_help_message(prompt: str) -> str:
+    """Deterministic catalog reply for 'what is <model>?' questions."""
+    hit = lookup_named_model(prompt)
+    if hit is None:
+        return ""
+    screen = _STUDIO_SCREEN.get(hit.service, hit.service)
+    notes = (hit.spec.notes or hit.spec.label).strip()
+    env = hit.spec.env_hint
+    if env:
+        key_line = f"Connect key: `{env}` (saved to opentryon/.env, not Studio)."
+    elif hit.spec.extra == "local":
+        key_line = "Local GPU extra — `pip install opentryon[local]`. No Connect key."
+    else:
+        key_line = "Local OpenAI-compatible server (set the base URL). No Connect key."
+    return (
+        f"**{hit.spec.label}** is in OpenTryOn as `{hit.model}` on **{screen}**.\n\n"
+        f"{notes}\n\n"
+        f"{key_line} In Agent chat, name `{hit.model}` in your prompt to pin it. "
+        f"On the {screen} screen, pick it in the model list after an MCP restart."
+    )
 
 
 def models_brief() -> str:

@@ -23,7 +23,10 @@ from tryon.agents.planner.catalog import (
     FALLBACK_HELP,
     FALLBACK_UNSUPPORTED,
     capabilities_brief,
+    is_named_model_question,
     models_brief,
+    named_model_cards,
+    named_model_help_message,
     normalize_help_markdown,
     out_of_scope_message,
     strip_emojis,
@@ -82,6 +85,7 @@ JSON shape:
 Rules:
 - "reason" and "task" are plain text — no emoji.
 - "Hi", "hello", "what can you do?", "what tasks?", "which models?" → "help".
+- "What is hy4-preview?", "what is Hy4 preview?", "tell me about wan-3.0" → "help", never "out_of_scope". Hyphenated registry ids are the same as spaced names (hy4-preview = Hy4 preview).
 - "Can you edit an image?", "Can you perform image understanding?", "do you support try-on?" with no files → "help" (explain), not the action.
 - We only do 2D fashion/product images, short video, virtual try-on, model-swap, image/video understanding, and background remove. We do not create 3D worlds, 3D models, games, CAD, audio, music, code, or websites.
 - If they ask for something we cannot do — even if they say "generate", "create", or "can you" — use "help". Do NOT run generate/edit/video. The help reply will apologize and list the closest supported tasks.
@@ -110,6 +114,7 @@ Format rules (strict):
 - Do not put a hyphen or a colon on its own line.
 
 Do not invent models, APIs, or features that are not in the catalog.
+Hyphenated registry ids match the same words with spaces (hy4-preview = Hy4 preview = Hy4). If the user asked about a listed id, describe it — never say we lack it.
 Do not ask for API keys (they stay in opentryon/.env).
 If they greet you, greet back and offer 3–5 things you can do.
 If they ask how to run a task, say what to type and which photos to attach.
@@ -207,6 +212,11 @@ class PlannerAgent:
         return self._apply_input_gates(plan, available, prompt)
 
     def _apply_input_gates(self, plan: Plan, available: dict, prompt: str) -> Plan:
+        if is_named_model_question(prompt):
+            plan.intent = "help"
+            plan.missing_inputs = []
+            plan.reason = "Named-model question — explain from the live registry."
+            return plan
         if plan.intent == "clarify":
             if is_capability_question(prompt):
                 plan.intent = "help"
@@ -236,17 +246,22 @@ class PlannerAgent:
         return plan
 
     def _answer_help(self, prompt: str) -> str:
+        named = named_model_help_message(prompt)
+        if named:
+            return named
         catalog = capabilities_brief()
+        card = named_model_cards(prompt)
         fallback = FALLBACK_UNSUPPORTED if is_unsupported_request(prompt) else FALLBACK_HELP
         if self.llm is None:
             return fallback
         try:
+            extra = f"\n\n{card}" if card else ""
             reply = self.llm.invoke(
                 [
                     SystemMessage(content=HELP_SYSTEM_PROMPT),
                     HumanMessage(
                         content=(
-                            f"Capability catalog:\n{catalog}\n\n"
+                            f"Capability catalog:\n{catalog}{extra}\n\n"
                             f"User: {current_utterance(prompt) or prompt}\n\n"
                             "Write the assistant reply now. No emoji."
                         )

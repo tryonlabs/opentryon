@@ -25,7 +25,7 @@ user query  →  PlannerAgent (cheap LLM classify)
                       recipes: vton (person + garment), model_swap (outfit rewrite)
 ```
 
-There is **no vector RAG index**. Help is grounded in `tryon.cli.registry`.
+There is **no vector RAG index**. Help is grounded in `tryon.cli.registry`. Questions like “what is Hy4 preview?” resolve the registry id (hyphenated ids match spaced names) and reply from that model’s `label` / `notes` instead of asking the help LLM to guess.
 
 ## Model choice
 
@@ -57,7 +57,7 @@ The planner can use **any** registry tool for a turn (named models search the fu
 | `understand` | image or video URL | `invoke_model` |
 | `bg_remove` | image | `invoke_model` |
 | `multi_step` | two or more tools (e.g. BG then try-on) | one `invoke_model` today |
-| `help` | greetings, how-to, or an unsupported ask (e.g. 3D world) | apology + closest tasks we can run; no `invoke_model` |
+| `help` | greetings, how-to, “what is \<model\>?”, or an unsupported ask (e.g. 3D world) | catalog answer (named models use registry `label` / `notes`); no `invoke_model` |
 | `clarify` | missing files | planner asks for the photo(s), not “missing inputs” |
 | `out_of_scope` | unrelated | planner declines |
 

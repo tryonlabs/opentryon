@@ -256,6 +256,48 @@ def check_named_model_hy4_dry_run():
     print("\u2713 named-model chat dry-runs hy4-preview / hy4-preview-local")
 
 
+def check_named_model_question_is_help():
+    from tryon.agents.planner.catalog import (
+        is_named_model_question,
+        named_model_help_message,
+    )
+
+    question = "Hi, What is Hy4 preview?"
+    assert is_named_model_question(question)
+    assert is_named_model_question("do you support hy4-preview?")
+    assert not is_named_model_question("Caption this with hy4-preview")
+    assert not is_named_model_question("What do you see in this photo?")
+
+    msg = named_model_help_message(question)
+    assert "hy4-preview" in msg
+    assert "Understand" in msg
+    assert "TOKENHUB_API_KEY" in msg
+    assert "770B" in msg or "TokenHub" in msg
+
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(
+            intent="out_of_scope", reason="unknown product", task=kwargs["prompt"]
+        )
+    )
+    result = agent.run(question)
+    assert result["success"] is True
+    assert result["intent"] == "help"
+    assert result["agent"] == "planner"
+    assert "hy4-preview" in result["message"]
+    assert "TOKENHUB_API_KEY" in result["message"]
+    assert "do not have information" not in result["message"].lower()
+
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(
+            intent="understand", task=kwargs["prompt"], reason="caption"
+        )
+    )
+    result = agent.run(question)
+    assert result["intent"] == "help"
+    assert "hy4-preview" in result["message"]
+    print("\u2713 'what is Hy4 preview?' is catalog help, not out-of-scope or understand")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -280,6 +322,7 @@ def check_help_answers_without_specialist():
 
     brief = capabilities_brief()
     assert "vton" in brief and "generate" in brief and "video-generate" in brief
+    assert "hy4-preview" in brief
 
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="help", reason="capability question", task=kwargs["prompt"])
@@ -658,6 +701,7 @@ def main():
     check_named_model_outfitanyone_and_photoroom_dry_run()
     check_named_model_leffa_and_catvton_dry_run()
     check_named_model_hy4_dry_run()
+    check_named_model_question_is_help()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()
