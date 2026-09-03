@@ -256,6 +256,48 @@ def check_named_model_hy4_dry_run():
     print("\u2713 named-model chat dry-runs hy4-preview / hy4-preview-local")
 
 
+def check_named_model_minimax_h3_max_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="video", task=kwargs["prompt"])
+    )
+    result = agent.run("Generate a clip using h3 max", dry_run=True)
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["service"] == "video-generate"
+    assert result["model"] == "minimax-h3-max"
+    assert "MiniMaxH3Adapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    video = slice_for_intent("video")
+    pinned = match_named_model("use minimax-h3-max please", video)
+    assert pinned is not None and pinned.model == "minimax-h3-max"
+    h3 = match_named_model("use minimax-h3 please", video)
+    assert h3 is not None and h3.model == "minimax-h3"
+    print("\u2713 named-model chat dry-runs minimax-h3-max and does not steal minimax-h3")
+
+
+def check_named_model_fal_h3_max_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="video", task=kwargs["prompt"])
+    )
+    result = agent.run("Generate a clip using fal h3 max", dry_run=True)
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["service"] == "video-generate"
+    assert result["model"] == "fal-h3-max"
+    assert "FalH3MaxAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    video = slice_for_intent("video")
+    fal = match_named_model("use fal-h3-max please", video)
+    assert fal is not None and fal.model == "fal-h3-max"
+    first_party = match_named_model("use h3 max please", video)
+    assert first_party is not None and first_party.model == "minimax-h3-max"
+    print("\u2713 named-model chat dry-runs fal-h3-max; bare h3 max stays MiniMax first-party")
+
+
 def check_named_model_question_is_help():
     from tryon.agents.planner.catalog import (
         is_named_model_question,
@@ -701,6 +743,8 @@ def main():
     check_named_model_outfitanyone_and_photoroom_dry_run()
     check_named_model_leffa_and_catvton_dry_run()
     check_named_model_hy4_dry_run()
+    check_named_model_minimax_h3_max_dry_run()
+    check_named_model_fal_h3_max_dry_run()
     check_named_model_question_is_help()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()

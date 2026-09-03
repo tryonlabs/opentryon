@@ -548,7 +548,8 @@ Also available via the CLI/MCP registry:
 | `GrokImagineVideoAdapter` | `grok-imagine-video` | [Grok Imagine](grok-imagine) |
 | `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
 | `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
-| `MiniMaxH3Adapter` | `minimax-h3` | [MiniMax H3](minimax-h3) |
+| `MiniMaxH3Adapter` | `minimax-h3` / `minimax-h3-max` | [MiniMax H3](minimax-h3) |
+| `FalH3MaxAdapter` | `fal-h3-max` | [MiniMax H3 Max (Fal)](fal-h3-max) |
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
 | `Cosmos3VideoAdapter` | `cosmos3` | [NVIDIA NIM](nvidia-nim) |

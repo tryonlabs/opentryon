@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎬 Video — Fal MiniMax H3 Max (third-party)
+- **Fal H3 Max** (`FalH3MaxAdapter` / CLI `--model fal-h3-max`): first third-party hoster in OpenTryOn
+  - Fal queue `minimax/h3-max/{text,image,reference}-to-video`. Auth `FAL_KEY` (`FAL_API_KEY` alias)
+  - T2V, first/last I2V, and reference-to-video (up to 12 refs). 480P/768P, 5–15s
+  - Distinct from first-party `--model minimax-h3-max` (`MINIMAX_API_KEY`, no R2V)
+  - MCP tool `video_generate_fal_h3_max`
+  - Docs: `docs/docs/api-reference/fal-h3-max.md`
+
 #### 🧠 Understanding — Tencent Hy4 preview
 - **Hy4 preview** (`Hy4Adapter` / CLI `--model hy4-preview` and `hy4-preview-local`): 770B MoE text LLM ([product](https://hy.tencent.ai/research/hy4-preview))
   - Path A: Tencent Cloud TokenHub OpenAI Chat Completions (`TOKENHUB_API_KEY`, model `hy4-preview`)
@@ -86,6 +94,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - T2V, first/last-frame I2V, optional reference-to-video in Python; 4–15s, 768P/2K, native stereo audio
   - MCP tool `video_generate_minimax_h3`
   - Docs: `docs/docs/api-reference/minimax-h3.md`
+- **MiniMax H3 Max** (`MiniMaxH3Adapter` / CLI `--model minimax-h3-max`): same V2 adapter, official `MiniMax-H3-Max`
+  - Fast hosted variant: T2V / first-last I2V only (no reference-to-video), 480P/768P (no 2K), 5–15s
+  - Same `MINIMAX_API_KEY`. No local twin
+  - MCP tool `video_generate_minimax_h3_max`
 - **MiniMax H3 local Diffusers** (`MiniMaxH3LocalAdapter` / CLI `--model minimax-h3-local`): open-weight dual-path
   - `MiniMaxAI/MiniMax-H3` via `ModularPipeline` (`t2va` / `fl2va`); 768p H3-Base (2K regenerate is not open-sourced)
   - CUDA + Diffusers from main; ComponentsManager CPU offload by default

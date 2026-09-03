@@ -32,7 +32,7 @@ opentryon <service> --model <model> [params...]
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local) |
-| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
 Models marked "local" run on your own GPU and require
@@ -154,6 +154,9 @@ opentryon video-generate --model ltx-2.5-api --prompt "runway walk, soft light" 
 opentryon video-generate --model ltx-2.5 --prompt "runway walk at dusk, camera tracking" --width 960 --height 544 --num-frames 121
 opentryon video-generate --model hailuo-2.3 --prompt "runway walk [Tracking shot]" --duration 6 --resolution 1080P
 opentryon video-generate --model minimax-h3 --prompt "runway walk at dusk" --duration 5 --resolution 2K --ratio 16:9
+opentryon video-generate --model minimax-h3-max --prompt "runway walk at dusk" --duration 5 --resolution 768P --ratio 16:9
+opentryon video-generate --model fal-h3-max --prompt "runway walk at dusk" --duration 5 --resolution 768P --ratio 16:9
+opentryon video-generate --model fal-h3-max --prompt "Image 1 is the model. Keep her identity." --reference-image look.jpg
 opentryon video-generate --model minimax-h3-local --prompt "runway walk at dusk" --width 960 --height 544 --num-frames 124
 opentryon video-generate --model wan-api --prompt "runway walk" --duration 5 --resolution 720P
 opentryon video-generate --model wan-3.0 --prompt "runway walk at dusk" --duration 8 --resolution 720P

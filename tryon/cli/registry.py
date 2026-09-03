@@ -1747,7 +1747,7 @@ _VIDEO_GENERATE = {
         notes=(
             "First-party MiniMax Hailuo 2.3 T2V/I2V. No open weights for 2.3. "
             "Camera moves via [Tracking shot] style commands in the prompt. "
-            "H3 dual-path is --model minimax-h3 / minimax-h3-local."
+            "H3 dual-path is --model minimax-h3 / minimax-h3-max / minimax-h3-local."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", help="Text prompt (required for T2V)"),
@@ -1778,7 +1778,8 @@ _VIDEO_GENERATE = {
         notes=(
             "First-party MiniMax H3 (Hailuo 3) via V2 video_generation. "
             "T2V / first-last I2V with native stereo audio, 4–15s, 768P/2K. "
-            "Same MINIMAX_API_KEY as hailuo-2.3. Local twin: --model minimax-h3-local."
+            "Same MINIMAX_API_KEY as hailuo-2.3. Fast variant: --model minimax-h3-max. "
+            "Local twin: --model minimax-h3-local."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt (required, max 7000 chars)"),
@@ -1809,6 +1810,140 @@ _VIDEO_GENERATE = {
                 choices=["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
                 help="Required for T2V (cannot be adaptive). Ignored for I2V.",
             ),
+        ],
+    ),
+    "minimax-h3-max": ModelSpec(
+        id="minimax-h3-max",
+        label="MiniMax H3 Max (official API, fast)",
+        import_path="tryon.api.minimax",
+        class_name="MiniMaxH3Adapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="MINIMAX_API_KEY",
+        notes=(
+            "First-party MiniMax H3 Max (fast V2 variant). T2V / first-last I2V only — "
+            "no reference-to-video. 480P/768P (no 2K), 5–15s. Same MINIMAX_API_KEY. "
+            "Quality/2K/R2V on MiniMax: --model minimax-h3. Fal R2V twin: --model fal-h3-max."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt (required, max 7000 chars)"),
+            Arg(("--image",), "image", help="First-frame image (switches to I2V)", alt_only=True),
+            Arg(
+                ("--last-frame",),
+                "last_frame",
+                help="Last-frame image (I2V last-only, or pair with --image)",
+            ),
+            Arg(
+                ("--h3-model",),
+                "h3_model",
+                target="init",
+                call_name="model",
+                default="MiniMax-H3-Max",
+                choices=["MiniMax-H3-Max"],
+                help="MiniMax V2 model id",
+            ),
+            Arg(
+                ("--duration",),
+                "duration",
+                type=int,
+                default=5,
+                choices=list(range(5, 16)),
+                help="Seconds 5-15",
+            ),
+            Arg(
+                ("--resolution",),
+                "resolution",
+                default="768P",
+                choices=["480P", "768P"],
+            ),
+            Arg(
+                ("--ratio",),
+                "ratio",
+                default="16:9",
+                choices=["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+                help="Required for T2V (cannot be adaptive). Ignored for I2V.",
+            ),
+        ],
+    ),
+    "fal-h3-max": ModelSpec(
+        id="fal-h3-max",
+        label="MiniMax H3 Max (Fal, T2V / I2V / R2V)",
+        import_path="tryon.api.fal",
+        class_name="FalH3MaxAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="FAL_KEY",
+        notes=(
+            "Third-party Fal hoster for MiniMax H3 Max (joint MiniMax + fal.ai release). "
+            "T2V, first/last I2V, and reference-to-video. 480P/768P, 5–15s. "
+            "First-party MiniMax (no R2V): --model minimax-h3-max."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt (required)"),
+            Arg(("--image",), "image", help="First-frame image (switches to I2V)", alt_only=True),
+            Arg(
+                ("--last-frame",),
+                "last_frame",
+                help="Last-frame image (I2V last-only, or pair with --image)",
+            ),
+            Arg(
+                ("--reference-image",),
+                "reference_image",
+                nargs="+",
+                help="Reference images for R2V (prompt as Image 1, Image 2, …). Max 12 files with video/audio.",
+            ),
+            Arg(
+                ("--reference-video",),
+                "reference_video",
+                nargs="+",
+                help="Reference videos for R2V (prompt as Video 1, …)",
+            ),
+            Arg(
+                ("--reference-audio",),
+                "reference_audio",
+                nargs="+",
+                help="Reference audio for R2V (cannot be the only reference)",
+            ),
+            Arg(
+                ("--duration",),
+                "duration",
+                type=int,
+                default=5,
+                choices=list(range(5, 16)),
+                help="Seconds 5-15",
+            ),
+            Arg(
+                ("--resolution",),
+                "resolution",
+                default="768P",
+                choices=["480P", "768P"],
+            ),
+            Arg(
+                ("--ratio",),
+                "ratio",
+                default="16:9",
+                choices=["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+                help="T2V cannot be adaptive. R2V default on Fal is adaptive if you pass it. I2V ignores ratio.",
+            ),
+            Arg(
+                ("--prompt-expansion",),
+                "prompt_expansion_mode",
+                default="balanced",
+                choices=["balanced", "quality"],
+                help="Fal prompt rewrite: balanced (~1s) or quality (up to ~30s)",
+            ),
+            Arg(
+                ("--no-safety-checker",),
+                "enable_safety_checker",
+                action="store_false",
+                default=True,
+                help="Disable Fal safety checker",
+            ),
+            Arg(("--seed",), "seed", type=int, help="Optional RNG seed"),
         ],
     ),
     "minimax-h3-local": ModelSpec(

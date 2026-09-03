@@ -9,6 +9,10 @@ Docs:
   https://platform.minimax.io/docs/api-reference/video-generation-v2-create
   https://platform.minimax.io/docs/api-reference/video-generation-v2-query
 
+Switch H3 vs H3 Max with the ``model`` field (``MiniMax-H3`` / ``MiniMax-H3-Max``).
+H3 Max is the fast variant: T2V and first/last-frame I2V only (no reference-to-video),
+``480P`` / ``768P`` (no ``2K``), duration 5–15s (not 4s).
+
 Env:
   MINIMAX_API_KEY
   MINIMAX_API_BASE_URL (default https://api.minimax.io)
@@ -23,6 +27,10 @@ Examples:
     ...     ratio="16:9",
     ... )
     >>> open("out.mp4", "wb").write(video)
+    >>> fast = MiniMaxH3Adapter(model="MiniMax-H3-Max")
+    >>> open("h3-max.mp4", "wb").write(fast.generate_text_to_video(
+    ...     prompt="Runway walk at dusk", duration=5, resolution="768P",
+    ... ))
 """
 
 from __future__ import annotations
@@ -38,11 +46,32 @@ from PIL import Image
 
 DEFAULT_BASE_URL = "https://api.minimax.io"
 DEFAULT_MODEL = "MiniMax-H3"
+H3_MAX_MODEL = "MiniMax-H3-Max"
 MAX_PROMPT_CHARS = 7000
 T2V_RATIOS = ("21:9", "16:9", "4:3", "1:1", "3:4", "9:16")
-RESOLUTIONS = ("768P", "2K")
+
+# Official V2 constraints (platform.minimax.io video-generation-v2-create).
+_MODEL_LIMITS = {
+    DEFAULT_MODEL: {
+        "resolutions": ("768P", "2K"),
+        "default_resolution": "2K",
+        "duration_min": 4,
+        "duration_max": 15,
+        "allow_reference": True,
+    },
+    H3_MAX_MODEL: {
+        "resolutions": ("480P", "768P"),
+        "default_resolution": "768P",
+        "duration_min": 5,
+        "duration_max": 15,
+        "allow_reference": False,
+    },
+}
 
 MODEL_ALIASES = {
+    "minimax-h3-max": H3_MAX_MODEL,
+    "MiniMax-H3-Max": H3_MAX_MODEL,
+    "h3-max": H3_MAX_MODEL,
     "minimax-h3": DEFAULT_MODEL,
     "MiniMax-H3": DEFAULT_MODEL,
     "hailuo-h3": DEFAULT_MODEL,
@@ -82,6 +111,17 @@ class MiniMaxH3Adapter:
     def _resolve_model(model: str) -> str:
         key = (model or "").strip()
         return MODEL_ALIASES.get(key, key) or DEFAULT_MODEL
+
+    @classmethod
+    def _limits(cls, model: str) -> dict:
+        resolved = cls._resolve_model(model)
+        limits = _MODEL_LIMITS.get(resolved)
+        if limits is None:
+            raise ValueError(
+                f"Unknown MiniMax V2 model {resolved!r}. "
+                f"Use {DEFAULT_MODEL} or {H3_MAX_MODEL}."
+            )
+        return limits
 
     def _headers(self) -> Dict[str, str]:
         return {
@@ -201,6 +241,7 @@ class MiniMaxH3Adapter:
         reference_image: Optional[Union[ImageLike, Sequence[ImageLike]]] = None,
         reference_video: Optional[Union[MediaLike, Sequence[MediaLike]]] = None,
         reference_audio: Optional[Union[MediaLike, Sequence[MediaLike]]] = None,
+        for_model: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         refs_img = self._as_list(reference_image)
         refs_vid = self._as_list(reference_video)
@@ -211,6 +252,12 @@ class MiniMaxH3Adapter:
             raise ValueError(
                 "MiniMax H3 image-to-video (first/last frame) and reference-to-video "
                 "are mutually exclusive."
+            )
+        chosen = self._resolve_model(for_model or self.model)
+        if has_refs and not self._limits(chosen)["allow_reference"]:
+            raise ValueError(
+                f"{chosen} does not support reference-to-video "
+                "(reference image / video / audio). Use --model minimax-h3."
             )
 
         content: List[Dict[str, Any]] = [{"type": "text", "text": prompt}]
@@ -301,8 +348,8 @@ class MiniMaxH3Adapter:
         self,
         prompt: str,
         *,
-        duration: int,
-        resolution: str,
+        duration: Optional[int],
+        resolution: Optional[str],
         ratio: Optional[str],
         image: Optional[ImageLike] = None,
         last_frame: Optional[ImageLike] = None,
@@ -312,12 +359,21 @@ class MiniMaxH3Adapter:
         model: Optional[str] = None,
     ) -> bytes:
         text = self._validate_prompt(prompt)
-        duration_i = int(duration)
-        if duration_i < 4 or duration_i > 15:
-            raise ValueError("duration must be an integer between 4 and 15 seconds.")
-        res = (resolution or "2K").strip()
-        if res not in RESOLUTIONS:
-            raise ValueError(f"resolution must be one of {RESOLUTIONS} (got {res!r}).")
+        chosen_model = self._resolve_model(model) if model else self.model
+        limits = self._limits(chosen_model)
+        duration_i = int(duration if duration is not None else 5)
+        dmin, dmax = limits["duration_min"], limits["duration_max"]
+        if duration_i < dmin or duration_i > dmax:
+            raise ValueError(
+                f"duration must be an integer between {dmin} and {dmax} seconds "
+                f"for {chosen_model} (got {duration_i})."
+            )
+        res = (resolution or limits["default_resolution"]).strip()
+        allowed = limits["resolutions"]
+        if res not in allowed:
+            raise ValueError(
+                f"resolution must be one of {allowed} for {chosen_model} (got {res!r})."
+            )
 
         content = self._build_content(
             text,
@@ -326,6 +382,7 @@ class MiniMaxH3Adapter:
             reference_image=reference_image,
             reference_video=reference_video,
             reference_audio=reference_audio,
+            for_model=chosen_model,
         )
         is_t2v = len(content) == 1
         is_i2v = any(
@@ -333,7 +390,7 @@ class MiniMaxH3Adapter:
         )
 
         payload: Dict[str, Any] = {
-            "model": self._resolve_model(model) if model else self.model,
+            "model": chosen_model,
             "content": content,
             "resolution": res,
             "duration": duration_i,
@@ -360,7 +417,7 @@ class MiniMaxH3Adapter:
         prompt: str,
         model: Optional[str] = None,
         duration: int = 5,
-        resolution: str = "2K",
+        resolution: Optional[str] = None,
         ratio: str = "16:9",
         last_frame: Optional[ImageLike] = None,
         reference_image: Optional[Union[ImageLike, Sequence[ImageLike]]] = None,
@@ -386,7 +443,7 @@ class MiniMaxH3Adapter:
         prompt: str,
         model: Optional[str] = None,
         duration: int = 5,
-        resolution: str = "2K",
+        resolution: Optional[str] = None,
         last_frame: Optional[ImageLike] = None,
         ratio: Optional[str] = None,
     ) -> bytes:

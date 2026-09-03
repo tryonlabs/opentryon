@@ -14,7 +14,7 @@ keywords:
 
 Open-weight [MiniMax H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) via Hugging Face Diffusers `ModularPipeline` (`t2va` / `fl2va`). Runs on your CUDA GPU with ComponentsManager CPU offload by default. Outputs MP4 with native stereo audio.
 
-Hosted API twin: [MiniMax H3 (official API)](../api-reference/minimax-h3.md) (`--model minimax-h3`).
+Hosted API twin: [MiniMax H3 (official API)](../api-reference/minimax-h3.md) (`--model minimax-h3`). Fast hosted variant: `--model minimax-h3-max` (no local twin).
 
 Local weights are **H3-Base at 768p** (short edge). The hosted **H3-Regenerate-2K** pass is not open-sourced — use the API for 2K.
 

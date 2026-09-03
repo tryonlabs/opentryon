@@ -249,6 +249,8 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_ltx_2_5` | LTX-2.5 (local Diffusers) | local/GPU |
 | `video_generate_hailuo_2_3` | MiniMax Hailuo 2.3 | `MINIMAX_API_KEY` |
 | `video_generate_minimax_h3` | MiniMax H3 (official API) | `MINIMAX_API_KEY` |
+| `video_generate_minimax_h3_max` | MiniMax H3 Max (official API, fast) | `MINIMAX_API_KEY` |
+| `video_generate_fal_h3_max` | MiniMax H3 Max (Fal, T2V / I2V / R2V) | `FAL_KEY` |
 | `video_generate_minimax_h3_local` | MiniMax H3 (local Diffusers) | local/GPU |
 | `video_generate_wan_api` | Alibaba Wan 2.x (DashScope) | `DASHSCOPE_API_KEY` |
 | `video_generate_wan_3_0` | Alibaba Wan 3.0 (DashScope) | `DASHSCOPE_API_KEY` |

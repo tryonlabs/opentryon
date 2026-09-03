@@ -189,15 +189,17 @@ capability notes: [Qwen3.8-Max](../api-reference/qwen3.8.md),
 
 ## MiniMax H3 tools (video)
 
-Same `MINIMAX_API_KEY` as Hailuo 2.3. H3 is a **dual path** (hosted V2 vs local Diffusers); Hailuo 2.3 stays API-only.
+Same `MINIMAX_API_KEY` as Hailuo 2.3. H3 is a **dual path** (hosted V2 vs local Diffusers); Hailuo 2.3 stays API-only. H3 Max is the hosted fast variant (no local twin).
 
 | MCP tool | Backend | Needs |
 |---|---|---|
-| `video_generate_minimax_h3` | MiniMax H3 official V2 API (T2V / I2V, 4–15s, 768P/2K) | `MINIMAX_API_KEY` |
+| `video_generate_minimax_h3` | MiniMax H3 official V2 API (T2V / I2V / R2V, 4–15s, 768P/2K) | `MINIMAX_API_KEY` |
+| `video_generate_minimax_h3_max` | MiniMax H3 Max (fast V2; T2V / I2V, 5–15s, 480P/768P) | `MINIMAX_API_KEY` |
+| `video_generate_fal_h3_max` | Fal-hosted H3 Max (T2V / I2V / R2V, 5–15s, 480P/768P) | `FAL_KEY` |
 | `video_generate_minimax_h3_local` | Open-weight `MiniMaxAI/MiniMax-H3` (768p H3-Base) | `pip install opentryon[local]` + CUDA + Diffusers from main |
 | `video_generate_hailuo_2_3` | MiniMax Hailuo 2.3 (V1) | `MINIMAX_API_KEY` |
 
-See [MiniMax H3 API](../api-reference/minimax-h3.md) and [MiniMax H3 local](../local-models/minimax-h3.md).
+See [MiniMax H3 API](../api-reference/minimax-h3.md), [MiniMax H3 Max (Fal)](../api-reference/fal-h3-max.md), and [MiniMax H3 local](../local-models/minimax-h3.md).
 
 ## NVIDIA NIM tools (understand + video)
 
@@ -279,6 +281,7 @@ See [P-Image-Ideogram](../api-reference/p-image-ideogram.md).
 - [Qwen-Image local model](../local-models/qwen-image)
 - [Qwen3.8 local model](../local-models/qwen3.8)
 - [MiniMax H3 API](../api-reference/minimax-h3)
+- [MiniMax H3 Max (Fal)](../api-reference/fal-h3-max)
 - [MiniMax H3 local](../local-models/minimax-h3)
 - [Muse Image](../api-reference/muse-image)
 - [P-Image-Ideogram](../api-reference/p-image-ideogram)

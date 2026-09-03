@@ -35,12 +35,14 @@ _EXTRA_ENV_NAMES = (
     "RUNWAY_API_KEY",
     "META_MODEL_API_KEY",
     "MUSE_API_KEY",
+    "FAL_API_KEY",
 )
 
 # Registry env_hint name -> names that also count as configured (adapter aliases).
 _VAR_ALIASES: Dict[str, Tuple[str, ...]] = {
     "MODEL_API_KEY": ("MODEL_API_KEY", "META_MODEL_API_KEY", "MUSE_API_KEY"),
     "TOKENHUB_API_KEY": ("TOKENHUB_API_KEY", "TENCENT_TOKENHUB_API_KEY"),
+    "FAL_KEY": ("FAL_KEY", "FAL_API_KEY"),
 }
 
 # (id, label, docs_url, env var names, optional notes). Order is the Connect rail.
@@ -104,10 +106,19 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
     ),
     (
         "minimax",
-        "MiniMax (Hailuo 2.3 / H3)",
+        "MiniMax (Hailuo 2.3 / H3 / H3 Max)",
         "https://platform.minimax.io/user-center/basic-information/interface-key",
         ("MINIMAX_API_KEY",),
-        "One key for Hailuo 2.3 and MiniMax H3 video. Local H3 needs no key.",
+        "One key for Hailuo 2.3, MiniMax H3, and H3 Max video. Local H3 needs no key. "
+        "Fal-hosted H3 Max is a separate key (FAL_KEY / fal-h3-max).",
+    ),
+    (
+        "fal",
+        "Fal (H3 Max)",
+        "https://fal.ai/dashboard/keys",
+        ("FAL_KEY",),
+        "First third-party hoster in OpenTryOn. Unlocks fal-h3-max (T2V / I2V / R2V). "
+        "Official MiniMax H3 Max remains MINIMAX_API_KEY. FAL_API_KEY is an alias.",
     ),
     (
         "moonshot",

@@ -123,6 +123,8 @@ async def check_dry_run_calls() -> None:
         ("video_generate_gemini_omni", {"prompt": "a cat walking", "dry_run": True}, False),
         ("video_generate_wan_3_0", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3", {"prompt": "runway walk", "dry_run": True}, False),
+        ("video_generate_minimax_h3_max", {"prompt": "runway walk", "dry_run": True}, False),
+        ("video_generate_fal_h3_max", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_cosmos3", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3_local", {"prompt": "runway walk", "dry_run": True}, True),
         ("video_generate_seedance", {"prompt": "runway walk", "dry_run": True}, False),
@@ -239,6 +241,16 @@ async def check_list_and_set_api_keys() -> None:
     assert any(
         u["service"] == "video-generate" and u["model"] == "minimax-h3"
         for u in by_id["minimax"]["unlocks"]
+    )
+    assert any(
+        u["service"] == "video-generate" and u["model"] == "minimax-h3-max"
+        for u in by_id["minimax"]["unlocks"]
+    )
+    assert "fal" in by_id
+    assert by_id["fal"]["vars"][0]["name"] == "FAL_KEY"
+    assert any(
+        u["service"] == "video-generate" and u["model"] == "fal-h3-max"
+        for u in by_id["fal"]["unlocks"]
     )
     assert "pruna" in by_id
     assert any(

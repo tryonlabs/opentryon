@@ -36,6 +36,7 @@ keywords:
   - Kimi K3
   - Moonshot AI
   - MiniMax H3
+  - MiniMax H3 Max
   - Muse Image
   - Hailuo
   - multimodal understanding
@@ -86,7 +87,7 @@ Cloud adapters including FLUX VTO, **Google Vertex Virtual Try-On**, **OutfitAny
 Nano Banana family, FLUX.2, GPT Image, Luma Photon, **Seedream 5.0 Pro**, **Ideogram 4.0**, **Grok Imagine Image**, **Pruna P-Image / P-Image-Ideogram / Edit / Upscale**, **Qwen-Image** (DashScope 3.0 + local 2512/Edit-2511), **Muse Image**, plus local FLUX.2-dev Turbo.
 
 ### Video
-Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3** (API + local), **Wan** (2.x API + **Wan 3.0** API + local 2.2), **Runway Gen-4.5**.
+Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3 / H3 Max** (API + local H3 + **Fal H3 Max**), **Wan** (2.x API + **Wan 3.0** API + local 2.2), **Runway Gen-4.5**.
 
 ### Understanding & other
 **Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **Hy4 preview** (TokenHub + local vLLM/SGLang), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.

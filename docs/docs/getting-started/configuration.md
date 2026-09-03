@@ -60,8 +60,11 @@ DASHSCOPE_API_KEY=your_dashscope_api_key
 # Photoroom Virtual Try-On + Virtual Model
 PHOTOROOM_API_KEY=your_photoroom_api_key
 
-# MiniMax Hailuo 2.3 + MiniMax H3 video (same key; H3 uses V2)
+# MiniMax Hailuo 2.3 + MiniMax H3 / H3 Max video (same key; H3 uses V2)
 MINIMAX_API_KEY=your_minimax_api_key
+
+# Fal (third-party MiniMax H3 Max — T2V / I2V / R2V)
+FAL_KEY=your_fal_key
 
 # NVIDIA NIM (Nemotron Omni understand, Cosmos 3 Reasoner, Cosmos 3 Generator)
 NVIDIA_API_KEY=your_nvidia_api_key
@@ -210,15 +213,22 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU.
    `vton --model photoroom-virtual-model` (flat-lay → on-model). Plus / Enterprise
    Image Editing API. See [Photoroom](../api-reference/photoroom.md).
 
-### MiniMax (Hailuo 2.3 + H3)
+### MiniMax (Hailuo 2.3 + H3 + H3 Max)
 
 1. Sign up at [MiniMax Open Platform](https://platform.minimax.io/)
 2. Create an interface key from [API keys](https://platform.minimax.io/user-center/basic-information/interface-key)
 3. Add to `.env`: `MINIMAX_API_KEY=your_key`
 
-   Same key covers `video-generate --model hailuo-2.3` (V1) and `video-generate --model minimax-h3` (V2 H3). H3 on the API is billed as pay-as-you-go video.
+   Same key covers `video-generate --model hailuo-2.3` (V1), `video-generate --model minimax-h3` (V2 H3), and `video-generate --model minimax-h3-max` (V2 H3 Max, fast). H3 on the API is billed as pay-as-you-go video.
 
    Local open-weight twin (`pip install opentryon[local]`, CUDA, Diffusers from main): `--model minimax-h3-local`. The Community License for those weights excludes US/EU/UK/South Korea unless separately authorized. See [MiniMax H3 local](../local-models/minimax-h3.md).
+
+### Fal (MiniMax H3 Max)
+
+1. Create a key at [Fal API keys](https://fal.ai/dashboard/keys)
+2. Add to `.env`: `FAL_KEY=your_key` (`FAL_API_KEY` is an alias)
+
+   Covers `video-generate --model fal-h3-max` (T2V / I2V / **R2V**). This is a third-party hoster, not MiniMax’s V2 API. First-party Max remains `--model minimax-h3-max`. See [MiniMax H3 Max (Fal)](../api-reference/fal-h3-max.md).
 
 ### NVIDIA NIM (Nemotron / Cosmos)
 

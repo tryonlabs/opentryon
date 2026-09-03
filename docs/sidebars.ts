@@ -79,6 +79,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/ltx-2.5',
         'api-reference/hailuo',
         'api-reference/minimax-h3',
+        'api-reference/fal-h3-max',
         'api-reference/muse-image',
         'api-reference/muse-video',
         'api-reference/wan',

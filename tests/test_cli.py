@@ -574,6 +574,60 @@ def check_minimax_h3_requires_prompt():
     assert snap_num_frames(400) == 362
     print("\u2713 MiniMaxH3Adapter rejects empty prompt; local frame snap stays on 17*n+5")
 
+    fast = MiniMaxH3Adapter(api_key="fake-key-for-validation-test", model="MiniMax-H3-Max")
+    try:
+        fast.generate_text_to_video(prompt="ok", duration=4)
+    except ValueError as e:
+        assert "5" in str(e) and "MiniMax-H3-Max" in str(e)
+    else:
+        raise AssertionError("expected ValueError for H3 Max duration 4")
+    try:
+        fast.generate_text_to_video(prompt="ok", resolution="2K")
+    except ValueError as e:
+        assert "2K" in str(e) or "480P" in str(e)
+    else:
+        raise AssertionError("expected ValueError for H3 Max 2K")
+    try:
+        fast.generate_text_to_video(prompt="ok", reference_image="look.jpg")
+    except ValueError as e:
+        assert "reference" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for H3 Max reference-to-video")
+    print("\u2713 MiniMax H3 Max rejects 4s, 2K, and reference-to-video")
+
+
+def check_fal_h3_max_requires_prompt():
+    from tryon.api.fal import FalH3MaxAdapter
+
+    adapter = FalH3MaxAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_text_to_video(prompt="")
+    except ValueError as e:
+        assert "prompt" in str(e)
+    else:
+        raise AssertionError("expected ValueError when Fal H3 Max prompt is empty")
+    try:
+        adapter.generate_text_to_video(prompt="ok", duration=4)
+    except ValueError as e:
+        assert "5" in str(e)
+    else:
+        raise AssertionError("expected ValueError for Fal H3 Max duration 4")
+    try:
+        adapter.generate_text_to_video(prompt="ok", reference_audio="voice.mp3")
+    except ValueError as e:
+        assert "audio" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for audio-only Fal R2V")
+    try:
+        adapter.generate_image_to_video(
+            image="look.jpg", prompt="ok", reference_image="style.jpg"
+        )
+    except ValueError as e:
+        assert "mutually exclusive" in str(e).lower() or "reference" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when mixing I2V and R2V")
+    print("\u2713 FalH3MaxAdapter rejects empty prompt, 4s, audio-only R2V, and mixed I2V+R2V")
+
 
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
@@ -695,6 +749,19 @@ def check_new_media_models_dry_runs():
         (["video-generate", "--model", "minimax-h3", "--prompt", "animate",
           "--image", "data/model-1.jpg"],
          "MiniMaxH3Adapter", "generate_image_to_video"),
+        (["video-generate", "--model", "minimax-h3-max", "--prompt", "runway walk"],
+         "MiniMaxH3Adapter", "generate_text_to_video"),
+        (["video-generate", "--model", "minimax-h3-max", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "MiniMaxH3Adapter", "generate_image_to_video"),
+        (["video-generate", "--model", "fal-h3-max", "--prompt", "runway walk"],
+         "FalH3MaxAdapter", "generate_text_to_video"),
+        (["video-generate", "--model", "fal-h3-max", "--prompt", "animate",
+          "--image", "data/model-1.jpg"],
+         "FalH3MaxAdapter", "generate_image_to_video"),
+        (["video-generate", "--model", "fal-h3-max", "--prompt", "Image 1 is the model",
+          "--reference-image", "data/model-1.jpg"],
+         "FalH3MaxAdapter", "generate_text_to_video"),
         (["video-generate", "--model", "minimax-h3-local", "--prompt", "runway walk"],
          "MiniMaxH3LocalAdapter", "generate_text_to_video"),
         (["video-generate", "--model", "minimax-h3-local", "--prompt", "animate",
@@ -739,6 +806,10 @@ def check_new_media_models_dry_runs():
         printed = buf.getvalue()
         assert code == 0, printed
         assert expect_cls in printed and f".{expect_method}(" in printed, printed
+        if "minimax-h3-max" in argv:
+            assert "MiniMax-H3-Max" in printed, printed
+        if "fal-h3-max" in argv and "--reference-image" in argv:
+            assert "reference_image" in printed, printed
     print("\u2713 new Seedance/Seedream/Ideogram/Grok/Kling/Ray3.2/Pruna/LTX/Hailuo/MiniMax-H3/Muse/Wan/Runway --dry-run calls resolve")
 
 
@@ -771,6 +842,7 @@ if __name__ == "__main__":
     check_nvidia_understand_requires_media()
     check_qwen_image_requires_prompt_and_tryon_inputs()
     check_minimax_h3_requires_prompt()
+    check_fal_h3_max_requires_prompt()
     check_muse_image_requires_prompt()
     check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")
