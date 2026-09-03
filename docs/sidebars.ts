@@ -12,6 +12,7 @@ const sidebars: SidebarsConfig = {
         'getting-started/configuration',
         'getting-started/cli',
         'getting-started/mcp',
+        'getting-started/tryon-studio',
         'getting-started/openapi-swagger',
         'getting-started/fashion-ml',
       ],

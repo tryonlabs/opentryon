@@ -42,6 +42,8 @@ keywords:
   - opentryon CLI
   - MCP
   - Model Context Protocol
+  - TryOn Studio
+  - FastMCP
   - Pruna
   - Seedance
   - Seedream
@@ -59,11 +61,12 @@ OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on
 
 ## 🎯 What is OpenTryOn?
 
-OpenTryOn gives you three ways to run fashion AI models:
+OpenTryOn gives you four ways to run fashion AI models:
 
 1. **CLI** — `opentryon <service> --model <model> …`
-2. **MCP server** — tools for Cursor, Claude, and [tryon-studio](getting-started/mcp)
-3. **Python APIs** — `tryon.api` adapters + `invoke_model()`
+2. **MCP server** — tools for Cursor, Claude, and any MCP client ([guide](getting-started/mcp), [in-repo README](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md))
+3. **TryOn Studio** — Next.js playground that talks to the MCP server ([setup and screens](getting-started/tryon-studio))
+4. **Python APIs** — `tryon.api` adapters + `invoke_model()`
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
@@ -71,7 +74,8 @@ Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
 ### Developer surfaces
 - Unified **registry-driven CLI** with `--dry-run`
-- **FastMCP** server — every registry model is a tool
+- **FastMCP** server — every registry model is a tool ([MCP Server](getting-started/mcp))
+- **TryOn Studio** — Agent chat, Connect, and capability screens over MCP HTTP ([setup](getting-started/tryon-studio))
 - **OpenAPI / Swagger** + **Postman** snapshots for upstream media APIs ([guide](getting-started/openapi-swagger))
 - **Model integration guidelines** for Path A (API) vs Path B (local)
 
@@ -87,8 +91,8 @@ Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turb
 ### Understanding & other
 **Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **Hy4 preview** (TokenHub + local vLLM/SGLang), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.
 
-### Interactive demos
-Gradio apps in-repo; the Next.js playground/studio UI lives in **tryon-studio** and talks to OpenTryOn over MCP.
+### Interactive playground
+**[TryOn Studio](getting-started/tryon-studio)** is the Next.js UI: Agent chat (`planner_agent`), Connect (MCP status + key passthrough), and capability screens (Image, VTON, Understand, Video, BG Remove). In-repo **Gradio** apps remain for extract-garment / model-swap / outfit-generator.
 
 ## 📚 What You'll Learn
 
@@ -98,7 +102,8 @@ In this documentation, you'll find:
 - **[Quick Start](getting-started/quickstart)**: First successful runs
 - **[Configuration](getting-started/configuration)**: API keys and `.env`
 - **[Unified CLI](getting-started/cli)**: Service → model → params
-- **[MCP Server](getting-started/mcp)**: Agent / IDE tool surface
+- **[MCP Server](getting-started/mcp)**: Agent / IDE tool surface, plus the [`mcp-server` README](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md)
+- **[TryOn Studio](getting-started/tryon-studio)**: Web UI setup, Agent, Connect, and capability screens
 - **[OpenAPI & Postman](getting-started/openapi-swagger)**: Swagger for upstream media APIs
 - **[Fashion ML Engineer Path](getting-started/fashion-ml)**: Train → eval → invoke → workflow (toward v0.1.0)
 - **[Datasets Module](datasets/overview)**: Fashion-MNIST, VITON-HD, Subjects200K

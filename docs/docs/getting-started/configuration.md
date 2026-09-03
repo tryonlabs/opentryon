@@ -1,6 +1,6 @@
 # Configuration
 
-Learn how to configure OpenTryOn for your specific needs. OpenTryOn supports three main categories: **Preprocessing**, **API Integrations**, and **Datasets**.
+Learn how to configure OpenTryOn for your specific needs. The same `opentryon/.env` file is read by the **CLI**, the **[MCP server](mcp)**, and **[TryOn Studio](tryon-studio)** Connect (Studio never stores keys itself).
 
 ## Environment Variables
 
@@ -83,7 +83,7 @@ HF_DATASETS_CACHE=path/to/cache
 
 ### Planner / Studio chat (optional — only if you use `planner_agent`)
 
-The cheap intent model is separate from image/VTON/video keys. See [Planner Agent](../agents/planner-agent.md).
+The cheap intent model is separate from image/VTON/video keys. Studio Agent chat calls MCP `planner_agent`; set these on the MCP host and restart the server. See [Planner Agent](../agents/planner-agent.md) and [TryOn Studio](tryon-studio).
 
 ```env
 OPENTRYON_AGENT_LLM_PROVIDER=openai

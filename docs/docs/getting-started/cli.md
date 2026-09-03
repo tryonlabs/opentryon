@@ -205,6 +205,7 @@ stack trace:
 ## See Also
 
 - [MCP Server](mcp)
+- [TryOn Studio](tryon-studio)
 - [OpenAPI & Postman](openapi-swagger)
 - [Kimi K2.6 / K2.7 Code / K3 understanding](../api-reference/kimi.md)
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)

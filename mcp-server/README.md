@@ -2,7 +2,13 @@
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that exposes every model in the [`opentryon`](../README.md) toolkit -- virtual try-on, image/video generation & editing, multimodal image & video understanding, and background removal -- as tools an LLM agent (Claude, Cursor, ChatGPT, or any MCP client) can call directly.
 
-Requires **OpenTryOn v0.0.4+** (`pip install -U opentryon`). Docs: [MCP Server guide](https://tryonlabs.github.io/opentryon/docs/getting-started/mcp).
+Requires **OpenTryOn v0.0.4+** (`pip install -U opentryon`).
+
+**Documentation:**
+
+- [MCP Server guide](https://tryonlabs.github.io/opentryon/getting-started/mcp) — install, transports, Cursor / Claude / Studio
+- [TryOn Studio](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio) — Next.js MCP client (Agent, Connect, capability screens)
+- This README — architecture notes and the full generated tool table
 
 Built on [FastMCP](https://gofastmcp.com) 3.x, the actively-maintained, high-level Python framework for MCP servers (FastMCP 1.0 was folded into the official MCP Python SDK in 2024; this server uses the standalone FastMCP 2/3 project, which adds streamable-HTTP transport, better auth, and much less boilerplate).
 
@@ -36,9 +42,11 @@ Copy `env.template` (repo root) to `.env` and fill in whichever API keys you pla
 # stdio transport (what Claude Desktop / Cursor / most MCP clients expect)
 python server.py
 
-# streamable-HTTP transport, for remote/network clients
-python server.py --transport http --host 0.0.0.0 --port 8000
+# streamable-HTTP transport, for TryOn Studio and network clients
+python server.py --transport http --host 127.0.0.1 --port 8000
 ```
+
+TryOn Studio needs the HTTP transport (`OPENTRYON_MCP_URL=http://127.0.0.1:8000/mcp`). Setup: [TryOn Studio](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio).
 
 On startup the server prints a configuration status report to stderr (which API keys are set, which models are ready) -- the same information the `opentryon_status` tool returns at runtime.
 

@@ -1,41 +1,38 @@
 # Demos
 
-OpenTryOn includes interactive demos for easy experimentation and testing.
+OpenTryOn includes in-repo **Gradio** demos for quick experiments. The current web playground is **TryOn Studio**, which talks to OpenTryOn over MCP — it is not in this repository.
 
-## Available Demos
+## TryOn Studio (recommended UI)
 
-### Virtual Try-On Demo (Full-Stack Web App) ⭐ NEW
+[TryOn Studio](https://github.com/tryonlabs/tryon-studio) is a Next.js MCP client: Agent chat, Connect, Image generate/edit, VTON, Understand, Video, and background removal.
 
-A modern, production-ready virtual try-on web application with FastAPI backend and Next.js frontend.
+**Quick start** (two processes):
 
-**Features**:
-- Support for 4 AI models (Nano Banana, Nano Banana Pro, FLUX 2 Pro, FLUX 2 Flex)
-- Multi-image upload with drag & drop
-- Real-time credit estimation
-- Modern, responsive UI
-- RESTful API
+1. Start the MCP server from this repo:
 
-**Quick Start**:
-
-1. Start the backend:
 ```bash
-python api_server.py
+cd mcp-server
+python server.py --transport http --host 127.0.0.1 --port 8000
 ```
 
-2. In a new terminal, start the frontend:
+2. In another terminal, start Studio:
+
 ```bash
-cd demo/virtual-tryon
+cd tryon-studio
+cp .env.local.example .env.local
 npm install
 npm run dev
 ```
 
-3. Open `http://localhost:3000` in your browser
+Open [http://localhost:3000/connect](http://localhost:3000/connect) first.
 
-**[Read Full Documentation →](./virtual-tryon)**
+**[Full setup and screen tour →](../getting-started/tryon-studio)** · **[MCP Server →](../getting-started/mcp)**
 
 ---
 
-### Extract Garment Demo (Gradio)
+## Gradio demos (in this repo)
+
+### Extract Garment
 
 Interactive Gradio demo for garment extraction.
 
@@ -45,7 +42,7 @@ python run_demo.py --name extract_garment
 
 **[Read More →](./extract-garment)**
 
-### Model Swap Demo (Gradio)
+### Model Swap
 
 Interactive Gradio demo for swapping garments between models.
 
@@ -55,7 +52,7 @@ python run_demo.py --name model_swap
 
 **[Read More →](./model-swap)**
 
-### Outfit Generator Demo (Gradio)
+### Outfit Generator
 
 Interactive Gradio demo for generating outfits from text prompts.
 
@@ -65,29 +62,14 @@ python run_demo.py --name outfit_generator
 
 **[Read More →](./outfit-generator)**
 
-### Fashion Prompt Builder Demo (Next.js)
-
-A modern Next.js web application for generating prompts for fashion model generation.
-
-```bash
-cd demo/fashion-prompt-builder
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000` to access the prompt builder interface.
-
-**[Read Full Documentation →](./fashion-prompt-builder)**
-
 ---
 
-## Demo Comparison
+## Demo comparison
 
-| Demo | Type | Tech Stack | Use Case |
-|------|------|------------|----------|
-| **Virtual Try-On** | Full-stack Web App | Next.js + FastAPI | Production-ready virtual try-on with multiple AI models |
-| **Fashion Prompt Builder** | Web App | Next.js + TypeScript | Generate high-quality prompts for fashion AI models |
-| **Extract Garment** | Gradio | Python + Gradio | Quick garment extraction testing |
-| **Model Swap** | Gradio | Python + Gradio | Garment swapping experiments |
-| **Outfit Generator** | Gradio | Python + Gradio | Text-to-outfit generation |
+| Demo | Type | Where | Use case |
+|------|------|-------|----------|
+| **TryOn Studio** | Next.js MCP client | [tryon-studio](https://github.com/tryonlabs/tryon-studio) | Agent + all registry capabilities |
+| **Extract Garment** | Gradio | `demo/extract_garment` | Quick garment extraction |
+| **Model Swap** | Gradio | `demo/model_swap` | Garment swapping experiments |
+| **Outfit Generator** | Gradio | `demo/outfit_generator` | Text-to-outfit generation |
 
