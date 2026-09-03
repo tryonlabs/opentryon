@@ -87,6 +87,13 @@ After installation, verify that OpenTryOn is correctly installed:
 python -c "import tryon; print('OpenTryOn', tryon.__version__, 'installed successfully')"
 ```
 
+## MCP server and TryOn Studio
+
+The same install is what the MCP server and Studio talk to.
+
+- **MCP:** `cd mcp-server && pip install -r requirements.txt && python server.py` (stdio) or `python server.py --transport http --host 127.0.0.1 --port 8000` (Studio). Guide: [MCP Server](mcp). Full tool table: [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md).
+- **Studio:** clone [tryon-studio](https://github.com/tryonlabs/tryon-studio), point `OPENTRYON_MCP_URL` at that HTTP endpoint, `npm run dev`. Guide: [TryOn Studio](tryon-studio).
+
 ## Configuration
 
 ### Environment Variables
@@ -213,11 +220,14 @@ If you encounter issues:
 
 Once installed:
 
-1. **[Quick Start Guide](quickstart.md)**: Get started with API integrations, datasets, and preprocessing
-2. **[Configuration Guide](configuration.md)**: Set up environment variables and API keys
-3. **[API Reference](../api-reference/overview)**: Explore cloud-based virtual try-on and image generation APIs
-4. **[Datasets Module](../datasets/overview)**: Learn how to load and work with fashion datasets
-5. **[Preprocessing](../preprocessing/overview)**: Process garments, models, and images for virtual try-on
+1. **[Quick Start Guide](quickstart.md)**: First CLI / Python runs
+2. **[MCP Server](mcp)**: Expose every registry model as tools for Cursor, Claude, or Studio
+3. **[TryOn Studio](tryon-studio)**: Next.js UI — Agent chat, Connect, Image, VTON, Understand, Video, BG Remove
+4. **[Configuration Guide](configuration.md)**: Set up environment variables and API keys
+5. **[Unified CLI](cli)**: `opentryon <service> --model <model>`
+6. **[API Reference](../api-reference/overview)**: Cloud adapters
+7. **[Datasets Module](../datasets/overview)**: Fashion-MNIST, VITON-HD, Subjects200K
+8. **[Preprocessing](../preprocessing/overview)**: Garments, models, and images for virtual try-on
 
 ### Key Features to Explore
 

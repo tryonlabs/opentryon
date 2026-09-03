@@ -134,3 +134,9 @@ Returns `success`, `intent`, `agent`, `message`, `images_base64` / `video_base64
 ```bash
 conda run -n opentryon python tests/test_planner_agent.py
 ```
+
+## Related
+
+- [TryOn Studio](../getting-started/tryon-studio) — Agent chat is `planner_agent` over MCP HTTP
+- [MCP Server](../getting-started/mcp)
+- [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md)

@@ -1,6 +1,10 @@
 # Virtual Try-On Demo
 
-A modern, full-stack virtual try-on web application featuring a Next.js frontend and FastAPI backend. Generate realistic virtual try-on images using state-of-the-art AI models.
+:::note Current playground
+The Next.js + FastAPI demo that used to live in `demo/virtual-tryon/` is no longer in this repository. Use **[TryOn Studio](../getting-started/tryon-studio)** over the **[MCP server](../getting-started/mcp)** for the current UI (Agent, Connect, VTON, Image, Understand, Video, BG Remove).
+:::
+
+A historical full-stack virtual try-on web application featuring a Next.js frontend and FastAPI backend. The notes below describe that older demo.
 
 ## Overview
 

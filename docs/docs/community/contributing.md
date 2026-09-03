@@ -30,7 +30,7 @@ git checkout -b feature/your-feature-name
 - Write clean, documented code
 - Follow PEP 8 style guidelines
 - Add tests for new features
-- Update documentation
+- Update documentation (`docs/` Docusaurus site). New surfaces belong in Getting Started: [MCP Server](../getting-started/mcp), [TryOn Studio](../getting-started/tryon-studio).
 - For new cloud APIs or local models, follow
   [Model Integration Guidelines](../advanced/model-integration-guidelines.md)
   and the [new-model checklist](../advanced/new-model-checklist.md)

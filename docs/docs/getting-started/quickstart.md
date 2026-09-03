@@ -1,6 +1,6 @@
 # Quick Start
 
-Get started with OpenTryOn in minutes! This guide will walk you through the key features: **API integrations**, **datasets**, and **preprocessing**.
+Get started with OpenTryOn in minutes. The same registry powers the **CLI**, the **MCP server**, and **TryOn Studio**.
 
 ## Prerequisites
 
@@ -8,13 +8,24 @@ Get started with OpenTryOn in minutes! This guide will walk you through the key 
 - Environment variables configured (see [Configuration Guide](configuration.md))
 - API keys for cloud services (optional, for API integrations)
 
-## What You Can Do
+## Four ways to run a model
 
-OpenTryOn provides three main capabilities:
+| Surface | When to use it | Guide |
+|---|---|---|
+| **CLI** | Scripts, `--dry-run`, one-off jobs | [Unified CLI](cli) |
+| **MCP server** | Cursor, Claude, or any MCP client | [MCP Server](mcp) · [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md) |
+| **TryOn Studio** | Browser UI: Agent, Connect, capability screens | [TryOn Studio](tryon-studio) |
+| **Python** | `tryon.api` adapters in your own code | examples below |
 
-1. **🔌 API Integrations**: Use cloud-based virtual try-on and image generation APIs
-2. **📊 Datasets**: Load and work with fashion datasets (Fashion-MNIST, VITON-HD, Subjects200K)
-3. **🛠️ Preprocessing**: Process garments, models, and images for virtual try-on
+Studio needs the MCP server on **HTTP** (`python server.py --transport http --host 127.0.0.1 --port 8000`), then `npm run dev` in [tryon-studio](https://github.com/tryonlabs/tryon-studio). Open `/connect` first.
+
+## What else you can do
+
+OpenTryOn also includes:
+
+1. **API integrations**: cloud virtual try-on and image generation
+2. **Datasets**: Fashion-MNIST, VITON-HD, Subjects200K
+3. **Preprocessing**: garments, models, and images for virtual try-on
 
 ## Quick Examples
 
@@ -448,6 +459,8 @@ python run_demo.py --name outfit_generator
 
 ### Additional Resources
 
+- [MCP Server](mcp): Cursor, Claude, and Studio tool surface
+- [TryOn Studio](tryon-studio): Agent chat, Connect, and capability screens
 - [Examples](../examples/basic-usage): Real-world usage examples
 - [TryOnDiffusion](../tryondiffusion/overview): Advanced diffusion-based virtual try-on
 - [Configuration Guide](configuration): Environment setup and API keys

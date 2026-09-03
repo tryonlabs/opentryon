@@ -25,7 +25,7 @@ Canonical file: [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/
 - Qwen-Image generate / edit / VTON (DashScope 3.0 + local Diffusers 2512 / Edit-2511)
 - **OpenAPI / Postman** media snapshots, docs, Gradio demos
 - Local extras (FLUX.2 Turbo, Kimi-VL, LLaVA-NeXT, BEN2, LTX-2.5, Wan 2.2, Qwen3.8, Qwen-Image)
-- Web UI in **tryon-studio** over [MCP](../getting-started/mcp)
+- Web UI in **[TryOn Studio](../getting-started/tryon-studio)** over **[MCP](../getting-started/mcp)**
 
 ## Next — Fashion ML Toolkit Core → v0.1.0
 

@@ -1,13 +1,14 @@
 ---
 sidebar_position: 5
 title: MCP Server
-description: Expose every OpenTryOn registry model as Model Context Protocol tools for Cursor, Claude, and tryon-studio
+description: Install and run the OpenTryOn Model Context Protocol server — registry tools for Cursor, Claude, and TryOn Studio
 keywords:
   - MCP
   - Model Context Protocol
   - FastMCP
   - Cursor
   - Claude
+  - TryOn Studio
   - opentryon
 ---
 
@@ -15,13 +16,125 @@ keywords:
 
 OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) server under `mcp-server/`. Every model in `tryon.cli.registry` becomes an MCP tool automatically — the same surface as the `opentryon` CLI, via `tryon.cli.runner.invoke_model()`.
 
-**Current release:** works with OpenTryOn **v0.0.4+** (`pip install -U opentryon`).
+**Current release:** OpenTryOn **v0.0.4+** (`pip install -U opentryon`).
+
+This page is the Docusaurus guide for the server. Keep it next to:
+
+- **In-repo README (full tool table):** [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md)
+- **TryOn Studio (the web MCP client):** [TryOn Studio](tryon-studio)
 
 ## Why it matters
 
-- Agents in **Cursor**, **Claude Desktop**, or **tryon-studio** can call try-on, generate, edit, video, understand, and bg-remove tools directly. Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
-- New registry models appear as tools with **zero hand-written MCP wrappers**
-- CLI and MCP cannot drift — one runner, one registry
+- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, and bg-remove tools directly.
+- Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
+- New registry models appear as tools with **zero hand-written MCP wrappers**.
+- CLI and MCP cannot drift — one runner, one registry.
+
+## Install
+
+```bash
+cd opentryon
+pip install -e .              # core (API-backed) models
+# optional GPU extras (leffa, catvton, kimi-vl, qwen3.8, ben2, …):
+pip install -e ".[local]"
+
+cd mcp-server
+pip install -r requirements.txt
+```
+
+Copy repo-root `env.template` to `.env` and fill the keys you plan to use. The server and every adapter read that same file.
+
+## Run
+
+```bash
+# stdio — what Claude Desktop / Cursor expect
+python server.py
+
+# streamable-HTTP — required by TryOn Studio
+python server.py --transport http --host 127.0.0.1 --port 8000
+```
+
+On startup the server prints a configuration report to stderr (which keys are set, which models are ready) — the same text `opentryon_status` returns at runtime.
+
+| Transport | Typical client | Endpoint |
+|---|---|---|
+| stdio (default) | Cursor, Claude Desktop | process stdin/stdout |
+| HTTP | [TryOn Studio](tryon-studio), FastMCP `Client` over the network | `http://127.0.0.1:8000/mcp` |
+
+Studio’s only URL is `OPENTRYON_MCP_URL=http://127.0.0.1:8000/mcp`. Remote MCP hosts are out of scope for Studio.
+
+## Clients
+
+### TryOn Studio
+
+HTTP MCP plus a Next.js UI (Agent, Connect, Image, VTON, Understand, Video, BG Remove). Full setup: [TryOn Studio](tryon-studio).
+
+### Cursor
+
+Add to `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global). Example: [`mcp-server/examples/cursor_mcp_config.json`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/examples/cursor_mcp_config.json).
+
+```json
+{
+  "mcpServers": {
+    "opentryon": {
+      "command": "python",
+      "args": ["/absolute/path/to/opentryon/mcp-server/server.py"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to `claude_desktop_config.json`. Example: [`mcp-server/examples/claude_desktop_config.json`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/examples/claude_desktop_config.json).
+
+```json
+{
+  "mcpServers": {
+    "opentryon": {
+      "command": "python",
+      "args": ["/absolute/path/to/opentryon/mcp-server/server.py"]
+    }
+  }
+}
+```
+
+### Python (FastMCP client)
+
+See [`mcp-server/examples/example_usage.py`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/examples/example_usage.py).
+
+```python
+import asyncio
+from fastmcp import Client
+
+async def main():
+    async with Client("server.py") as client:
+        result = await client.call_tool("vton_flux_vto", {
+            "person": "model.jpg",
+            "garment": "garment.jpg",
+            "dry_run": True,
+        })
+        print(result.data)
+
+asyncio.run(main())
+```
+
+## Discovery, keys, and the planner
+
+Always available, independent of which models you configured:
+
+| Tool | Role |
+|---|---|
+| `list_opentryon_tools` | Services, models, MCP tool names, env readiness |
+| `opentryon_status` | Same human-readable report printed on startup |
+| `list_api_keys` / `set_api_keys` | Inspect or upsert host `.env` keys (never returns secret values). Studio Connect uses these |
+| `planner_agent` | Studio Agent chat entrypoint. Cheap LLM classifies intent, then `invoke_model` on a filtered slice. [Planner Agent](../agents/planner-agent) |
+
+Every generated model tool also accepts `dry_run` and `output_dir`, matching the CLI.
+
+## Selected tools
+
+The tables below highlight newer families. The complete generated list lives in [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md) and grows with `tryon/cli/registry.py`.
 
 ## Understand tools (including Qwen3.8 and Hy4)
 
@@ -151,38 +264,14 @@ Same `PRUNA_API_KEY` as the rest of the Pruna family. **Not** Ideogram 4.0 (`gen
 
 See [P-Image-Ideogram](../api-reference/p-image-ideogram.md).
 
-## Quick start
-
-```bash
-cd mcp-server
-pip install -r requirements.txt   # includes fastmcp
-cp ../env.template ../.env        # fill API keys you need
-python server.py                  # stdio (default for most MCP clients)
-# or:
-python server.py --transport http --host 127.0.0.1 --port 8000
-```
-
-Discovery tools:
-
-- `list_opentryon_tools` — list services / models / tool names / env readiness
-- `opentryon_status` — configuration status report
-- `list_api_keys` / `set_api_keys` — inspect or upsert host `.env` keys (never returns secret values). TryOn Studio Connect uses these.
-
-Every generated tool accepts `dry_run` and `output_dir`, matching the CLI.
-
-## Client config
-
-See example configs in the repo:
-
-- [`mcp-server/examples/cursor_mcp_config.json`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/examples/cursor_mcp_config.json)
-- [`mcp-server/examples/claude_desktop_config.json`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/examples/claude_desktop_config.json)
-
-Full tool tables and architecture notes: [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md).
-
 ## Related
 
+- [TryOn Studio](tryon-studio) — Next.js MCP client (Agent, Connect, capability screens)
+- [`mcp-server/README.md`](https://github.com/tryonlabs/opentryon/blob/main/mcp-server/README.md) — architecture notes and full generated tool table
 - [Planner Agent](../agents/planner-agent)
 - [Unified CLI](cli)
+- [Configuration](configuration)
+- [Adding a new model](../advanced/new-model-checklist)
 - [Qwen3.8-Max understanding](../api-reference/qwen3.8)
 - [Hy4 preview TokenHub](../api-reference/hy4)
 - [Hy4 local vLLM/SGLang](../local-models/hy4)
@@ -193,5 +282,3 @@ Full tool tables and architecture notes: [`mcp-server/README.md`](https://github
 - [MiniMax H3 local](../local-models/minimax-h3)
 - [Muse Image](../api-reference/muse-image)
 - [P-Image-Ideogram](../api-reference/p-image-ideogram)
-- [Adding a new model](../advanced/new-model-checklist)
-- [Configuration](configuration)

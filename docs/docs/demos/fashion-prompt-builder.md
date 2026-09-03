@@ -1,5 +1,9 @@
 # Fashion Prompt Builder Demo
 
+:::note Not in the v1 Studio nav
+Fashion Prompt Builder is a use-case screen, not part of TryOn Studio v1. For the current playground see **[TryOn Studio](../getting-started/tryon-studio)**. The notes below describe the older Next.js demo.
+:::
+
 A modern, responsive web application for generating prompts for fashion model generation. Built with Next.js 14, Tailwind CSS, and TypeScript.
 
 ## Overview

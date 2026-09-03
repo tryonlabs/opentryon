@@ -22,13 +22,12 @@ API tutorials, configuration, examples, and agent guides live there — not in t
 | **Video** | Veo, Sora, Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3** (API + local), **Wan** (API + local 2.2), **Runway Gen-4.5** |
 | **Other** | BEN2 background removal, garment/human preprocessing, fashion datasets, planner agent (registry `invoke_model`) |
 
-## Three ways to use it
+## Four ways to use it
 
 1. **CLI** — `opentryon <service> --model <model> [params...]`
-2. **MCP server** — expose every registry model as tools for Claude, Cursor, or [tryon-studio](https://github.com/tryonlabs/tryon-studio)
-3. **Python** — `from tryon.api import ...` (and `tryon.cli.runner.invoke_model`)
-
-The unified Next.js + Tailwind web UI is **not** in this repo — it lives in [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) and talks to OpenTryOn over MCP.
+2. **MCP server** — expose every registry model as tools for Claude, Cursor, or [TryOn Studio](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio). Guide: [MCP Server](https://tryonlabs.github.io/opentryon/getting-started/mcp) · [`mcp-server/README.md`](mcp-server/README.md)
+3. **TryOn Studio** — Next.js UI (Agent, Connect, Image, VTON, Understand, Video, BG Remove) over MCP HTTP. Setup: [TryOn Studio](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio)
+4. **Python** — `from tryon.api import ...` (and `tryon.cli.runner.invoke_model`)
 
 ## Install
 
@@ -105,10 +104,10 @@ Models marked local need `pip install opentryon[local]`. Full table and flags: [
 cd mcp-server
 pip install -r requirements.txt
 python server.py                                    # stdio (Claude Desktop / Cursor)
-python server.py --transport http --host 127.0.0.1 --port 8000
+python server.py --transport http --host 127.0.0.1 --port 8000   # TryOn Studio
 ```
 
-Tools are generated from `tryon/cli/registry.py` — the same registry as the CLI. See [`mcp-server/README.md`](mcp-server/README.md).
+Tools are generated from `tryon/cli/registry.py` — the same registry as the CLI. Guide: [MCP Server](https://tryonlabs.github.io/opentryon/getting-started/mcp) · full tool table: [`mcp-server/README.md`](mcp-server/README.md). Web UI: [TryOn Studio](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio).
 
 ## Demos & notebooks
 
@@ -118,7 +117,7 @@ This package ships **Gradio** demos and **Jupyter** notebooks only:
 python run_demo.py --name extract_garment   # also: model_swap, outfit_generator
 ```
 
-Notebooks: [`notebooks/`](notebooks/). Web UI: [tryon-studio](https://github.com/tryonlabs/tryon-studio).
+Notebooks: [`notebooks/`](notebooks/). Web UI: [TryOn Studio](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio).
 
 ## Layout
 
@@ -142,7 +141,8 @@ opentryon/
 |---|---|
 | Install & config | [Getting Started](https://tryonlabs.github.io/opentryon/docs/getting-started/installation) |
 | CLI | [CLI guide](https://tryonlabs.github.io/opentryon/docs/getting-started/cli) |
-| MCP | [MCP server](https://tryonlabs.github.io/opentryon/docs/getting-started/mcp) · [`mcp-server/README.md`](mcp-server/README.md) |
+| MCP | [MCP server](https://tryonlabs.github.io/opentryon/getting-started/mcp) · [`mcp-server/README.md`](mcp-server/README.md) |
+| TryOn Studio | [Setup and screens](https://tryonlabs.github.io/opentryon/getting-started/tryon-studio) · [`tryon-studio`](https://github.com/tryonlabs/tryon-studio) |
 | OpenAPI / Postman | [Swagger guide](https://tryonlabs.github.io/opentryon/docs/getting-started/openapi-swagger) · [`openapi/`](openapi/) · [`postman/`](postman/) |
 | Per-provider APIs | [API Reference](https://tryonlabs.github.io/opentryon/docs/api-reference/overview) |
 | Local / GPU models | [Local Models](https://tryonlabs.github.io/opentryon/docs/local-models/overview) |
