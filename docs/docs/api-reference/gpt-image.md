@@ -1,10 +1,13 @@
 ---
 sidebar_position: 7
 title: GPT-Image (OpenAI Image Generation)
-description: Generate high-quality images using OpenAI's GPT-Image models (GPT-Image-1 and GPT-Image-1.5) with text-to-image, image editing, and mask-based editing capabilities.
+description: Generate and edit images with OpenAI GPT-Image-1 / 1.5 and ChatGPT Images 2.5 (Flare and Sunburst).
 keywords:
   - GPT-Image-1
   - GPT-Image-1.5
+  - ChatGPT Images 2.5
+  - gpt-image-2.5-flare
+  - gpt-image-2.5-sunburst
   - OpenAI image generation
   - image generation
   - text to image
@@ -16,18 +19,20 @@ keywords:
 
 # GPT-Image (OpenAI Image Generation)
 
-OpenAI's GPT-Image models provide high-quality image generation with two versions available. Both models support precise prompt-driven image generation, image editing with multiple base images, and mask-based editing with consistent visual quality.
+OpenAI's GPT Image models provide high-quality image generation. Use **ChatGPT Images 2.5** (Flare / Sunburst) for new work. `--model gpt-image` stays on GPT-Image-1.5 so existing scripts do not silently jump versions.
 
 ## Models Available
 
-- **GPT-Image-1**: Original high-quality image generation model with strong prompt understanding
-- **GPT-Image-1.5**: Enhanced version with improved quality, better consistency, and superior prompt understanding (recommended)
+- **ChatGPT Images 2.5 Flare** (`gpt-image-2.5-flare`): Fast everyday generation. CLI `--model gpt-image-2.5` (and `--model-version gpt-image-2.5` aliases to Flare).
+- **ChatGPT Images 2.5 Sunburst** (`gpt-image-2.5-sunburst`): Precision edits. CLI `--model gpt-image-2.5-sunburst`.
+- **GPT-Image-1.5**: Previous generation (CLI `--model gpt-image` default).
+- **GPT-Image-1**: Original high-quality model (`--model gpt-image --model-version gpt-image-1`).
 
 ## Overview
 
 The `tryon.api.openAI.image_adapter` module provides:
 
-- **GPTImageAdapter**: OpenAI's GPT-Image-1 model for high-quality image generation
+- **GPTImageAdapter**: OpenAI Images API (GPT-Image-1 / 1.5 and ChatGPT Images 2.5 Flare / Sunburst)
 - Strong prompt understanding
 - Consistent composition and visual accuracy
 - Multiple image conditioning
@@ -51,8 +56,14 @@ The `tryon.api.openAI.image_adapter` module provides:
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 
-# Using GPT-Image-1.5 (default - recommended)
+# Using GPT-Image-1.5 (constructor default — same as CLI --model gpt-image)
 adapter = GPTImageAdapter()
+
+# ChatGPT Images 2.5 Flare (everyday; gpt-image-2.5 aliases here)
+adapter = GPTImageAdapter(model_version="gpt-image-2.5")
+
+# ChatGPT Images 2.5 Sunburst (precision edits)
+adapter = GPTImageAdapter(model_version="gpt-image-2.5-sunburst")
 
 # Explicitly specify GPT-Image-1.5
 adapter = GPTImageAdapter(model_version="gpt-image-1.5")
@@ -61,12 +72,12 @@ adapter = GPTImageAdapter(model_version="gpt-image-1.5")
 adapter = GPTImageAdapter(model_version="gpt-image-1")
 
 # With explicit API key
-adapter = GPTImageAdapter(api_key="your_api_key", model_version="gpt-image-1.5")
+adapter = GPTImageAdapter(api_key="your_api_key", model_version="gpt-image-2.5-flare")
 ```
 
 **Parameters:**
 - `api_key` (str, optional): OpenAI API key. Defaults to `OPENAI_API_KEY` environment variable
-- `model_version` (str, optional): Model version - `"gpt-image-1"` or `"gpt-image-1.5"`. Defaults to `"gpt-image-1.5"`
+- `model_version` (str, optional): Images API id. `"gpt-image-1"`, `"gpt-image-1.5"` (constructor default), `"gpt-image-2.5-flare"` / `"gpt-image-2.5"` (Flare), `"gpt-image-2.5-sunburst"`, or dated snapshots `gpt-image-2.5-*-2026-09-08`.
 
 ## Text-to-Image Generation
 
@@ -90,7 +101,7 @@ for idx, image_bytes in enumerate(images):
 **Parameters:**
 - `prompt` (str): Text description of the image to generate
 - `size` (str, optional): Image size. Options: `"1024x1024"`, `"1536x1024"`, `"1024x1536"`, `"auto"`. Default: `"1024x1024"`
-- `quality` (str, optional): Quality level. Options: `"low"`, `"medium"`, `"high"`, `"auto"`. Default: `"high"`
+- `quality` (str, optional): Quality level. GPT-Image-1 / 1.5: `"low"`, `"medium"`, `"high"`, `"auto"`. ChatGPT Images 2.5 also accepts `"xhigh"` and `"max"`. Default: `"auto"`
 - `background` (str, optional): Background type. Options: `"transparent"`, `"opaque"`, `"auto"`. Default: `"opaque"`
 - `n` (int, optional): Number of images to generate (1-10). Default: `1`
 
@@ -167,23 +178,20 @@ images = adapter.generate_image_edit(
 
 ## Command Line Usage
 
-Use the `gpt_image.py` script for command-line image generation:
+Same `OPENAI_API_KEY` as `--model gpt-image`. `--model gpt-image` stays on 1.5.
 
 ```bash
-# Text-to-image
-python gpt_image.py --mode text --prompt "A female model in a traditional green saree" --size 1024x1024 --quality high
+# ChatGPT Images 2.5 Flare (everyday)
+opentryon generate --model gpt-image-2.5 \
+  --prompt "editorial still of a linen trench" --quality high --dry-run
 
-# With transparent background and output directory
-python gpt_image.py --mode text --prompt "A female model in a traditional green saree" --size 1024x1024 --quality high --background transparent --output_dir outputs/
+# ChatGPT Images 2.5 Sunburst (precision edits)
+opentryon edit --model gpt-image-2.5-sunburst \
+  --images person.jpg --prompt "Change the jacket to black leather"
 
-# Image-to-image
-python gpt_image.py --mode image --prompt "change the flowers in the background" --images "person.jpg" --size 1536x1024 --quality medium --n 2
-
-# Image-to-image with high input fidelity
-python gpt_image.py --mode image --prompt "change the flowers in the background" --images "person.jpg" --size 1536x1024 --quality medium --inp_fid high
-
-# Image editing with mask
-python gpt_image.py --mode image --images "scene.png" --mask "mask.png" --prompt "Replace the masked area with a swimming pool"
+# Previous generation (GPT-Image-1.5)
+opentryon generate --model gpt-image \
+  --prompt "A fashion model wearing elegant evening wear"
 ```
 
 ## Supported Sizes
@@ -199,7 +207,8 @@ python gpt_image.py --mode image --images "scene.png" --mask "mask.png" --prompt
 
 - **low**: Faster generation, lower cost, good for previews
 - **medium**: Balanced quality and speed
-- **high**: Best quality, slower generation, higher detail
+- **high**: High quality
+- **xhigh** / **max**: ChatGPT Images 2.5 only (highest fidelity / cost)
 - **auto**: Automatic quality selection
 
 ## Background Options
@@ -399,6 +408,14 @@ Check [OpenAI's pricing page](https://openai.com/pricing) for current rates and 
 
 ## Model Comparison
 
+### ChatGPT Images 2.5 vs GPT-Image-1.5
+
+| Feature | Flare (`gpt-image-2.5`) | Sunburst | GPT-Image-1.5 (`gpt-image`) |
+|---------|-------------------------|----------|-----------------------------|
+| Role | Everyday generation | Precision edits | Previous generation |
+| Quality extras | `xhigh`, `max` | `xhigh`, `max` | `low`–`high` / `auto` |
+| Same API | Images API + `OPENAI_API_KEY` | same | same |
+
 ### GPT-Image-1 vs GPT-Image-1.5
 
 | Feature | GPT-Image-1 | GPT-Image-1.5 |
@@ -425,6 +442,9 @@ Check [OpenAI's pricing page](https://openai.com/pricing) for current rates and 
 ## Reference
 
 - [OpenAI Image Generation Documentation](https://platform.openai.com/docs/guides/image-generation)
+- [ChatGPT Images 2.5 announcement](https://openai.com/index/introducing-chatgpt-images-2-5/)
+- [GPT Image 2.5 Flare](https://developers.openai.com/api/docs/models/gpt-image-2.5-flare)
+- [GPT Image 2.5 Sunburst](https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst)
 - [GPT-Image-1.5 Model Card](https://platform.openai.com/docs/models/gpt-image-1.5)
 - [OpenAI Platform](https://platform.openai.com/)
 - [API Keys](https://platform.openai.com/settings/organization/api-key)

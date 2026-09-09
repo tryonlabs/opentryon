@@ -224,6 +224,42 @@ def check_named_model_leffa_and_catvton_dry_run():
     print("\u2713 named-model chat dry-runs leffa / catvton")
 
 
+def check_named_model_gpt_image_25_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="generate", task=kwargs["prompt"], reason="gen")
+    )
+    result = agent.run("Generate an editorial still using chatgpt images 2.5", dry_run=True)
+    assert result["success"] is True
+    assert result["model"] == "gpt-image-2.5"
+    assert result["service"] == "generate"
+    assert "GPTImageAdapter" in (result.get("call") or "")
+
+    edit_agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="edit", task=kwargs["prompt"], reason="edit")
+    )
+    result = edit_agent.run(
+        "Edit this photo using gpt-image-2.5-sunburst",
+        image="photo.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["model"] == "gpt-image-2.5-sunburst"
+    assert result["service"] == "edit"
+
+    from tryon.agents.planner.bind import match_named_model, pick_model, slice_for_intent
+
+    fashion = slice_for_intent("fashion")
+    flare = match_named_model("poster with chatgpt images 2.5", fashion)
+    assert flare is not None and flare.model == "gpt-image-2.5"
+    official = match_named_model("use gpt-image-2.5-flare please", fashion)
+    assert official is not None and official.model == "gpt-image-2.5"
+    sun = match_named_model("edit with gpt-image-2.5-sunburst", fashion)
+    assert sun is not None and sun.model == "gpt-image-2.5-sunburst"
+    legacy = pick_model("edit", "edit this image using gpt-image.")
+    assert legacy is not None and legacy.model == "gpt-image"
+    print("\u2713 named-model chat dry-runs gpt-image-2.5 Flare / Sunburst without stealing gpt-image")
+
+
 def check_out_of_scope_does_not_delegate():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="out_of_scope", reason="not fashion")
@@ -625,6 +661,7 @@ def main():
     check_named_model_google_vton_dry_run()
     check_named_model_outfitanyone_and_photoroom_dry_run()
     check_named_model_leffa_and_catvton_dry_run()
+    check_named_model_gpt_image_25_dry_run()
     check_out_of_scope_does_not_delegate()
     check_help_answers_without_specialist()
     check_normalize_help_markdown()

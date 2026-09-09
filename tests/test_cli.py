@@ -161,6 +161,56 @@ def check_nano_banana_2_lite_dry_runs():
     print("\u2713 vton/generate/edit nano-banana-2-lite --dry-run resolve the expected calls")
 
 
+def check_gpt_image_25_dry_runs():
+    from tryon.api.openAI.image_adapter import GPTImageAdapter
+
+    flare = GPTImageAdapter(api_key="sk-test", model_version="gpt-image-2.5")
+    assert flare.model_version == "gpt-image-2.5-flare"
+    sun = GPTImageAdapter(api_key="sk-test", model_version="gpt-image-2.5-sunburst")
+    assert sun.model_version == "gpt-image-2.5-sunburst"
+    legacy = GPTImageAdapter(api_key="sk-test")
+    assert legacy.model_version == "gpt-image-1.5"
+
+    cases = [
+        (
+            ["generate", "--model", "gpt-image-2.5", "--prompt", "editorial still"],
+            "generate_text_to_image",
+            "gpt-image-2.5-flare",
+        ),
+        (
+            ["generate", "--model", "gpt-image-2.5-sunburst", "--prompt", "editorial still"],
+            "generate_text_to_image",
+            "gpt-image-2.5-sunburst",
+        ),
+        (
+            ["edit", "--model", "gpt-image-2.5",
+             "--images", "data/model-1.jpg", "--prompt", "make it blue"],
+            "generate_image_edit",
+            "gpt-image-2.5-flare",
+        ),
+        (
+            ["edit", "--model", "gpt-image-2.5-sunburst",
+             "--images", "data/model-1.jpg", "--prompt", "make it blue"],
+            "generate_image_edit",
+            "gpt-image-2.5-sunburst",
+        ),
+        (
+            ["generate", "--model", "gpt-image", "--prompt", "editorial still"],
+            "generate_text_to_image",
+            "gpt-image-1.5",
+        ),
+    ]
+    for argv, expect_method, expect_version in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "GPTImageAdapter" in printed and f".{expect_method}(" in printed, printed
+        assert f"'model_version': '{expect_version}'" in printed, printed
+    print("\u2713 generate/edit gpt-image-2.5 / sunburst --dry-run pin Flare vs 1.5")
+
+
 def check_fashn_dry_runs():
     for model_id, expect_model_name in [
         ("fashn-tryon-max", "tryon-max"),
@@ -710,6 +760,7 @@ if __name__ == "__main__":
     check_flux_vto_real_call()
     check_p_image_tryon_dry_run()
     check_nano_banana_2_lite_dry_runs()
+    check_gpt_image_25_dry_runs()
     check_fashn_dry_runs()
     check_google_vton_dry_run()
     check_outfitanyone_plus_dry_run()

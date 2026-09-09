@@ -118,6 +118,55 @@ def _gemini_aspect_ratio() -> Arg:
     )
 
 
+_GPT_IMAGE_2_5_VERSIONS = [
+    "gpt-image-2.5-flare",
+    "gpt-image-2.5-sunburst",
+    "gpt-image-2.5",
+    "gpt-image-2.5-flare-2026-09-08",
+    "gpt-image-2.5-sunburst-2026-09-08",
+]
+_GPT_IMAGE_2_5_QUALITY = ["low", "medium", "high", "xhigh", "max", "auto"]
+_GPT_IMAGE_2_5_SIZES = ["1024x1024", "1536x1024", "1024x1536", "auto"]
+
+
+def _gpt_image_25_generate_args(default_version: str) -> List[Arg]:
+    return [
+        Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+        Arg(("--size",), "size", default="auto", choices=_GPT_IMAGE_2_5_SIZES),
+        Arg(("--quality",), "quality", default="auto", choices=_GPT_IMAGE_2_5_QUALITY,
+            help="2.5 adds xhigh and max on top of low/medium/high/auto"),
+        Arg(("--background",), "background", default="auto"),
+        Arg(("--n",), "n", type=int, default=1, help="Number of images"),
+        Arg(
+            ("--model-version",), "model_version", target="init",
+            default=default_version, choices=_GPT_IMAGE_2_5_VERSIONS,
+            help="OpenAI Images API id. Flare = everyday; Sunburst = precision edits. "
+            "gpt-image-2.5 aliases to Flare.",
+        ),
+    ]
+
+
+def _gpt_image_25_edit_args(default_version: str) -> List[Arg]:
+    return [
+        Arg(("--images",), "images", nargs="+", required=True,
+            help="One or more input images (paths or URLs)"),
+        Arg(("--prompt", "-p"), "prompt", help="Editing instruction"),
+        Arg(("--mask",), "mask", help="Optional mask image"),
+        Arg(("--size",), "size", default="auto", choices=_GPT_IMAGE_2_5_SIZES),
+        Arg(("--quality",), "quality", default="auto", choices=_GPT_IMAGE_2_5_QUALITY,
+            help="2.5 adds xhigh and max on top of low/medium/high/auto"),
+        Arg(("--background",), "background", default="auto"),
+        Arg(("--input-fidelity",), "input_fidelity", default="low", choices=["low", "high"]),
+        Arg(("--n",), "n", type=int, default=1),
+        Arg(
+            ("--model-version",), "model_version", target="init",
+            default=default_version, choices=_GPT_IMAGE_2_5_VERSIONS,
+            help="OpenAI Images API id. Flare = everyday; Sunburst = precision edits. "
+            "gpt-image-2.5 aliases to Flare.",
+        ),
+    ]
+
+
 def _qwen_image_common_args() -> List[Arg]:
     return [
         Arg(("--model-version",), "model_version", target="init", call_name="model",
@@ -754,6 +803,35 @@ _GENERATE = {
             Arg(("--model-version",), "model_version", target="init", default="gpt-image-1.5"),
         ],
     ),
+    "gpt-image-2.5": ModelSpec(
+        id="gpt-image-2.5",
+        label="ChatGPT Images 2.5 Flare (OpenAI)",
+        import_path="tryon.api.openAI.image_adapter",
+        class_name="GPTImageAdapter",
+        method="generate_text_to_image",
+        output_kind="image_bytes",
+        env_hint="OPENAI_API_KEY",
+        notes=(
+            "ChatGPT Images 2.5 Flare (everyday). Same OPENAI_API_KEY as --model gpt-image. "
+            "Official API id gpt-image-2.5-flare; --model-version can pin Sunburst or dated snapshots. "
+            "CLI --model gpt-image stays on 1.5."
+        ),
+        args=_gpt_image_25_generate_args("gpt-image-2.5-flare"),
+    ),
+    "gpt-image-2.5-sunburst": ModelSpec(
+        id="gpt-image-2.5-sunburst",
+        label="ChatGPT Images 2.5 Sunburst (OpenAI)",
+        import_path="tryon.api.openAI.image_adapter",
+        class_name="GPTImageAdapter",
+        method="generate_text_to_image",
+        output_kind="image_bytes",
+        env_hint="OPENAI_API_KEY",
+        notes=(
+            "ChatGPT Images 2.5 Sunburst (precision edits). Same OPENAI_API_KEY as --model gpt-image. "
+            "Everyday gen: --model gpt-image-2.5 (Flare)."
+        ),
+        args=_gpt_image_25_generate_args("gpt-image-2.5-sunburst"),
+    ),
     "muse-image": ModelSpec(
         id="muse-image",
         label="Muse Image (Meta Model API)",
@@ -1007,6 +1085,34 @@ _EDIT = {
             Arg(("--n",), "n", type=int, default=1),
             Arg(("--model-version",), "model_version", target="init", default="gpt-image-1.5"),
         ],
+    ),
+    "gpt-image-2.5": ModelSpec(
+        id="gpt-image-2.5",
+        label="ChatGPT Images 2.5 Flare (OpenAI, edit)",
+        import_path="tryon.api.openAI.image_adapter",
+        class_name="GPTImageAdapter",
+        method="generate_image_edit",
+        output_kind="image_bytes",
+        env_hint="OPENAI_API_KEY",
+        notes=(
+            "ChatGPT Images 2.5 Flare edit. Same OPENAI_API_KEY as --model gpt-image. "
+            "Precision edits: --model gpt-image-2.5-sunburst. CLI --model gpt-image stays on 1.5."
+        ),
+        args=_gpt_image_25_edit_args("gpt-image-2.5-flare"),
+    ),
+    "gpt-image-2.5-sunburst": ModelSpec(
+        id="gpt-image-2.5-sunburst",
+        label="ChatGPT Images 2.5 Sunburst (OpenAI, edit)",
+        import_path="tryon.api.openAI.image_adapter",
+        class_name="GPTImageAdapter",
+        method="generate_image_edit",
+        output_kind="image_bytes",
+        env_hint="OPENAI_API_KEY",
+        notes=(
+            "ChatGPT Images 2.5 Sunburst (precision edits). Same OPENAI_API_KEY as --model gpt-image. "
+            "Everyday gen/edit: --model gpt-image-2.5 (Flare)."
+        ),
+        args=_gpt_image_25_edit_args("gpt-image-2.5-sunburst"),
     ),
     "muse-image": ModelSpec(
         id="muse-image",

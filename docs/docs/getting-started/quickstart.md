@@ -118,14 +118,17 @@ images = flex_adapter.generate_text_to_image(
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 
-# Text-to-image generation (uses GPT-Image-1.5 by default)
-adapter = GPTImageAdapter()  # Latest model (GPT-Image-1.5)
+# Text-to-image generation (constructor default is GPT-Image-1.5)
+adapter = GPTImageAdapter()  # CLI --model gpt-image
 images = adapter.generate_text_to_image(
     prompt="A female model in a traditional green saree",
     size="1024x1024",
     quality="high",
     background="opaque"  # or "transparent" for transparent background
 )
+
+# ChatGPT Images 2.5 Flare (everyday). Sunburst: model_version="gpt-image-2.5-sunburst"
+adapter_25 = GPTImageAdapter(model_version="gpt-image-2.5")
 
 # Save result
 with open("result.png", "wb") as f:
