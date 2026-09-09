@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎨 Image — ChatGPT Images 2.5 (Flare + Sunburst)
+- **GPT Image 2.5** (`GPTImageAdapter` / CLI `--model gpt-image-2.5` and `gpt-image-2.5-sunburst`): first-party OpenAI Images API
+  - Official ids `gpt-image-2.5-flare` (everyday; `--model gpt-image-2.5`) and `gpt-image-2.5-sunburst` (precision edits)
+  - Same `OPENAI_API_KEY` as `--model gpt-image` (still GPT-Image-1.5). Quality adds `xhigh` / `max`
+  - MCP tools `generate_gpt_image_2_5`, `edit_gpt_image_2_5`, `generate_gpt_image_2_5_sunburst`, `edit_gpt_image_2_5_sunburst`
+  - Docs: `docs/docs/api-reference/gpt-image.md`
+
 #### 🎬 Video — Fal MiniMax H3 Max (third-party)
 - **Fal H3 Max** (`FalH3MaxAdapter` / CLI `--model fal-h3-max`): first third-party hoster in OpenTryOn
   - Fal queue `minimax/h3-max/{text,image,reference}-to-video`. Auth `FAL_KEY` (`FAL_API_KEY` alias)

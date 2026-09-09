@@ -158,7 +158,9 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `generate_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `generate_flux2_turbo` | FLUX.2-dev Turbo (local, 8-step) | local/GPU |
-| `generate_gpt_image` | OpenAI GPT Image | `OPENAI_API_KEY` |
+| `generate_gpt_image` | OpenAI GPT Image 1.5 | `OPENAI_API_KEY` |
+| `generate_gpt_image_2_5` | ChatGPT Images 2.5 Flare | `OPENAI_API_KEY` |
+| `generate_gpt_image_2_5_sunburst` | ChatGPT Images 2.5 Sunburst | `OPENAI_API_KEY` |
 | `generate_luma_image` | Luma Photon | `LUMA_AI_API_KEY` |
 | `generate_seedream` | ByteDance Seedream 5.0 Pro | `ARK_API_KEY` |
 | `generate_ideogram` | Ideogram 4.0 | `IDEOGRAM_API_KEY` |
@@ -179,7 +181,9 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `edit_flux2_turbo` | FLUX.2-dev Turbo (local, image-to-image) | local/GPU |
-| `edit_gpt_image` | OpenAI GPT Image | `OPENAI_API_KEY` |
+| `edit_gpt_image` | OpenAI GPT Image 1.5 | `OPENAI_API_KEY` |
+| `edit_gpt_image_2_5` | ChatGPT Images 2.5 Flare | `OPENAI_API_KEY` |
+| `edit_gpt_image_2_5_sunburst` | ChatGPT Images 2.5 Sunburst | `OPENAI_API_KEY` |
 | `edit_seedream` | ByteDance Seedream 5.0 Pro (edit / multi-ref) | `ARK_API_KEY` |
 | `edit_p_image_edit` | Pruna P-Image-Edit | `PRUNA_API_KEY` |
 | `edit_p_image_upscale` | Pruna P-Image-Upscale | `PRUNA_API_KEY` |

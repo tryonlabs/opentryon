@@ -5,7 +5,9 @@ This module provides adapters for OpenAI's generative models:
 
 Image Generation:
 - GPT Image 1 (gpt-image-1): High-quality image generation and editing
-- GPT Image 1.5 (gpt-image-1.5): Enhanced quality and prompt understanding
+- GPT Image 1.5 (gpt-image-1.5): Enhanced quality (constructor / --model gpt-image default)
+- ChatGPT Images 2.5 Flare (gpt-image-2.5-flare) and Sunburst (gpt-image-2.5-sunburst):
+  everyday gen vs precision edits; same Images API, same OPENAI_API_KEY
   with support for text-to-image, image-to-image edits, masks, background
   control, quality settings, and multiple output images.
 

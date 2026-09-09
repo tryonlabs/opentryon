@@ -1,7 +1,8 @@
 """
 GPT Image (OpenAI Image Generation) API Adapter
 
-Adapter for OpenAI's GPT Image models (GPT-Image-1 and GPT-Image-1.5).
+Adapter for OpenAI's GPT Image models (GPT-Image-1 / 1.5 and ChatGPT Images 2.5
+Flare / Sunburst).
 
 These models support high-quality image generation and image editing using
 text prompts and reference images. This adapter provides a clean, unified
@@ -21,7 +22,9 @@ https://platform.openai.com/docs/guides/image-generation
 
 Models:
 - GPT-Image-1 (gpt-image-1): High-quality image generation and editing
-- GPT-Image-1.5 (gpt-image-1.5): Enhanced quality, better prompt understanding, improved consistency (default)
+- GPT-Image-1.5 (gpt-image-1.5): Enhanced quality (constructor default; CLI --model gpt-image)
+- ChatGPT Images 2.5 Flare (gpt-image-2.5-flare): Fast everyday generation (CLI --model gpt-image-2.5)
+- ChatGPT Images 2.5 Sunburst (gpt-image-2.5-sunburst): Precision edits (CLI --model gpt-image-2.5-sunburst)
 
 Examples:
     Text-to-image with latest model:
@@ -80,28 +83,59 @@ except ImportError:
 
 VALID_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
 VALID_QUALITY = {"low", "high", "medium", "auto"}
+VALID_QUALITY_2_5 = VALID_QUALITY | {"xhigh", "max"}
 INPUT_FIDELITY = {"low", "high"}
-VALID_MODELS = {"gpt-image-1", "gpt-image-1.5"}
+VALID_MODELS = {
+    "gpt-image-1",
+    "gpt-image-1.5",
+    "gpt-image-2.5-flare",
+    "gpt-image-2.5-sunburst",
+    "gpt-image-2.5-flare-2026-09-08",
+    "gpt-image-2.5-sunburst-2026-09-08",
+}
+MODEL_ALIASES = {
+    "gpt-image-2.5": "gpt-image-2.5-flare",
+    "chatgpt-images-2.5": "gpt-image-2.5-flare",
+}
+
+
+def _resolve_model_version(model_version: str) -> str:
+    key = (model_version or "").strip()
+    return MODEL_ALIASES.get(key, key)
+
+
+def _is_gpt_image_25(model_version: str) -> bool:
+    return "gpt-image-2.5" in (model_version or "")
+
+
+def _allowed_quality(model_version: str):
+    if _is_gpt_image_25(model_version):
+        return VALID_QUALITY_2_5
+    return VALID_QUALITY
 
 
 class GPTImageAdapter:
     """
-    Adapter for OpenAI GPT Image API (supports both GPT-Image-1 and GPT-Image-1.5).
-    
+    Adapter for OpenAI GPT Image API (GPT-Image-1 / 1.5 and ChatGPT Images 2.5).
+
+    Constructor default stays ``gpt-image-1.5`` so existing ``--model gpt-image``
+    callers do not silently jump to 2.5. ChatGPT Images 2.5 Flare/Sunburst are
+    separate registry ids.
+
     Args:
         api_key (str, optional): OpenAI API key. If not provided, reads from OPENAI_API_KEY environment variable.
-        model_version (str, optional): Model version to use. Options: "gpt-image-1", "gpt-image-1.5". 
-                                       Defaults to "gpt-image-1.5" (latest and recommended).
-    
+        model_version (str, optional): OpenAI Images API model id. Defaults to ``gpt-image-1.5``.
+            ``gpt-image-2.5`` aliases to Flare.
+
     Examples:
-        >>> # Use latest model (GPT-Image-1.5)
+        >>> # Use GPT-Image-1.5 (constructor / CLI --model gpt-image default)
         >>> adapter = GPTImageAdapter()
-        
-        >>> # Use specific model version
-        >>> adapter = GPTImageAdapter(model_version="gpt-image-1")
-        
-        >>> # With explicit API key
-        >>> adapter = GPTImageAdapter(api_key="sk-...", model_version="gpt-image-1.5")
+
+        >>> # ChatGPT Images 2.5 Flare (everyday)
+        >>> adapter = GPTImageAdapter(model_version="gpt-image-2.5")
+
+        >>> # ChatGPT Images 2.5 Sunburst (precision edits)
+        >>> adapter = GPTImageAdapter(model_version="gpt-image-2.5-sunburst")
     """
 
     def __init__(self, api_key: Optional[str] = None, model_version: str = "gpt-image-1.5"):
@@ -111,18 +145,19 @@ class GPTImageAdapter:
                 "OpenAI SDK is not available. " \
                 "Please install it with 'pip install openai'."
             )
-        
-        if model_version not in VALID_MODELS:
+
+        resolved = _resolve_model_version(model_version)
+        if resolved not in VALID_MODELS:
             raise ValueError(
                 f"Invalid model_version: {model_version}. "
-                f"Supported models: {VALID_MODELS}"
+                f"Supported models: {sorted(VALID_MODELS | set(MODEL_ALIASES))}"
             )
         
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OpenAI API key must be provided either as a parameter or through the OPENAI_API_KEY environment variable.")
         
-        self.model_version = model_version
+        self.model_version = resolved
         self.client = OpenAI(api_key=self.api_key)
 
     
@@ -174,7 +209,8 @@ class GPTImageAdapter:
 
             quality (str, optional):
                 Image generation quality.
-                Allowed values: {"low", "medium", "high", "auto"}.
+                GPT-Image-1 / 1.5: {"low", "medium", "high", "auto"}.
+                ChatGPT Images 2.5 also accepts {"xhigh", "max"}.
                 Defaults to "auto".
 
             background (str, optional):
@@ -219,8 +255,9 @@ class GPTImageAdapter:
         if size not in VALID_SIZES:
             raise ValueError(f"Invalid Size: {size}, Available Options are: {VALID_SIZES}")
         
-        if quality not in VALID_QUALITY:
-            raise ValueError(f"Invalid quality: {quality}, Available Options are: {VALID_QUALITY}")
+        allowed_quality = _allowed_quality(self.model_version)
+        if quality not in allowed_quality:
+            raise ValueError(f"Invalid quality: {quality}, Available Options are: {allowed_quality}")
 
         response = self.client.images.generate(
             model=self.model_version,
@@ -282,7 +319,8 @@ class GPTImageAdapter:
 
             quality (str, optional):
                 Image generation quality.
-                Allowed values: {"low", "medium", "high", "auto"}.
+                GPT-Image-1 / 1.5: {"low", "medium", "high", "auto"}.
+                ChatGPT Images 2.5 also accepts {"xhigh", "max"}.
                 Defaults to "auto".
 
             background (str, optional):
@@ -341,8 +379,9 @@ class GPTImageAdapter:
         if size not in VALID_SIZES:
             raise ValueError(f"Invalid Size: {size}, Available Options are: {VALID_SIZES}")
 
-        if quality not in VALID_QUALITY:
-            raise ValueError(f"Invalid quality: {quality}, Available Options are: {VALID_QUALITY}")
+        allowed_quality = _allowed_quality(self.model_version)
+        if quality not in allowed_quality:
+            raise ValueError(f"Invalid quality: {quality}, Available Options are: {allowed_quality}")
 
         if input_fidelity not in INPUT_FIDELITY:
             raise ValueError(f"input_fidelity can only be {INPUT_FIDELITY}")
