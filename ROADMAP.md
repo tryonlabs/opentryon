@@ -1,6 +1,6 @@
 # OpenTryOn Roadmap
 
-> **Last Updated**: 17 August 2026 · **Current release**: [v0.0.4](https://pypi.org/project/opentryon/0.0.4/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
+> **Last Updated**: 14 September 2026 · **Current release**: [v0.0.5](https://pypi.org/project/opentryon/0.0.5/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
 > **Horizon**: Aug 2026 – early 2027 · Fashion-first; other domains later
 
 This roadmap tracks what shipped and what comes next. Product strategy: [`VISION.md`](VISION.md).
@@ -15,14 +15,16 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ SHIPPED — v0.0.3 / v0.0.4 (August 2026)  ·  Phase 0: invoke layer       │
+│ SHIPPED — v0.0.3 / v0.0.4 / v0.0.5 (Sep 2026)  ·  Phase 0: invoke layer │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ ✓ Unified `opentryon` CLI + FastMCP (same registry / invoke_model)      │
 │ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
 │ ✓ v0.0.4: LTX-2.5, Hailuo 2.3, Wan dual-path, Runway Gen-4.5, Qwen3.8   │
-│ ✓ Unreleased: MiniMax H3 · Muse Image · NVIDIA NIM (Omni / Cosmos 3)    │
+│ ✓ v0.0.5: Vertex / Photoroom / OutfitAnyone VTON, Leffa+CatVTON,        │
+│   Images 2.5, H3/H3 Max+Fal, NIM, Hy4, Qwen-Image, Wan 3.0, planner     │
 │ ✓ OpenAPI + Postman snapshots · docs · Gradio · tryon-studio via MCP    │
-│ ✓ Local extras: FLUX.2 Turbo, Kimi-VL, LLaVA, BEN2, LTX, Wan, Qwen3.8   │
+│ ✓ Local extras: FLUX.2 Turbo, Kimi-VL, LLaVA, BEN2, LTX, Wan, Qwen3.8,  │
+│   Qwen-Image, Leffa, CatVTON, MiniMax H3                                │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -48,7 +50,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 
 ---
 
-## Completed (through v0.0.4) — Phase 0
+## Completed (through v0.0.5) — Phase 0
 
 ### Developer surfaces
 - [x] **`opentryon` CLI** — `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`
@@ -57,15 +59,16 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 - [x] **Registry** — `tryon/cli/registry.py` as source of truth
 - [x] **OpenAPI / Swagger** — `openapi/opentryon-media.openapi.yaml`
 - [x] **Postman** — `postman/opentryon-media.postman_collection.json`
-- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.4`
+- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.5`
 - [x] **tryon-studio** — separate UI repo over MCP
 - [x] **Model integration guidelines** — Path A API vs Path B local
 
 ### Fashion cloud / local (invoke)
-- [x] VTON: FLUX VTO, Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local)
-- [x] Image: Nano Banana family, FLUX.2 (+ local Turbo), GPT Image, Luma Photon, Seedream, Ideogram, Grok Imagine Image, Pruna P-Image / Edit / Upscale, **Qwen-Image 3.0** (API) + **Qwen-Image-2512 / Edit-2511** (local)
-- [x] Video: Veo, Sora, Luma Ray 2/3.2, Seedance, Kling 3 / Omni / Turbo, Grok Imagine Video, Gemini Omni, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **Wan** (API + local 2.2), **Runway Gen-4.5**
-- [x] Understand: Kimi K2.6 / K2.7 Code / K3; Kimi-VL & LLaVA-NeXT (local); **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local)
+- [x] VTON: FLUX VTO, **Google Vertex**, **OutfitAnyone-Plus**, **Photoroom** (try-on + virtual model), Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local), **Leffa** / **CatVTON** (local), **Muse Image** (composition)
+- [x] Image: Nano Banana family, FLUX.2 (+ local Turbo), GPT Image 1.5 + **2.5** Flare/Sunburst, Luma Photon, Seedream, Ideogram, Grok Imagine Image, Pruna P-Image / **P-Image-Ideogram** / Edit / Upscale, **Qwen-Image 3.0** (API) + **Qwen-Image-2512 / Edit-2511** (local), **Muse Image**
+- [x] Video: Veo, Sora, Luma Ray 2/3.2, Seedance 2.5 (ModelArk `dreamina-seedance-2-5-260628`), Kling 3 / Omni / Turbo, Grok Imagine Video, Gemini Omni, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3 / H3 Max** (API + local H3 + **Fal H3 Max**), **Wan** (API + **3.0** + local 2.2), **Runway Gen-4.5**, **NVIDIA Cosmos 3**
+- [x] Understand: Kimi K2.6 / K2.7 Code / K3; Kimi-VL & LLaVA-NeXT (local); **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local); **NVIDIA Nemotron Omni / Cosmos 3 Reasoner**; **Hy4 preview** (TokenHub + local vLLM/SGLang)
+- [x] Planner: classify → filtered registry slice → `invoke_model`; catalog-grounded `help`
 - [x] BEN2, datasets (Fashion-MNIST, VITON-HD, Subjects200K), preprocessing, TryOnDiffusion research code
 - [x] Early LangChain agents + Gradio demos
 
@@ -121,7 +124,7 @@ CLI/MCP remain the distribution spine; new capabilities register the same way.
 | 4 | E | Agent on top of tools + evals |
 | 5 | F | Numbers for the path we actually ship |
 
-Intermediate tags: `0.0.4` / `0.0.5` as slices land; **v0.1.0** when A–E are usable end-to-end.
+Intermediate tags: **v0.0.4** and **v0.0.5** shipped; **v0.1.0** when A–E are usable end-to-end.
 
 ### Conceptual package layout (target)
 ```
@@ -185,4 +188,4 @@ See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/ne
 
 ---
 
-**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.4](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.4) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)
+**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.5](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)

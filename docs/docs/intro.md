@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.4 adds LTX-2.5, Hailuo 2.3, MiniMax H3 (API + local), Wan dual-path, Runway Gen-4.5, and Qwen3.8 understand (API + local) on top of the v0.0.3 CLI/MCP media surface.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.5 adds dedicated VTON (Vertex, OutfitAnyone-Plus, Photoroom, Leffa, CatVTON), ChatGPT Images 2.5, MiniMax H3 / H3 Max + Fal H3 Max, NVIDIA NIM, Hy4, Qwen-Image, and Wan 3.0 on the v0.0.4 CLI/MCP media surface.
 keywords:
   - virtual try-on
   - fashion AI
@@ -58,7 +58,7 @@ image: /img/opentryon-social-card.jpg
 
 # Welcome to OpenTryOn
 
-OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.4](https://pypi.org/project/opentryon/0.0.4/)** on PyPI.
+OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.5](https://pypi.org/project/opentryon/0.0.5/)** on PyPI.
 
 ## 🎯 What is OpenTryOn?
 
@@ -71,7 +71,7 @@ OpenTryOn gives you four ways to run fashion AI models:
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
-## 🚀 Key Features (v0.0.4)
+## 🚀 Key Features (v0.0.5)
 
 ### Developer surfaces
 - Unified **registry-driven CLI** with `--dry-run`
@@ -90,7 +90,7 @@ Nano Banana family, FLUX.2, GPT Image (1.5 + **ChatGPT Images 2.5** Flare/Sunbur
 Veo, Sora, Luma Ray 2 + **Ray 3.2**, **Seedance 2.5**, **Kling 3.0 / Omni / Turbo**, **Grok Imagine Video**, Gemini Omni Flash, **Pruna P-Video / Replace / Avatar / Animate**, plus **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3 / H3 Max** (API + local H3 + **Fal H3 Max**), **Wan** (2.x API + **Wan 3.0** API + local 2.2), **Runway Gen-4.5**.
 
 ### Understanding & other
-**Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **Hy4 preview** (TokenHub + local vLLM/SGLang), BEN2 bg-remove, fashion datasets, garment/pose preprocessing.
+**Kimi K2.6 / K2.7 Code / K3** (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **NVIDIA Nemotron Omni / Cosmos 3 Reasoner**, **Hy4 preview** (TokenHub + local vLLM/SGLang), BEN2 bg-remove, fashion datasets, garment/pose preprocessing. Also **NVIDIA Cosmos 3** video generation.
 
 ### Interactive playground
 **[TryOn Studio](getting-started/tryon-studio)** is the Next.js UI: Agent chat (`planner_agent`), Connect (MCP status + key passthrough), and capability screens (Image, VTON, Understand, Video, BG Remove). In-repo **Gradio** apps remain for extract-garment / model-swap / outfit-generator.

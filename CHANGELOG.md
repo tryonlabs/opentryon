@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 14 September 2026
+
 ### Changed
 
 - **Planner is a super agent over the live registry.** `planner_agent` still has the same MCP arguments (Studio chat unchanged). After classify, it binds a **filtered** registry slice and calls `invoke_model` — the same runner MCP model tools use. Named models in the prompt (e.g. `wan-3.0`) pin that id. VTON / model-swap are recipes (defaults + outfit-preserving prompt rewrite), not LangChain `create_agent` loops. `tryon.tools` is frozen; do not add providers there.
@@ -283,6 +285,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive demos
 - Complete documentation
 
+[0.0.5]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5
 [0.0.4]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.4
 [0.0.3]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3
 [0.0.2]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.2

@@ -2,7 +2,7 @@
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that exposes every model in the [`opentryon`](../README.md) toolkit -- virtual try-on, image/video generation & editing, multimodal image & video understanding, and background removal -- as tools an LLM agent (Claude, Cursor, ChatGPT, or any MCP client) can call directly.
 
-Requires **OpenTryOn v0.0.4+** (`pip install -U opentryon`).
+Requires **OpenTryOn v0.0.5+** (`pip install -U opentryon`).
 
 **Documentation:**
 
