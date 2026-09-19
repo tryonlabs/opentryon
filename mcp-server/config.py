@@ -117,8 +117,9 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Fal (H3 Max)",
         "https://fal.ai/dashboard/keys",
         ("FAL_KEY",),
-        "First third-party hoster in OpenTryOn. Unlocks fal-h3-max (T2V / I2V / R2V). "
-        "Official MiniMax H3 Max remains MINIMAX_API_KEY. FAL_API_KEY is an alias.",
+        "First third-party hoster in OpenTryOn. Unlocks fal-h3-max (T2V / I2V / R2V) and "
+        "fal-h3-max-lipsync (image + audio dubbing). Official MiniMax H3 Max remains "
+        "MINIMAX_API_KEY. FAL_API_KEY is an alias.",
     ),
     (
         "moonshot",
@@ -154,8 +155,15 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Alibaba DashScope",
         "https://www.alibabacloud.com/help/en/model-studio/get-api-key",
         ("DASHSCOPE_API_KEY",),
-        "Same key for Qwen3.8-Max, Qwen-Image, and Wan. OutfitAnyone-Plus "
+        "Same key for Qwen3.8-Max, Qwen3.8-Omni-Flash, Qwen-Image, and Wan. OutfitAnyone-Plus "
         "(outfitanyone-plus / aitryon-plus) needs a China Beijing-region key.",
+    ),
+    (
+        "zai",
+        "Z.ai (Zhipu GLM)",
+        "https://docs.z.ai/api-reference/introduction",
+        ("ZAI_API_KEY",),
+        "Unlocks understand glm-5.3-flashx (text/image/video, 200 tok/s serving tier).",
     ),
     (
         "aws",
@@ -176,7 +184,8 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Pruna AI",
         "https://dashboard.pruna.ai/login",
         ("PRUNA_API_KEY",),
-        "P-Image, P-Image-Ideogram, P-Image-Edit, try-on, and P-Video family.",
+        "P-Image, P-Image-Ideogram, P-Image-Edit, try-on, and P-Video family "
+        "(p-video, p-video-2-pro, p-video-replace, p-video-avatar, p-video-animate).",
     ),
     (
         "segmind",

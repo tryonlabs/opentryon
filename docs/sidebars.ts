@@ -88,6 +88,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/ben2',
         'api-reference/kimi',
         'api-reference/qwen3.8',
+        'api-reference/glm',
         'api-reference/hy4',
         'api-reference/qwen-image',
         'api-reference/utils',
@@ -108,6 +109,7 @@ const sidebars: SidebarsConfig = {
         'local-models/wan-2.2',
         'local-models/leffa',
         'local-models/catvton',
+        'local-models/ternary-bonsai',
       ],
     },
     {

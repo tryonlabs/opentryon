@@ -1,30 +1,32 @@
 ---
 sidebar_position: 24
 title: MiniMax H3 Max (Fal)
-description: Third-party Fal hoster for MiniMax H3 Max — text-to-video, image-to-video, and reference-to-video.
+description: Third-party Fal hoster for MiniMax H3 Max — text-to-video, image-to-video, reference-to-video, and lip-sync/dubbing.
 keywords:
   - Fal
   - MiniMax H3 Max
   - third-party
   - video generation
   - reference-to-video
+  - lip sync
 ---
 
 # MiniMax H3 Max (Fal)
 
-OpenTryOn’s **first third-party hoster** adapter. [Fal](https://fal.ai/minimax-h3-max) jointly released MiniMax H3 Max with MiniMax and hosts a post-trained stack with **T2V, I2V, and reference-to-video**.
+OpenTryOn’s **first third-party hoster** adapter. [Fal](https://fal.ai/minimax-h3-max) jointly released MiniMax H3 Max with MiniMax and hosts a post-trained stack with **T2V, I2V, reference-to-video, and a dedicated lip-sync/dubbing endpoint**.
 
-This is **not** the MiniMax first-party V2 API. Official MiniMax H3 Max (`--model minimax-h3-max`, `MINIMAX_API_KEY`) is T2V / first-last I2V only. Use Fal when you want R2V or Fal’s queue.
+This is **not** the MiniMax first-party V2 API. Official MiniMax H3 Max (`--model minimax-h3-max`, `MINIMAX_API_KEY`) is T2V / first-last I2V only. Use Fal when you want R2V, lip-sync, or Fal’s queue.
 
 | CLI model | Host | Modes | Key |
 |---|---|---|---|
 | `minimax-h3-max` | MiniMax V2 | T2V, I2V | `MINIMAX_API_KEY` |
 | `fal-h3-max` | Fal queue | T2V, I2V, **R2V** | `FAL_KEY` |
+| `fal-h3-max-lipsync` | Fal queue | Image + audio → lip-synced video | `FAL_KEY` |
 | `minimax-h3` | MiniMax V2 | T2V, I2V, R2V (Python), 2K | `MINIMAX_API_KEY` |
 
 No open weights for H3 Max. Local H3-Base is `--model minimax-h3-local`.
 
-Docs: [T2V](https://fal.ai/models/minimax/h3-max/text-to-video/api), [I2V](https://fal.ai/models/minimax/h3-max/image-to-video/api), [R2V](https://fal.ai/models/minimax/h3-max/reference-to-video/api), [queue](https://docs.fal.ai/model-apis/inference/queue).
+Docs: [T2V](https://fal.ai/models/minimax/h3-max/text-to-video/api), [I2V](https://fal.ai/models/minimax/h3-max/image-to-video/api), [R2V](https://fal.ai/models/minimax/h3-max/reference-to-video/api), [Lip Sync](https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api), [queue](https://docs.fal.ai/model-apis/inference/queue).
 
 ## Environment
 
@@ -55,6 +57,11 @@ opentryon video-generate --model fal-h3-max \
   --prompt "Image 1 is the model. Keep her identity while she walks the runway." \
   --reference-image look.jpg \
   --duration 5 --resolution 768P
+
+# Lip-sync / dubbing: portrait + audio in, matched mouth movement out (no prompt)
+opentryon video-generate --model fal-h3-max-lipsync \
+  --image portrait.jpg --audio line.wav \
+  --resolution 1080P --enable-transcription
 ```
 
 | Flag | Notes |
@@ -66,6 +73,19 @@ opentryon video-generate --model fal-h3-max \
 | `--last-frame` | Last frame (alone or with `--image`) |
 | `--reference-image` / `--reference-video` / `--reference-audio` | R2V lists. At most 12 files total. Audio cannot be the only reference. Mutually exclusive with `--image`. |
 | `--prompt-expansion` | `balanced` (default) or `quality` |
+| `--no-safety-checker` | Disable Fal’s safety checker |
+| `--seed` | Optional |
+
+### `fal-h3-max-lipsync` flags
+
+No `--prompt` — only an image and an audio track. Resolution ceiling is higher than T2V/I2V/R2V (up to 2K).
+
+| Flag | Notes |
+|---|---|
+| `--image` | Portrait to animate (aspect ratio must be 0.4–2.5) — required |
+| `--audio` | Track to sync mouth movement to (≥5s; clipped to ~14.8s) — required |
+| `--resolution` | `480P`, `768P`, `1080P`, or `2K` (default **768P**) |
+| `--enable-transcription` | Transcribe the audio to guide lip-sync accuracy |
 | `--no-safety-checker` | Disable Fal’s safety checker |
 | `--seed` | Optional |
 
@@ -96,10 +116,17 @@ open("r2v.mp4", "wb").write(
         reference_image=["look.jpg"],
     )
 )
+open("lipsync.mp4", "wb").write(
+    adapter.generate_lip_sync(
+        image="portrait.jpg",
+        audio="line.wav",
+        resolution="1080P",
+    )
+)
 ```
 
 ## Notes
 
 - Jobs go through Fal’s **queue** (`POST https://queue.fal.run/minimax/h3-max/...` → poll `status_url` → download `video.url`).
-- MCP tool: `video_generate_fal_h3_max` (generated from the registry).
-- Planner: `fal h3 max` / `fal-h3-max` pin this id. A bare `h3 max` still pins first-party `minimax-h3-max`.
+- MCP tools: `video_generate_fal_h3_max` and `video_generate_fal_h3_max_lipsync` (generated from the registry).
+- Planner: `fal h3 max` / `fal-h3-max` pin T2V/I2V/R2V. `h3 max lip sync` / `fal-h3-max-lipsync` pin the dubbing endpoint. A bare `h3 max` still pins first-party `minimax-h3-max`.

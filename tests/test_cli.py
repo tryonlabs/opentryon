@@ -679,6 +679,131 @@ def check_fal_h3_max_requires_prompt():
     print("\u2713 FalH3MaxAdapter rejects empty prompt, 4s, audio-only R2V, and mixed I2V+R2V")
 
 
+def check_fal_h3_max_lipsync_requires_valid_resolution():
+    from tryon.api.fal import FalH3MaxAdapter
+
+    adapter = FalH3MaxAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_lip_sync(image="face.jpg", audio="line.wav", resolution="4K")
+    except ValueError as e:
+        assert "resolution" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for H3 Max Lip Sync resolution 4K")
+    print("\u2713 FalH3MaxAdapter.generate_lip_sync rejects an invalid resolution")
+
+
+def check_p_video_2_pro_requires_valid_duration():
+    from tryon.api.pruna import PVideo2ProAdapter
+
+    adapter = PVideo2ProAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_text_to_video(prompt="ok", duration=20)
+    except ValueError as e:
+        assert "duration" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for P-Video-2-Pro duration 20")
+    try:
+        adapter.generate_text_to_video(prompt="")
+    except ValueError as e:
+        assert "prompt" in str(e)
+    else:
+        raise AssertionError("expected ValueError for P-Video-2-Pro empty prompt")
+    print("\u2713 PVideo2ProAdapter rejects empty prompt and out-of-range duration")
+
+
+def check_qwen_omni_flash_audio_requires_omni_model():
+    from tryon.api.qwen import QwenUnderstandAdapter
+
+    adapter = QwenUnderstandAdapter(api_key="fake-key-for-validation-test", model="qwen3.8-max")
+    try:
+        adapter.understand(audio="voice.wav", prompt="What is said?")
+    except ValueError as e:
+        assert "omni" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when qwen3.8-max is given audio")
+    print("\u2713 QwenUnderstandAdapter rejects audio input on a non-omni model")
+
+
+def check_glm_rejects_invalid_reasoning_effort():
+    from tryon.api.zai import GLMUnderstandAdapter
+
+    adapter = GLMUnderstandAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.understand(image="data/model-1.jpg", prompt="hi", reasoning_effort="ultra")
+    except ValueError as e:
+        assert "reasoning_effort" in str(e)
+    else:
+        raise AssertionError("expected ValueError for an invalid GLM reasoning_effort")
+    print("\u2713 GLMUnderstandAdapter rejects an invalid reasoning_effort")
+
+
+def check_ternary_bonsai_reports_connection_errors_clearly():
+    from tryon.models.ternary_bonsai import TernaryBonsaiAdapter
+
+    adapter = TernaryBonsaiAdapter(base_url="http://127.0.0.1:1")
+    try:
+        adapter.understand(prompt="hi")
+    except RuntimeError as e:
+        assert "prismml.com" in str(e).lower() or "bonsai" in str(e).lower()
+    else:
+        raise AssertionError("expected RuntimeError when no local Bonsai server is running")
+    print("\u2713 TernaryBonsaiAdapter raises a clear error when the local server is unreachable")
+
+
+def check_new_model_integrations_dry_runs():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "video-generate", "--model", "p-video-2-pro",
+            "--prompt", "A model walking a runway", "--duration", "10", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "PVideo2ProAdapter" in printed and "'duration': 10" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "video-generate", "--model", "fal-h3-max-lipsync",
+            "--image", "data/model-1.jpg", "--audio", "data/voice.wav",
+            "--resolution", "1080P", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "generate_lip_sync" in printed and "'resolution': '1080P'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "qwen3.8-omni-flash",
+            "--audio", "data/voice.wav", "--prompt", "What is said?", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "'model': 'qwen3.8-omni-flash'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "glm-5.3-flashx",
+            "--image", "data/model-1.jpg", "--prompt", "Describe the outfit", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "GLMUnderstandAdapter" in printed and "'reasoning_effort': 'max'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "ternary-bonsai-2-27b",
+            "--prompt", "hi", "--thinking-budget-tokens", "512", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "'thinking_budget_tokens': 512" in printed, printed
+
+    print(
+        "\u2713 video-generate p-video-2-pro / fal-h3-max-lipsync and "
+        "understand qwen3.8-omni-flash / glm-5.3-flashx / ternary-bonsai-2-27b "
+        "--dry-run resolve the expected calls"
+    )
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -894,6 +1019,12 @@ if __name__ == "__main__":
     check_qwen_image_requires_prompt_and_tryon_inputs()
     check_minimax_h3_requires_prompt()
     check_fal_h3_max_requires_prompt()
+    check_fal_h3_max_lipsync_requires_valid_resolution()
+    check_p_video_2_pro_requires_valid_duration()
+    check_qwen_omni_flash_audio_requires_omni_model()
+    check_glm_rejects_invalid_reasoning_effort()
+    check_ternary_bonsai_reports_connection_errors_clearly()
+    check_new_model_integrations_dry_runs()
     check_muse_image_requires_prompt()
     check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 8
 title: Pruna AI
-description: Pruna P-Image, P-Image-Ideogram, P-Image-Edit, P-Image-Upscale, P-Image-Try-On, P-Video, P-Video-Replace, P-Video-Avatar, and P-Video-Animate
+description: Pruna P-Image, P-Image-Ideogram, P-Image-Edit, P-Image-Upscale, P-Image-Try-On, P-Video, P-Video-2-Pro, P-Video-Replace, P-Video-Avatar, and P-Video-Animate
 keywords:
   - pruna
   - p-image
@@ -10,6 +10,7 @@ keywords:
   - p-image-upscale
   - p-image-try-on
   - p-video
+  - p-video-2-pro
   - p-video-replace
   - p-video-avatar
   - p-video-animate
@@ -28,13 +29,14 @@ OpenTryOn integrates Pruna's unified predictions API (`POST /v1/predictions` wit
 | `p-image-upscale` | `edit --model p-image-upscale` | `PImageUpscaleAdapter` | Upscale to 1–128 MP |
 | `p-image-try-on` | `vton --model p-image-tryon` | `PImageTryOnAdapter` | Multi-garment virtual try-on |
 | `p-video` | `video-generate --model p-video` | `PVideoAdapter` | T2V / I2V (+ optional audio) |
+| `p-video-2-pro` | `video-generate --model p-video-2-pro` | `PVideo2ProAdapter` | Fast MiniMax H3-based T2V / I2V (always-on generated audio) |
 | `p-video-replace` | `video-generate --model p-video-replace` | `PVideoReplaceAdapter` | Identity swap in a source clip |
 | `p-video-avatar` | `video-generate --model p-video-avatar` | `PVideoAvatarAdapter` | Talking-head from portrait + script/audio |
 | `p-video-animate` | `video-generate --model p-video-animate` | `PVideoAnimateAdapter` | Animate a subject with source motion |
 
 **Auth:** `PRUNA_API_KEY` (optional `PRUNA_BASE_URL`). Key is sent as the `apikey` header.
 
-**Docs:** [Pruna model guides](https://docs.api.pruna.ai/guides/models) · [P-Image-Ideogram](https://docs.pruna.ai/en/stable/docs_pruna_endpoints/performance_models/p-image-ideogram.html)
+**Docs:** [Pruna model guides](https://docs.api.pruna.ai/guides/models) · [P-Image-Ideogram](https://docs.pruna.ai/en/stable/docs_pruna_endpoints/performance_models/p-image-ideogram.html) · [P-Video-2-Pro](https://docs.pruna.ai/en/stable/docs_pruna_endpoints/performance_models/p-video-2-pro.html)
 
 Ideogram **4.0** via Pruna is skipped — use `opentryon generate --model ideogram` (`IDEOGRAM_API_KEY`). **P-Image-Ideogram** is a different model: `opentryon generate --model p-image-ideogram` (`PRUNA_API_KEY`). Full notes: [P-Image-Ideogram](p-image-ideogram).
 
@@ -85,6 +87,11 @@ opentryon video-generate --model p-video \
   --prompt "gentle head turn and smile" \
   --image still.jpg --duration 5
 
+# Faster MiniMax H3-based sibling (always-on generated audio, no audio input)
+opentryon video-generate --model p-video-2-pro \
+  --prompt "model walks toward camera, soft breeze" \
+  --duration 8 --resolution 768p --mode speed
+
 # Identity replace in video
 opentryon video-generate --model p-video-replace \
   --video source.mp4 \
@@ -120,6 +127,7 @@ from tryon.api.pruna import (
     PImageIdeogramAdapter,
     PImageUpscaleAdapter,
     PVideoAdapter,
+    PVideo2ProAdapter,
     PVideoAnimateAdapter,
     PVideoAvatarAdapter,
     PVideoReplaceAdapter,
@@ -162,6 +170,14 @@ mp4 = PVideoAdapter().generate_text_to_video(
     resolution="720p",
 )
 open("clip.mp4", "wb").write(mp4)
+
+fast_mp4 = PVideo2ProAdapter().generate_text_to_video(
+    prompt="runway walk, cinematic tracking shot",
+    duration=8,
+    resolution="768p",
+    mode="speed",
+)
+open("fast_clip.mp4", "wb").write(fast_mp4)
 
 replaced = PVideoReplaceAdapter().generate_video_replace(
     video="source.mp4",
@@ -207,6 +223,11 @@ animated = PVideoAnimateAdapter().generate_video_animate(
 ### P-Video
 - Required: `prompt`
 - Optional: `image` (I2V), `audio` (duration follows audio), `duration` 1–20s, `resolution` 720p/1080p, `fps` 24/48, `draft`, `prompt_upsampling`
+
+### P-Video-2-Pro
+- Required: `prompt`
+- Optional: `image` (I2V), `last_frame_image`, `duration` 5–15s (default 5), `resolution` 480p/768p (default 768p), `aspect_ratio`, `mode` speed/quality (default speed), `prompt_upsampler` off/turbo/max (default turbo), `seed`
+- Fixed 24fps; audio is always generated and cannot be supplied as input (unlike `p-video`)
 
 ### P-Video-Replace
 - Required: source `video`, 1–3 identity `images`

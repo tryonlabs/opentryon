@@ -1,16 +1,18 @@
 ---
 sidebar_position: 13
 title: Qwen3.8-Max Understanding
-description: Multimodal text, image, and video understanding using Alibaba DashScope Qwen3.8-Max via the opentryon QwenUnderstandAdapter.
+description: Multimodal text, image, video, and audio understanding using Alibaba DashScope Qwen3.8-Max / Qwen3.8-Omni-Flash via the opentryon QwenUnderstandAdapter.
 keywords:
   - Qwen
   - Qwen3.8
   - Qwen3.8-Max
+  - Qwen3.8-Omni-Flash
   - DashScope
   - Alibaba Cloud
   - multimodal understanding
   - image understanding
   - video understanding
+  - audio understanding
   - vision language model
   - reasoning
   - agents
@@ -22,6 +24,11 @@ keywords:
 Alibaba's hosted flagship multimodal model on DashScope / Model Studio.
 OpenTryOn integrates it via `QwenUnderstandAdapter` for **image and video
 understanding** over the OpenAI-compatible Chat Completions API.
+
+The same adapter also serves **[Qwen3.8-Omni-Flash](https://qwen.ai/blog?id=qwen3.8-omni-flash)**
+(`--model qwen3.8-omni-flash`), Alibaba's native omni-modal model — the only
+model in this family that accepts **audio** input (`--audio`), on top of
+text/image/video. Same `DASHSCOPE_API_KEY`, 1M-token context, text-only output.
 
 For local/GPU deployment, see the open-weight
 [Qwen3.8-27B local model](../local-models/qwen3.8.md).
@@ -52,6 +59,7 @@ virtual try-on use the sibling **Qwen-Image** adapter
 | Variant | Role |
 |---|---|
 | **Qwen3.8-Max** | Hosted MoE flagship (~2.4T total / ~95B active) — CLI `qwen3.8-max` |
+| **Qwen3.8-Omni-Flash** | Hosted native omni-modal (text/image/audio/video in, text out) — CLI `qwen3.8-omni-flash` |
 | **Qwen3.8-27B** | Dense open weights — CLI `qwen3.8` ([local docs](../local-models/qwen3.8.md)) |
 | **Qwen3.8-2.4T-A95B** | Open MoE closest to Max — cluster / vLLM–SGLang only |
 
@@ -104,6 +112,20 @@ print(result["text"])
 Public `https://` media URLs are passed through; local files are inlined as
 base64 data URIs.
 
+### Audio Understanding (Omni-Flash only)
+
+```python
+omni = QwenUnderstandAdapter(model="qwen3.8-omni-flash")
+
+result = omni.understand(
+    audio="voice_note.wav",
+    prompt="Transcribe and summarize what is being said.",
+)
+print(result["text"])
+```
+
+`qwen3.8-max` raises `ValueError` if you pass `audio` — use `qwen3.8-omni-flash`.
+
 ## CLI
 
 ```bash
@@ -116,6 +138,9 @@ opentryon understand --model qwen3.8-max \
 
 opentryon understand --model qwen3.8-max \
   --image garment.jpg --no-thinking
+
+opentryon understand --model qwen3.8-omni-flash \
+  --audio voice_note.wav --prompt "What is being said?"
 ```
 
 ## MCP
@@ -123,6 +148,7 @@ opentryon understand --model qwen3.8-max \
 Same registry models appear as MCP tools (no extra wiring):
 
 - `understand_qwen3_8_max` — DashScope API (`DASHSCOPE_API_KEY`)
+- `understand_qwen3_8_omni_flash` — DashScope API, adds `--audio` (`DASHSCOPE_API_KEY`)
 - `understand_qwen3_8` — local 27B ([local docs](../local-models/qwen3.8.md))
 
 Caption → generate / try-on (same key): `generate_qwen_image`,
@@ -149,7 +175,7 @@ class QwenUnderstandAdapter:
 
 - `understand_image(image, prompt, enable_thinking=None, reasoning_effort=None, ...)`
 - `understand_video(video, prompt, ...)`
-- `understand(image=None, video=None, prompt=..., ...)` — CLI / MCP entry point
+- `understand(image=None, video=None, audio=None, prompt=..., ...)` — CLI / MCP entry point; `audio` requires `model="qwen3.8-omni-flash"`
 - `chat(messages, ...)` — multi-turn / tools escape hatch (raw ChatCompletion)
 
 Return dict keys: `text`, `reasoning`, `model`, `usage`.
@@ -160,6 +186,7 @@ Return dict keys: `text`, `reasoning`, `model`, `usage`.
 - [Model Studio vision docs](https://www.alibabacloud.com/help/en/model-studio/vision)
 - [Get API key](https://www.alibabacloud.com/help/en/model-studio/get-api-key)
 - [Alibaba Qwen3.8-Max announcement](https://www.alibabacloud.com/press-room/alibaba-unveils-qwen3-8-max)
+- [Qwen3.8-Omni-Flash announcement](https://qwen.ai/blog?id=qwen3.8-omni-flash)
 - [Open-weight Qwen3.8-27B](../local-models/qwen3.8.md)
 - [Qwen-Image generate / edit / VTON](qwen-image.md)
 - [Open-weight Qwen-Image local](../local-models/qwen-image.md)

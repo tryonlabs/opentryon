@@ -54,8 +54,12 @@ MOONSHOT_API_KEY=your_moonshot_api_key
 TOKENHUB_API_KEY=your_tokenhub_api_key
 # TOKENHUB_BASE_URL=https://tokenhub-intl.tencentcloudmaas.com/v1
 
-# Alibaba DashScope (Wan, Qwen3.8-Max, Qwen-Image, OutfitAnyone-Plus)
+# Alibaba DashScope (Wan, Qwen3.8-Max, Qwen3.8-Omni-Flash, Qwen-Image, OutfitAnyone-Plus)
 DASHSCOPE_API_KEY=your_dashscope_api_key
+
+# Z.ai / Zhipu (GLM-5.3-FlashX multimodal understanding)
+ZAI_API_KEY=your_zai_api_key
+# ZAI_BASE_URL=https://api.z.ai/api/paas/v4
 
 # Photoroom Virtual Try-On + Virtual Model
 PHOTOROOM_API_KEY=your_photoroom_api_key
@@ -72,8 +76,17 @@ NVIDIA_API_KEY=your_nvidia_api_key
 # Meta Model API (Muse Image generate/edit/vton)
 MODEL_API_KEY=your_meta_model_api_key
 
-# Pruna AI (P-Image, P-Image-Ideogram, P-Image-Edit, try-on, P-Video family)
+# Pruna AI (P-Image, P-Image-Ideogram, P-Image-Edit, try-on, P-Video family incl. P-Video-2-Pro)
 PRUNA_API_KEY=your_pruna_api_key
+```
+
+### Local server models (Optional — no cloud key)
+
+```env
+# Ternary Bonsai 2 27B — you run its llama.cpp/MLX server yourself;
+# OpenTryOn is just an OpenAI-compatible client against it.
+# BONSAI_BASE_URL=http://127.0.0.1:8080/v1
+# BONSAI_API_KEY=...   # only if your server enforces auth
 ```
 
 ### Datasets (Optional - Only if using HuggingFace datasets)
@@ -181,7 +194,7 @@ See [Hy4 TokenHub](../api-reference/hy4.md) and [Hy4 local](../local-models/hy4.
    # Optional: QWEN_IMAGE_BASE_URL for Qwen-Image T2I / I2I / VTON
    ```
 
-   Same key covers `understand --model qwen3.8-max`, `generate|edit|vton --model qwen-image`, `video-generate --model wan-api` / `wan-3.0`, and **Beijing-region** `vton --model outfitanyone-plus` (`aitryon-plus`). International keys used for Qwen/Wan do not unlock OutfitAnyone-Plus.
+   Same key covers `understand --model qwen3.8-max`, `understand --model qwen3.8-omni-flash` (adds `--audio`), `generate|edit|vton --model qwen-image`, `video-generate --model wan-api` / `wan-3.0`, and **Beijing-region** `vton --model outfitanyone-plus` (`aitryon-plus`). International keys used for Qwen/Wan do not unlock OutfitAnyone-Plus.
 
    Local open-weight twin (`pip install opentryon[local]`, CUDA, recent Diffusers):
 
@@ -228,7 +241,25 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU.
 1. Create a key at [Fal API keys](https://fal.ai/dashboard/keys)
 2. Add to `.env`: `FAL_KEY=your_key` (`FAL_API_KEY` is an alias)
 
-   Covers `video-generate --model fal-h3-max` (T2V / I2V / **R2V**). This is a third-party hoster, not MiniMax’s V2 API. First-party Max remains `--model minimax-h3-max`. See [MiniMax H3 Max (Fal)](../api-reference/fal-h3-max.md).
+   Covers `video-generate --model fal-h3-max` (T2V / I2V / **R2V**) and `video-generate --model fal-h3-max-lipsync` (portrait + audio → lip-synced video). This is a third-party hoster, not MiniMax’s V2 API. First-party Max remains `--model minimax-h3-max`. See [MiniMax H3 Max (Fal)](../api-reference/fal-h3-max.md).
+
+### Z.ai / Zhipu (GLM-5.3-FlashX)
+
+1. Create a key at [Z.ai](https://z.ai) / the [Z.ai API docs](https://docs.z.ai/api-reference/introduction)
+2. Add to `.env`: `ZAI_API_KEY=your_key`
+
+   Covers `understand --model glm-5.3-flashx` (text/image/video understanding, 200 tok/s serving tier of GLM-5.3-Flash). See [GLM-5.3-FlashX](../api-reference/glm.md).
+
+### Ternary Bonsai 2 27B (local server, no cloud key)
+
+No API key. Start the model's own llama.cpp (PrismML fork, `prism-b10658`+) or MLX server yourself, then point OpenTryOn at it:
+
+```env
+# BONSAI_BASE_URL=http://127.0.0.1:8080/v1   # default
+# BONSAI_API_KEY=...                         # only if your server enforces auth
+```
+
+CLI: `opentryon understand --model ternary-bonsai-2-27b`. See [Ternary Bonsai 2 27B](../local-models/ternary-bonsai.md).
 
 ### NVIDIA NIM (Nemotron / Cosmos)
 

@@ -204,7 +204,10 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
 | `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
+| `understand_qwen3_8_omni_flash` | Qwen3.8-Omni-Flash (DashScope) | `DASHSCOPE_API_KEY` | Native omni-modal; adds `audio`; text/image/audio/video in, text out; 1M context |
 | `understand_qwen3_8` | Qwen3.8-27B (open-weight, local) | local/GPU | Dense open multimodal (`Qwen/Qwen3.8-27B`); thinking toggle; frame-sampled video |
+| `understand_glm_5_3_flashx` | GLM-5.3-FlashX (Zhipu / Z.ai) | `ZAI_API_KEY` | Native text/image/video; thinking always on; `reasoning_effort` (`low`/`high`/`max`); 200 tok/s serving tier |
+| `understand_ternary_bonsai_2_27b` | Ternary Bonsai 2 27B (PrismML) | local server | OpenAI-compatible client for a self-hosted llama.cpp/MLX server (`BONSAI_BASE_URL`); not in-process GPU |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |
@@ -246,6 +249,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_grok_imagine_video` | xAI Grok Imagine Video 1.5 | `XAI_API_KEY` |
 | `video_generate_gemini_omni` | Gemini Omni Flash | `GEMINI_API_KEY` |
 | `video_generate_p_video` | Pruna P-Video | `PRUNA_API_KEY` |
+| `video_generate_p_video_2_pro` | Pruna P-Video-2-Pro (fast, MiniMax H3-based) | `PRUNA_API_KEY` |
 | `video_generate_p_video_replace` | Pruna P-Video-Replace | `PRUNA_API_KEY` |
 | `video_generate_p_video_avatar` | Pruna P-Video-Avatar | `PRUNA_API_KEY` |
 | `video_generate_p_video_animate` | Pruna P-Video-Animate | `PRUNA_API_KEY` |
@@ -255,6 +259,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_minimax_h3` | MiniMax H3 (official API) | `MINIMAX_API_KEY` |
 | `video_generate_minimax_h3_max` | MiniMax H3 Max (official API, fast) | `MINIMAX_API_KEY` |
 | `video_generate_fal_h3_max` | MiniMax H3 Max (Fal, T2V / I2V / R2V) | `FAL_KEY` |
+| `video_generate_fal_h3_max_lipsync` | MiniMax H3 Max Lip Sync (Fal, image + audio → video) | `FAL_KEY` |
 | `video_generate_minimax_h3_local` | MiniMax H3 (local Diffusers) | local/GPU |
 | `video_generate_wan_api` | Alibaba Wan 2.x (DashScope) | `DASHSCOPE_API_KEY` |
 | `video_generate_wan_3_0` | Alibaba Wan 3.0 (DashScope) | `DASHSCOPE_API_KEY` |

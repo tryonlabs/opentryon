@@ -31,8 +31,8 @@ opentryon <service> --model <model> [params...]
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `muse-image` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
-| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8` (local), `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local) |
-| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
+| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server) |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
 Models marked "local" run on your own GPU and require
@@ -105,6 +105,18 @@ opentryon understand --model qwen3.8-max \
   --reasoning-effort medium
 opentryon understand --model qwen3.8 --image garment.jpg
 
+# Qwen3.8-Omni-Flash (same DASHSCOPE_API_KEY): adds --audio
+opentryon understand --model qwen3.8-omni-flash \
+  --audio voice_note.wav --prompt "What is being said?"
+
+# GLM-5.3-FlashX (Zhipu / Z.ai, ZAI_API_KEY)
+opentryon understand --model glm-5.3-flashx \
+  --image garment.jpg --prompt "Describe this outfit."
+
+# Ternary Bonsai 2 27B (local llama.cpp/MLX server, no cloud key)
+opentryon understand --model ternary-bonsai-2-27b \
+  --prompt "Explain ternary quantization in two sentences."
+
 # Tencent Hy4 preview (TokenHub LLM; optional --image)
 opentryon understand --model hy4-preview \
   --prompt "Write a 3-sentence lookbook caption for a linen trench."
@@ -147,6 +159,7 @@ opentryon video-generate --model kling-v3 --prompt "atelier pan" --mode pro --so
 opentryon video-generate --model luma-ray-3.2 --prompt "dolly through mist" --resolution 720p
 opentryon video-generate --model grok-imagine-video --prompt "cinematic push-in" --duration 6
 opentryon video-generate --model p-video --prompt "runway walk, soft light" --duration 5
+opentryon video-generate --model p-video-2-pro --prompt "runway walk, soft light" --duration 8 --mode speed
 opentryon video-generate --model p-video-replace --video clip.mp4 --images identity.jpg
 opentryon video-generate --model p-video-avatar --image portrait.jpg --voice-script "Hello from the showroom."
 opentryon video-generate --model p-video-animate --video driver.mp4 --image subject.jpg
@@ -157,6 +170,7 @@ opentryon video-generate --model minimax-h3 --prompt "runway walk at dusk" --dur
 opentryon video-generate --model minimax-h3-max --prompt "runway walk at dusk" --duration 5 --resolution 768P --ratio 16:9
 opentryon video-generate --model fal-h3-max --prompt "runway walk at dusk" --duration 5 --resolution 768P --ratio 16:9
 opentryon video-generate --model fal-h3-max --prompt "Image 1 is the model. Keep her identity." --reference-image look.jpg
+opentryon video-generate --model fal-h3-max-lipsync --image portrait.jpg --audio line.wav --resolution 1080P
 opentryon video-generate --model minimax-h3-local --prompt "runway walk at dusk" --width 960 --height 544 --num-frames 124
 opentryon video-generate --model wan-api --prompt "runway walk" --duration 5 --resolution 720P
 opentryon video-generate --model wan-3.0 --prompt "runway walk at dusk" --duration 8 --resolution 720P
@@ -212,7 +226,9 @@ stack trace:
 - [OpenAPI & Postman](openapi-swagger)
 - [Kimi K2.6 / K2.7 Code / K3 understanding](../api-reference/kimi.md)
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
-- [Qwen3.8-Max understanding](../api-reference/qwen3.8.md)
+- [Qwen3.8-Max / Qwen3.8-Omni-Flash understanding](../api-reference/qwen3.8.md)
+- [GLM-5.3-FlashX understanding](../api-reference/glm.md)
+- [Ternary Bonsai 2 27B (local server)](../local-models/ternary-bonsai.md)
 - [Hy4 preview TokenHub](../api-reference/hy4.md)
 - [Hy4 local vLLM/SGLang](../local-models/hy4.md)
 - [Qwen-Image generation, edit, and try-on](../api-reference/qwen-image.md)

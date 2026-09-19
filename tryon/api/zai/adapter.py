@@ -1,37 +1,32 @@
 """
-Qwen 3.8 (DashScope / Qwen Cloud) Vision API Adapter
+GLM-5.3-FlashX (Z.ai / Zhipu) Vision API Adapter
 
-Adapter for Alibaba Cloud Model Studio's Qwen3.8 multimodal models via the
-DashScope OpenAI-compatible Chat Completions API. Qwen3.8-Max natively
-accepts text, images, and video and is general-purpose — useful for garment
-photos and lookbook clips as well as documents, UI, and product photography.
+Adapter for Zhipu's GLM-5.3-FlashX, the high-speed serving tier of
+GLM-5.3-Flash (launched 18 Sep 2026, up to 200 tokens/s) via the Z.ai
+OpenAI-compatible Chat Completions API. Natively multimodal (text + image +
+video) and general-purpose -- useful for garment photos and lookbook clips
+as well as documents, UI, and product photography.
+
+Unlike the text-only GLM-5.3 flagship, the Flash/FlashX branch is a VLM and
+always runs with thinking enabled (GLM-5.3-FlashX rejects requests that try
+to disable it; use ``reasoning_effort`` to control depth instead).
 
 Reference:
-https://docs.qwencloud.com/developer-guides/multimodal/vision
-https://www.alibabacloud.com/help/en/model-studio/vision
-https://www.alibabacloud.com/help/en/model-studio/get-api-key
+https://docs.z.ai/guides/vlm/glm-5.3-flash
+https://docs.z.ai/api-reference/introduction
 
 Models:
-- qwen3.8-max: Hosted flagship multimodal model (text + image + video).
-- qwen3.8-omni-flash: Native omni-modal model (text + image + audio + video
-  in, text out). 1M-token context. Same DASHSCOPE_API_KEY; do not request
-  audio output ("modalities": ["text"] is implicit here since this adapter
-  only ever returns text).
+- glm-5.3-flashx: High-speed serving tier of GLM-5.3-Flash. Same weights,
+  faster inference. 1M context, 320B total / 18B activated parameters.
 
 Env:
-  DASHSCOPE_API_KEY (required)
-  QWEN_BASE_URL — default https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-    China: https://dashscope.aliyuncs.com/compatible-mode/v1
-    US: https://dashscope-us.aliyuncs.com/compatible-mode/v1
+  ZAI_API_KEY (required)
+  ZAI_BASE_URL -- default https://api.z.ai/api/paas/v4
 
 Examples:
-    >>> from tryon.api.qwen import QwenUnderstandAdapter
-    >>> adapter = QwenUnderstandAdapter()
+    >>> from tryon.api.zai import GLMUnderstandAdapter
+    >>> adapter = GLMUnderstandAdapter()
     >>> result = adapter.understand_image("garment.jpg", prompt="Describe this outfit.")
-    >>> print(result["text"])
-
-    >>> omni = QwenUnderstandAdapter(model="qwen3.8-omni-flash")
-    >>> result = omni.understand(audio="voice_note.wav", prompt="What is being said?")
     >>> print(result["text"])
 """
 
@@ -54,42 +49,37 @@ except ImportError:
     _OPENAI_AVAILABLE = False
     OpenAI = None
 
-DEFAULT_BASE_URL = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+DEFAULT_BASE_URL = "https://api.z.ai/api/paas/v4"
 
 VALID_MODELS = {
-    "qwen3.8-max",
-    "qwen3.8-omni-flash",
+    "glm-5.3-flashx",
 }
-# Only the omni model accepts audio input.
-AUDIO_MODELS = {"qwen3.8-omni-flash"}
-VALID_REASONING_EFFORTS = {"xhigh", "medium", "low"}
+VALID_REASONING_EFFORTS = {"low", "high", "max"}
 
 VIDEO_MIME_OVERRIDES = {"flv": "x-flv", "3gp": "3gpp"}
-AUDIO_MIME_OVERRIDES = {"m4a": "mp4"}
 
 DEFAULT_UNDERSTAND_PROMPT = "Describe what is shown in as much relevant detail as possible."
 
 ImageInput = Union[str, Path, io.BytesIO, bytes, Image.Image]
 VideoInput = Union[str, Path, io.BytesIO, bytes]
-AudioInput = Union[str, Path, io.BytesIO, bytes]
 
 
-class QwenUnderstandAdapter:
+class GLMUnderstandAdapter:
     """
-    Adapter for Qwen3.8 multimodal understanding via DashScope's
+    Adapter for Zhipu's GLM-5.3-FlashX vision model via the Z.ai
     OpenAI-compatible API.
 
     Args:
-        api_key: DashScope / Model Studio key. Defaults to ``DASHSCOPE_API_KEY``.
-        model: Default model id. Defaults to ``"qwen3.8-max"``.
-        base_url: Compatible-mode base URL. Defaults to ``QWEN_BASE_URL`` or
-            the international DashScope endpoint.
+        api_key: Z.ai / Zhipu key. Defaults to ``ZAI_API_KEY``.
+        model: Default model id. Defaults to ``"glm-5.3-flashx"``.
+        base_url: Compatible-mode base URL. Defaults to ``ZAI_BASE_URL`` or
+            the official Z.ai endpoint.
     """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "qwen3.8-max",
+        model: str = "glm-5.3-flashx",
         base_url: Optional[str] = None,
     ):
         if not _OPENAI_AVAILABLE:
@@ -100,18 +90,16 @@ class QwenUnderstandAdapter:
         if model not in VALID_MODELS:
             raise ValueError(f"Invalid model: {model!r}. Supported models: {sorted(VALID_MODELS)}")
 
-        self.api_key = api_key or os.getenv("DASHSCOPE_API_KEY")
+        self.api_key = api_key or os.getenv("ZAI_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "DashScope API key must be provided either as a parameter or "
-                "through the DASHSCOPE_API_KEY environment variable."
+                "Z.ai API key must be provided either as a parameter or "
+                "through the ZAI_API_KEY environment variable."
             )
 
         self.model = model
         self.base_url = (
-            base_url
-            or os.getenv("QWEN_BASE_URL")
-            or DEFAULT_BASE_URL
+            base_url or os.getenv("ZAI_BASE_URL") or DEFAULT_BASE_URL
         ).rstrip("/")
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
@@ -156,12 +144,7 @@ class QwenUnderstandAdapter:
         mime_ext = VIDEO_MIME_OVERRIDES.get(ext, ext)
         return f"data:video/{mime_ext};base64,{base64.b64encode(data).decode('utf-8')}"
 
-    def _audio_to_data_uri(self, audio: AudioInput) -> str:
-        data, ext = self._load_bytes(audio, default_ext="mp3")
-        mime_ext = AUDIO_MIME_OVERRIDES.get(ext, ext)
-        return f"data:audio/{mime_ext};base64,{base64.b64encode(data).decode('utf-8')}"
-
-    def _media_url(self, source: Union[ImageInput, VideoInput, AudioInput], kind: str) -> str:
+    def _media_url(self, source: Union[ImageInput, VideoInput], kind: str) -> str:
         """Pass through http(s) URLs; otherwise encode as a data URI."""
         if isinstance(source, (str, Path)):
             source_str = str(source)
@@ -169,8 +152,6 @@ class QwenUnderstandAdapter:
                 return source_str
         if kind == "image":
             return self._image_to_data_uri(source)  # type: ignore[arg-type]
-        if kind == "audio":
-            return self._audio_to_data_uri(source)  # type: ignore[arg-type]
         return self._video_to_data_uri(source)  # type: ignore[arg-type]
 
     # -- core call --------------------------------------------------------
@@ -179,10 +160,10 @@ class QwenUnderstandAdapter:
         self,
         content: List[Dict[str, Any]],
         model: Optional[str] = None,
-        enable_thinking: Optional[bool] = None,
         reasoning_effort: Optional[str] = None,
         max_tokens: Optional[int] = None,
-        preserve_thinking: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Dict[str, Any]:
         model = model or self.model
         if model not in VALID_MODELS:
@@ -191,19 +172,15 @@ class QwenUnderstandAdapter:
         kwargs: Dict[str, Any] = {
             "model": model,
             "messages": [{"role": "user", "content": content}],
+            # GLM-5.3-FlashX rejects thinking.type: disabled; only "enabled" is valid.
+            "extra_body": {"thinking": {"type": "enabled"}},
         }
         if max_tokens is not None:
             kwargs["max_tokens"] = max_tokens
-
-        extra_body: Dict[str, Any] = {}
-        if enable_thinking is not None:
-            # Qwen Cloud uses top-level enable_thinking (not chat_template_kwargs).
-            extra_body["enable_thinking"] = enable_thinking
-        if preserve_thinking is not None:
-            extra_body["preserve_thinking"] = preserve_thinking
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if top_p is not None:
+            kwargs["top_p"] = top_p
         if reasoning_effort is not None:
             if reasoning_effort not in VALID_REASONING_EFFORTS:
                 raise ValueError(
@@ -231,10 +208,10 @@ class QwenUnderstandAdapter:
         image: Union[ImageInput, List[ImageInput]],
         prompt: str = DEFAULT_UNDERSTAND_PROMPT,
         model: Optional[str] = None,
-        enable_thinking: Optional[bool] = None,
         reasoning_effort: Optional[str] = None,
         max_tokens: Optional[int] = None,
-        preserve_thinking: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Understand one or more images with a text prompt/instruction."""
         images = image if isinstance(image, list) else [image]
@@ -246,10 +223,10 @@ class QwenUnderstandAdapter:
         return self._chat(
             content,
             model=model,
-            enable_thinking=enable_thinking,
             reasoning_effort=reasoning_effort,
             max_tokens=max_tokens,
-            preserve_thinking=preserve_thinking,
+            temperature=temperature,
+            top_p=top_p,
         )
 
     def understand_video(
@@ -257,10 +234,10 @@ class QwenUnderstandAdapter:
         video: VideoInput,
         prompt: str = "Describe what happens in this video.",
         model: Optional[str] = None,
-        enable_thinking: Optional[bool] = None,
         reasoning_effort: Optional[str] = None,
         max_tokens: Optional[int] = None,
-        preserve_thinking: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Understand video content with a text prompt/instruction."""
         content = [
@@ -270,33 +247,26 @@ class QwenUnderstandAdapter:
         return self._chat(
             content,
             model=model,
-            enable_thinking=enable_thinking,
             reasoning_effort=reasoning_effort,
             max_tokens=max_tokens,
-            preserve_thinking=preserve_thinking,
+            temperature=temperature,
+            top_p=top_p,
         )
 
     def understand(
         self,
         image: Optional[Union[ImageInput, List[ImageInput]]] = None,
         video: Optional[VideoInput] = None,
-        audio: Optional[AudioInput] = None,
         prompt: str = DEFAULT_UNDERSTAND_PROMPT,
         model: Optional[str] = None,
-        enable_thinking: Optional[bool] = None,
         reasoning_effort: Optional[str] = None,
         max_tokens: Optional[int] = None,
-        preserve_thinking: Optional[bool] = None,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Dict[str, Any]:
-        """CLI-friendly entry point: pass ``image``, ``video``, and/or ``audio``
-        (audio is only accepted by omni models, e.g. ``qwen3.8-omni-flash``)."""
-        if image is None and video is None and audio is None:
-            raise ValueError("Provide at least one of `image`, `video`, or `audio`.")
-        if audio is not None and (model or self.model) not in AUDIO_MODELS:
-            raise ValueError(
-                f"audio input requires an omni model ({sorted(AUDIO_MODELS)}), "
-                f"got {model or self.model!r}."
-            )
+        """CLI-friendly entry point: pass ``image`` and/or ``video``."""
+        if image is None and video is None:
+            raise ValueError("Provide at least one of `image` or `video`.")
 
         content: List[Dict[str, Any]] = []
         if image is not None:
@@ -309,55 +279,13 @@ class QwenUnderstandAdapter:
             content.append(
                 {"type": "video_url", "video_url": {"url": self._media_url(video, "video")}}
             )
-        if audio is not None:
-            content.append(
-                {"type": "audio_url", "audio_url": {"url": self._media_url(audio, "audio")}}
-            )
         content.append({"type": "text", "text": prompt})
 
         return self._chat(
             content,
             model=model,
-            enable_thinking=enable_thinking,
             reasoning_effort=reasoning_effort,
             max_tokens=max_tokens,
-            preserve_thinking=preserve_thinking,
+            temperature=temperature,
+            top_p=top_p,
         )
-
-    def chat(
-        self,
-        messages: List[Dict[str, Any]],
-        model: Optional[str] = None,
-        enable_thinking: Optional[bool] = None,
-        reasoning_effort: Optional[str] = None,
-        max_tokens: Optional[int] = None,
-        preserve_thinking: Optional[bool] = None,
-        tools: Optional[List[Dict[str, Any]]] = None,
-        tool_choice: Optional[str] = None,
-    ):
-        """Multi-turn / tool-calling escape hatch; returns the raw ChatCompletion."""
-        model = model or self.model
-        kwargs: Dict[str, Any] = {"model": model, "messages": messages}
-        if max_tokens is not None:
-            kwargs["max_tokens"] = max_tokens
-        if tools is not None:
-            kwargs["tools"] = tools
-            kwargs["tool_choice"] = tool_choice or "auto"
-
-        extra_body: Dict[str, Any] = {}
-        if enable_thinking is not None:
-            extra_body["enable_thinking"] = enable_thinking
-        if preserve_thinking is not None:
-            extra_body["preserve_thinking"] = preserve_thinking
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-
-        if reasoning_effort is not None:
-            if reasoning_effort not in VALID_REASONING_EFFORTS:
-                raise ValueError(
-                    f"Invalid reasoning_effort: {reasoning_effort!r}. "
-                    f"Supported values: {sorted(VALID_REASONING_EFFORTS)}"
-                )
-            kwargs["reasoning_effort"] = reasoning_effort
-
-        return self.client.chat.completions.create(**kwargs)
