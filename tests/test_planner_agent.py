@@ -298,6 +298,48 @@ def check_named_model_fal_h3_max_dry_run():
     print("\u2713 named-model chat dry-runs fal-h3-max; bare h3 max stays MiniMax first-party")
 
 
+def check_named_model_fal_h3_max_lipsync_pin():
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    video = slice_for_intent("video")
+    lipsync = match_named_model("dub this with h3 max lip sync", video)
+    assert lipsync is not None and lipsync.model == "fal-h3-max-lipsync"
+    lipsync2 = match_named_model("use fal-h3-max-lipsync", video)
+    assert lipsync2 is not None and lipsync2.model == "fal-h3-max-lipsync"
+    # Bare "h3 max" / "fal h3 max" still bind to the T2V/I2V/R2V models, not lipsync.
+    bare = match_named_model("use h3 max please", video)
+    assert bare is not None and bare.model == "minimax-h3-max"
+    fal_bare = match_named_model("use fal h3 max please", video)
+    assert fal_bare is not None and fal_bare.model == "fal-h3-max"
+    print("\u2713 'h3 max lip sync' pins fal-h3-max-lipsync, not minimax-h3-max/fal-h3-max")
+
+
+def check_named_model_p_video_2_pro_pin():
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    video = slice_for_intent("video")
+    pinned = match_named_model("generate with p-video-2-pro", video)
+    assert pinned is not None and pinned.model == "p-video-2-pro"
+    base = match_named_model("generate with p-video please", video)
+    assert base is not None and base.model == "p-video"
+    print("\u2713 'p-video-2-pro' pins the Pro sibling, not bare p-video")
+
+
+def check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin():
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    understand = slice_for_intent("understand")
+    omni = match_named_model("use qwen3.8-omni-flash to listen to this", understand)
+    assert omni is not None and omni.model == "qwen3.8-omni-flash"
+    qwen_max = match_named_model("use qwen3.8-max please", understand)
+    assert qwen_max is not None and qwen_max.model == "qwen3.8-max"
+    glm = match_named_model("use glm-5.3-flashx", understand)
+    assert glm is not None and glm.model == "glm-5.3-flashx"
+    bonsai = match_named_model("use ternary bonsai 2 27b", understand)
+    assert bonsai is not None and bonsai.model == "ternary-bonsai-2-27b"
+    print("\u2713 named-model chat pins qwen3.8-omni-flash / glm-5.3-flashx / ternary-bonsai-2-27b")
+
+
 def check_named_model_question_is_help():
     from tryon.agents.planner.catalog import (
         is_named_model_question,
@@ -781,6 +823,9 @@ def main():
     check_named_model_hy4_dry_run()
     check_named_model_minimax_h3_max_dry_run()
     check_named_model_fal_h3_max_dry_run()
+    check_named_model_fal_h3_max_lipsync_pin()
+    check_named_model_p_video_2_pro_pin()
+    check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin()
     check_named_model_question_is_help()
     check_named_model_gpt_image_25_dry_run()
     check_out_of_scope_does_not_delegate()

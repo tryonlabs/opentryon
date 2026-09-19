@@ -1298,17 +1298,62 @@ _UNDERSTAND = {
             Arg(("--temperature",), "temperature", type=float, default=0.8, help="Sampling temperature"),
         ],
     ),
+    "glm-5.3-flashx": ModelSpec(
+        id="glm-5.3-flashx",
+        label="GLM-5.3-FlashX (Zhipu / Z.ai multimodal understanding, 200 tok/s)",
+        import_path="tryon.api.zai", class_name="GLMUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="ZAI_API_KEY",
+        notes="High-speed serving tier of GLM-5.3-Flash via Z.ai's OpenAI-compatible API. "
+        "Native text/image/video. Thinking is always on (FlashX rejects thinking.type=disabled); "
+        "use --reasoning-effort to control depth. 1M context, 128K max output.",
+        args=[
+            Arg(("--glm-model",), "glm_model", target="init", call_name="model",
+                default="glm-5.3-flashx", choices=["glm-5.3-flashx"], help="GLM model id"),
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--reasoning-effort",), "reasoning_effort", default="max",
+                choices=["low", "high", "max"], help="Reasoning depth (low/high/max)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--temperature",), "temperature", type=float, help="Sampling temperature (Z.ai default 1.0)"),
+            Arg(("--top-p",), "top_p", type=float, help="Nucleus sampling (Z.ai default 0.95)"),
+        ],
+    ),
     "qwen3.8-max": ModelSpec(
         id="qwen3.8-max", label="Qwen3.8-Max (DashScope multimodal understanding)",
         import_path="tryon.api.qwen", class_name="QwenUnderstandAdapter",
         method="understand", output_kind="text", env_hint="DASHSCOPE_API_KEY",
         notes="Hosted Qwen3.8-Max via DashScope OpenAI-compatible API. Native text/image/video. "
-        "Thinking on by default; use --no-thinking or --reasoning-effort to control.",
+        "Thinking on by default; use --no-thinking or --reasoning-effort to control. "
+        "Need audio input too? --model qwen3.8-omni-flash.",
         args=[
             Arg(("--qwen-model",), "qwen_model", target="init", call_name="model", default="qwen3.8-max",
                 choices=["qwen3.8-max"], help="Qwen DashScope model id"),
             Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
             Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
+                help="Disable Qwen thinking mode (enable_thinking=False)"),
+            Arg(("--reasoning-effort",), "reasoning_effort", default="xhigh",
+                choices=["xhigh", "medium", "low"], help="Reasoning depth (xhigh/medium/low)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+        ],
+    ),
+    "qwen3.8-omni-flash": ModelSpec(
+        id="qwen3.8-omni-flash",
+        label="Qwen3.8-Omni-Flash (DashScope native omni-modal understanding)",
+        import_path="tryon.api.qwen", class_name="QwenUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="DASHSCOPE_API_KEY",
+        notes="Native omni-modal Qwen (text/image/audio/video in, text-only out). 1M-token "
+        "context, 131K max output. Same DASHSCOPE_API_KEY as qwen3.8-max. "
+        "Audio input requires this model (qwen3.8-max rejects --audio).",
+        args=[
+            Arg(("--qwen-model",), "qwen_model", target="init", call_name="model",
+                default="qwen3.8-omni-flash", choices=["qwen3.8-omni-flash"],
+                help="Qwen DashScope model id"),
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--audio",), "audio", help="Audio to understand (path or URL)"),
             Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
             Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
                 help="Disable Qwen thinking mode (enable_thinking=False)"),
@@ -1333,6 +1378,28 @@ _UNDERSTAND = {
             Arg(("--temperature",), "temperature", type=float, default=0.8, help="Sampling temperature"),
             Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
                 help="Disable thinking mode in the chat template"),
+        ],
+    ),
+    "ternary-bonsai-2-27b": ModelSpec(
+        id="ternary-bonsai-2-27b",
+        label="Ternary Bonsai 2 27B (PrismML, local llama.cpp/MLX server)",
+        import_path="tryon.models.ternary_bonsai", class_name="TernaryBonsaiAdapter",
+        method="understand", output_kind="text",
+        notes="27B model ternary-quantized to {-1,0,+1} (Apache 2.0), built on Qwen3.8-27B; "
+        "~98% of FP16 benchmark score at 5.9-8.5GB on disk. Does NOT run in-process — this is a "
+        "thin OpenAI-compatible client for the llama.cpp fork (prism-b10658+) or MLX server the "
+        "model ships with; start that server yourself (default http://127.0.0.1:8080/v1, "
+        "override with BONSAI_BASE_URL). No opentryon[local]/torch needed for this adapter. "
+        "Docs: https://docs.prismml.com/bonsai-2-27b",
+        args=[
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--thinking-budget-tokens",), "thinking_budget_tokens", type=int,
+                help="Per-request thinking token budget (server also supports --reasoning-budget)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+            Arg(("--base-url",), "base_url", target="init",
+                help="Override the local server URL (default http://127.0.0.1:8080/v1 / BONSAI_BASE_URL)"),
         ],
     ),
     "nemotron-omni": ModelSpec(
@@ -1654,7 +1721,8 @@ _VIDEO_GENERATE = {
         alt_method_on_image="generate_image_to_video",
         alt_image_dest="image",
         env_hint="PRUNA_API_KEY",
-        notes="T2V / I2V with optional audio conditioning, draft mode, and prompt upsampling.",
+        notes="T2V / I2V with optional audio conditioning, draft mode, and prompt upsampling. "
+        "Faster MiniMax H3-based sibling (no audio input): --model p-video-2-pro.",
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
             Arg(("--image",), "image", help="Optional start image (switches to image-to-video)", alt_only=True),
@@ -1669,6 +1737,35 @@ _VIDEO_GENERATE = {
             Arg(("--draft",), "draft", action="store_true", help="Faster lower-quality draft preview"),
             Arg(("--no-save-audio",), "save_audio", action="store_false", default=True),
             Arg(("--no-prompt-upsampling",), "prompt_upsampling", action="store_false", default=True),
+        ],
+    ),
+    "p-video-2-pro": ModelSpec(
+        id="p-video-2-pro",
+        label="Pruna P-Video-2-Pro (fast, MiniMax H3-based)",
+        import_path="tryon.api.pruna",
+        class_name="PVideo2ProAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="PRUNA_API_KEY",
+        notes=(
+            "Pruna's optimized MiniMax H3-based endpoint (launched 17 Sep 2026). "
+            "T2V / I2V with always-on generated audio (no audio *input*, unlike --model p-video). "
+            "480p/768p, 5-15s, fixed 24fps. Same PRUNA_API_KEY."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--image",), "image", help="Optional start image (switches to image-to-video)", alt_only=True),
+            Arg(("--last-frame-image",), "last_frame_image", help="Optional last-frame reference image"),
+            Arg(("--duration",), "duration", type=int, default=5, help="Duration in seconds (5-15)"),
+            Arg(("--resolution",), "resolution", default="768p", choices=["480p", "768p"]),
+            Arg(("--aspect-ratio",), "aspect_ratio", default="16:9",
+                choices=["16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "1:1"]),
+            Arg(("--mode",), "mode", default="speed", choices=["speed", "quality"]),
+            Arg(("--prompt-upsampler",), "prompt_upsampler", default="turbo",
+                choices=["off", "turbo", "max"]),
+            Arg(("--seed",), "seed", type=int),
         ],
     ),
     "p-video-replace": ModelSpec(
@@ -1986,7 +2083,8 @@ _VIDEO_GENERATE = {
         notes=(
             "Third-party Fal hoster for MiniMax H3 Max (joint MiniMax + fal.ai release). "
             "T2V, first/last I2V, and reference-to-video. 480P/768P, 5–15s. "
-            "First-party MiniMax (no R2V): --model minimax-h3-max."
+            "First-party MiniMax (no R2V): --model minimax-h3-max. "
+            "Dedicated lip-sync/dubbing endpoint: --model fal-h3-max-lipsync."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt (required)"),
@@ -2049,6 +2147,33 @@ _VIDEO_GENERATE = {
                 default=True,
                 help="Disable Fal safety checker",
             ),
+            Arg(("--seed",), "seed", type=int, help="Optional RNG seed"),
+        ],
+    ),
+    "fal-h3-max-lipsync": ModelSpec(
+        id="fal-h3-max-lipsync",
+        label="MiniMax H3 Max Lip Sync (Fal, image + audio -> video)",
+        import_path="tryon.api.fal",
+        class_name="FalH3MaxAdapter",
+        method="generate_lip_sync",
+        output_kind="video_bytes",
+        env_hint="FAL_KEY",
+        notes=(
+            "Fal-hosted H3 Max lip-sync/dubbing endpoint — portrait + audio track in, "
+            "video with matched mouth movement out. No prompt; not T2V/I2V/R2V. "
+            "480P-2K (higher ceiling than fal-h3-max's 768P cap). Audio clipped to ~14.8s. "
+            "Same FAL_KEY as --model fal-h3-max."
+        ),
+        args=[
+            _img(("--image", "-i"), "image", "Portrait / face image to animate (aspect ratio 0.4-2.5)", required=True),
+            Arg(("--audio",), "audio", required=True,
+                help="Audio track to lip-sync to (>=5s, clipped at ~14.8s)"),
+            Arg(("--resolution",), "resolution", default="768P",
+                choices=["480P", "768P", "1080P", "2K"]),
+            Arg(("--enable-transcription",), "enable_transcription", action="store_true",
+                help="Transcribe the audio to guide lip sync accuracy"),
+            Arg(("--no-safety-checker",), "enable_safety_checker", action="store_false",
+                default=True, help="Disable Fal safety checker"),
             Arg(("--seed",), "seed", type=int, help="Optional RNG seed"),
         ],
     ),

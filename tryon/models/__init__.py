@@ -19,6 +19,9 @@ Available Models:
     - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
     - MiniMaxH3LocalAdapter: MiniMax H3 open-weight text/image-to-video with stereo audio
     - Wan22Adapter: Wan 2.2 open-weight text/image-to-video (Diffusers)
+    - TernaryBonsaiAdapter: Ternary Bonsai 2 27B (PrismML) ternary-quantized
+      multimodal understanding, a thin OpenAI-compatible client for a
+      locally-served llama.cpp/MLX server (no torch/diffusers needed)
 
 Examples:
     Text-to-image generation:
@@ -56,6 +59,7 @@ from .ltx25 import LTX25Adapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
 from .qwen_image import QwenImageLocalAdapter
+from .ternary_bonsai import TernaryBonsaiAdapter
 from .wan22 import Wan22Adapter
 
 __all__ = [
@@ -67,5 +71,6 @@ __all__ = [
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",
     "QwenImageLocalAdapter",
+    "TernaryBonsaiAdapter",
     "Wan22Adapter",
 ]

@@ -10,6 +10,7 @@ Docs:
   https://fal.ai/models/minimax/h3-max/text-to-video/api
   https://fal.ai/models/minimax/h3-max/image-to-video/api
   https://fal.ai/models/minimax/h3-max/reference-to-video/api
+  https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
   https://docs.fal.ai/model-apis/inference/queue
 
 Env:
@@ -30,6 +31,9 @@ Examples:
     ...     prompt="Image 1 is the model. Keep her identity while she walks.",
     ...     reference_image=["look.jpg"],
     ... ))
+    >>> open("lipsync.mp4", "wb").write(adapter.generate_lip_sync(
+    ...     image="portrait.jpg", audio="line.wav", resolution="1080P",
+    ... ))
 """
 
 from __future__ import annotations
@@ -47,7 +51,11 @@ DEFAULT_QUEUE_URL = "https://queue.fal.run"
 T2V_ENDPOINT = "minimax/h3-max/text-to-video"
 I2V_ENDPOINT = "minimax/h3-max/image-to-video"
 R2V_ENDPOINT = "minimax/h3-max/reference-to-video"
+LIPSYNC_ENDPOINT = "minimax/h3-max/lip-sync/image-to-video"
 RESOLUTIONS = ("480P", "768P")
+LIPSYNC_RESOLUTIONS = ("480P", "768P", "1080P", "2K")
+LIPSYNC_AUDIO_MIN_SECONDS = 5
+LIPSYNC_AUDIO_MAX_SECONDS = 14.8
 T2V_RATIOS = ("21:9", "16:9", "4:3", "1:1", "3:4", "9:16")
 R2V_RATIOS = ("adaptive",) + T2V_RATIOS
 PROMPT_EXPANSION = ("balanced", "quality")
@@ -401,3 +409,36 @@ class FalH3MaxAdapter:
         if last_frame is not None:
             payload["end_image_url"] = self._prepare_image_uri(last_frame)
         return self._run_endpoint(I2V_ENDPOINT, payload)
+
+    def generate_lip_sync(
+        self,
+        image: ImageLike,
+        audio: MediaLike,
+        resolution: str = "768P",
+        enable_transcription: bool = False,
+        enable_safety_checker: bool = True,
+        seed: Optional[int] = None,
+    ) -> bytes:
+        """H3 Max Lip Sync — animate a portrait to match a supplied audio track.
+
+        Distinct from ``generate_text_to_video``/``generate_image_to_video``:
+        it does not take a prompt, only an image plus audio (5-14.8s used;
+        longer clips are clipped by Fal). Output resolution can reach 2K
+        (T2V/I2V top out at 768P).
+        """
+        res = (resolution or "768P").strip()
+        if res not in LIPSYNC_RESOLUTIONS:
+            raise ValueError(
+                f"resolution must be one of {list(LIPSYNC_RESOLUTIONS)} for "
+                f"lip-sync (got {res!r})."
+            )
+        payload: Dict[str, Any] = {
+            "image_url": self._prepare_image_uri(image),
+            "audio_url": self._prepare_media_uri(audio, kind="audio"),
+            "resolution": res,
+            "enable_transcription": bool(enable_transcription),
+            "enable_safety_checker": bool(enable_safety_checker),
+        }
+        if seed is not None:
+            payload["seed"] = int(seed)
+        return self._run_endpoint(LIPSYNC_ENDPOINT, payload)

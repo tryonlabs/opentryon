@@ -139,12 +139,17 @@ The tables below highlight newer families. The complete generated list lives in 
 ## Understand tools (including Qwen3.8 and Hy4)
 
 Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, the
-**Qwen3.8** dual path, and **Hy4 preview** (TokenHub LLM + local vLLM/SGLang):
+**Qwen3.8** dual path (+ **Qwen3.8-Omni-Flash** for audio), **GLM-5.3-FlashX**,
+**Ternary Bonsai 2 27B** (local server), and **Hy4 preview** (TokenHub LLM +
+local vLLM/SGLang):
 
 | MCP tool | Backend | Needs |
 |---|---|---|
 | `understand_qwen3_8_max` | DashScope Qwen3.8-Max (text/image/video, thinking + `reasoning_effort`) | `DASHSCOPE_API_KEY` |
+| `understand_qwen3_8_omni_flash` | DashScope Qwen3.8-Omni-Flash (adds audio; text/image/audio/video, 1M context) | `DASHSCOPE_API_KEY` |
 | `understand_qwen3_8` | Local `Qwen/Qwen3.8-27B` | `pip install opentryon[local]` + GPU |
+| `understand_glm_5_3_flashx` | Z.ai GLM-5.3-FlashX (text/image/video, 200 tok/s) | `ZAI_API_KEY` |
+| `understand_ternary_bonsai_2_27b` | PrismML Ternary Bonsai 2 27B (self-hosted llama.cpp/MLX server) | `BONSAI_BASE_URL` (default localhost:8080) |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
 | `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |
 
@@ -196,6 +201,7 @@ Same `MINIMAX_API_KEY` as Hailuo 2.3. H3 is a **dual path** (hosted V2 vs local 
 | `video_generate_minimax_h3` | MiniMax H3 official V2 API (T2V / I2V / R2V, 4–15s, 768P/2K) | `MINIMAX_API_KEY` |
 | `video_generate_minimax_h3_max` | MiniMax H3 Max (fast V2; T2V / I2V, 5–15s, 480P/768P) | `MINIMAX_API_KEY` |
 | `video_generate_fal_h3_max` | Fal-hosted H3 Max (T2V / I2V / R2V, 5–15s, 480P/768P) | `FAL_KEY` |
+| `video_generate_fal_h3_max_lipsync` | Fal-hosted H3 Max Lip Sync (image + audio → dubbed video, 480P–2K) | `FAL_KEY` |
 | `video_generate_minimax_h3_local` | Open-weight `MiniMaxAI/MiniMax-H3` (768p H3-Base) | `pip install opentryon[local]` + CUDA + Diffusers from main |
 | `video_generate_hailuo_2_3` | MiniMax Hailuo 2.3 (V1) | `MINIMAX_API_KEY` |
 

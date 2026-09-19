@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 🎬 Video — Pruna P-Video-2-Pro
+- **P-Video-2-Pro** (`PVideo2ProAdapter` / CLI `--model p-video-2-pro`): Pruna's fast MiniMax H3-based endpoint (launched 17 Sep 2026)
+  - Same `PRUNA_API_KEY` / `PrunaClient` as `p-video`. T2V / I2V, 480p/768p, 5–15s, fixed 24fps
+  - Always-on generated audio; no audio *input* (unlike `p-video`)
+  - MCP tool `video_generate_p_video_2_pro`
+  - Docs: `docs/docs/api-reference/pruna.md`
+
+#### 🎬 Video — Fal H3 Max Lip Sync
+- **H3 Max Lip Sync** (`FalH3MaxAdapter.generate_lip_sync` / CLI `--model fal-h3-max-lipsync`): dedicated dubbing endpoint on Fal's MiniMax H3 Max stack
+  - `minimax/h3-max/lip-sync/image-to-video`, same `FAL_KEY` as `fal-h3-max`
+  - Portrait + audio in (no prompt), lip-synced video out. 480P–2K (higher ceiling than T2V/I2V/R2V's 768P cap)
+  - MCP tool `video_generate_fal_h3_max_lipsync`
+  - Docs: `docs/docs/api-reference/fal-h3-max.md`
+
+#### 🧠 Understanding — Qwen3.8-Omni-Flash
+- **Qwen3.8-Omni-Flash** (`QwenUnderstandAdapter` / CLI `--model qwen3.8-omni-flash`): Alibaba's native omni-modal sibling to `qwen3.8-max`
+  - Same `DASHSCOPE_API_KEY`; adds `--audio` (text/image/audio/video in, text out), 1M-token context
+  - MCP tool `understand_qwen3_8_omni_flash`
+  - Docs: `docs/docs/api-reference/qwen3.8.md`
+
+#### 🧠 Understanding — GLM-5.3-FlashX (Zhipu / Z.ai)
+- **GLM-5.3-FlashX** (`GLMUnderstandAdapter` / CLI `--model glm-5.3-flashx`): new first-party provider, `tryon.api.zai`
+  - Z.ai OpenAI-compatible Chat Completions, `ZAI_API_KEY`. Text/image/video → text, 1M context, 200 tok/s serving tier
+  - MCP tool `understand_glm_5_3_flashx`
+  - Docs: `docs/docs/api-reference/glm.md` (new page)
+
+#### 🧠 Understanding — Ternary Bonsai 2 27B (PrismML, local server)
+- **Ternary Bonsai 2 27B** (`TernaryBonsaiAdapter` / CLI `--model ternary-bonsai-2-27b`): new local model, `tryon.models.ternary_bonsai`
+  - 27B, ternary-quantized (Apache 2.0). Thin OpenAI-compatible client for the PrismML llama.cpp fork / MLX server **you run yourself** — no `opentryon[local]` / torch needed for this adapter
+  - `BONSAI_BASE_URL` (default `http://127.0.0.1:8080/v1`), optional `BONSAI_API_KEY`
+  - MCP tool `understand_ternary_bonsai_2_27b`
+  - Docs: `docs/docs/local-models/ternary-bonsai.md` (new page)
+
 ## [0.0.5] - 14 September 2026
 
 ### Changed

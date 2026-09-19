@@ -11,6 +11,7 @@ from .p_image_edit import PImageEditAdapter
 from .p_image_ideogram import PImageIdeogramAdapter
 from .p_image_upscale import PImageUpscaleAdapter
 from .p_video import PVideoAdapter
+from .p_video_2_pro import PVideo2ProAdapter
 from .p_video_animate import PVideoAnimateAdapter
 from .p_video_avatar import PVideoAvatarAdapter
 from .p_video_replace import PVideoReplaceAdapter
@@ -21,6 +22,7 @@ __all__ = [
     "PImageIdeogramAdapter",
     "PImageUpscaleAdapter",
     "PVideoAdapter",
+    "PVideo2ProAdapter",
     "PVideoAnimateAdapter",
     "PVideoAvatarAdapter",
     "PVideoReplaceAdapter",

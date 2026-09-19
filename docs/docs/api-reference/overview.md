@@ -341,7 +341,7 @@ images = adapter.generate_and_decode(
 - `generate(person_image, garment_images, ...)` - Generate a virtual try-on result (returns a URL)
 - `generate_and_decode(person_image, garment_images, ...)` - Generate and decode to PIL Images
 
-See [Pruna AI Documentation](pruna) for complete details (also covers `PImageAdapter`, `PImageIdeogramAdapter`, `PImageEditAdapter`, `PImageUpscaleAdapter`, `PVideoAdapter`, `PVideoReplaceAdapter`, `PVideoAvatarAdapter`, `PVideoAnimateAdapter`). Dedicated page: [P-Image-Ideogram](p-image-ideogram).
+See [Pruna AI Documentation](pruna) for complete details (also covers `PImageAdapter`, `PImageIdeogramAdapter`, `PImageEditAdapter`, `PImageUpscaleAdapter`, `PVideoAdapter`, `PVideo2ProAdapter`, `PVideoReplaceAdapter`, `PVideoAvatarAdapter`, `PVideoAnimateAdapter`). Dedicated page: [P-Image-Ideogram](p-image-ideogram).
 
 ---
 
@@ -564,7 +564,8 @@ Also available via the CLI/MCP registry:
 | `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
 | `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
 | `MiniMaxH3Adapter` | `minimax-h3` / `minimax-h3-max` | [MiniMax H3](minimax-h3) |
-| `FalH3MaxAdapter` | `fal-h3-max` | [MiniMax H3 Max (Fal)](fal-h3-max) |
+| `FalH3MaxAdapter` | `fal-h3-max` / `fal-h3-max-lipsync` | [MiniMax H3 Max (Fal)](fal-h3-max) |
+| `PVideo2ProAdapter` | `p-video-2-pro` | [Pruna AI](pruna) |
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
 | `Cosmos3VideoAdapter` | `cosmos3` | [NVIDIA NIM](nvidia-nim) |
@@ -636,11 +637,48 @@ See [Kimi API Documentation](kimi) for complete details, or the open-weight
 
 ---
 
+### `GLMUnderstandAdapter`
+
+Adapter for Zhipu's **GLM-5.3-FlashX** via Z.ai — general-purpose, natively
+multimodal image and video understanding (200 tok/s serving tier of
+GLM-5.3-Flash).
+
+```python
+from tryon.api import GLMUnderstandAdapter
+
+adapter = GLMUnderstandAdapter()  # glm-5.3-flashx by default
+
+result = adapter.understand_image(
+    "garment.jpg",
+    prompt="Describe this outfit: color, pattern, style, fit, and material."
+)
+print(result["text"])
+```
+
+**Parameters:**
+- `api_key` (str, optional): Z.ai key. Defaults to `ZAI_API_KEY` environment variable
+- `model` (str, optional): `"glm-5.3-flashx"` (default)
+- `base_url` (str, optional): Defaults to `ZAI_BASE_URL` or the Z.ai default
+
+**Methods:**
+- `understand_image(image, prompt, ...)` - Understand one or more images
+- `understand_video(video, prompt, ...)` - Understand video content
+- `understand(image=None, video=None, prompt=...)` - Single entry point accepting either/both
+
+Thinking is always on (`thinking.type` only supports `enabled`); use
+`reasoning_effort` (`low` / `high` / `max`) to control depth.
+
+See [GLM-5.3-FlashX Documentation](glm) for complete details.
+
+---
+
 ### `QwenUnderstandAdapter`
 
-Adapter for Alibaba DashScope **Qwen3.8-Max** — native multimodal flagship
-(text + image + video → text) with thinking / `reasoning_effort`. OpenTryOn
-exposes the **understand** path (plus `chat()` for multi-turn/tools).
+Adapter for Alibaba DashScope **Qwen3.8-Max** and **Qwen3.8-Omni-Flash** —
+native multimodal understanding (text + image + video → text on Max; text +
+image + audio + video → text on Omni-Flash) with thinking /
+`reasoning_effort`. OpenTryOn exposes the **understand** path (plus `chat()`
+for multi-turn/tools on Max).
 
 ```python
 from tryon.api import QwenUnderstandAdapter
@@ -656,13 +694,13 @@ print(result["text"])
 
 **Parameters:**
 - `api_key` (str, optional): Defaults to `DASHSCOPE_API_KEY`
-- `model` (str, optional): `"qwen3.8-max"` (default)
+- `model` (str, optional): `"qwen3.8-max"` (default) or `"qwen3.8-omni-flash"`
 - `base_url` (str, optional): Defaults to `QWEN_BASE_URL` or the international DashScope compatible-mode URL
 
 **Methods:**
 - `understand_image(image, prompt, ...)` - Understand one or more images
 - `understand_video(video, prompt, ...)` - Understand video content
-- `understand(image=None, video=None, prompt=...)` - Single entry point accepting either/both
+- `understand(image=None, video=None, audio=None, prompt=...)` - Single entry point; `audio` requires `model="qwen3.8-omni-flash"`
 - `chat(messages, tools=None, ...)` - Multi-turn/tool-calling escape hatch
 
 **Series capabilities (vendor):** ~1M context on Max, long video, coding/agent
