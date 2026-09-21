@@ -737,6 +737,25 @@ def check_glm_rejects_invalid_reasoning_effort():
     print("\u2713 GLMUnderstandAdapter rejects an invalid reasoning_effort")
 
 
+def check_deepseek_flash_requires_image():
+    from tryon.api.deepseek import DeepSeekUnderstandAdapter
+
+    adapter = DeepSeekUnderstandAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.understand(prompt="hi")
+    except ValueError as e:
+        assert "image" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when deepseek-flash gets no image")
+    try:
+        adapter.understand_image("data/model-1.jpg", prompt="hi", reasoning_effort="ultra")
+    except ValueError as e:
+        assert "reasoning_effort" in str(e)
+    else:
+        raise AssertionError("expected ValueError for an invalid DeepSeek reasoning_effort")
+    print("\u2713 DeepSeekUnderstandAdapter requires an image and rejects an invalid reasoning_effort")
+
+
 def check_ternary_bonsai_reports_connection_errors_clearly():
     from tryon.models.ternary_bonsai import TernaryBonsaiAdapter
 
@@ -791,6 +810,16 @@ def check_new_model_integrations_dry_runs():
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         code = cli_main([
+            "understand", "--model", "deepseek-flash",
+            "--image", "data/model-1.jpg", "--prompt", "Describe the outfit",
+            "--reasoning-effort", "none", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "DeepSeekUnderstandAdapter" in printed and "'reasoning_effort': 'none'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
             "understand", "--model", "ternary-bonsai-2-27b",
             "--prompt", "hi", "--thinking-budget-tokens", "512", "--dry-run",
         ])
@@ -799,7 +828,7 @@ def check_new_model_integrations_dry_runs():
 
     print(
         "\u2713 video-generate p-video-2-pro / fal-h3-max-lipsync and "
-        "understand qwen3.8-omni-flash / glm-5.3-flashx / ternary-bonsai-2-27b "
+        "understand qwen3.8-omni-flash / glm-5.3-flashx / deepseek-flash / ternary-bonsai-2-27b "
         "--dry-run resolve the expected calls"
     )
 
@@ -1023,6 +1052,7 @@ if __name__ == "__main__":
     check_p_video_2_pro_requires_valid_duration()
     check_qwen_omni_flash_audio_requires_omni_model()
     check_glm_rejects_invalid_reasoning_effort()
+    check_deepseek_flash_requires_image()
     check_ternary_bonsai_reports_connection_errors_clearly()
     check_new_model_integrations_dry_runs()
     check_muse_image_requires_prompt()

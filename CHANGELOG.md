@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🧠 Understanding — DeepSeek-V4.1-Flash
+- **DeepSeek-V4.1-Flash** (`DeepSeekUnderstandAdapter` / CLI `--model deepseek-flash`): new first-party provider, `tryon.api.deepseek`
+  - DeepSeek Platform OpenAI-compatible API, `DEEPSEEK_API_KEY`. Text/image → text (**no video**), 1M context, cheapest frontier-class VLM available
+  - Thinking on by default; `--reasoning-effort none/low/high/max` (`none` disables thinking)
+  - MCP tool `understand_deepseek_flash`
+  - Docs: `docs/docs/api-reference/deepseek.md` (new page)
+
 #### 🎬 Video — Pruna P-Video-2-Pro
 - **P-Video-2-Pro** (`PVideo2ProAdapter` / CLI `--model p-video-2-pro`): Pruna's fast MiniMax H3-based endpoint (launched 17 Sep 2026)
   - Same `PRUNA_API_KEY` / `PrunaClient` as `p-video`. T2V / I2V, 480p/768p, 5–15s, fixed 24fps

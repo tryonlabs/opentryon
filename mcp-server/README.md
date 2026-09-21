@@ -207,6 +207,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_qwen3_8_omni_flash` | Qwen3.8-Omni-Flash (DashScope) | `DASHSCOPE_API_KEY` | Native omni-modal; adds `audio`; text/image/audio/video in, text out; 1M context |
 | `understand_qwen3_8` | Qwen3.8-27B (open-weight, local) | local/GPU | Dense open multimodal (`Qwen/Qwen3.8-27B`); thinking toggle; frame-sampled video |
 | `understand_glm_5_3_flashx` | GLM-5.3-FlashX (Zhipu / Z.ai) | `ZAI_API_KEY` | Native text/image/video; thinking always on; `reasoning_effort` (`low`/`high`/`max`); 200 tok/s serving tier |
+| `understand_deepseek_flash` | DeepSeek-V4.1-Flash | `DEEPSEEK_API_KEY` | Native text/image only (**no video**); thinking on by default; `reasoning_effort` (`none`/`low`/`high`/`max`, `none` disables thinking); cheapest frontier-class VLM available |
 | `understand_ternary_bonsai_2_27b` | Ternary Bonsai 2 27B (PrismML) | local server | OpenAI-compatible client for a self-hosted llama.cpp/MLX server (`BONSAI_BASE_URL`); not in-process GPU |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |

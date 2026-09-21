@@ -672,6 +672,40 @@ See [GLM-5.3-FlashX Documentation](glm) for complete details.
 
 ---
 
+### `DeepSeekUnderstandAdapter`
+
+Adapter for DeepSeek's **deepseek-flash** — general-purpose, natively
+multimodal **image** understanding (no video). Currently the cheapest
+frontier-class VLM available.
+
+```python
+from tryon.api import DeepSeekUnderstandAdapter
+
+adapter = DeepSeekUnderstandAdapter()  # deepseek-flash by default
+
+result = adapter.understand_image(
+    "garment.jpg",
+    prompt="Describe this outfit: color, pattern, style, fit, and material."
+)
+print(result["text"])
+```
+
+**Parameters:**
+- `api_key` (str, optional): Defaults to `DEEPSEEK_API_KEY` environment variable
+- `model` (str, optional): `"deepseek-flash"` (default)
+- `base_url` (str, optional): Defaults to `DEEPSEEK_BASE_URL` or the DeepSeek Platform default
+
+**Methods:**
+- `understand_image(image, prompt, ...)` - Understand one or more images
+- `understand(image=..., prompt=...)` - CLI / MCP entry point; raises `ValueError` without an image
+
+Thinking is on by default; `reasoning_effort` (`none` / `low` / `high` /
+`max`) controls depth, where `none` disables it.
+
+See [DeepSeek-V4.1-Flash Documentation](deepseek) for complete details.
+
+---
+
 ### `QwenUnderstandAdapter`
 
 Adapter for Alibaba DashScope **Qwen3.8-Max** and **Qwen3.8-Omni-Flash** —

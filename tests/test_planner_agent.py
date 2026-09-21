@@ -337,7 +337,12 @@ def check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin():
     assert glm is not None and glm.model == "glm-5.3-flashx"
     bonsai = match_named_model("use ternary bonsai 2 27b", understand)
     assert bonsai is not None and bonsai.model == "ternary-bonsai-2-27b"
-    print("\u2713 named-model chat pins qwen3.8-omni-flash / glm-5.3-flashx / ternary-bonsai-2-27b")
+    deepseek = match_named_model("use deepseek flash", understand)
+    assert deepseek is not None and deepseek.model == "deepseek-flash"
+    print(
+        "\u2713 named-model chat pins qwen3.8-omni-flash / glm-5.3-flashx / "
+        "deepseek-flash / ternary-bonsai-2-27b"
+    )
 
 
 def check_named_model_question_is_help():

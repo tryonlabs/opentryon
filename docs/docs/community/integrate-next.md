@@ -148,6 +148,7 @@ Pick **one** for v0.1.0 Slice D (`tryon.models` + `opentryon[local]`). Many rese
 | SD 3.5 Large via NIM | A | Crowded T2I table; low fashion differentiation. | `skip` |
 | Qwen-Image via NIM | A | Already `qwen-image` (DashScope) + local. | `skip` |
 | NVIDIA Edify (Getty/Shutterstock) | — | NIM preview **retired** 6 June 2025. | `skip` |
+| **Janus-Pro-7B** (DeepSeek) | B (HF, single 24GB GPU) | Unified understand + T2I, autoregressive. Only DeepSeek model that generates images; quality trails FLUX.2/Nano Banana/Qwen-Image — OSS option, not a differentiator. Third-party host: [Fal](https://fal.ai/models/fal-ai/janus) if Path A is preferred over local. [HF](https://huggingface.co/deepseek-ai/Janus-Pro-7B) | `watch` |
 
 ### Image-to-image / edit
 
@@ -187,6 +188,10 @@ NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX V
 | Cosmos 3 Reasoner / Reason2 8B | A | Reasoner shipped (`cosmos3-reasoner`). Reason2 remains watch. | shipped / `watch` |
 | Muse Glimmer 30B (on NIM) | A | Meta multimodal on NVIDIA’s catalog; we already have first-party Muse Image. Glimmer is understand, not gen. | `watch` |
 | Llama 3.2 11B/90B Vision on NIM | A | Older VLMs; Omni supersedes for new work. | `skip` |
+| **DeepSeek-V4.1-Flash** (`deepseek-flash`) | A — first-party [`api-docs.deepseek.com`](https://api-docs.deepseek.com/quick_start/pricing/), OpenAI-compatible | Cheapest frontier-class VLM available ($0.15/$0.60 per 1M off-peak). Text+image (no video), 1M context, thinking on by default + `reasoning_effort` (`none`/`low`/`high`/`max`). Same shape as `kimi-k2.6`/`qwen3.8-max`/`glm-5.3-flashx`. `DEEPSEEK_API_KEY`. | shipped |
+| DeepSeek-VL2 (`deepseek-vl2`) | B — HF Diffusers/Transformers, distilled MoE VLM | Local counterpart to `deepseek-flash`, same pairing pattern as `qwen3.8-max`/`qwen3.8`. Cheaper to self-host than Kimi-VL/Qwen3.8 local. | `watch` (until Flash ships and someone asks for local) |
+| DeepSeek-OCR (`deepseek-ocr`) | B — HF weights only, no first-party hosted endpoint | "Contexts Optical Compression" — real fashion fit: care labels, size tags, SKU/product-copy sheets. High page throughput on one GPU (vLLM support since Oct 2025). Distinct value from general captioning even though it shares the `understand` service. | `watch` |
+| DeepSeek-V4-Pro (`deepseek-v4-pro`) | A — first-party, text-only (no image input) | Flagship reasoning (R-series folded into V4) but no vision — doesn't fit `understand`'s media-first contract. Better framed as an alternate `OPENTRYON_AGENT_LLM_PROVIDER` backend for the planner than a registry model, mirroring Nemotron's text-only agents. | `skip` |
 
 ### 3D model generation
 
@@ -200,7 +205,7 @@ NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX V
 
 ### Out of scope for this list
 
-Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — on the NIM catalog, not fashion media.
+Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — on the NIM catalog, not fashion media. DeepSeek-Prover-V2 (formal theorem proving) and DeepSeek-Coder (code LLM) — no fashion/media surface.
 
 ---
 
@@ -213,12 +218,14 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 5. **New services** only after one local VTON: LipSync (A2V), TRELLIS (3D).
 6. **SANA-Sprint** if we want a fast local T2I that is not another FLUX/Qwen clone.
 7. Optional: `nemotron-omni-local` if someone will run 30B-A3B.
+8. ~~`deepseek-flash`~~ **shipped** (Path A, `understand`, 21 Sep 2026).
+9. Optional later: `deepseek-vl2` (local pair) and `deepseek-ocr` (label/tag OCR) once someone asks for local DeepSeek.
 
 ---
 
 ## Shipped (do not re-add)
 
-Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image (1.5 + ChatGPT Images 2.5 Flare/Sunburst), Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3 / H3 Max, **Fal H3 Max** (+ **Fal H3 Max Lip Sync**, `fal-h3-max-lipsync`), Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8 (+ **Qwen3.8-Omni-Flash**, `qwen3.8-omni-flash`), **Hy4 preview** (`hy4-preview` TokenHub + `hy4-preview-local` vLLM/SGLang), **GLM-5.3-FlashX** (`glm-5.3-flashx`, Zhipu/Z.ai — new `tryon.api.zai`), **Ternary Bonsai 2 27B** (`ternary-bonsai-2-27b`, PrismML local server — new `tryon.models.ternary_bonsai`), **P-Video-2-Pro** (`p-video-2-pro`, Pruna MiniMax H3-based), BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
+Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image (1.5 + ChatGPT Images 2.5 Flare/Sunburst), Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3 / H3 Max, **Fal H3 Max** (+ **Fal H3 Max Lip Sync**, `fal-h3-max-lipsync`), Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8 (+ **Qwen3.8-Omni-Flash**, `qwen3.8-omni-flash`), **Hy4 preview** (`hy4-preview` TokenHub + `hy4-preview-local` vLLM/SGLang), **GLM-5.3-FlashX** (`glm-5.3-flashx`, Zhipu/Z.ai — new `tryon.api.zai`), **Ternary Bonsai 2 27B** (`ternary-bonsai-2-27b`, PrismML local server — new `tryon.models.ternary_bonsai`), **P-Video-2-Pro** (`p-video-2-pro`, Pruna MiniMax H3-based), **DeepSeek-V4.1-Flash** (`deepseek-flash`, new `tryon.api.deepseek`), BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
 
 ---
 

@@ -133,6 +133,7 @@ async def check_dry_run_calls() -> None:
         ("video_generate_p_video_2_pro", {"prompt": "runway walk", "dry_run": True}, False),
         ("understand_qwen3_8_omni_flash", {"audio": "line.wav", "prompt": "what is said?", "dry_run": True}, False),
         ("understand_glm_5_3_flashx", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, False),
+        ("understand_deepseek_flash", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, False),
         ("understand_ternary_bonsai_2_27b", {"prompt": "hi", "dry_run": True}, False),
         ("video_generate_cosmos3", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3_local", {"prompt": "runway walk", "dry_run": True}, True),
