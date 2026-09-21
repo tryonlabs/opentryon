@@ -1319,6 +1319,25 @@ _UNDERSTAND = {
             Arg(("--top-p",), "top_p", type=float, help="Nucleus sampling (Z.ai default 0.95)"),
         ],
     ),
+    "deepseek-flash": ModelSpec(
+        id="deepseek-flash",
+        label="DeepSeek-V4.1-Flash (multimodal understanding)",
+        import_path="tryon.api.deepseek", class_name="DeepSeekUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="DEEPSEEK_API_KEY",
+        notes="First-party DeepSeek Platform API (OpenAI-compatible). Native text/image only -- "
+        "no video (unlike kimi-k2.6/qwen3.8-max/glm-5.3-flashx). Thinking on by default; "
+        "--reasoning-effort none disables it. 1M context, 384K max output. "
+        "Legacy ids deepseek-v4-flash / deepseek-v4-flash-vision-exp are billed as this model upstream.",
+        args=[
+            Arg(("--deepseek-model",), "deepseek_model", target="init", call_name="model",
+                default="deepseek-flash", choices=["deepseek-flash"], help="DeepSeek model id"),
+            Arg(("--image", "-i"), "image", required=True, help="Image to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--reasoning-effort",), "reasoning_effort", default="high",
+                choices=["none", "low", "high", "max"], help="Reasoning depth; none disables thinking"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+        ],
+    ),
     "qwen3.8-max": ModelSpec(
         id="qwen3.8-max", label="Qwen3.8-Max (DashScope multimodal understanding)",
         import_path="tryon.api.qwen", class_name="QwenUnderstandAdapter",

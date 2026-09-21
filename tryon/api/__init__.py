@@ -52,6 +52,7 @@ _LAZY_ATTRS = {
     "QwenUnderstandAdapter": ".qwen",
     "QwenImageAdapter": ".qwen",
     "GLMUnderstandAdapter": ".zai",
+    "DeepSeekUnderstandAdapter": ".deepseek",
     "SeedanceAdapter": ".byteplus",
     "SeedreamAdapter": ".byteplus",
     "IdeogramAdapter": ".ideogram",

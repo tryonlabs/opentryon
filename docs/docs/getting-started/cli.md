@@ -31,7 +31,7 @@ opentryon <service> --model <model> [params...]
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `muse-image` |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
-| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server) |
+| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
 | `bg-remove` | Background removal | `ben2` (local) |
 
@@ -112,6 +112,10 @@ opentryon understand --model qwen3.8-omni-flash \
 # GLM-5.3-FlashX (Zhipu / Z.ai, ZAI_API_KEY)
 opentryon understand --model glm-5.3-flashx \
   --image garment.jpg --prompt "Describe this outfit."
+
+# DeepSeek-V4.1-Flash (DEEPSEEK_API_KEY; image only, no video)
+opentryon understand --model deepseek-flash \
+  --image garment.jpg --prompt "Describe this outfit." --reasoning-effort max
 
 # Ternary Bonsai 2 27B (local llama.cpp/MLX server, no cloud key)
 opentryon understand --model ternary-bonsai-2-27b \
@@ -228,6 +232,7 @@ stack trace:
 - [Kimi-VL open-weight local model](../local-models/kimi-vl.md)
 - [Qwen3.8-Max / Qwen3.8-Omni-Flash understanding](../api-reference/qwen3.8.md)
 - [GLM-5.3-FlashX understanding](../api-reference/glm.md)
+- [DeepSeek-V4.1-Flash understanding](../api-reference/deepseek.md)
 - [Ternary Bonsai 2 27B (local server)](../local-models/ternary-bonsai.md)
 - [Hy4 preview TokenHub](../api-reference/hy4.md)
 - [Hy4 local vLLM/SGLang](../local-models/hy4.md)

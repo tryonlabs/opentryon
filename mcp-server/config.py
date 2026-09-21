@@ -166,6 +166,13 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Unlocks understand glm-5.3-flashx (text/image/video, 200 tok/s serving tier).",
     ),
     (
+        "deepseek",
+        "DeepSeek",
+        "https://api-docs.deepseek.com/quick_start/pricing/",
+        ("DEEPSEEK_API_KEY",),
+        "Unlocks understand deepseek-flash (text/image, no video). Cheapest frontier-class VLM available.",
+    ),
+    (
         "aws",
         "Amazon Bedrock",
         "https://console.aws.amazon.com/bedrock/",

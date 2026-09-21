@@ -140,8 +140,8 @@ The tables below highlight newer families. The complete generated list lives in 
 
 Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, the
 **Qwen3.8** dual path (+ **Qwen3.8-Omni-Flash** for audio), **GLM-5.3-FlashX**,
-**Ternary Bonsai 2 27B** (local server), and **Hy4 preview** (TokenHub LLM +
-local vLLM/SGLang):
+**DeepSeek-V4.1-Flash**, **Ternary Bonsai 2 27B** (local server), and
+**Hy4 preview** (TokenHub LLM + local vLLM/SGLang):
 
 | MCP tool | Backend | Needs |
 |---|---|---|
@@ -149,6 +149,7 @@ local vLLM/SGLang):
 | `understand_qwen3_8_omni_flash` | DashScope Qwen3.8-Omni-Flash (adds audio; text/image/audio/video, 1M context) | `DASHSCOPE_API_KEY` |
 | `understand_qwen3_8` | Local `Qwen/Qwen3.8-27B` | `pip install opentryon[local]` + GPU |
 | `understand_glm_5_3_flashx` | Z.ai GLM-5.3-FlashX (text/image/video, 200 tok/s) | `ZAI_API_KEY` |
+| `understand_deepseek_flash` | DeepSeek deepseek-flash (text/image only, no video; cheapest frontier VLM) | `DEEPSEEK_API_KEY` |
 | `understand_ternary_bonsai_2_27b` | PrismML Ternary Bonsai 2 27B (self-hosted llama.cpp/MLX server) | `BONSAI_BASE_URL` (default localhost:8080) |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
 | `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |

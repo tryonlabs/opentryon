@@ -61,6 +61,10 @@ DASHSCOPE_API_KEY=your_dashscope_api_key
 ZAI_API_KEY=your_zai_api_key
 # ZAI_BASE_URL=https://api.z.ai/api/paas/v4
 
+# DeepSeek (deepseek-flash multimodal understanding — image only, no video)
+DEEPSEEK_API_KEY=your_deepseek_api_key
+# DEEPSEEK_BASE_URL=https://api.deepseek.com
+
 # Photoroom Virtual Try-On + Virtual Model
 PHOTOROOM_API_KEY=your_photoroom_api_key
 
@@ -249,6 +253,13 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU.
 2. Add to `.env`: `ZAI_API_KEY=your_key`
 
    Covers `understand --model glm-5.3-flashx` (text/image/video understanding, 200 tok/s serving tier of GLM-5.3-Flash). See [GLM-5.3-FlashX](../api-reference/glm.md).
+
+### DeepSeek (deepseek-flash)
+
+1. Create a key at [platform.deepseek.com](https://platform.deepseek.com)
+2. Add to `.env`: `DEEPSEEK_API_KEY=your_key`
+
+   Covers `understand --model deepseek-flash` (text/image understanding — **no video**, unlike Kimi/Qwen3.8/GLM). Cheapest frontier-class VLM available; 1M context. See [DeepSeek-V4.1-Flash](../api-reference/deepseek.md).
 
 ### Ternary Bonsai 2 27B (local server, no cloud key)
 

@@ -89,6 +89,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/kimi',
         'api-reference/qwen3.8',
         'api-reference/glm',
+        'api-reference/deepseek',
         'api-reference/hy4',
         'api-reference/qwen-image',
         'api-reference/utils',
