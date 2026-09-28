@@ -24,6 +24,8 @@ Adding a new local or API model? Start with
 | [Wan 2.2](./wan-2.2) | Video Generation | ~12GB+ (TI2V-5B) | Moderate | Local T2V / I2V open weights (Wan 3.0 is API-only) |
 | [Leffa](./leffa) | Virtual Try-On | 12GB+ recommended | ~6s on A100 | Dedicated local VTON (CVPR 2025; MIT code) |
 | [CatVTON](./catvton) | Virtual Try-On | &lt;8GB @ 1024×768 | Moderate | Concatenation VTON (ICLR 2025; **CC BY-NC-SA**) |
+| [DeepSeek-VL2](./deepseek-vl2) | Image/Video Understanding | Single-GPU (tiny) to 40GB+ (small/base) | - | Open DeepSeek-VL2; no first-party hosted API exists. Needs DeepSeek's own `deepseek_vl2` package (not on PyPI) |
+| [DeepSeek-OCR](./deepseek-ocr) | Document/Image OCR | Requires flash-attn + CUDA | - | "Contexts Optical Compression"; care labels, size tags, SKU sheets. No first-party hosted API exists |
 | [Ternary Bonsai 2 27B](./ternary-bonsai) | Image/Text Understanding | 5.9-8.5GB on disk (ternary-quantized) | Fast (CPU/Metal-friendly) | OpenAI-compatible client for PrismML's own llama.cpp/MLX server — no torch needed on the OpenTryOn side |
 
 ## Requirements

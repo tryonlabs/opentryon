@@ -58,7 +58,7 @@ class ModelSpec:
     import_path: str  # dotted submodule path, e.g. "tryon.api.vton.flux_vto"
     class_name: str
     method: str
-    output_kind: str  # "images" | "image_bytes" | "video_bytes" | "text"
+    output_kind: str  # "images" | "image_bytes" | "video_bytes" | "audio_bytes" | "text"
     args: List[Arg] = field(default_factory=list)
     alt_method_on_image: Optional[str] = None
     alt_image_dest: str = "image"
@@ -1399,6 +1399,51 @@ _UNDERSTAND = {
                 help="Disable thinking mode in the chat template"),
         ],
     ),
+    "deepseek-vl2": ModelSpec(
+        id="deepseek-vl2",
+        label="DeepSeek-VL2 (open-weight, local)",
+        import_path="tryon.models.deepseek_vl2", class_name="DeepSeekVL2Adapter",
+        method="understand", output_kind="text", extra="local",
+        notes="No first-party hosted API exists for DeepSeek-VL2 (deepseek-flash/deepseek-v4-pro are "
+        "the only hosted DeepSeek models) -- local is the only path. Default deepseek-ai/deepseek-vl2-tiny "
+        "(single-GPU friendly); pass a heavier variant via DEEPSEEK_VL2_MODEL_ID. Needs DeepSeek's own "
+        "deepseek_vl2 package: pip install \"git+https://github.com/deepseek-ai/DeepSeek-VL2.git\" "
+        "(not part of opentryon[local]).",
+        args=[
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL, requires `pip install decord`)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--num-frames",), "num_frames", type=int, default=8, help="Frames to sample from --video"),
+            Arg(("--max-new-tokens",), "max_new_tokens", type=int, default=512, help="Max output tokens"),
+            Arg(("--do-sample",), "do_sample", action="store_true", help="Enable sampling (default is greedy decoding)"),
+            Arg(("--temperature",), "temperature", type=float, default=0.8, help="Sampling temperature (only with --do-sample)"),
+        ],
+    ),
+    "deepseek-ocr": ModelSpec(
+        id="deepseek-ocr",
+        label="DeepSeek-OCR (open-weight, local document/image OCR)",
+        import_path="tryon.models.deepseek_ocr", class_name="DeepSeekOCRAdapter",
+        method="understand", output_kind="text", extra="local",
+        notes="No first-party hosted API exists for DeepSeek-OCR -- local is the only path. "
+        "'Contexts Optical Compression': reads scans/screenshots/photographed documents "
+        "-- garment care labels, size tags, SKU sheets. Needs flash-attn; DeepSeek's model card pins "
+        "torch==2.6.0/transformers==4.46.3/flash-attn==2.7.3, newer than opentryon[local]'s shared pin "
+        "-- upgrade in a separate env if loading fails. DEEPSEEK_OCR_MODEL_ID overrides the HF id "
+        "(e.g. deepseek-ai/DeepSeek-OCR-2 -- unverified against this adapter's model.infer() call shape).",
+        args=[
+            Arg(("--image", "-i"), "image", required=True, help="Image/document to OCR (path or URL)"),
+            # NOT "--mode": argparse abbreviation-matches it to the reserved --model
+            # flag ("--mode" is a 6-char prefix of "--model") in the probe parser
+            # that resolves --model before this model's own args are registered.
+            Arg(("--ocr-mode",), "mode", default="markdown", choices=["markdown", "free"],
+                help="markdown: document -> markdown (default). free: plain free-form OCR text."),
+            Arg(("--prompt", "-p"), "prompt", help="Raw DeepSeek-OCR prompt; overrides --mode if given"),
+            Arg(("--base-size",), "base_size", type=int, default=1024, help="Base resolution"),
+            Arg(("--image-size",), "image_size", type=int, default=640, help="Processing resolution"),
+            Arg(("--no-crop-mode",), "crop_mode", action="store_false", default=True,
+                help="Disable crop mode (large-image tiling)"),
+        ],
+    ),
     "ternary-bonsai-2-27b": ModelSpec(
         id="ternary-bonsai-2-27b",
         label="Ternary Bonsai 2 27B (PrismML, local llama.cpp/MLX server)",
@@ -2456,6 +2501,74 @@ _BG_REMOVE = {
     ),
 }
 
+_TTS = {
+    "eleven-v4": ModelSpec(
+        id="eleven-v4",
+        label="ElevenLabs Eleven v4 (text-to-speech, expressive)",
+        import_path="tryon.api.elevenlabs", class_name="ElevenLabsAdapter",
+        method="generate_speech", output_kind="audio_bytes", env_hint="ELEVENLABS_API_KEY",
+        notes="Most emotionally rich/expressive TTS model. 90+ languages, 10,000 char limit. "
+        "Default voice is ElevenLabs' premade 'Rachel' (--voice-id to override). "
+        "Real-time/low-latency sibling: --model eleven-v4-turbo.",
+        args=[
+            Arg(("--text", "-t"), "text", required=True, help="Text to speak"),
+            Arg(("--voice-id",), "voice_id", default="21m00Tcm4TlvDq8ikWAM",
+                help="ElevenLabs voice id (default: premade 'Rachel')"),
+            Arg(("--eleven-model",), "eleven_model", target="init", call_name="model",
+                default="eleven_v4", choices=["eleven_v4"], help="ElevenLabs model id"),
+            Arg(("--output-format",), "output_format", default="mp3_44100_128",
+                choices=["mp3_44100_128", "mp3_44100_192", "mp3_44100_96", "mp3_44100_64",
+                         "mp3_44100_32", "mp3_24000_48", "mp3_22050_32",
+                         "wav_44100", "wav_48000", "wav_24000", "wav_16000",
+                         "pcm_44100", "pcm_48000", "pcm_24000", "pcm_16000",
+                         "opus_48000_128", "ulaw_8000", "alaw_8000"],
+                help="Audio codec/sample-rate/bitrate"),
+            Arg(("--language-code",), "language_code", help="ISO 639-1 code to force text normalization"),
+            Arg(("--stability",), "stability", type=float, default=0.5, help="Emotional range (0-1)"),
+            Arg(("--similarity-boost",), "similarity_boost", type=float, default=0.75,
+                help="Adherence to the original voice (0-1)"),
+            Arg(("--style",), "style", type=float, default=0.0, help="Style exaggeration (0-1)"),
+            Arg(("--speed",), "speed", type=float, default=1.0, help="Speech rate multiplier"),
+            Arg(("--no-speaker-boost",), "use_speaker_boost", action="store_false", default=True,
+                help="Disable enhanced speaker similarity"),
+            Arg(("--seed",), "seed", type=int, help="Deterministic sampling seed (0-4294967295)"),
+        ],
+    ),
+    "eleven-v4-turbo": ModelSpec(
+        id="eleven-v4-turbo",
+        label="ElevenLabs Eleven v4 Turbo (text-to-speech, low-latency)",
+        import_path="tryon.api.elevenlabs", class_name="ElevenLabsAdapter",
+        method="generate_speech", output_kind="audio_bytes", env_hint="ELEVENLABS_API_KEY",
+        notes="Real-time-oriented sibling of eleven-v4 (~100ms median latency); adds audio tags "
+        "for delivery control (e.g. '[whispers]', '[laughs]') inside --text. "
+        "Same ELEVENLABS_API_KEY. Most expressive/highest quality: --model eleven-v4.",
+        args=[
+            Arg(("--text", "-t"), "text", required=True,
+                help="Text to speak; supports audio tags like [whispers], [laughs]"),
+            Arg(("--voice-id",), "voice_id", default="21m00Tcm4TlvDq8ikWAM",
+                help="ElevenLabs voice id (default: premade 'Rachel')"),
+            Arg(("--eleven-model",), "eleven_model", target="init", call_name="model",
+                default="eleven_v4_turbo", choices=["eleven_v4_turbo"], help="ElevenLabs model id"),
+            Arg(("--output-format",), "output_format", default="mp3_44100_128",
+                choices=["mp3_44100_128", "mp3_44100_192", "mp3_44100_96", "mp3_44100_64",
+                         "mp3_44100_32", "mp3_24000_48", "mp3_22050_32",
+                         "wav_44100", "wav_48000", "wav_24000", "wav_16000",
+                         "pcm_44100", "pcm_48000", "pcm_24000", "pcm_16000",
+                         "opus_48000_128", "ulaw_8000", "alaw_8000"],
+                help="Audio codec/sample-rate/bitrate"),
+            Arg(("--language-code",), "language_code", help="ISO 639-1 code to force text normalization"),
+            Arg(("--stability",), "stability", type=float, default=0.5, help="Emotional range (0-1)"),
+            Arg(("--similarity-boost",), "similarity_boost", type=float, default=0.75,
+                help="Adherence to the original voice (0-1)"),
+            Arg(("--style",), "style", type=float, default=0.0, help="Style exaggeration (0-1)"),
+            Arg(("--speed",), "speed", type=float, default=1.0, help="Speech rate multiplier"),
+            Arg(("--no-speaker-boost",), "use_speaker_boost", action="store_false", default=True,
+                help="Disable enhanced speaker similarity"),
+            Arg(("--seed",), "seed", type=int, help="Deterministic sampling seed (0-4294967295)"),
+        ],
+    ),
+}
+
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "vton": _VTON,
     "generate": _GENERATE,
@@ -2463,6 +2576,7 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "understand": _UNDERSTAND,
     "video-generate": _VIDEO_GENERATE,
     "bg-remove": _BG_REMOVE,
+    "tts": _TTS,
 }
 
 SERVICE_HELP = {
@@ -2472,6 +2586,7 @@ SERVICE_HELP = {
     "understand": "Image understanding / captioning",
     "video-generate": "Text/image-to-video generation",
     "bg-remove": "Background removal",
+    "tts": "Text-to-speech",
 }
 
 

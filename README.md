@@ -95,6 +95,7 @@ opentryon understand --model kimi-k3 --help    # list that model's flags
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k3`, `kimi-vl`, … |
 | `video-generate` | Text/image-to-video | `veo`, `sora`, `gemini-omni`, … |
 | `bg-remove` | Background removal | `ben2` |
+| `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo` |
 
 Models marked local need `pip install opentryon[local]`. Full table and flags: [Unified CLI](https://tryonlabs.github.io/opentryon/docs/getting-started/cli).
 

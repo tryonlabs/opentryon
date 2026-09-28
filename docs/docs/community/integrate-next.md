@@ -56,7 +56,7 @@ Highest leverage: one NIM provider key unlocks understand + video. Nemotron is *
 | Nemotron 3 Ultra 550B-A55B | Flagship text | Low |
 | Nemotron 3.5 Lightning 30B-A3B | Fast text agents | Low |
 | **Nemotron 3 Nano Omni 30B-A3B** | Image / video / speech / text | **High — Wave 1** |
-| Nemotron Voicechat / ASR / Magpie TTS | Speech | Later (no speech service yet) |
+| Nemotron Voicechat / ASR / Magpie TTS | Speech | `tts` service now exists (ElevenLabs Eleven v4/v4 Turbo shipped 21 Sep 2026) — re-evaluate as an NVIDIA-hosted alternative/local option | `watch` |
 | Llama-Nemotron embed/rerank VL | RAG embeddings | Out of scope |
 
 ---
@@ -180,6 +180,19 @@ NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX V
 | Cosmos 3 + sound | B / vLLM-Omni | T2V/I2V **with** synchronized audio. Not on Generator NIM. | `watch` |
 | Pruna P-Video-Avatar | — | Already shipped (`p-video-avatar`). | shipped |
 
+### Text-to-speech
+
+The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candidates go in this table, not a "new CLI service" note.
+
+| Candidate | Path | Suggested id | Notes | Status |
+|---|---|---|---|---|
+| **ElevenLabs Eleven v4** | A — first-party, synchronous REST | `eleven-v4` | Most expressive TTS; 90+ languages, 10K char limit. `ELEVENLABS_API_KEY`. | shipped |
+| **ElevenLabs Eleven v4 Turbo** | A — first-party, synchronous REST | `eleven-v4-turbo` | ~100ms latency; audio tags (`[whispers]`, `[laughs]`) for delivery control. Same key. | shipped |
+| NVIDIA Magpie TTS / Voicechat | A NIM | — | Re-evaluate as an NVIDIA-hosted alternative or local option now that `tts` exists. | `watch` |
+| Qwen-TTS (DashScope) | A | — | Same `DASHSCOPE_API_KEY` family as Qwen3.8/Wan. Only if a customer asks for a second TTS vendor. | `watch` |
+| OpenAI TTS (`gpt-4o-mini-tts` etc.) | A | — | Same `OPENAI_API_KEY` as GPT Image. Only if asked. | `watch` |
+| Local open-weight TTS (e.g. Kokoro, F5-TTS) | B | — | No local TTS shipped yet; worth a Path B pass if someone wants offline/no-per-request-cost voiceover. | `watch` |
+
 ### Image & video understanding / multimodal
 
 | Candidate | Path | Notes | Status |
@@ -189,8 +202,8 @@ NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX V
 | Muse Glimmer 30B (on NIM) | A | Meta multimodal on NVIDIA’s catalog; we already have first-party Muse Image. Glimmer is understand, not gen. | `watch` |
 | Llama 3.2 11B/90B Vision on NIM | A | Older VLMs; Omni supersedes for new work. | `skip` |
 | **DeepSeek-V4.1-Flash** (`deepseek-flash`) | A — first-party [`api-docs.deepseek.com`](https://api-docs.deepseek.com/quick_start/pricing/), OpenAI-compatible | Cheapest frontier-class VLM available ($0.15/$0.60 per 1M off-peak). Text+image (no video), 1M context, thinking on by default + `reasoning_effort` (`none`/`low`/`high`/`max`). Same shape as `kimi-k2.6`/`qwen3.8-max`/`glm-5.3-flashx`. `DEEPSEEK_API_KEY`. | shipped |
-| DeepSeek-VL2 (`deepseek-vl2`) | B — HF Diffusers/Transformers, distilled MoE VLM | Local counterpart to `deepseek-flash`, same pairing pattern as `qwen3.8-max`/`qwen3.8`. Cheaper to self-host than Kimi-VL/Qwen3.8 local. | `watch` (until Flash ships and someone asks for local) |
-| DeepSeek-OCR (`deepseek-ocr`) | B — HF weights only, no first-party hosted endpoint | "Contexts Optical Compression" — real fashion fit: care labels, size tags, SKU/product-copy sheets. High page throughput on one GPU (vLLM support since Oct 2025). Distinct value from general captioning even though it shares the `understand` service. | `watch` |
+| **DeepSeek-VL2** (`deepseek-vl2`) | B — Transformers + DeepSeek's own `deepseek_vl2` package (not on PyPI). No first-party hosted API exists (confirmed: `deepseek-flash`/`deepseek-v4-pro` are the only hosted models). | Local counterpart to `deepseek-flash`, same pairing pattern as `qwen3.8-max`/`qwen3.8`. Default `deepseek-ai/deepseek-vl2-tiny` (single-GPU friendly). | shipped |
+| **DeepSeek-OCR** (`deepseek-ocr`) | B — HF weights only, no first-party hosted endpoint (confirmed) | "Contexts Optical Compression" — real fashion fit: care labels, size tags, SKU/product-copy sheets. Needs flash-attn; distinct value from general captioning even though it shares the `understand` service. | shipped |
 | DeepSeek-V4-Pro (`deepseek-v4-pro`) | A — first-party, text-only (no image input) | Flagship reasoning (R-series folded into V4) but no vision — doesn't fit `understand`'s media-first contract. Better framed as an alternate `OPENTRYON_AGENT_LLM_PROVIDER` backend for the planner than a registry model, mirroring Nemotron's text-only agents. | `skip` |
 
 ### 3D model generation
@@ -219,13 +232,14 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 6. **SANA-Sprint** if we want a fast local T2I that is not another FLUX/Qwen clone.
 7. Optional: `nemotron-omni-local` if someone will run 30B-A3B.
 8. ~~`deepseek-flash`~~ **shipped** (Path A, `understand`, 21 Sep 2026).
-9. Optional later: `deepseek-vl2` (local pair) and `deepseek-ocr` (label/tag OCR) once someone asks for local DeepSeek.
+9. ~~`deepseek-vl2` / `deepseek-ocr`~~ **shipped** (Path B local, 21 Sep 2026). Both confirmed no first-party hosted API exists for either.
+10. ~~`eleven-v4` / `eleven-v4-turbo`~~ **shipped** (Path A, new `tts` service, 28 Sep 2026). First non-media-generation registry category — new `output_kind="audio_bytes"` in `tryon/cli/runner.py`. No dedicated Studio capability screen yet (tracked separately).
 
 ---
 
 ## Shipped (do not re-add)
 
-Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image (1.5 + ChatGPT Images 2.5 Flare/Sunburst), Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3 / H3 Max, **Fal H3 Max** (+ **Fal H3 Max Lip Sync**, `fal-h3-max-lipsync`), Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8 (+ **Qwen3.8-Omni-Flash**, `qwen3.8-omni-flash`), **Hy4 preview** (`hy4-preview` TokenHub + `hy4-preview-local` vLLM/SGLang), **GLM-5.3-FlashX** (`glm-5.3-flashx`, Zhipu/Z.ai — new `tryon.api.zai`), **Ternary Bonsai 2 27B** (`ternary-bonsai-2-27b`, PrismML local server — new `tryon.models.ternary_bonsai`), **P-Video-2-Pro** (`p-video-2-pro`, Pruna MiniMax H3-based), **DeepSeek-V4.1-Flash** (`deepseek-flash`, new `tryon.api.deepseek`), BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
+Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), Nano Banana family, GPT Image (1.5 + ChatGPT Images 2.5 Flare/Sunburst), Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo, Sora, LTX-2.5, Hailuo 2.3, MiniMax H3 / H3 Max, **Fal H3 Max** (+ **Fal H3 Max Lip Sync**, `fal-h3-max-lipsync`), Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator**, Kimi K2.6/K2.7/K3, Qwen3.8 (+ **Qwen3.8-Omni-Flash**, `qwen3.8-omni-flash`), **Hy4 preview** (`hy4-preview` TokenHub + `hy4-preview-local` vLLM/SGLang), **GLM-5.3-FlashX** (`glm-5.3-flashx`, Zhipu/Z.ai — new `tryon.api.zai`), **Ternary Bonsai 2 27B** (`ternary-bonsai-2-27b`, PrismML local server — new `tryon.models.ternary_bonsai`), **P-Video-2-Pro** (`p-video-2-pro`, Pruna MiniMax H3-based), **DeepSeek-V4.1-Flash** (`deepseek-flash`, new `tryon.api.deepseek`), **DeepSeek-VL2** (`deepseek-vl2`, local — new `tryon.models.deepseek_vl2`), **DeepSeek-OCR** (`deepseek-ocr`, local — new `tryon.models.deepseek_ocr`), **ElevenLabs Eleven v4 / Eleven v4 Turbo** (`eleven-v4` / `eleven-v4-turbo`, new `tts` service + `tryon.api.elevenlabs`), BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
 
 ---
 

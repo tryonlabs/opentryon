@@ -17,6 +17,7 @@ Intent = Literal[
     "video",
     "understand",
     "bg_remove",
+    "tts",
     "multi_step",
     "clarify",
     "help",
@@ -32,6 +33,7 @@ INTENTS = (
     "video",
     "understand",
     "bg_remove",
+    "tts",
     "multi_step",
     "clarify",
     "help",
@@ -47,6 +49,7 @@ ACTION_INTENTS = (
     "video",
     "understand",
     "bg_remove",
+    "tts",
     "multi_step",
 )
 
@@ -95,6 +98,8 @@ def parse_plan_json(text: str) -> Plan:
         intent = "edit"
     if intent in ("bg-remove", "background", "background_remove", "bgremove"):
         intent = "bg_remove"
+    if intent in ("text_to_speech", "text-to-speech", "speech", "voiceover", "voice_over", "narration"):
+        intent = "tts"
     if intent in ("multistep", "multi-step", "chain"):
         intent = "multi_step"
     if intent not in INTENTS:

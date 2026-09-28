@@ -40,7 +40,7 @@ the matching use-case directory (`tryon/api/vton/`, and analogously
 `tryon/api/generate/`, `tryon/api/edit/`, etc. if/when those are needed) --
 the same small, fixed set of directories the CLI/MCP registry already
 organizes by (`vton`, `generate`, `edit`, `understand`, `video-generate`,
-`bg-remove`). A vendor whose model is already represented in one of these
+`bg-remove`, `tts`). A vendor whose model is already represented in one of these
 directories, or that ships multiple adapter classes/files, still gets its
 own `tryon/api/<provider>/` package as before.
 
@@ -135,15 +135,15 @@ __all__ = ["YourAdapter"]
 ## 7. Wire it into the `opentryon` CLI
 
 Add a `ModelSpec` entry to the right service dict in `tryon/cli/registry.py`
-(`vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`, or
-a new service if it's a genuinely new category):
+(`vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`,
+`tts`, or a new service if it's a genuinely new category):
 
 ```python
 "your-model": ModelSpec(
     id="your-model", label="Human-readable name",
     import_path="tryon.api.your_provider", class_name="YourAdapter",
     method="generate_text_to_image",  # or whatever public method to call
-    output_kind="images",  # "images" | "image_bytes" | "video_bytes" | "text"
+    output_kind="images",  # "images" | "image_bytes" | "video_bytes" | "audio_bytes" | "text"
     env_hint="YOUR_API_KEY",       # omit for local models
     extra="local",                 # only for GPU/local models
     args=[

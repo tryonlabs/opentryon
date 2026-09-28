@@ -30,7 +30,8 @@ FALLBACK_HELP = (
     "- **Model swap** — attach an outfit photo and describe the new model\n"
     "- **Video** — text or first-frame to video\n"
     "- **Understand** — ask about an image or a video URL\n"
-    "- **Background remove** — attach a product or model photo\n\n"
+    "- **Background remove** — attach a product or model photo\n"
+    "- **Text-to-speech** — give me a line and I'll read it as a voiceover\n\n"
     "Say what you want, and attach files when the task needs them. "
     "API keys stay in `opentryon/.env`, not in this chat."
 )
@@ -56,13 +57,13 @@ def capabilities_brief(*, models_per_service: int = 40) -> str:
         "The planner is a super agent over the live registry "
         "(same tools as MCP model tools, filtered by intent). Recipes: "
         "vton (person + garment), model_swap (outfit photo + new-person text), "
-        "generate / edit / video / understand / bg-remove. "
+        "generate / edit / video / understand / bg-remove / tts (text -> voiceover audio, no file needed). "
         "If the user names a model, use that id only. Otherwise use the "
         "capability default.",
         "",
         "Capability defaults (unnamed): "
         "vton → kling-ai; generate/edit/fashion → nano-banana-pro; "
-        "video → sora; understand → kimi-k2.6; bg-remove → ben2.",
+        "video → sora; understand → kimi-k2.6; bg-remove → ben2; tts → eleven-v4.",
         "",
         "Live registry (service → models):",
     ]

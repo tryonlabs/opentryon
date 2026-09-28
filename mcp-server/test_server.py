@@ -134,6 +134,8 @@ async def check_dry_run_calls() -> None:
         ("understand_qwen3_8_omni_flash", {"audio": "line.wav", "prompt": "what is said?", "dry_run": True}, False),
         ("understand_glm_5_3_flashx", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, False),
         ("understand_deepseek_flash", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, False),
+        ("understand_deepseek_vl2", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, True),
+        ("understand_deepseek_ocr", {"image": "p.jpg", "dry_run": True}, True),
         ("understand_ternary_bonsai_2_27b", {"prompt": "hi", "dry_run": True}, False),
         ("video_generate_cosmos3", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3_local", {"prompt": "runway walk", "dry_run": True}, True),
@@ -147,6 +149,8 @@ async def check_dry_run_calls() -> None:
         ("generate_ideogram", {"prompt": "poster type", "dry_run": True}, False),
         ("generate_grok_imagine_image", {"prompt": "product shot", "dry_run": True}, False),
         ("bg_remove_ben2", {"image": "i.jpg", "dry_run": True}, True),
+        ("tts_eleven_v4", {"text": "Welcome to the spring collection.", "dry_run": True}, False),
+        ("tts_eleven_v4_turbo", {"text": "[whispers] Hello.", "dry_run": True}, False),
     ]
     checked = 0
     for name, args, needs_local in cases:

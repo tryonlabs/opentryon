@@ -173,6 +173,13 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Unlocks understand deepseek-flash (text/image, no video). Cheapest frontier-class VLM available.",
     ),
     (
+        "elevenlabs",
+        "ElevenLabs",
+        "https://elevenlabs.io/app/settings/api-keys",
+        ("ELEVENLABS_API_KEY",),
+        "Unlocks tts eleven-v4 / eleven-v4-turbo (text-to-speech). OpenTryOn's first tts service model.",
+    ),
+    (
         "aws",
         "Amazon Bedrock",
         "https://console.aws.amazon.com/bedrock/",

@@ -24,6 +24,7 @@ INTENT_SERVICES: Dict[str, Tuple[str, ...]] = {
     "video": ("video-generate",),
     "understand": ("understand",),
     "bg_remove": ("bg-remove",),
+    "tts": ("tts",),
     "multi_step": (
         "bg-remove",
         "vton",
@@ -31,6 +32,7 @@ INTENT_SERVICES: Dict[str, Tuple[str, ...]] = {
         "edit",
         "video-generate",
         "understand",
+        "tts",
     ),
 }
 
@@ -45,6 +47,7 @@ DEFAULT_MODEL: Dict[str, Tuple[str, str]] = {
     "video": ("video-generate", "sora"),
     "understand": ("understand", "kimi-k2.6"),
     "bg_remove": ("bg-remove", "ben2"),
+    "tts": ("tts", "eleven-v4"),
     "multi_step": ("generate", "nano-banana-pro"),
 }
 
@@ -197,6 +200,11 @@ _ALIASES: Tuple[Tuple[str, str, Optional[str]], ...] = (
     ("deepseek flash", "deepseek-flash", "understand"),
     ("deepseek v4.1 flash", "deepseek-flash", "understand"),
     ("deepseek v4 flash", "deepseek-flash", "understand"),
+    ("deepseek-vl2", "deepseek-vl2", "understand"),
+    ("deepseek vl2", "deepseek-vl2", "understand"),
+    ("deepseek vl 2", "deepseek-vl2", "understand"),
+    ("deepseek-ocr", "deepseek-ocr", "understand"),
+    ("deepseek ocr", "deepseek-ocr", "understand"),
     ("deepseek", "deepseek-flash", "understand"),
     ("ternary-bonsai-2-27b", "ternary-bonsai-2-27b", "understand"),
     ("ternary bonsai 2 27b", "ternary-bonsai-2-27b", "understand"),
@@ -210,6 +218,14 @@ _ALIASES: Tuple[Tuple[str, str, Optional[str]], ...] = (
     ("kimi k3", "kimi-k3", "understand"),
     ("ben2", "ben2", "bg-remove"),
     ("kimi", "kimi-k2.6", "understand"),
+    ("eleven-v4-turbo", "eleven-v4-turbo", "tts"),
+    ("eleven v4 turbo", "eleven-v4-turbo", "tts"),
+    ("elevenlabs v4 turbo", "eleven-v4-turbo", "tts"),
+    ("eleven-v4", "eleven-v4", "tts"),
+    ("eleven v4", "eleven-v4", "tts"),
+    ("elevenlabs v4", "eleven-v4", "tts"),
+    ("elevenlabs", "eleven-v4", "tts"),
+    ("eleven labs", "eleven-v4", "tts"),
 )
 
 

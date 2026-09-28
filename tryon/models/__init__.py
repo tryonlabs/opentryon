@@ -12,6 +12,10 @@ Available Models:
       understanding), the local counterpart to the Kimi K2.6/K2.7 Code APIs
     - Qwen38Adapter: Qwen3.8-27B open-weight multimodal understanding,
       the local counterpart to the hosted qwen3.8-max DashScope API
+    - DeepSeekVL2Adapter: DeepSeek-VL2 open-weight multimodal understanding
+      (image/video). No first-party hosted API exists for this model.
+    - DeepSeekOCRAdapter: DeepSeek-OCR open-weight document/image OCR
+      ("Contexts Optical Compression"). No first-party hosted API exists.
     - QwenImageLocalAdapter: Qwen-Image-2512 T2I + Qwen-Image-Edit-2511
       I2I/VTON, the local counterpart to the hosted qwen-image DashScope API
     - LeffaAdapter: CVPR 2025 dedicated local VTON (VITON-HD / DressCode)
@@ -52,6 +56,8 @@ Requirements:
 """
 
 from .catvton import CatVTONAdapter
+from .deepseek_ocr import DeepSeekOCRAdapter
+from .deepseek_vl2 import DeepSeekVL2Adapter
 from .flux2_turbo import Flux2TurboAdapter
 from .kimi_vl import KimiVLAdapter
 from .leffa import LeffaAdapter
@@ -64,6 +70,8 @@ from .wan22 import Wan22Adapter
 
 __all__ = [
     "CatVTONAdapter",
+    "DeepSeekOCRAdapter",
+    "DeepSeekVL2Adapter",
     "Flux2TurboAdapter",
     "KimiVLAdapter",
     "LeffaAdapter",

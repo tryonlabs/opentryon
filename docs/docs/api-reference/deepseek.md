@@ -27,6 +27,12 @@ for describing garments and outfits in the fashion domain, but equally
 capable on documents, UI screenshots, product photography, or any other
 image content.
 
+For open-weight DeepSeek models that run on your own GPU instead of this
+hosted API — DeepSeek has no first-party hosted endpoint for them — see
+[DeepSeek-VL2](../local-models/deepseek-vl2.md) (general multimodal
+understanding) and [DeepSeek-OCR](../local-models/deepseek-ocr.md)
+(document/label OCR).
+
 Unlike those three, **DeepSeek's API does not accept video input** — images
 only.
 

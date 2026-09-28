@@ -105,8 +105,9 @@ Full placement rules: [new-model checklist §1](./new-model-checklist.md).
   | `understand` | `understand` / `understand_image` / `understand_video` |
   | `video-generate` | `generate_text_to_video`, `generate_image_to_video` |
   | `bg-remove` | `remove_background` |
+  | `tts` | `generate_speech` |
 
-- Returns: images → `List[Image.Image]` (or bytes if needed); video → raw `bytes`; understand → `dict`.
+- Returns: images → `List[Image.Image]` (or bytes if needed); video → raw `bytes`; audio → raw `bytes`; understand → `dict`.
 - Module docstring: summary, official docs link, model ids, 1–2 examples.
 
 ### 3.3 Async job pattern (video / long gen)
@@ -250,8 +251,9 @@ In-process CLI adapters are enough for OpenTryOn. For Playground / tryon-server:
 | Caption / VLM / LLM | `understand` | `text` |
 | Text/image → video | `video-generate` | `video_bytes` |
 | Background remove | `bg-remove` | `images` |
+| Text-to-speech | `tts` | `audio_bytes` |
 
-New category only if none of the above fit — adding a service is a product decision, not a drive-by.
+New category only if none of the above fit — adding a service is a product decision, not a drive-by. `tts` (ElevenLabs Eleven v4 / v4 Turbo, 21 Sep 2026) was the first new category added after v0.0.5; see `tryon/cli/runner.py` `_package_result`/`_save_audio` for the `audio_bytes` handling it introduced (extension sniffed from magic bytes, not from the requested `output_format`).
 
 ---
 

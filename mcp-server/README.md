@@ -122,7 +122,7 @@ Studio Connect and other MCP clients can inspect and upsert keys **on this machi
 
 - All of the model's own parameters (mirrors `opentryon <service> --model <model> --help` exactly), with the same required/optional-ness, defaults, and choice/enum constraints as the CLI.
 - **`dry_run`** (bool, default `false`) -- preview the resolved adapter call (`ClassName(**init_kwargs).method(**call_kwargs)`) without hitting any API, GPU, or network.
-- **`output_dir`** (str, default `"outputs"`) -- where to save any resulting images/video/JSON.
+- **`output_dir`** (str, default `"outputs"`) -- where to save any resulting images/video/audio/JSON.
 
 Every tool returns a structured dict: `{"success": true/false, ...}` -- never raises, so an LLM caller always gets a clean result to reason about instead of a stack trace.
 
@@ -208,6 +208,8 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_qwen3_8` | Qwen3.8-27B (open-weight, local) | local/GPU | Dense open multimodal (`Qwen/Qwen3.8-27B`); thinking toggle; frame-sampled video |
 | `understand_glm_5_3_flashx` | GLM-5.3-FlashX (Zhipu / Z.ai) | `ZAI_API_KEY` | Native text/image/video; thinking always on; `reasoning_effort` (`low`/`high`/`max`); 200 tok/s serving tier |
 | `understand_deepseek_flash` | DeepSeek-V4.1-Flash | `DEEPSEEK_API_KEY` | Native text/image only (**no video**); thinking on by default; `reasoning_effort` (`none`/`low`/`high`/`max`, `none` disables thinking); cheapest frontier-class VLM available |
+| `understand_deepseek_vl2` | DeepSeek-VL2 (open-weight, local) | local/GPU + `deepseek_vl2` package | No first-party hosted API exists. Default `deepseek-ai/deepseek-vl2-tiny`; image + frame-sampled video |
+| `understand_deepseek_ocr` | DeepSeek-OCR (open-weight, local) | local/GPU + `flash-attn` | No first-party hosted API exists. Document/label OCR -> markdown or free text; care labels, size tags, SKU sheets |
 | `understand_ternary_bonsai_2_27b` | Ternary Bonsai 2 27B (PrismML) | local server | OpenAI-compatible client for a self-hosted llama.cpp/MLX server (`BONSAI_BASE_URL`); not in-process GPU |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
@@ -273,6 +275,17 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | Tool | Model | Requires |
 |---|---|---|
 | `bg_remove_ben2` | BEN2 background remover (local) | local/GPU |
+
+### tts -- Text-to-speech
+
+First-party ElevenLabs API, `ELEVENLABS_API_KEY`. OpenTryOn's first `tts` service (synchronous -- audio bytes come back directly, no job/poll cycle).
+
+| Tool | Model | Requires |
+|---|---|---|
+| `tts_eleven_v4` | ElevenLabs Eleven v4 (most expressive; 90+ languages, 10K char limit) | `ELEVENLABS_API_KEY` |
+| `tts_eleven_v4_turbo` | ElevenLabs Eleven v4 Turbo (~100ms latency; audio tags e.g. `[whispers]`) | `ELEVENLABS_API_KEY` |
+
+See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenlabs.md).
 
 Run `list_opentryon_tools()` at any time for the live, authoritative version of this table (including per-model parameter docs) plus real-time configuration status.
 
