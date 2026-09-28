@@ -9,12 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🔊 Text-to-Speech — ElevenLabs Eleven v4 / Eleven v4 Turbo (new `tts` service)
+- **New `tts` service** in the CLI/MCP registry — OpenTryOn's first non-media-generation category (previously vton / generate / edit / understand / video-generate / bg-remove only). New `output_kind="audio_bytes"` in `tryon/cli/runner.py` (`_save_audio`, `_sniff_audio_extension`): output file extension is sniffed from the actual audio bytes' magic number, not the requested `--output-format`, so it's correct even for mp3/wav/opus interchangeably; headerless formats (raw PCM, µ-law, A-law) fall back to `.raw`
+- **Eleven v4** (`ElevenLabsAdapter` / CLI `--model eleven-v4`) and **Eleven v4 Turbo** (`--model eleven-v4-turbo`): new first-party provider, `tryon.api.elevenlabs`
+  - ElevenLabs synchronous REST API, `ELEVENLABS_API_KEY`. Text → speech audio; 90+ languages; default voice ElevenLabs' premade "Rachel" (`--voice-id` to override)
+  - v4: most expressive, 10,000 char limit. v4 Turbo: ~100ms latency, adds audio tags (`[whispers]`, `[laughs]`) for delivery control
+  - MCP tools `tts_eleven_v4`, `tts_eleven_v4_turbo`
+  - Full planner/chat wiring: new `tts` intent in `tryon/agents/planner/plan.py` + `agent.py` classifier prompt + `bind.py` (capability default `eleven-v4`), so Studio chat can dispatch "say this out loud" style requests, same as every other service
+  - Voiceover pairs naturally with `p-video-avatar`'s `--audio` input for a talking-head clip in a specific voice
+  - No dedicated Studio capability screen yet (those are currently Image / VTON / Understand / Video / BG Remove) — tools are live via Agent chat / MCP as soon as the server restarts; a Studio screen is a separate `tryon-studio`-side follow-up
+  - Docs: `docs/docs/api-reference/elevenlabs.md` (new page)
+
 #### 🧠 Understanding — DeepSeek-V4.1-Flash
 - **DeepSeek-V4.1-Flash** (`DeepSeekUnderstandAdapter` / CLI `--model deepseek-flash`): new first-party provider, `tryon.api.deepseek`
   - DeepSeek Platform OpenAI-compatible API, `DEEPSEEK_API_KEY`. Text/image → text (**no video**), 1M context, cheapest frontier-class VLM available
   - Thinking on by default; `--reasoning-effort none/low/high/max` (`none` disables thinking)
   - MCP tool `understand_deepseek_flash`
   - Docs: `docs/docs/api-reference/deepseek.md` (new page)
+
+#### 🧠 Understanding — DeepSeek-VL2 / DeepSeek-OCR (local, open-weight)
+- **DeepSeek-VL2** (`DeepSeekVL2Adapter` / CLI `--model deepseek-vl2`): new local model, `tryon.models.deepseek_vl2`
+  - No first-party hosted API exists for this model. Default `deepseek-ai/deepseek-vl2-tiny` (single-GPU friendly); `DEEPSEEK_VL2_MODEL_ID` overrides
+  - Needs DeepSeek's own `deepseek_vl2` package (not on PyPI, not part of `opentryon[local]`): `pip install "git+https://github.com/deepseek-ai/DeepSeek-VL2.git"`
+  - Image + frame-sampled video (no official video recipe, same fallback as Kimi-VL/Qwen3.8 local)
+  - MCP tool `understand_deepseek_vl2`
+  - Docs: `docs/docs/local-models/deepseek-vl2.md` (new page)
+- **DeepSeek-OCR** (`DeepSeekOCRAdapter` / CLI `--model deepseek-ocr`): new local model, `tryon.models.deepseek_ocr`
+  - No first-party hosted API exists for this model. "Contexts Optical Compression" — care labels, size tags, SKU/product-copy sheets
+  - Default `deepseek-ai/DeepSeek-OCR`; `DEEPSEEK_OCR_MODEL_ID` overrides. Needs `flash-attn`; model card pins newer torch/transformers than this repo's shared `opentryon[local]` pin
+  - `--ocr-mode markdown|free` (not `--mode` — that name abbreviation-collides with the CLI's own `--model` selector)
+  - MCP tool `understand_deepseek_ocr`
+  - Docs: `docs/docs/local-models/deepseek-ocr.md` (new page)
 
 #### 🎬 Video — Pruna P-Video-2-Pro
 - **P-Video-2-Pro** (`PVideo2ProAdapter` / CLI `--model p-video-2-pro`): Pruna's fast MiniMax H3-based endpoint (launched 17 Sep 2026)

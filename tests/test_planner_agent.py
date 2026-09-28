@@ -339,10 +339,40 @@ def check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin():
     assert bonsai is not None and bonsai.model == "ternary-bonsai-2-27b"
     deepseek = match_named_model("use deepseek flash", understand)
     assert deepseek is not None and deepseek.model == "deepseek-flash"
+    vl2 = match_named_model("use deepseek vl2 to caption this", understand)
+    assert vl2 is not None and vl2.model == "deepseek-vl2"
+    ocr = match_named_model("use deepseek ocr on this label", understand)
+    assert ocr is not None and ocr.model == "deepseek-ocr"
+    # Bare "deepseek" (no more specific match) still falls back to deepseek-flash.
+    bare = match_named_model("just use deepseek for this", understand)
+    assert bare is not None and bare.model == "deepseek-flash"
     print(
         "\u2713 named-model chat pins qwen3.8-omni-flash / glm-5.3-flashx / "
-        "deepseek-flash / ternary-bonsai-2-27b"
+        "deepseek-flash / deepseek-vl2 / deepseek-ocr / ternary-bonsai-2-27b"
     )
+
+
+def check_named_model_tts_dry_run():
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="tts", task=kwargs["prompt"])
+    )
+    result = agent.run("Say welcome to the spring collection", dry_run=True)
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["service"] == "tts"
+    assert result["model"] == "eleven-v4"
+    assert "ElevenLabsAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    tts = slice_for_intent("tts")
+    turbo = match_named_model("use eleven-v4-turbo to say this", tts)
+    assert turbo is not None and turbo.model == "eleven-v4-turbo"
+    v4 = match_named_model("use eleven-v4 please", tts)
+    assert v4 is not None and v4.model == "eleven-v4"
+    labs = match_named_model("use elevenlabs for the voiceover", tts)
+    assert labs is not None and labs.model == "eleven-v4"
+    print("\u2713 named-model chat dry-runs tts eleven-v4 and pins eleven-v4-turbo")
 
 
 def check_named_model_question_is_help():
@@ -517,6 +547,7 @@ def check_required_inputs():
     assert required_inputs("understand") == ("image",)
     assert required_inputs("fashion") == ()
     assert required_inputs("video") == ()
+    assert required_inputs("tts") == ()
     assert required_inputs("help") == ()
     print("\u2713 required_inputs per intent")
 
@@ -831,6 +862,7 @@ def main():
     check_named_model_fal_h3_max_lipsync_pin()
     check_named_model_p_video_2_pro_pin()
     check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin()
+    check_named_model_tts_dry_run()
     check_named_model_question_is_help()
     check_named_model_gpt_image_25_dry_run()
     check_out_of_scope_does_not_delegate()

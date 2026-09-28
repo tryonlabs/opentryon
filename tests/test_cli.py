@@ -833,6 +833,126 @@ def check_new_model_integrations_dry_runs():
     )
 
 
+def check_deepseek_local_dry_runs():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "deepseek-vl2",
+            "--image", "data/model-1.jpg", "--prompt", "Describe the outfit", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "DeepSeekVL2Adapter" in printed and "'do_sample': False" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "deepseek-vl2",
+            "--video", "data/clip.mp4", "--prompt", "Summarize", "--num-frames", "4", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "'video': 'data/clip.mp4'" in printed and "'num_frames': 4" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "deepseek-ocr",
+            "--image", "data/model-1.jpg", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "DeepSeekOCRAdapter" in printed and "'mode': 'markdown'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "deepseek-ocr",
+            "--image", "data/model-1.jpg", "--ocr-mode", "free", "--no-crop-mode", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "'mode': 'free'" in printed and "'crop_mode': False" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["understand", "--model", "deepseek-ocr", "--dry-run"])
+    assert code != 0, "expected deepseek-ocr to require --image"
+
+    print(
+        "\u2713 understand deepseek-vl2 (image/video) / deepseek-ocr (--ocr-mode, "
+        "not --mode) --dry-run resolve the expected calls"
+    )
+
+
+def check_elevenlabs_requires_text_and_valid_choices():
+    from tryon.api.elevenlabs import ElevenLabsAdapter
+
+    adapter = ElevenLabsAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.generate_speech("")
+    except ValueError as e:
+        assert "text" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for empty text")
+    try:
+        adapter.generate_speech("hi", voice_id="")
+    except ValueError as e:
+        assert "voice_id" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for empty voice_id")
+    try:
+        adapter.generate_speech("hi", model="eleven_v5")
+    except ValueError as e:
+        assert "model" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for an unsupported model")
+    try:
+        adapter.generate_speech("hi", output_format="mp3_9999")
+    except ValueError as e:
+        assert "output_format" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for an invalid output_format")
+    print("\u2713 ElevenLabsAdapter rejects empty text/voice_id and invalid model/output_format")
+
+
+def check_audio_extension_sniffing():
+    from tryon.cli.runner import _sniff_audio_extension
+
+    assert _sniff_audio_extension(b"ID3" + b"\x00" * 10) == ".mp3"
+    assert _sniff_audio_extension(b"\xff\xfb" + b"\x00" * 10) == ".mp3"
+    assert _sniff_audio_extension(b"RIFF\x00\x00\x00\x00WAVEfmt ") == ".wav"
+    assert _sniff_audio_extension(b"OggS" + b"\x00" * 10) == ".opus"
+    assert _sniff_audio_extension(b"\x00" * 20) == ".raw"
+    print("\u2713 _sniff_audio_extension detects mp3/wav/opus, falls back to .raw for headerless PCM")
+
+
+def check_tts_dry_runs():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "tts", "--model", "eleven-v4",
+            "--text", "Welcome to the spring collection.", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "ElevenLabsAdapter" in printed and "'model': 'eleven_v4'" in printed, printed
+    assert "'voice_id': '21m00Tcm4TlvDq8ikWAM'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "tts", "--model", "eleven-v4-turbo",
+            "--text", "[whispers] Hello.", "--output-format", "wav_44100",
+            "--voice-id", "custom-voice-id", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "'model': 'eleven_v4_turbo'" in printed and "'output_format': 'wav_44100'" in printed, printed
+    assert "'voice_id': 'custom-voice-id'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["tts", "--model", "eleven-v4", "--dry-run"])
+    assert code != 0, "expected eleven-v4 to require --text"
+
+    print("\u2713 tts eleven-v4 / eleven-v4-turbo --dry-run resolve the expected calls")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -1055,6 +1175,10 @@ if __name__ == "__main__":
     check_deepseek_flash_requires_image()
     check_ternary_bonsai_reports_connection_errors_clearly()
     check_new_model_integrations_dry_runs()
+    check_deepseek_local_dry_runs()
+    check_elevenlabs_requires_text_and_valid_choices()
+    check_audio_extension_sniffing()
+    check_tts_dry_runs()
     check_muse_image_requires_prompt()
     check_kimi_k26_real_call()
     print("\nAll CLI checks passed.")

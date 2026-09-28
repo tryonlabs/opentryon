@@ -40,8 +40,9 @@ Each capability has a **default model**. The planner uses that default unless th
 | Image understanding | `understand` | `understand` / `kimi-k2.6` |
 | Video generation | `video` | `video-generate` / `sora` |
 | Background remove | `bg_remove` | `bg-remove` / `ben2` |
+| Text-to-speech | `tts` | `tts` / `eleven-v4` |
 
-- **User named a model** (for example `wan-3.0`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `leffa`, `catvton`, `flux2-pro`, `p-image-ideogram`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `nemotron-omni`, `cosmos3`, `seedance`, `hy4-preview`, `minimax-h3-max`, `fal-h3-max`) → that registry id **only**, even if it lives in another capability. An unknown name is **not** replaced by the default; the planner asks you to pick a real id. `p-image-ideogram` pins Pruna’s model; a bare `ideogram` still pins Ideogram 4.0. `cosmos3-reasoner` pins the VLM, not the Generator. `google-vton` / `virtual-try-on-001` pin Vertex dedicated try-on, not Nano Banana. `aitryon-plus` / `outfitanyone-plus` pin OutfitAnyone-Plus, not Qwen-Image. `photoroom virtual model` pins catalog on-model; a bare `photoroom` pins shopper try-on. `leffa` / `catvton` pin local dedicated VTON (GPU extra). `seedance` / `seedance 2.5` pin BytePlus ModelArk video. `chatgpt images 2.5` / `gpt-image-2.5` / `gpt-image-2.5-flare` pin Flare; `gpt-image-2.5-sunburst` pins Sunburst; a bare `gpt-image` stays on GPT-Image-1.5. `hy4-preview-local` / `hy4 local` pin the vLLM twin; a bare `hy4` / `hy4-preview` pins TokenHub. `h3 max` / `minimax-h3-max` pin first-party MiniMax H3 Max, not H3. `fal h3 max` / `fal-h3-max` pin the Fal hoster (R2V).
+- **User named a model** (for example `wan-3.0`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `leffa`, `catvton`, `flux2-pro`, `p-image-ideogram`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `nemotron-omni`, `cosmos3`, `seedance`, `hy4-preview`, `minimax-h3-max`, `fal-h3-max`, `eleven-v4-turbo`) → that registry id **only**, even if it lives in another capability. An unknown name is **not** replaced by the default; the planner asks you to pick a real id. `p-image-ideogram` pins Pruna’s model; a bare `ideogram` still pins Ideogram 4.0. `cosmos3-reasoner` pins the VLM, not the Generator. `google-vton` / `virtual-try-on-001` pin Vertex dedicated try-on, not Nano Banana. `aitryon-plus` / `outfitanyone-plus` pin OutfitAnyone-Plus, not Qwen-Image. `photoroom virtual model` pins catalog on-model; a bare `photoroom` pins shopper try-on. `leffa` / `catvton` pin local dedicated VTON (GPU extra). `seedance` / `seedance 2.5` pin BytePlus ModelArk video. `chatgpt images 2.5` / `gpt-image-2.5` / `gpt-image-2.5-flare` pin Flare; `gpt-image-2.5-sunburst` pins Sunburst; a bare `gpt-image` stays on GPT-Image-1.5. `hy4-preview-local` / `hy4 local` pin the vLLM twin; a bare `hy4` / `hy4-preview` pins TokenHub. `h3 max` / `minimax-h3-max` pin first-party MiniMax H3 Max, not H3. `fal h3 max` / `fal-h3-max` pin the Fal hoster (R2V).
 - **No model named** → the default in the table.
 - The classifier must leave `model` empty unless the user named one. A leaked default in `plan.model` is ignored unless that id also appears in the prompt.
 
@@ -56,12 +57,15 @@ The planner can use **any** registry tool for a turn (named models search the fu
 | `video` | text, optional first frame | `invoke_model` |
 | `understand` | image or video URL | `invoke_model` |
 | `bg_remove` | image | `invoke_model` |
+| `tts` | text (no file needed) | `invoke_model` |
 | `multi_step` | two or more tools (e.g. BG then try-on) | one `invoke_model` today |
 | `help` | greetings, how-to, “what is \<model\>?”, or an unsupported ask (e.g. 3D world) | catalog answer (named models use registry `label` / `notes`); no `invoke_model` |
 | `clarify` | missing files | planner asks for the photo(s), not “missing inputs” |
 | `out_of_scope` | unrelated | planner declines |
 
 `FashionAgent`, `VTOnAgent`, and `ModelSwapAgent` remain as thin Python facades over the same recipes for example scripts. Prefer `PlannerAgent` for new code.
+
+`tts` is chat-only for now — Studio's capability screens are still Image / VTON / Understand / Video / BG Remove, with no dedicated TTS picker. Chat (`planner_agent`) and any other MCP client can call `tts_eleven_v4` / `tts_eleven_v4_turbo` today; a Studio screen would be a separate `tryon-studio`-side addition.
 
 ## Environment
 

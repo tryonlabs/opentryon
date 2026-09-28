@@ -171,6 +171,17 @@ def _package_result(spec: ModelSpec, result: Any, output_dir: Path, prefix: str)
             "downloaded": True,
         }
 
+    if spec.output_kind == "audio_bytes":
+        path = _save_audio(result, output_dir, prefix)
+        encoded = base64.b64encode(path.read_bytes()).decode("utf-8")
+        return {
+            "output_kind": "audio_bytes",
+            "output_path": str(path),
+            "output_paths": [str(path)],
+            # Same remote-render contract as `images_base64`/`video_base64`.
+            "audio_base64": encoded,
+        }
+
     if spec.output_kind == "text":
         output_dir.mkdir(parents=True, exist_ok=True)
         path = output_dir / f"{prefix}.json"
@@ -205,6 +216,27 @@ def _save_video(video_bytes: bytes, output_dir: Path, prefix: str) -> Path:
     path = output_dir / f"{prefix}.mp4"
     with open(path, "wb") as f:
         f.write(video_bytes)
+    return path
+
+
+def _sniff_audio_extension(audio_bytes: bytes) -> str:
+    """Best-effort extension from magic bytes. Headerless formats (raw PCM,
+    u-law, A-law) have no signature and fall back to `.raw`."""
+    head = audio_bytes[:12]
+    if head[:3] == b"ID3" or head[:2] in (b"\xff\xfb", b"\xff\xf3", b"\xff\xf2", b"\xff\xe3"):
+        return ".mp3"
+    if head[:4] == b"RIFF" and head[8:12] == b"WAVE":
+        return ".wav"
+    if head[:4] == b"OggS":
+        return ".opus"
+    return ".raw"
+
+
+def _save_audio(audio_bytes: bytes, output_dir: Path, prefix: str) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{prefix}{_sniff_audio_extension(audio_bytes)}"
+    with open(path, "wb") as f:
+        f.write(audio_bytes)
     return path
 
 
@@ -246,6 +278,10 @@ def run_service(service: str, argv: List[str]) -> int:
             print(f"\u2713 Video generation ID (not yet downloaded): {packaged['video_id']}")
         else:
             print(f"\u2713 Saved: {packaged['output_path']}")
+        return 0
+
+    if packaged["output_kind"] == "audio_bytes":
+        print(f"\u2713 Saved: {packaged['output_path']}")
         return 0
 
     if packaged["output_kind"] == "text":

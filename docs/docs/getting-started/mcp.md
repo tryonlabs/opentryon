@@ -25,7 +25,7 @@ This page is the Docusaurus guide for the server. Keep it next to:
 
 ## Why it matters
 
-- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, and bg-remove tools directly.
+- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, bg-remove, and tts tools directly.
 - Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
 - New registry models appear as tools with **zero hand-written MCP wrappers**.
 - CLI and MCP cannot drift — one runner, one registry.
@@ -140,8 +140,9 @@ The tables below highlight newer families. The complete generated list lives in 
 
 Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, the
 **Qwen3.8** dual path (+ **Qwen3.8-Omni-Flash** for audio), **GLM-5.3-FlashX**,
-**DeepSeek-V4.1-Flash**, **Ternary Bonsai 2 27B** (local server), and
-**Hy4 preview** (TokenHub LLM + local vLLM/SGLang):
+**DeepSeek-V4.1-Flash** (+ local **DeepSeek-VL2** / **DeepSeek-OCR**),
+**Ternary Bonsai 2 27B** (local server), and **Hy4 preview** (TokenHub LLM +
+local vLLM/SGLang):
 
 | MCP tool | Backend | Needs |
 |---|---|---|
@@ -150,6 +151,8 @@ Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, the
 | `understand_qwen3_8` | Local `Qwen/Qwen3.8-27B` | `pip install opentryon[local]` + GPU |
 | `understand_glm_5_3_flashx` | Z.ai GLM-5.3-FlashX (text/image/video, 200 tok/s) | `ZAI_API_KEY` |
 | `understand_deepseek_flash` | DeepSeek deepseek-flash (text/image only, no video; cheapest frontier VLM) | `DEEPSEEK_API_KEY` |
+| `understand_deepseek_vl2` | Local `deepseek-ai/deepseek-vl2-tiny` (no first-party hosted API) | `pip install opentryon[local]` + GPU + `deepseek_vl2` package |
+| `understand_deepseek_ocr` | Local `deepseek-ai/DeepSeek-OCR` (document/label OCR, no first-party hosted API) | `pip install opentryon[local]` + GPU + `flash-attn` |
 | `understand_ternary_bonsai_2_27b` | PrismML Ternary Bonsai 2 27B (self-hosted llama.cpp/MLX server) | `BONSAI_BASE_URL` (default localhost:8080) |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
 | `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |
@@ -273,6 +276,19 @@ Same `PRUNA_API_KEY` as the rest of the Pruna family. **Not** Ideogram 4.0 (`gen
 
 See [P-Image-Ideogram](../api-reference/p-image-ideogram.md).
 
+## TTS tools (text-to-speech)
+
+OpenTryOn's first `tts` service. Same `ELEVENLABS_API_KEY` for both models; synchronous (no job/poll cycle) -- audio bytes come back directly.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `tts_eleven_v4` | ElevenLabs Eleven v4 (most expressive; 90+ languages, 10K char limit) | `ELEVENLABS_API_KEY` |
+| `tts_eleven_v4_turbo` | ElevenLabs Eleven v4 Turbo (~100ms latency; audio tags for delivery control) | `ELEVENLABS_API_KEY` |
+
+`tts` has no dedicated Studio capability screen yet (those are currently Image / VTON / Understand / Video / BG Remove) -- the tools are live via Studio's Agent chat and any MCP client as soon as the server restarts.
+
+See [ElevenLabs Eleven v4 / v4 Turbo](../api-reference/elevenlabs.md).
+
 ## Related
 
 - [TryOn Studio](tryon-studio) — Next.js MCP client (Agent, Connect, capability screens)
@@ -286,6 +302,7 @@ See [P-Image-Ideogram](../api-reference/p-image-ideogram.md).
 - [Hy4 local vLLM/SGLang](../local-models/hy4)
 - [Qwen-Image generate / edit / VTON](../api-reference/qwen-image)
 - [Qwen-Image local model](../local-models/qwen-image)
+- [ElevenLabs Eleven v4 / v4 Turbo (text-to-speech)](../api-reference/elevenlabs.md)
 - [Qwen3.8 local model](../local-models/qwen3.8)
 - [MiniMax H3 API](../api-reference/minimax-h3)
 - [MiniMax H3 Max (Fal)](../api-reference/fal-h3-max)

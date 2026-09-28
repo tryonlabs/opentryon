@@ -65,6 +65,10 @@ ZAI_API_KEY=your_zai_api_key
 DEEPSEEK_API_KEY=your_deepseek_api_key
 # DEEPSEEK_BASE_URL=https://api.deepseek.com
 
+# ElevenLabs (Eleven v4 / Eleven v4 Turbo text-to-speech — first tts service model)
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+# ELEVENLABS_BASE_URL=https://api.elevenlabs.io
+
 # Photoroom Virtual Try-On + Virtual Model
 PHOTOROOM_API_KEY=your_photoroom_api_key
 
@@ -260,6 +264,20 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU.
 2. Add to `.env`: `DEEPSEEK_API_KEY=your_key`
 
    Covers `understand --model deepseek-flash` (text/image understanding — **no video**, unlike Kimi/Qwen3.8/GLM). Cheapest frontier-class VLM available; 1M context. See [DeepSeek-V4.1-Flash](../api-reference/deepseek.md).
+
+### DeepSeek-VL2 / DeepSeek-OCR (local, no cloud key)
+
+No API key. Needs `pip install opentryon[local]` and a CUDA GPU. **No first-party hosted API exists for either model** — local is the only path.
+
+- `understand --model deepseek-vl2` — [DeepSeek-VL2](../local-models/deepseek-vl2.md). Also needs DeepSeek's own `deepseek_vl2` package (not on PyPI): `pip install "git+https://github.com/deepseek-ai/DeepSeek-VL2.git"`. Optional `DEEPSEEK_VL2_MODEL_ID`.
+- `understand --model deepseek-ocr` — [DeepSeek-OCR](../local-models/deepseek-ocr.md). Also needs `flash-attn`; the model card pins `torch==2.6.0`/`transformers==4.46.3`, newer than this repo's shared `opentryon[local]` pin. Optional `DEEPSEEK_OCR_MODEL_ID`.
+
+### ElevenLabs (eleven-v4 / eleven-v4-turbo)
+
+1. Create a key at [elevenlabs.io/app/settings/api-keys](https://elevenlabs.io/app/settings/api-keys)
+2. Add to `.env`: `ELEVENLABS_API_KEY=your_key`
+
+   Covers `tts --model eleven-v4` and `tts --model eleven-v4-turbo` — OpenTryOn's first `tts` service (text -> speech audio, no image/video needed). Default voice is ElevenLabs' premade "Rachel"; override with `--voice-id`. See [ElevenLabs Eleven v4 / v4 Turbo](../api-reference/elevenlabs.md).
 
 ### Ternary Bonsai 2 27B (local server, no cloud key)
 
