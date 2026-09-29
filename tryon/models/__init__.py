@@ -26,6 +26,10 @@ Available Models:
     - TernaryBonsaiAdapter: Ternary Bonsai 2 27B (PrismML) ternary-quantized
       multimodal understanding, a thin OpenAI-compatible client for a
       locally-served llama.cpp/MLX server (no torch/diffusers needed)
+    - LimiteAdapter: Limite 1B - Violetto (Paradigma Inc), a 1B math-reasoning
+      LLM (text only, ~2.1GB). No fashion/media fit -- added as a reference
+      point for a possible future generic model gateway, not roadmapped work.
+      No first-party hosted API exists.
 
 Examples:
     Text-to-image generation:
@@ -61,6 +65,7 @@ from .deepseek_vl2 import DeepSeekVL2Adapter
 from .flux2_turbo import Flux2TurboAdapter
 from .kimi_vl import KimiVLAdapter
 from .leffa import LeffaAdapter
+from .limite import LimiteAdapter
 from .ltx25 import LTX25Adapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
@@ -75,6 +80,7 @@ __all__ = [
     "Flux2TurboAdapter",
     "KimiVLAdapter",
     "LeffaAdapter",
+    "LimiteAdapter",
     "LTX25Adapter",
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",

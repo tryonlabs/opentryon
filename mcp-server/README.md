@@ -211,6 +211,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_deepseek_vl2` | DeepSeek-VL2 (open-weight, local) | local/GPU + `deepseek_vl2` package | No first-party hosted API exists. Default `deepseek-ai/deepseek-vl2-tiny`; image + frame-sampled video |
 | `understand_deepseek_ocr` | DeepSeek-OCR (open-weight, local) | local/GPU + `flash-attn` | No first-party hosted API exists. Document/label OCR -> markdown or free text; care labels, size tags, SKU sheets |
 | `understand_ternary_bonsai_2_27b` | Ternary Bonsai 2 27B (PrismML) | local server | OpenAI-compatible client for a self-hosted llama.cpp/MLX server (`BONSAI_BASE_URL`); not in-process GPU |
+| `understand_limite_1b_violetto` | Limite 1B - Violetto (Paradigma Inc, open-weight, local) | local/GPU | No first-party hosted API exists. Text-only 1B math reasoning, no image/video — out of fashion/media scope; named-model-only, not a capability default |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |

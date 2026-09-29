@@ -136,6 +136,7 @@ async def check_dry_run_calls() -> None:
         ("understand_deepseek_flash", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, False),
         ("understand_deepseek_vl2", {"image": "p.jpg", "prompt": "describe this", "dry_run": True}, True),
         ("understand_deepseek_ocr", {"image": "p.jpg", "dry_run": True}, True),
+        ("understand_limite_1b_violetto", {"prompt": "If x + 3 = 8, what is x?", "dry_run": True}, True),
         ("understand_ternary_bonsai_2_27b", {"prompt": "hi", "dry_run": True}, False),
         ("video_generate_cosmos3", {"prompt": "runway walk", "dry_run": True}, False),
         ("video_generate_minimax_h3_local", {"prompt": "runway walk", "dry_run": True}, True),
