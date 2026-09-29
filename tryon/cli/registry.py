@@ -1466,6 +1466,26 @@ _UNDERSTAND = {
                 help="Override the local server URL (default http://127.0.0.1:8080/v1 / BONSAI_BASE_URL)"),
         ],
     ),
+    "limite-1b-violetto": ModelSpec(
+        id="limite-1b-violetto",
+        label="Limite 1B - Violetto (Paradigma Inc, local math reasoning)",
+        import_path="tryon.models.limite", class_name="LimiteAdapter",
+        method="understand", output_kind="text", extra="local",
+        notes="Out of OpenTryOn's fashion/media scope -- added as a reference point for a possible "
+        "future generic model gateway, not roadmapped work. Text-only 1B math-reasoning model "
+        "(no image/video); ~2.1GB, single-GPU/CPU friendly. No first-party hosted API exists. "
+        "Single-turn use only (system + current message) -- may reinterpret multi-turn context as "
+        "a different math problem. Apache-2.0.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Math problem/question for the model"),
+            Arg(("--system-prompt",), "system_prompt", help="Optional system prompt"),
+            Arg(("--max-new-tokens",), "max_new_tokens", type=int, default=512, help="Max output tokens"),
+            Arg(("--temperature",), "temperature", type=float,
+                help="Sampling temperature (default from generation_config.json: 0.6)"),
+            Arg(("--top-p",), "top_p", type=float,
+                help="Nucleus sampling (default from generation_config.json: 0.95)"),
+        ],
+    ),
     "nemotron-omni": ModelSpec(
         id="nemotron-omni",
         label="NVIDIA Nemotron 3 Nano Omni (NIM multimodal understanding)",

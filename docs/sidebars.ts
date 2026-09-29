@@ -114,6 +114,7 @@ const sidebars: SidebarsConfig = {
         'local-models/deepseek-vl2',
         'local-models/deepseek-ocr',
         'local-models/ternary-bonsai',
+        'local-models/limite',
       ],
     },
     {
