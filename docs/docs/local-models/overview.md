@@ -20,6 +20,7 @@ Adding a new local or API model? Start with
 | [Hy4 preview](./hy4) | Text LLM (vLLM/SGLang) | Datacenter (FP8 ~770GB+, TP=8) | - | Open `tencent/Hy4-preview`; OpenTryOn calls localhost OpenAI API — not in-process |
 | [Qwen-Image](./qwen-image) | Image Generation / Edit / VTON | ~40GB+ (bf16; offload default) | - | Open Qwen-Image-2512 T2I + Edit-2511 I2I; counterpart to DashScope qwen-image |
 | [LTX-2.5](./ltx-2.5) | Video Generation | 16GB+ (24GB+ preferred) | Distilled few-step | Local T2V / I2V with synced audio |
+| [Cosmos 3 Nano](./cosmos3) | Video Generation | Large (16B, BF16 only; offload optional) | Heavy | Local T2V / I2V; self-hosted twin of NIM `cosmos3` |
 | [MiniMax H3](./minimax-h3) | Video Generation | 80GB+ preferred (offload; ~75GB host RAM if int8) | Heavy | Local T2V / I2V with stereo audio (768p base) |
 | [Wan 2.2](./wan-2.2) | Video Generation | ~12GB+ (TI2V-5B) | Moderate | Local T2V / I2V open weights (Wan 3.0 is API-only) |
 | [Leffa](./leffa) | Virtual Try-On | 12GB+ recommended | ~6s on A100 | Dedicated local VTON (CVPR 2025; MIT code) |

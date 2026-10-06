@@ -8,8 +8,10 @@ generation, image-conditioned generation, and frame-controlled synthesis.
 Supported Models:
 - veo-3.1-generate-preview
 - veo-3.1-fast-generate-preview
-- veo-3.0-generate-001
-- veo-3.0-fast-generate-001
+- veo-3.1-lite-generate-preview
+
+Veo 3.0 (veo-3.0-generate-001 / veo-3.0-fast-generate-001) was shut down on
+30 Jun 2026 and is no longer accepted.
 
 Capabilities:
 1) Text-to-Video
@@ -92,8 +94,35 @@ except ImportError:
 
 DURATION = {"4", "6", "8"}
 ASPECT_RATIO = {"16:9", "9:16"}
-RESOLUTION = {"720p", "1080p"}
-MODELS = {"veo-3.1-generate-preview", "veo-3.1-fast-generate-preview", "veo-3.0-generate-001", "veo-3.0-fast-generate-001"}
+RESOLUTION = {"720p", "1080p", "4k"}
+MODELS = {
+    "veo-3.1-generate-preview",
+    "veo-3.1-fast-generate-preview",
+    "veo-3.1-lite-generate-preview",
+}
+# Veo 3.1 Lite: no 4k output and no reference-image conditioning.
+LITE_MODELS = {"veo-3.1-lite-generate-preview"}
+RETIRED_MODELS = {"veo-3.0-generate-001", "veo-3.0-fast-generate-001"}
+
+
+def _validate_model(model: str) -> None:
+    if model in RETIRED_MODELS:
+        raise ValueError(
+            f"{model} was shut down on 30 Jun 2026. Use one of: {sorted(MODELS)}"
+        )
+    if model not in MODELS:
+        raise ValueError(f"{model} is not a recognized model. Available models are {sorted(MODELS)}")
+
+
+def _validate_resolution(model: str, resolution: str, duration_seconds: str) -> None:
+    """Resolution rules for Veo 3.1: 1080p / 4k require 8s clips; Lite has no 4k."""
+    if resolution not in RESOLUTION:
+        raise ValueError("resolution must be '720p', '1080p' or '4k'")
+    if resolution in {"1080p", "4k"} and duration_seconds != "8":
+        raise ValueError(f"{resolution} resolution only supports 8s duration for veo 3.1 models.")
+    if resolution == "4k" and model in LITE_MODELS:
+        raise ValueError("veo-3.1-lite-generate-preview does not support 4k output (720p / 1080p only).")
+
 
 class VeoAdapter:
 
@@ -201,10 +230,14 @@ class VeoAdapter:
         resolution: str = "720p",
         negative_prompt: Optional[str] = None,
         model: str = "veo-3.1-generate-preview",
+        reference_images: Optional[list] = None,
     ) -> bytes:
         
         """
         Generate a video from a text prompt using Google Veo.
+
+        If ``reference_images`` (up to 3) is given the request is routed to
+        :meth:`generate_video_with_references` (requires 8s, 16:9, non-Lite model).
 
         This function sends a text prompt to a Veo video generation model, polls the
         operation until the video is ready, then downloads and returns the raw MP4 bytes.
@@ -221,7 +254,7 @@ class VeoAdapter:
             aspect_ratio:
                 Output aspect ratio (e.g., "16:9" or "9:16").
             resolution:
-                Output resolution preset ("720p" or "1080p", depending on model limits).
+                Output resolution preset ("720p", "1080p" or "4k"; 1080p/4k need 8s, Lite has no 4k).
             negative_prompt:
                 Optional text describing content to avoid in the generation.
             model:
@@ -229,8 +262,7 @@ class VeoAdapter:
                 Examples:
                     - "veo-3.1-generate-preview"
                     - "veo-3.1-fast-generate-preview"
-                    - "veo-3.0-generate-001"
-                    - "veo-3.0-fast-generate-001"
+                    - "veo-3.1-lite-generate-preview"
 
         Returns:
             bytes:
@@ -259,9 +291,19 @@ class VeoAdapter:
         # Validation Check
         if not prompt:
             raise ValueError("prompt is required")
-        
-        if model not in MODELS:
-            raise ValueError(f"{model} is not a recognized model. Available models are {MODELS}")
+
+        if reference_images:
+            return self.generate_video_with_references(
+                prompt=prompt,
+                reference_images=list(reference_images),
+                duration_seconds=duration_seconds,
+                aspect_ratio=aspect_ratio,
+                resolution=resolution,
+                model=model,
+                negative_prompt=negative_prompt,
+            )
+
+        _validate_model(model)
 
         if duration_seconds not in DURATION:
             raise ValueError("duration_seconds must be one of: 4, 6, 8")
@@ -269,16 +311,7 @@ class VeoAdapter:
         if aspect_ratio not in ASPECT_RATIO:
             raise ValueError("aspect_ratio must be '16:9' or '9:16'")
 
-        if resolution not in RESOLUTION:
-            raise ValueError("resolution must be '720p' or '1080p'")
-
-        if model in {"veo-3.1-generate-preview", "veo-3.1-fast-generate-preview"}:
-            if resolution == "1080p" and duration_seconds != "8":
-                raise ValueError("1080p resolution only supports 8s duration for veo 3.1 models.")
-        
-        if model in {"veo-3.0-generate-001", "veo-3.0-fast-generate-001"}:
-            if resolution == "1080p" and aspect_ratio != "16:9":
-                raise ValueError("1080p resolution only supportes 16:9 aspect ratio for veo 3 models.")
+        _validate_resolution(model, resolution, duration_seconds)
             
         # Create Configurations
         kwargs = {
@@ -361,10 +394,15 @@ class VeoAdapter:
         resolution: str = "720p",
         negative_prompt: Optional[str] = None,
         model: str = "veo-3.1-generate-preview",
+        last_image: Optional[Union[str, io.BytesIO, Image.Image]] = None,
+        reference_images: Optional[list] = None,
     ) -> bytes:
         
         """
         Animate a still image into a video using Google Veo.
+
+        If ``last_image`` is given, ``image`` is treated as the first frame and the
+        request is routed to :meth:`generate_video_with_frames` (requires 8s).
 
         This function takes a single reference image and a guiding text prompt, sends
         them to a Veo image-to-video model, polls until generation completes, and
@@ -386,15 +424,14 @@ class VeoAdapter:
             aspect_ratio:
                 Output aspect ratio (e.g., "16:9" or "9:16").
             resolution:
-                Output video resolution preset ("720p" or "1080p", depending on model limits).
+                Output video resolution preset ("720p", "1080p" or "4k"; 1080p/4k need 8s, Lite has no 4k).
             negative_prompt:
                 Optional text describing what should be avoided in the generated video.
             model:
                 Veo model identifier to use for generation, such as:
                     - "veo-3.1-generate-preview"
                     - "veo-3.1-fast-generate-preview"
-                    - "veo-3.0-generate-001"
-                    - "veo-3.0-fast-generate-001"
+                    - "veo-3.1-lite-generate-preview"
 
         Returns:
             bytes:
@@ -428,9 +465,26 @@ class VeoAdapter:
 
         if not prompt:
             raise ValueError("prompt is required")
-        
-        if model not in MODELS:
-            raise ValueError(f"{model} is not a recognized model. Available models are {MODELS}")
+
+        if reference_images:
+            raise ValueError(
+                "reference_images cannot be combined with image / last_image; "
+                "use text-to-video with reference_images, or frames, not both."
+            )
+
+        if last_image:
+            return self.generate_video_with_frames(
+                prompt=prompt,
+                first_image=image,
+                last_image=last_image,
+                duration_seconds=duration_seconds,
+                aspect_ratio=aspect_ratio,
+                resolution=resolution,
+                model=model,
+                negative_prompt=negative_prompt,
+            )
+
+        _validate_model(model)
 
         if duration_seconds not in DURATION:
             raise ValueError("duration_seconds must be one of: 4, 6, 8")
@@ -438,16 +492,7 @@ class VeoAdapter:
         if aspect_ratio not in ASPECT_RATIO:
             raise ValueError("aspect_ratio must be '16:9' or '9:16'")
 
-        if resolution not in RESOLUTION:
-            raise ValueError("resolution must be '720p' or '1080p'")
-        
-        if model in {"veo-3.1-generate-preview", "veo-3.1-fast-generate-preview"}:
-            if resolution == "1080p" and duration_seconds != "8":
-                raise ValueError("1080p resolution only supports 8s duration for veo 3.1 models.")
-        
-        if model in {"veo-3.0-generate-001", "veo-3.0-fast-generate-001"}:
-            if resolution == "1080p" and aspect_ratio != "16:9":
-                raise ValueError("1080p resolution only supportes 16:9 aspect ratio for veo 3 models.")
+        _validate_resolution(model, resolution, duration_seconds)
         
 
         # Create Configurations
@@ -597,11 +642,10 @@ class VeoAdapter:
         if not prompt:
             raise ValueError("prompt is required")
         
-        if model not in MODELS:
-            raise ValueError(f"{model} is not a recognized model. Available models are {MODELS}")
-        
-        if model in {"veo-3.0-generate-001", "veo-3.0-fast-generate-001"}:
-            raise ValueError("Video generation using reference images is only supported for veo 3.1 models.")
+        _validate_model(model)
+
+        if model in LITE_MODELS:
+            raise ValueError("Reference images are not supported by veo-3.1-lite-generate-preview; use veo-3.1-generate-preview or veo-3.1-fast-generate-preview.")
 
         if not reference_images:
             raise ValueError("At least one reference image is required")
@@ -609,8 +653,7 @@ class VeoAdapter:
         if len(reference_images) > 3:
             raise ValueError("Veo 3.1 supports a maximum of 3 reference images")
 
-        if resolution not in RESOLUTION:
-            raise ValueError("resolution must be '720p' or '1080p'")
+        _validate_resolution(model, resolution, duration_seconds)
 
         if duration_seconds != "8":
             raise ValueError("Video generation using reference images require duration_seconds='8'")
@@ -778,22 +821,17 @@ class VeoAdapter:
         if not prompt:
             raise ValueError("Prompt is required for video generation.")
         
-        if model not in MODELS:
-            raise ValueError(f"{model} is not a recognized model. Available models are {MODELS}")
-        
-        if model in {"veo-3.0-generate-001", "veo-3.0-fast-generate-001"}:
-            raise ValueError("Video generation using first frame and last frame is only supported for veo 3.1 models.")
+        _validate_model(model)
 
         if aspect_ratio not in ASPECT_RATIO:
             raise ValueError("aspect_ratio must be '16:9' or '9:16'")
 
-        if resolution not in RESOLUTION:
-            raise ValueError("resolution must be '720p' or '1080p'")
-        
+        _validate_resolution(model, resolution, duration_seconds)
+
         if duration_seconds != "8":
             raise ValueError("Video generation using frames require duration_seconds='8'")
         
-        if not first_image and not last_image:
+        if not first_image or not last_image:
             raise ValueError("Both first frame and last frame are required for video generation.")
         
         # Preparing images for input

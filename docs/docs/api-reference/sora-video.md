@@ -15,6 +15,10 @@ keywords:
 
 # Sora (OpenAI Video Generation)
 
+:::danger API removed upstream
+OpenAI removed the Sora 2 / Sora 2 Pro video API on **24 Sep 2026**. The `sora` registry id and `SoraVideoAdapter` are kept for backwards compatibility (the adapter emits a `DeprecationWarning`) but live requests will fail. Use [Veo 3.1](veo), [Seedance 2.5](seedance-seedream), [Gemini Omni 1.1 Flash](gemini-omni) or [MiniMax H3](minimax-h3) instead. The planner's default video model is now `veo`.
+:::
+
 Generate high-quality videos using OpenAI's **Sora 2** and **Sora 2 Pro** models. This adapter provides a unified interface for text-to-video and image-to-video generation with both synchronous (polling) and asynchronous (callback-based) wait mechanisms.
 
 ## Models Available

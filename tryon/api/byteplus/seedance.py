@@ -23,7 +23,9 @@ Env:
 
 from __future__ import annotations
 
+import base64
 import io
+import mimetypes
 import os
 import time
 from typing import Any, Dict, List, Optional, Union
@@ -52,7 +54,7 @@ VALID_RESOLUTIONS = {"480p", "720p", "1080p", "2k", "4k"}
 
 
 class SeedanceAdapter:
-    """BytePlus ModelArk Seedance video adapter (T2V / I2V)."""
+    """BytePlus ModelArk Seedance video adapter (T2V / I2V / reference-to-video)."""
 
     def __init__(
         self,
@@ -119,6 +121,24 @@ class SeedanceAdapter:
         b64 = base64.b64encode(raw).decode("ascii")
         return f"data:image/png;base64,{b64}"
 
+    @staticmethod
+    def _media_to_url_or_data(media: Union[str, bytes], kind: str) -> str:
+        """URL passthrough, or base64 data URL for a local video/audio file."""
+        if isinstance(media, str):
+            if media.startswith(("http://", "https://", "data:", "asset://")):
+                return media
+            if os.path.exists(media):
+                mime, _ = mimetypes.guess_type(media)
+                default = "video/mp4" if kind == "video" else "audio/mpeg"
+                with open(media, "rb") as f:
+                    b64 = base64.b64encode(f.read()).decode("ascii")
+                return f"data:{mime or default};base64,{b64}"
+            raise ValueError(f"Reference {kind} path does not exist: {media}")
+        if isinstance(media, (bytes, bytearray)):
+            default = "video/mp4" if kind == "video" else "audio/mpeg"
+            return f"data:{default};base64,{base64.b64encode(bytes(media)).decode('ascii')}"
+        raise ValueError(f"Unsupported reference {kind} input type for Seedance.")
+
     def _create_task(self, payload: Dict[str, Any]) -> str:
         url = f"{self.base_url}/contents/generations/tasks"
         resp = requests.post(url, headers=self.headers, json=payload, timeout=60)
@@ -181,6 +201,9 @@ class SeedanceAdapter:
         generate_audio: bool = True,
         seed: Optional[int] = None,
         model: Optional[str] = None,
+        reference_images: Optional[List[Any]] = None,
+        reference_videos: Optional[List[Any]] = None,
+        reference_audios: Optional[List[Any]] = None,
     ) -> Dict[str, Any]:
         if ratio not in VALID_RATIOS:
             raise ValueError(f"Invalid ratio '{ratio}'. Valid: {sorted(VALID_RATIOS)}")
@@ -202,6 +225,32 @@ class SeedanceAdapter:
                 "image_url": {"url": self._image_to_url_or_data(end_image)},
                 "role": "last_frame",
             })
+        has_refs = bool(reference_images or reference_videos or reference_audios)
+        if has_refs and (image is not None or end_image is not None):
+            raise ValueError(
+                "Reference-to-video cannot be combined with first/last-frame images; "
+                "use either --image/--end-image or --reference-* inputs."
+            )
+        for ref in reference_images or []:
+            content.append({
+                "type": "image_url",
+                "image_url": {"url": self._image_to_url_or_data(ref)},
+                "role": "reference_image",
+            })
+        for ref in reference_videos or []:
+            content.append({
+                "type": "video_url",
+                "video_url": {"url": self._media_to_url_or_data(ref, "video")},
+                "role": "reference_video",
+            })
+        for ref in reference_audios or []:
+            content.append({
+                "type": "audio_url",
+                "audio_url": {"url": self._media_to_url_or_data(ref, "audio")},
+                "role": "reference_audio",
+            })
+        if reference_audios and not (reference_images or reference_videos):
+            raise ValueError("Reference audio needs at least one reference image or video.")
         if not content:
             raise ValueError("At least a prompt or an image is required.")
 
@@ -226,11 +275,18 @@ class SeedanceAdapter:
         generate_audio: bool = True,
         seed: Optional[int] = None,
         model: Optional[str] = None,
+        reference_images: Optional[List[Any]] = None,
+        reference_videos: Optional[List[Any]] = None,
+        reference_audios: Optional[List[Any]] = None,
     ) -> bytes:
+        """Text-to-video; pass ``reference_*`` lists for multimodal reference-to-video."""
         if not prompt:
             raise ValueError("prompt is required for text-to-video.")
         payload = self._build_payload(
             prompt,
+            reference_images=reference_images,
+            reference_videos=reference_videos,
+            reference_audios=reference_audios,
             duration=duration,
             ratio=ratio,
             resolution=resolution,
@@ -253,9 +309,15 @@ class SeedanceAdapter:
         generate_audio: bool = True,
         seed: Optional[int] = None,
         model: Optional[str] = None,
+        reference_images: Optional[List[Any]] = None,
+        reference_videos: Optional[List[Any]] = None,
+        reference_audios: Optional[List[Any]] = None,
     ) -> bytes:
         payload = self._build_payload(
             prompt,
+            reference_images=reference_images,
+            reference_videos=reference_videos,
+            reference_audios=reference_audios,
             image=image,
             end_image=end_image,
             duration=duration,

@@ -61,6 +61,12 @@ opentryon video-generate --model seedance \
 opentryon video-generate --model seedance \
   --image person.jpg --prompt "Slow cinematic push-in" --duration 5
 
+# Multimodal reference-to-video (images / videos / audio; not combinable with --image / --end-image)
+opentryon video-generate --model seedance \
+  --prompt "The model from image 1 repeats the walk from video 1" \
+  --reference-image person.jpg --reference-video walk.mp4 --reference-audio score.mp3 \
+  --duration 12
+
 # Seedream 5.0 Pro text-to-image
 opentryon generate --model seedream \
   --prompt "Editorial product shot of matte black sneakers" --size 2K
@@ -93,5 +99,7 @@ images[0].save("out.png")
 ## Notes
 
 - Seedance 2.5 public ModelArk id is `dreamina-seedance-2-5-260628` (CLI `--model-version seedance-2-5` maps to it). Activate the model in the BytePlus console before calling.
+- Reference-to-video sends `reference_image` / `reference_video` / `reference_audio` content roles; reference audio needs at least one reference image or video. Local video/audio files are sent as base64 data URLs; prefer URLs for large files.
+- Seedance is cloud-only; there are no open weights.
 - Auth uses `Authorization: Bearer $ARK_API_KEY`.
 - Async video tasks are polled until completion, then the MP4 is downloaded.

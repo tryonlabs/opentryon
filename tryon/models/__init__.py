@@ -21,6 +21,8 @@ Available Models:
     - LeffaAdapter: CVPR 2025 dedicated local VTON (VITON-HD / DressCode)
     - CatVTONAdapter: ICLR 2025 concatenation VTON (<8GB @ 1024x768; CC BY-NC-SA)
     - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
+    - Cosmos3LocalAdapter: NVIDIA Cosmos 3 Nano (16B) open-weight text/image-to-video
+      (Diffusers, BF16/CUDA), the local counterpart to the hosted NIM `cosmos3`
     - MiniMaxH3LocalAdapter: MiniMax H3 open-weight text/image-to-video with stereo audio
     - Wan22Adapter: Wan 2.2 open-weight text/image-to-video (Diffusers)
     - TernaryBonsaiAdapter: Ternary Bonsai 2 27B (PrismML) ternary-quantized
@@ -67,6 +69,7 @@ from .kimi_vl import KimiVLAdapter
 from .leffa import LeffaAdapter
 from .limite import LimiteAdapter
 from .ltx25 import LTX25Adapter
+from .cosmos3 import Cosmos3LocalAdapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
 from .qwen_image import QwenImageLocalAdapter
@@ -82,6 +85,7 @@ __all__ = [
     "LeffaAdapter",
     "LimiteAdapter",
     "LTX25Adapter",
+    "Cosmos3LocalAdapter",
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",
     "QwenImageLocalAdapter",

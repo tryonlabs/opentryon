@@ -14,6 +14,11 @@ reference images. This adapter provides a clean, unified interface for the follo
 The adapter can return video bytes directly or provide status tracking for
 long-running video generation tasks.
 
+DEPRECATION: OpenAI removed the Sora 2 / Sora 2 Pro video API on 24 Sep 2026.
+This adapter is kept for backwards compatibility and will raise API errors
+against the live service; prefer Veo 3.1, Seedance 2.5, Gemini Omni 1.1 Flash
+or MiniMax H3 for hosted video generation.
+
 Reference:
 https://platform.openai.com/docs/guides/video-generation
 
@@ -71,6 +76,7 @@ Examples:
 import io
 import os
 import time
+import warnings
 from typing import Optional, Union, Callable, Dict, Any
 from PIL import Image
 
@@ -146,6 +152,13 @@ class SoraVideoAdapter:
                 f"Supported models: {VALID_MODELS}"
             )
         
+        warnings.warn(
+            "OpenAI removed the Sora video API on 24 Sep 2026; requests will fail "
+            "against the live service. Consider veo, seedance, gemini-omni or minimax-h3.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError(

@@ -32,7 +32,7 @@ opentryon <service> --model <model> [params...]
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope) |
-| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3` |
+| `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3`, `cosmos3-local` (local) |
 | `bg-remove` | Background removal | `ben2` (local) |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo` |
 
@@ -164,6 +164,17 @@ opentryon vton --model catvton --person-image model.jpg --garment-image garment.
 # Text-to-video
 opentryon video-generate --model veo \
   --prompt "A model walking a runway in slow motion" --duration 6
+# Veo 3.1: first+last frame, reference images, 4k (8s), Lite tier
+opentryon video-generate --model veo --prompt "Transition" --image a.jpg --last-image b.jpg --duration 8
+opentryon video-generate --model veo --prompt "Walk" --reference-image a.jpg b.jpg --duration 8
+opentryon video-generate --model veo --prompt "Walk" --duration 8 --resolution 4k
+# Gemini Omni 1.1 Flash: extend an existing clip
+opentryon video-generate --model gemini-omni --prompt "Continue the walk" --video clip.mp4
+# Seedance 2.5 reference-to-video
+opentryon video-generate --model seedance --prompt "Repeat the motion" --reference-image p.jpg --reference-video m.mp4 --duration 10
+# Local Cosmos 3 (GPU)
+opentryon video-generate --model cosmos3-local --prompt "Runway at dusk"
+# NOTE: sora is deprecated -- OpenAI removed the API on 2026-09-24
 
 # Seedance 2.5 / Kling 3.0 / Ray 3.2 / Grok Imagine Video / Pruna P-Video
 opentryon video-generate --model seedance --prompt "10s lookbook walk" --duration 10
