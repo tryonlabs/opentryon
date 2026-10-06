@@ -158,7 +158,7 @@ edited_images = adapter.generate_image_edit(
 )
 ```
 
-**Sora (OpenAI Video Generation):**
+**Sora (OpenAI Video Generation) — deprecated:** OpenAI removed the Sora API on 24 Sep 2026; use Veo 3.1 / Seedance 2.5 / Gemini Omni 1.1 Flash instead. The legacy example is kept for reference:
 
 ```python
 from tryon.api.openAI.video_adapter import SoraVideoAdapter

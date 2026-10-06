@@ -1565,27 +1565,42 @@ _UNDERSTAND = {
 
 _VIDEO_GENERATE = {
     "veo": ModelSpec(
-        id="veo", label="Google Veo",
+        id="veo", label="Google Veo 3.1 (Generate / Fast / Lite)",
         import_path="tryon.api.veo", class_name="VeoAdapter",
         method="generate_text_to_video", output_kind="video_bytes",
         alt_method_on_image="generate_image_to_video", alt_image_dest="image",
         env_hint="GEMINI_API_KEY",
+        notes=(
+            "Veo 3.1 only (Veo 3.0 shut down 30 Jun 2026). --last-image switches to first+last "
+            "frame interpolation; --reference-image (up to 3, 8s, 16:9, not Lite) steers style. "
+            "1080p and 4k require --duration 8; Lite has no 4k and no reference images. "
+            "Cloud-only: no open weights exist."
+        ),
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
             Arg(("--image",), "image", help="Optional still image to animate (switches to image-to-video)", alt_only=True),
-            Arg(("--duration",), "duration_seconds", default="4", help='Clip length in seconds, e.g. "4", "6", "8"'),
-            Arg(("--aspect-ratio",), "aspect_ratio", default="16:9"),
-            Arg(("--resolution",), "resolution", default="720p", choices=["720p", "1080p"]),
+            Arg(("--last-image",), "last_image", help="Optional final frame (with --image; requires --duration 8)", alt_only=True),
+            Arg(("--reference-image",), "reference_images", nargs="+",
+                help="Up to 3 subject/style reference images (text-to-video only; 8s, 16:9)"),
+            Arg(("--duration",), "duration_seconds", default="4", help='Clip length in seconds: "4", "6" or "8"'),
+            Arg(("--aspect-ratio",), "aspect_ratio", default="16:9", choices=["16:9", "9:16"]),
+            Arg(("--resolution",), "resolution", default="720p", choices=["720p", "1080p", "4k"]),
             Arg(("--negative-prompt",), "negative_prompt"),
-            Arg(("--model-version",), "model_version", call_name="model", default="veo-3.1-generate-preview"),
+            Arg(("--model-version",), "model_version", call_name="model", default="veo-3.1-generate-preview",
+                choices=["veo-3.1-generate-preview", "veo-3.1-fast-generate-preview", "veo-3.1-lite-generate-preview"]),
         ],
     ),
     "sora": ModelSpec(
-        id="sora", label="OpenAI Sora",
+        id="sora", label="OpenAI Sora 2 (API REMOVED upstream 2026-09-24)",
         import_path="tryon.api.openAI.video_adapter", class_name="SoraVideoAdapter",
         method="generate_text_to_video", output_kind="video_bytes",
         alt_method_on_image="generate_image_to_video", alt_image_dest="image",
         env_hint="OPENAI_API_KEY",
+        notes=(
+            "DEPRECATED: OpenAI removed the Sora 2 / Sora 2 Pro video API on 24 Sep 2026; calls "
+            "will fail against the live service. Kept for backward compatibility. "
+            "Use veo, seedance, gemini-omni or minimax-h3 instead."
+        ),
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
             Arg(("--image",), "image", help="Optional still image to animate (switches to image-to-video)", alt_only=True),
@@ -1613,7 +1628,7 @@ _VIDEO_GENERATE = {
     ),
     "gemini-omni": ModelSpec(
         id="gemini-omni",
-        label="Gemini Omni Flash (video generation / conversational editing)",
+        label="Gemini Omni 1.1 Flash (video generation / editing / extension)",
         import_path="tryon.api.omni",
         class_name="GeminiOmniAdapter",
         method="generate_text_to_video",
@@ -1622,17 +1637,23 @@ _VIDEO_GENERATE = {
         alt_image_dest="image",
         env_hint="GEMINI_API_KEY",
         notes=(
-            "Uses gemini-omni-flash-preview via the Interactions API. "
-            "Pass --previous-interaction-id to conversationally edit a prior clip."
+            "Uses gemini-omni-1.1-flash via the Interactions API; the "
+            "gemini-omni-flash-preview endpoint was deprecated 30 Sep 2026. "
+            "--previous-interaction-id conversationally edits a prior clip; --video extends an "
+            "existing clip (<=10s) by 3-10s. Cloud-only: no open weights exist."
         ),
         args=[
-            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt or edit instruction"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt, edit instruction, or how to continue --video"),
             Arg(("--image",), "image", help="Optional still image to animate (switches to image-to-video)", alt_only=True),
             Arg(("--reference-image",), "reference_images", nargs="+",
                 help="Optional extra subject/style reference images (image-to-video only)", alt_only=True),
             Arg(("--aspect-ratio",), "aspect_ratio", default="16:9", choices=["16:9", "9:16"]),
+            Arg(("--resolution",), "resolution", choices=["360p", "720p", "1080p", "4k"],
+                help="Output resolution (API default 720p)"),
             Arg(("--previous-interaction-id",), "previous_interaction_id",
                 help="Prior Omni interaction id for conversational video editing"),
+            Arg(("--video",), "video",
+                help="Existing clip (<=10s; local path or Files/http(s) URI) to extend by 3-10s"),
         ],
     ),
     "seedance": ModelSpec(
@@ -1648,13 +1669,22 @@ _VIDEO_GENERATE = {
         notes=(
             "Seedance 2.5 targets up to 30s audio-video clips. "
             "Also supports Seedance 2.0 Standard/Fast/Mini via --model-version. "
+            "--reference-image/--reference-video/--reference-audio enable multimodal "
+            "reference-to-video (mutually exclusive with --image/--end-image). "
+            "Cloud-only: no open weights. "
             "See https://seed.bytedance.com/en/seedance2_5"
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", help="Text prompt"),
             Arg(("--image",), "image", help="Optional first-frame image (switches to image-to-video)", alt_only=True),
             Arg(("--end-image",), "end_image", help="Optional last-frame image (I2V only)", alt_only=True),
-            Arg(("--duration",), "duration", type=int, default=5, help="Clip length in seconds"),
+            Arg(("--reference-image",), "reference_images", nargs="+",
+                help="Reference-to-video: subject/style images (not combinable with --image)"),
+            Arg(("--reference-video",), "reference_videos", nargs="+",
+                help="Reference-to-video: motion/camera reference clips (URL or local path)"),
+            Arg(("--reference-audio",), "reference_audios", nargs="+",
+                help="Reference-to-video: voice/music references (needs a reference image or video)"),
+            Arg(("--duration",), "duration", type=int, default=5, help="Clip length in seconds (Seedance 2.5: 4-30)"),
             Arg(("--ratio",), "ratio", default="16:9",
                 choices=["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"]),
             Arg(("--resolution",), "resolution", default="720p",
@@ -2019,6 +2049,38 @@ _VIDEO_GENERATE = {
                 target="init",
                 help="HF repo id or local path (default Lightricks/LTX-2.5-Diffusers)",
             ),
+        ],
+    ),
+    "cosmos3-local": ModelSpec(
+        id="cosmos3-local",
+        label="NVIDIA Cosmos 3 Nano (local Diffusers)",
+        import_path="tryon.models.cosmos3",
+        class_name="Cosmos3LocalAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        extra="local",
+        notes=(
+            "Open weights (nvidia/Cosmos3-Nano, 16B, OpenMDW 1.1) via Diffusers "
+            "Cosmos3OmniPipeline; BF16 + large CUDA GPU only. Hosted twin is --model cosmos3 (NIM). "
+            "Upstream examples use structured JSON captions; plain text also works."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", help="Text (or JSON caption) prompt"),
+            Arg(("--image",), "image", help="First-frame image (switches to image-to-video)", alt_only=True),
+            Arg(("--negative-prompt",), "negative_prompt", help="Optional negative prompt"),
+            Arg(("--width",), "width", type=int, default=1280),
+            Arg(("--height",), "height", type=int, default=720),
+            Arg(("--num-frames",), "num_frames", type=int, default=189, help="Frame count (default 189 = ~7.9s @ 24fps)"),
+            Arg(("--fps",), "fps", type=int, default=24, help="Output FPS"),
+            Arg(("--steps",), "num_inference_steps", type=int, default=35),
+            Arg(("--guidance-scale",), "guidance_scale", type=float, default=6.0),
+            Arg(("--seed",), "seed", type=int, help="RNG seed"),
+            Arg(("--model-id",), "model_id", target="init",
+                help="HF repo id or local path (default nvidia/Cosmos3-Nano)"),
+            Arg(("--cpu-offload",), "cpu_offload", target="init", action="store_true",
+                help="Enable model CPU offload to reduce VRAM"),
         ],
     ),
     "hailuo-2.3": ModelSpec(

@@ -104,9 +104,13 @@ clip = Cosmos3VideoAdapter().generate_text_to_video(
 )
 ```
 
+## Local weights
+
+The open `nvidia/Cosmos3-Nano` weights run through Diffusers as `--model cosmos3-local` — see [Cosmos 3 (local)](../local-models/cosmos3.md).
+
 ## Planner
 
-Named-model pins: `nemotron-omni`, `cosmos3-reasoner`, `cosmos3` (and longer phrases such as `cosmos 3 reasoner`). Defaults are unchanged (`kimi-k2.6` / `sora`).
+Named-model pins: `nemotron-omni`, `cosmos3-reasoner`, `cosmos3`, `cosmos3-local` (and longer phrases such as `cosmos 3 reasoner`). Defaults: `kimi-k2.6` / `veo`.
 
 ## Not in this release
 

@@ -331,6 +331,89 @@ def check_gemini_omni_dry_runs():
     print("\u2713 video-generate gemini-omni --dry-run resolves text / image / edit paths")
 
 
+def check_video_wave_dry_runs():
+    """Omni 1.1 Flash resolution/extend, Veo 3.1 frames/refs/4k, Seedance refs, Cosmos 3 local."""
+    cases = [
+        (["video-generate", "--model", "gemini-omni", "--prompt", "continue",
+          "--video", "clip.mp4", "--resolution", "1080p"],
+         "GeminiOmniAdapter", "generate_text_to_video", ["'video': 'clip.mp4'", "'resolution': '1080p'"]),
+        (["video-generate", "--model", "veo", "--prompt", "x", "--image", "a.png",
+          "--last-image", "b.png", "--duration", "8", "--resolution", "4k",
+          "--model-version", "veo-3.1-fast-generate-preview"],
+         "VeoAdapter", "generate_image_to_video", ["'last_image': 'b.png'", "'resolution': '4k'"]),
+        (["video-generate", "--model", "veo", "--prompt", "x",
+          "--reference-image", "a.png", "b.png", "--duration", "8"],
+         "VeoAdapter", "generate_text_to_video", ["'reference_images': ['a.png', 'b.png']"]),
+        (["video-generate", "--model", "seedance", "--prompt", "x", "--reference-image", "a.png",
+          "--reference-video", "v.mp4", "--reference-audio", "s.mp3", "--duration", "12"],
+         "SeedanceAdapter", "generate_text_to_video", ["'reference_videos': ['v.mp4']", "'reference_audios': ['s.mp3']"]),
+        (["video-generate", "--model", "cosmos3-local", "--prompt", "runway walk", "--cpu-offload"],
+         "Cosmos3LocalAdapter", "generate_text_to_video", ["'cpu_offload': True"]),
+        (["video-generate", "--model", "cosmos3-local", "--prompt", "animate", "--image", "a.png"],
+         "Cosmos3LocalAdapter", "generate_image_to_video", ["'image': 'a.png'"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+    print("\u2713 Omni 1.1 / Veo 3.1 / Seedance refs / cosmos3-local --dry-run resolve")
+
+
+def check_veo_seedance_validation():
+    from tryon.api.veo import _validate_model, _validate_resolution
+    _validate_resolution("veo-3.1-generate-preview", "4k", "8")
+    for model, res, dur in [
+        ("veo-3.1-lite-generate-preview", "4k", "8"),
+        ("veo-3.1-generate-preview", "1080p", "4"),
+    ]:
+        try:
+            _validate_resolution(model, res, dur)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError((model, res, dur))
+    try:
+        _validate_model("veo-3.0-generate-001")
+    except ValueError as exc:
+        assert "shut down" in str(exc)
+    else:
+        raise AssertionError("Veo 3.0 should be rejected")
+
+    from tryon.api.byteplus.seedance import SeedanceAdapter
+    adapter = SeedanceAdapter(api_key="test")
+    payload = adapter._build_payload(
+        "p",
+        reference_images=["https://e.com/a.png"],
+        reference_videos=["https://e.com/v.mp4"],
+        reference_audios=["https://e.com/a.mp3"],
+        duration=12,
+    )
+    roles = [c.get("role") for c in payload["content"]]
+    assert roles == [None, "reference_image", "reference_video", "reference_audio"], roles
+    try:
+        adapter._build_payload("p", image="https://e.com/a.png", reference_images=["https://e.com/b.png"])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("refs + first-frame must be rejected")
+
+    from tryon.api.omni import GeminiOmniAdapter
+    try:
+        GeminiOmniAdapter(api_key="test", model="gemini-omni-flash-preview")
+    except ValueError as exc:
+        assert "deprecated" in str(exc)
+    except ImportError:
+        pass
+    else:
+        raise AssertionError("old Omni preview id must be rejected")
+    print("\u2713 Veo 3.1 / Seedance reference / Omni model-id validation")
+
+
 def check_kimi_dry_runs():
     for model_id, expect_kwarg in [
         ("kimi-k2.6", "'thinking': True"),
@@ -1156,6 +1239,8 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_video_wave_dry_runs()
+    check_veo_seedance_validation()
     check_registry_has_no_flag_collisions()
     check_wan3_model_aliases()
     check_seedance_25_model_id()

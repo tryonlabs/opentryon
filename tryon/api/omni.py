@@ -1,16 +1,20 @@
 """
-Google Gemini Omni Flash Video Generation API Adapter
+Google Gemini Omni 1.1 Flash Video Generation API Adapter
 
-Adapter for Gemini Omni Flash (``gemini-omni-flash-preview``) -- Google's
-fast multimodal video generation / conversational editing model. Uses the
-Interactions API via the ``google-genai`` SDK (not ``generate_videos`` /
-Veo).
+Adapter for Gemini Omni 1.1 Flash (``gemini-omni-1.1-flash``, GA 27 Aug 2026)
+-- Google's fast multimodal video generation / conversational editing model.
+Uses the Interactions API via the ``google-genai`` SDK (not
+``generate_videos`` / Veo). The earlier ``gemini-omni-flash-preview``
+endpoint was deprecated on 30 Sep 2026 and is no longer accepted here.
 
 Capabilities:
-1) Text-to-video -- generate a short clip (3-10s, 720p, 24 FPS) from a prompt
+1) Text-to-video -- generate a short clip (3-10s, 24 FPS) from a prompt
 2) Image-to-video -- animate a still (or multiple reference subjects) with a prompt
 3) Conversational editing -- refine a prior generation via
    ``previous_interaction_id`` without re-uploading the video
+4) Video extension -- append 3-10s to the end of an existing clip
+   (input clip <= 10s) via the ``extend`` task
+5) Resolution control -- ``360p`` / ``720p`` (default) / ``1080p`` / ``4k``
 
 Reference:
     https://ai.google.dev/gemini-api/docs/omni
@@ -55,27 +59,36 @@ except ImportError:
 
 
 ASPECT_RATIOS = {"16:9", "9:16"}
-VIDEO_TASKS = {"text_to_video", "image_to_video", "reference_to_video", "edit"}
+RESOLUTIONS = {"360p", "720p", "1080p", "4k"}
+VIDEO_TASKS = {"text_to_video", "image_to_video", "reference_to_video", "edit", "extend"}
+VALID_MODELS = {"gemini-omni-1.1-flash"}
+DEFAULT_MODEL = "gemini-omni-1.1-flash"
 
 
 class GeminiOmniAdapter:
     """
-    Adapter for Gemini Omni Flash (``gemini-omni-flash-preview``) video generation.
+    Adapter for Gemini Omni 1.1 Flash (``gemini-omni-1.1-flash``) video generation.
 
     Uses ``client.interactions.create(...)`` and returns raw MP4 bytes.
     After each successful call, ``last_interaction_id`` is set so you can
     chain conversational edits without re-uploading prior video.
     """
 
-    MODEL_NAME = "gemini-omni-flash-preview"
-
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = DEFAULT_MODEL):
         """
-        Initialize the Gemini Omni Flash adapter.
+        Initialize the Gemini Omni 1.1 Flash adapter.
 
         Args:
             api_key: Google Gemini API key. Defaults to ``GEMINI_API_KEY``.
+            model: Omni model id. Only ``gemini-omni-1.1-flash`` is valid
+                (the ``-preview`` endpoint was deprecated 30 Sep 2026).
         """
+        if model not in VALID_MODELS:
+            raise ValueError(
+                f"Invalid model {model!r}. Supported: {sorted(VALID_MODELS)}. "
+                "gemini-omni-flash-preview was deprecated on 30 Sep 2026."
+            )
+        self.model = model
         if not GOOGLE_GENAI_AVAILABLE:
             raise ImportError(
                 "Google GenAI SDK is required for Gemini Omni. "
@@ -185,6 +198,7 @@ class GeminiOmniAdapter:
         input_payload: Union[str, List[Dict[str, Any]]],
         *,
         aspect_ratio: Optional[str] = None,
+        resolution: Optional[str] = None,
         task: Optional[str] = None,
         previous_interaction_id: Optional[str] = None,
         **kwargs,
@@ -193,11 +207,15 @@ class GeminiOmniAdapter:
             raise ValueError(
                 f"Invalid aspect_ratio '{aspect_ratio}'. Valid options: {sorted(ASPECT_RATIOS)}"
             )
+        if resolution is not None and resolution not in RESOLUTIONS:
+            raise ValueError(
+                f"Invalid resolution '{resolution}'. Valid options: {sorted(RESOLUTIONS)}"
+            )
         if task is not None and task not in VIDEO_TASKS:
             raise ValueError(f"Invalid task '{task}'. Valid options: {sorted(VIDEO_TASKS)}")
 
         create_kwargs: Dict[str, Any] = {
-            "model": self.MODEL_NAME,
+            "model": self.model,
             "input": input_payload,
         }
         if previous_interaction_id:
@@ -206,6 +224,8 @@ class GeminiOmniAdapter:
         response_format: Dict[str, Any] = {"type": "video"}
         if aspect_ratio:
             response_format["aspect_ratio"] = aspect_ratio
+        if resolution:
+            response_format["resolution"] = resolution
         create_kwargs["response_format"] = response_format
 
         if task:
@@ -230,19 +250,25 @@ class GeminiOmniAdapter:
         self,
         prompt: str,
         aspect_ratio: str = "16:9",
+        resolution: Optional[str] = None,
         previous_interaction_id: Optional[str] = None,
+        video: Optional[str] = None,
         **kwargs,
     ) -> bytes:
         """
-        Generate (or conversationally edit) a video from a text prompt.
+        Generate (or conversationally edit / extend) a video from a text prompt.
 
         When ``previous_interaction_id`` is set, this becomes an edit turn on
-        the prior generation (same as :meth:`edit_video`).
+        the prior generation (same as :meth:`edit_video`). When ``video`` is
+        set, the clip is extended (same as :meth:`extend_video`).
 
         Args:
             prompt: Scene / edit description.
             aspect_ratio: ``16:9`` (default) or ``9:16``.
+            resolution: ``360p``, ``720p`` (API default), ``1080p`` or ``4k``.
             previous_interaction_id: Optional prior interaction id for editing.
+            video: Optional existing clip (local path or Gemini Files / http(s)
+                URI, <= 10s) to extend by 3-10s.
             **kwargs: Extra kwargs forwarded to ``interactions.create``.
 
         Returns:
@@ -250,13 +276,79 @@ class GeminiOmniAdapter:
         """
         if not prompt:
             raise ValueError("prompt is required")
+        if video and previous_interaction_id:
+            raise ValueError("Pass either video (extend) or previous_interaction_id (edit), not both.")
+        if video:
+            return self.extend_video(
+                video, prompt, aspect_ratio=aspect_ratio, resolution=resolution, **kwargs
+            )
 
         task = "edit" if previous_interaction_id else "text_to_video"
         return self._create_interaction(
             prompt,
             aspect_ratio=aspect_ratio,
+            resolution=resolution,
             task=task,
             previous_interaction_id=previous_interaction_id,
+            **kwargs,
+        )
+
+    def _video_to_part(self, video: str) -> Dict[str, str]:
+        """Return a ``{"type": "video", "uri": ...}`` part, uploading a local
+        file through the Files API (and waiting for ACTIVE) when needed."""
+        import time
+
+        if video.startswith(("http://", "https://", "gs://")) or "/files/" in video:
+            return {"type": "video", "uri": video}
+        if not os.path.exists(video):
+            raise ValueError(f"Video path does not exist: {video}")
+
+        uploaded = self.client.files.upload(file=video)
+        deadline = time.time() + 300
+        while getattr(getattr(uploaded, "state", None), "name", str(getattr(uploaded, "state", ""))) in (
+            "PROCESSING",
+            "State.PROCESSING",
+        ):
+            if time.time() > deadline:
+                raise TimeoutError("Timed out waiting for the uploaded video to become ACTIVE.")
+            time.sleep(2)
+            uploaded = self.client.files.get(name=uploaded.name)
+        return {"type": "video", "uri": uploaded.uri}
+
+    def extend_video(
+        self,
+        video: str,
+        prompt: str,
+        aspect_ratio: Optional[str] = None,
+        resolution: Optional[str] = None,
+        **kwargs,
+    ) -> bytes:
+        """
+        Extend an existing clip by 3-10 seconds (``extend`` task).
+
+        Args:
+            video: Local path, or an http(s) / Gemini Files URI. Input clip
+                must be <= 10s; extension only appends to the end.
+            prompt: How the scene should continue.
+            aspect_ratio: Optional override.
+            resolution: Optional ``360p`` / ``720p`` / ``1080p`` / ``4k``.
+
+        Returns:
+            Raw MP4 bytes for the extended clip.
+        """
+        if not video:
+            raise ValueError("video is required for extend_video")
+        if not prompt:
+            raise ValueError("prompt is required")
+        parts: List[Dict[str, Any]] = [
+            self._video_to_part(video),
+            {"type": "text", "text": prompt},
+        ]
+        return self._create_interaction(
+            parts,
+            aspect_ratio=aspect_ratio,
+            resolution=resolution,
+            task="extend",
             **kwargs,
         )
 
@@ -267,6 +359,7 @@ class GeminiOmniAdapter:
         aspect_ratio: str = "16:9",
         reference_images: Optional[List[Union[str, io.BytesIO, Image.Image]]] = None,
         previous_interaction_id: Optional[str] = None,
+        resolution: Optional[str] = None,
         **kwargs,
     ) -> bytes:
         """
@@ -300,6 +393,7 @@ class GeminiOmniAdapter:
         return self._create_interaction(
             parts,
             aspect_ratio=aspect_ratio,
+            resolution=resolution,
             task=task,
             previous_interaction_id=previous_interaction_id,
             **kwargs,
@@ -310,6 +404,7 @@ class GeminiOmniAdapter:
         prompt: str,
         previous_interaction_id: Optional[str] = None,
         aspect_ratio: Optional[str] = None,
+        resolution: Optional[str] = None,
         **kwargs,
     ) -> bytes:
         """
@@ -338,6 +433,7 @@ class GeminiOmniAdapter:
         return self._create_interaction(
             prompt,
             aspect_ratio=aspect_ratio,
+            resolution=resolution,
             task="edit",
             previous_interaction_id=interaction_id,
             **kwargs,

@@ -127,7 +127,13 @@ def check_named_model_nvidia_nim_dry_run():
     assert pinned is not None and pinned.model == "cosmos3-reasoner"
     omni = match_named_model("use nemotron-omni on this photo", fashion)
     assert omni is not None and omni.model == "nemotron-omni"
-    print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni")
+    local = match_named_model("make a clip with cosmos3-local", fashion)
+    assert local is not None and local.model == "cosmos3-local"
+    local2 = match_named_model("use cosmos 3 local weights", fashion)
+    assert local2 is not None and local2.model == "cosmos3-local"
+    hosted = match_named_model("make a clip with cosmos3", fashion)
+    assert hosted is not None and hosted.model == "cosmos3"
+    print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni / cosmos3-local")
 
 
 def check_named_model_google_vton_dry_run():
@@ -711,7 +717,7 @@ def check_bind_filters_registry_slice():
     assert pick_model("generate", "a red evening gown").model == "nano-banana-pro"
     assert pick_model("edit", "make the sky blue").model == "nano-banana-pro"
     assert pick_model("understand", "what is in this photo").model == "kimi-k2.6"
-    assert pick_model("video", "runway walk clip").model == "sora"
+    assert pick_model("video", "runway walk clip").model == "veo"
     assert pick_model("bg_remove", "remove the background").model == "ben2"
     named_gen = pick_model("generate", "Generate a clip using wan-3.0")
     assert named_gen is not None and named_gen.model == "wan-3.0"
@@ -772,7 +778,7 @@ def check_capability_defaults_via_planner():
     video = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="video", task=kwargs["prompt"])
     ).run("Make a short runway clip", dry_run=True)
-    assert video["model"] == "sora" and video["service"] == "video-generate"
+    assert video["model"] == "veo" and video["service"] == "video-generate"
 
     understand = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"])

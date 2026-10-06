@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🎬 Video — model-wave audit (Seedance 2.5, MiniMax H3, Gemini Omni 1.1 Flash, Veo 3.1, Sora 2, Cosmos 3)
+- **Cosmos 3 Nano local** (`cosmos3-local`, `tryon.models.cosmos3.Cosmos3LocalAdapter`): new Path B twin of the NIM `cosmos3`, Diffusers `Cosmos3OmniPipeline`, `nvidia/Cosmos3-Nano` (BF16/CUDA, OpenMDW 1.1). Env: `COSMOS3_MODEL_ID` / `COSMOS3_MODEL_PATH`. MCP tool `video_generate_cosmos3_local`; planner pins `cosmos3-local`, `cosmos 3 local`. Docs: `docs/docs/local-models/cosmos3.md`
+- **Gemini Omni 1.1 Flash**: `gemini-omni` now targets `gemini-omni-1.1-flash` (the `gemini-omni-flash-preview` endpoint was deprecated 30 Sep 2026 and the old id is rejected). New `--resolution` (360p/720p/1080p/4k) and `--video` (extend an existing clip by 3-10s)
+- **Veo 3.1**: model list is now 3.1 Generate / Fast / **Lite** (Veo 3.0 was shut down 30 Jun 2026 and is rejected); `4k` resolution; central validation (1080p/4k need 8s, Lite has no 4k or reference images); `--last-image` (first+last frame) and `--reference-image` (up to 3) are reachable from the CLI/MCP. New docs page `docs/docs/api-reference/veo.md`
+- **Seedance 2.5**: multimodal reference-to-video via `--reference-image` / `--reference-video` / `--reference-audio`
+- **MiniMax H3**: audited — API (`minimax-h3`, `minimax-h3-max`, `fal-h3-max`) and local (`minimax-h3-local`) already shipped; no change
+
+### Deprecated / Changed
+- **Sora 2** (`sora`): OpenAI removed the Sora video API on 24 Sep 2026. The registry id and adapter are kept for backwards compatibility (adapter emits a `DeprecationWarning`; label/notes flag the removal)
+- **Planner default video model changed from `sora` to `veo`** (`tryon/agents/planner/bind.py`, `catalog.py`, Studio docs)
+
 #### 🧮 Understanding — Limite 1B - Violetto (out of fashion/media scope)
 - **Limite 1B - Violetto** (`LimiteAdapter` / CLI `--model limite-1b-violetto`): new local model, `tryon.models.limite`
   - Out of OpenTryOn's fashion/media scope by design -- added as a reference point for a possible future generic model gateway, not roadmapped work

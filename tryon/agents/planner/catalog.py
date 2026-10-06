@@ -63,7 +63,7 @@ def capabilities_brief(*, models_per_service: int = 40) -> str:
         "",
         "Capability defaults (unnamed): "
         "vton → kling-ai; generate/edit/fashion → nano-banana-pro; "
-        "video → sora; understand → kimi-k2.6; bg-remove → ben2; tts → eleven-v4.",
+        "video → veo; understand → kimi-k2.6; bg-remove → ben2; tts → eleven-v4.",
         "",
         "Live registry (service → models):",
     ]

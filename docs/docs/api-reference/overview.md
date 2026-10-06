@@ -569,16 +569,17 @@ Also available via the CLI/MCP registry:
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
 | `Cosmos3VideoAdapter` | `cosmos3` | [NVIDIA NIM](nvidia-nim) |
-| `SoraVideoAdapter` / `VeoAdapter` / `LumaAIVideoAdapter` | `sora` / `veo` / `luma-video` | existing pages |
+| `VeoAdapter` | `veo` | [Veo 3.1](veo) |
+| `SoraVideoAdapter` (deprecated — API removed 2026-09-24) / `LumaAIVideoAdapter` | `sora` / `luma-video` | existing pages |
 
-Local twins: `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
+Local twins: `Cosmos3LocalAdapter` (`cosmos3-local`), `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
 
 Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `PImageIdeogramAdapter` (`p-image-ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video).
 
 ### `GeminiOmniAdapter`
 
-Adapter for Gemini Omni Flash (`gemini-omni-flash-preview`) -- multimodal
-video generation and conversational editing via the Interactions API.
+Adapter for Gemini Omni 1.1 Flash (`gemini-omni-1.1-flash`) -- multimodal
+video generation, conversational editing and clip extension via the Interactions API.
 
 ```python
 from tryon.api.omni import GeminiOmniAdapter
@@ -593,13 +594,15 @@ video = adapter.generate_text_to_video(
 
 **Parameters:**
 - `api_key` (str, optional): Google Gemini API key. Defaults to `GEMINI_API_KEY`
+- `model` (str, optional): Defaults to `gemini-omni-1.1-flash`
 
 **Methods:**
-- `generate_text_to_video(prompt, aspect_ratio, previous_interaction_id, ...)` - Text-to-video (or edit turn)
+- `generate_text_to_video(prompt, aspect_ratio, resolution, previous_interaction_id, video, ...)` - Text-to-video (or edit / extend turn)
 - `generate_image_to_video(image, prompt, aspect_ratio, reference_images, ...)` - Image-to-video
 - `edit_video(prompt, previous_interaction_id, ...)` - Conversational edit of a prior clip
+- `extend_video(video, prompt, ...)` - Extend an existing clip by 3-10s
 
-See [Gemini Omni Flash Documentation](gemini-omni) for complete details.
+See [Gemini Omni 1.1 Flash Documentation](gemini-omni) for complete details.
 
 ---
 

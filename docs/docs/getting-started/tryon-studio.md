@@ -57,7 +57,7 @@ Chat is a super-agent over the live registry, not a launcher that only deep-link
 
 - OpenTryOn classifies intent with a cheap planner LLM, then runs a **filtered slice** of the same tools the capability screens use (`invoke_model`).
 - If you name a model (`wan-3.0`, `hy4-preview`, `leffa`, …) that registry id is exclusive for the turn.
-- Otherwise the planner uses the capability default: VTON `kling-ai`, generate/edit `nano-banana-pro`, understand `kimi-k2.6`, video `sora`, bg-remove `ben2`.
+- Otherwise the planner uses the capability default: VTON `kling-ai`, generate/edit `nano-banana-pro`, understand `kimi-k2.6`, video `veo`, bg-remove `ben2`.
 - This turn’s first attached image is `person_image` / `image`; the second is `garment_image`. Follow-ups reuse the latest prior user photos.
 - Returned `images_base64` / `video_base64` persist as chat attachments.
 - Questions such as “what is Hy4 preview?” are answered from the live registry catalog (label + notes), not by guessing.

@@ -242,8 +242,8 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 
 | Tool | Model | Requires |
 |---|---|---|
-| `video_generate_veo` | Google Veo | `GEMINI_API_KEY` |
-| `video_generate_sora` | OpenAI Sora | `OPENAI_API_KEY` |
+| `video_generate_veo` | Google Veo 3.1 (Generate / Fast / Lite) | `GEMINI_API_KEY` |
+| `video_generate_sora` | OpenAI Sora (**deprecated — API removed 2026-09-24**) | `OPENAI_API_KEY` |
 | `video_generate_luma_video` | Luma Dream Machine (Ray 2) | `LUMA_AI_API_KEY` |
 | `video_generate_luma_ray_3_2` | Luma Ray 3.2 (Agents API) | `LUMA_AGENTS_API_KEY` / `LUMA_AI_API_KEY` |
 | `video_generate_seedance` | ByteDance Seedance 2.5 | `ARK_API_KEY` |
@@ -251,7 +251,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_kling_v3_omni` | Kling 3.0 Omni | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `video_generate_kling_v2_5_turbo` | Kling 2.5 Turbo | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `video_generate_grok_imagine_video` | xAI Grok Imagine Video 1.5 | `XAI_API_KEY` |
-| `video_generate_gemini_omni` | Gemini Omni Flash | `GEMINI_API_KEY` |
+| `video_generate_gemini_omni` | Gemini Omni 1.1 Flash | `GEMINI_API_KEY` |
 | `video_generate_p_video` | Pruna P-Video | `PRUNA_API_KEY` |
 | `video_generate_p_video_2_pro` | Pruna P-Video-2-Pro (fast, MiniMax H3-based) | `PRUNA_API_KEY` |
 | `video_generate_p_video_replace` | Pruna P-Video-Replace | `PRUNA_API_KEY` |
@@ -270,6 +270,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_wan_2_2` | Wan 2.2 (local Diffusers) | local/GPU |
 | `video_generate_runway_gen4_5` | Runway Gen-4.5 | `RUNWAYML_API_SECRET` |
 | `video_generate_cosmos3` | NVIDIA Cosmos 3 Generator nano | `NVIDIA_API_KEY` |
+| `video_generate_cosmos3_local` | NVIDIA Cosmos 3 Nano (local Diffusers) | local/GPU |
 
 ### bg-remove -- Background removal
 
