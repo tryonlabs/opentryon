@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🧮 Understanding — Limite 1B - Violetto (out of fashion/media scope)
+- **Limite 1B - Violetto** (`LimiteAdapter` / CLI `--model limite-1b-violetto`): new local model, `tryon.models.limite`
+  - Out of OpenTryOn's fashion/media scope by design -- added as a reference point for a possible future generic model gateway, not roadmapped work
+  - Paradigma Inc's 1B-parameter text-only math-reasoning LLM (~2.1GB, Apache-2.0). No image/video/audio; no first-party hosted API exists
+  - Single-turn use only (system + current message), `attn_implementation="sdpa"` per the model card's numerical-correctness note
+  - Named-model-only: no new planner intent, no capability-default change -- `--model limite-1b-violetto` or naming it in chat
+  - MCP tool `understand_limite_1b_violetto`
+  - Docs: `docs/docs/local-models/limite.md` (new page)
+
 #### 🔊 Text-to-Speech — ElevenLabs Eleven v4 / Eleven v4 Turbo (new `tts` service)
 - **New `tts` service** in the CLI/MCP registry — OpenTryOn's first non-media-generation category (previously vton / generate / edit / understand / video-generate / bg-remove only). New `output_kind="audio_bytes"` in `tryon/cli/runner.py` (`_save_audio`, `_sniff_audio_extension`): output file extension is sniffed from the actual audio bytes' magic number, not the requested `--output-format`, so it's correct even for mp3/wav/opus interchangeably; headerless formats (raw PCM, µ-law, A-law) fall back to `.raw`
 - **Eleven v4** (`ElevenLabsAdapter` / CLI `--model eleven-v4`) and **Eleven v4 Turbo** (`--model eleven-v4-turbo`): new first-party provider, `tryon.api.elevenlabs`

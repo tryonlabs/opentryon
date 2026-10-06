@@ -375,6 +375,38 @@ def check_named_model_tts_dry_run():
     print("\u2713 named-model chat dry-runs tts eleven-v4 and pins eleven-v4-turbo")
 
 
+def check_named_model_limite_dry_run():
+    # limite-1b-violetto is named-model-only: no capability default changed,
+    # no new intent. It only resolves when the user names it explicitly.
+    # required_inputs("understand") == ("image",) is a blanket per-intent
+    # gate (not per-model, same pre-existing behavior hy4-preview's test
+    # below works around) -- Limite has no image capability at all, but a
+    # dummy image still has to be attached to clear the gate via full chat.
+    agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"], model="limite-1b-violetto")
+    )
+    result = agent.run(
+        "use limite-1b-violetto to solve for x given x + 3 = 8",
+        image="garment.jpg",
+        dry_run=True,
+    )
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["service"] == "understand"
+    assert result["model"] == "limite-1b-violetto"
+    assert "LimiteAdapter" in (result.get("call") or "")
+
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    understand = slice_for_intent("understand")
+    hit = match_named_model("use limite 1b violetto for this", understand)
+    assert hit is not None and hit.model == "limite-1b-violetto"
+    # Bare "understand" default (kimi-k2.6) is unaffected.
+    default_hit = match_named_model("describe this photo", understand)
+    assert default_hit is None or default_hit.model != "limite-1b-violetto"
+    print("\u2713 named-model chat dry-runs limite-1b-violetto without changing the understand default")
+
+
 def check_named_model_question_is_help():
     from tryon.agents.planner.catalog import (
         is_named_model_question,
@@ -863,6 +895,7 @@ def main():
     check_named_model_p_video_2_pro_pin()
     check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin()
     check_named_model_tts_dry_run()
+    check_named_model_limite_dry_run()
     check_named_model_question_is_help()
     check_named_model_gpt_image_25_dry_run()
     check_out_of_scope_does_not_delegate()

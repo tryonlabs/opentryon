@@ -142,7 +142,9 @@ Multimodal image/video understanding tools include Kimi, LLaVA-NeXT, the
 **Qwen3.8** dual path (+ **Qwen3.8-Omni-Flash** for audio), **GLM-5.3-FlashX**,
 **DeepSeek-V4.1-Flash** (+ local **DeepSeek-VL2** / **DeepSeek-OCR**),
 **Ternary Bonsai 2 27B** (local server), and **Hy4 preview** (TokenHub LLM +
-local vLLM/SGLang):
+local vLLM/SGLang). **Limite 1B - Violetto** also lives under `understand`
+but is text-only math reasoning, out of fashion/media scope, and
+named-model-only (not a capability default):
 
 | MCP tool | Backend | Needs |
 |---|---|---|
@@ -154,6 +156,7 @@ local vLLM/SGLang):
 | `understand_deepseek_vl2` | Local `deepseek-ai/deepseek-vl2-tiny` (no first-party hosted API) | `pip install opentryon[local]` + GPU + `deepseek_vl2` package |
 | `understand_deepseek_ocr` | Local `deepseek-ai/DeepSeek-OCR` (document/label OCR, no first-party hosted API) | `pip install opentryon[local]` + GPU + `flash-attn` |
 | `understand_ternary_bonsai_2_27b` | PrismML Ternary Bonsai 2 27B (self-hosted llama.cpp/MLX server) | `BONSAI_BASE_URL` (default localhost:8080) |
+| `understand_limite_1b_violetto` | Paradigma Limite 1B - Violetto (text-only math reasoning; out of fashion/media scope) | `pip install opentryon[local]` + GPU |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
 | `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |
 

@@ -881,6 +881,24 @@ def check_deepseek_local_dry_runs():
     )
 
 
+def check_limite_dry_run_and_requires_prompt():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "limite-1b-violetto",
+            "--prompt", "If x + 3 = 8, what is x?", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "LimiteAdapter" in printed and "'max_new_tokens': 512" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["understand", "--model", "limite-1b-violetto", "--dry-run"])
+    assert code != 0, "expected limite-1b-violetto to require --prompt"
+
+    print("\u2713 understand limite-1b-violetto --dry-run resolves the expected call and requires --prompt")
+
+
 def check_elevenlabs_requires_text_and_valid_choices():
     from tryon.api.elevenlabs import ElevenLabsAdapter
 
@@ -1176,6 +1194,7 @@ if __name__ == "__main__":
     check_ternary_bonsai_reports_connection_errors_clearly()
     check_new_model_integrations_dry_runs()
     check_deepseek_local_dry_runs()
+    check_limite_dry_run_and_requires_prompt()
     check_elevenlabs_requires_text_and_valid_choices()
     check_audio_extension_sniffing()
     check_tts_dry_runs()
