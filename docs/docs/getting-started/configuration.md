@@ -69,6 +69,13 @@ DEEPSEEK_API_KEY=your_deepseek_api_key
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 # ELEVENLABS_BASE_URL=https://api.elevenlabs.io
 
+# Anthropic (Claude Haiku 5.5 understanding; also the Studio chat planner)
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Typesafe AI (Jev decision model -- early access)
+TYPESAFE_API_KEY=your_typesafe_api_key
+# TYPESAFE_BASE_URL=https://api.typesafe.ai
+
 # Photoroom Virtual Try-On + Virtual Model
 PHOTOROOM_API_KEY=your_photoroom_api_key
 
@@ -278,6 +285,24 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU. **No first-part
 2. Add to `.env`: `ELEVENLABS_API_KEY=your_key`
 
    Covers `tts --model eleven-v4` and `tts --model eleven-v4-turbo` — OpenTryOn's first `tts` service (text -> speech audio, no image/video needed). Default voice is ElevenLabs' premade "Rachel"; override with `--voice-id`. See [ElevenLabs Eleven v4 / v4 Turbo](../api-reference/elevenlabs.md).
+
+### Anthropic (claude-haiku-5-5)
+
+1. Create a key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+2. Add to `.env`: `ANTHROPIC_API_KEY=your_key`
+
+   Covers `understand --model claude-haiku-5-5` (text/image, no video) and is the same key Studio chat uses when `OPENTRYON_AGENT_LLM_PROVIDER=anthropic`. See [Claude Haiku 5.5](../api-reference/claude.md).
+
+### Typesafe AI (jev)
+
+1. Request access at [console.typesafe.ai](https://console.typesafe.ai) (early access; new sign-ups were paused 2026-09-22)
+2. Add to `.env`: `TYPESAFE_API_KEY=your_key` (optional `TYPESAFE_BASE_URL` for an OpenRouter/Vercel/DigitalOcean-compatible gateway)
+
+   Covers `decide --model jev`. See [Typesafe Jev](../api-reference/typesafe-jev.md).
+
+### Liquid d1 / EmbeddingGemma 2 / pplx-embed-v2-late (local, no cloud key)
+
+No API key. Need `pip install opentryon[local]` plus newer libraries in a separate env (`transformers>=5.15` for d1; `sentence-transformers` for the embedders — `>=6.0.0` for pplx). Optional overrides: `LIQUID_D1_MODEL_ID`, `EMBEDDINGGEMMA_MODEL_ID`, `PPLX_EMBED_MODEL_ID`. See [Liquid d1](../local-models/liquid-d1.md), [EmbeddingGemma 2](../local-models/embeddinggemma.md), [pplx-embed-v2-late](../local-models/pplx-embed.md).
 
 ### Ternary Bonsai 2 27B (local server, no cloud key)
 

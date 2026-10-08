@@ -91,6 +91,8 @@ const sidebars: SidebarsConfig = {
         'api-reference/qwen3.8',
         'api-reference/glm',
         'api-reference/deepseek',
+        'api-reference/claude',
+        'api-reference/typesafe-jev',
         'api-reference/hy4',
         'api-reference/qwen-image',
         'api-reference/elevenlabs',
@@ -117,6 +119,9 @@ const sidebars: SidebarsConfig = {
         'local-models/deepseek-ocr',
         'local-models/ternary-bonsai',
         'local-models/limite',
+        'local-models/liquid-d1',
+        'local-models/embeddinggemma',
+        'local-models/pplx-embed',
       ],
     },
     {

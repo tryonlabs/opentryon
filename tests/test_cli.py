@@ -1054,6 +1054,214 @@ def check_tts_dry_runs():
     print("\u2713 tts eleven-v4 / eleven-v4-turbo --dry-run resolve the expected calls")
 
 
+def check_decide_embed_haiku_relight_dry_runs():
+    """claude-haiku-5-5, fal-h3-max-relight and the new decide / embed services."""
+    cases = [
+        (["understand", "--model", "claude-haiku-5-5", "--image", "a.jpg", "--prompt", "fabric?",
+          "--effort", "low", "--no-thinking"],
+         "ClaudeUnderstandAdapter", "understand", ["'effort': 'low'", "'thinking': False", "'model': 'claude-haiku-5-5'"]),
+        (["video-generate", "--model", "fal-h3-max-relight", "--video", "clip.mp4",
+          "--reference-image", "sphere.png", "--resolution", "1080P"],
+         "FalH3MaxAdapter", "generate_relight", ["'video': 'clip.mp4'", "'reference_image': 'sphere.png'", "'resolution': '1080P'"]),
+        (["decide", "--model", "d1-3b", "--questions", "q.json", "--image", "a.jpg", "b.jpg"],
+         "LiquidD1Adapter", "decide", ["'variant': 'd1-3B'", "'image': ['a.jpg', 'b.jpg']"]),
+        (["decide", "--model", "d1-omni-600m", "--questions", "q.json", "--audio", "clip.wav"],
+         "LiquidD1Adapter", "decide", ["'variant': 'd1-omni-600M'", "'audio': 'clip.wav'"]),
+        (["decide", "--model", "jev", "--questions", "q.json", "--state", "red satin gown"],
+         "JevAdapter", "decide", ["'model': 'jev-latest'", "'state': 'red satin gown'"]),
+        (["embed", "--model", "embeddinggemma-2", "--text", "red gown", "--image", "a.jpg",
+          "--query", "formal dress", "--dim", "256", "--modalities", "text+image"],
+         "EmbeddingGemma2Adapter", "embed", ["'modalities': 'text+image'", "'dim': 256", "'query': 'formal dress'"]),
+        (["embed", "--model", "pplx-embed-v2-late-9b", "--image", "p1.png", "p2.png", "--query", "wool coat"],
+         "PplxEmbedLateAdapter", "embed", ["'variant': '9b'", "'image': ['p1.png', 'p2.png']"]),
+        (["embed", "--model", "pplx-embed-v2-late-0.6b", "--text", "a b"],
+         "PplxEmbedLateAdapter", "embed", ["'variant': '0.6b'"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+    for argv in (
+        ["decide", "--model", "jev", "--questions", "q.json", "--dry-run"],   # --state required
+        ["decide", "--model", "d1-3b", "--dry-run"],                          # --questions required
+    ):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            try:
+                code = cli_main(argv)
+            except SystemExit as exc:
+                code = exc.code
+        assert code != 0, argv
+    print("\u2713 claude-haiku-5-5 / fal-h3-max-relight / decide (d1, jev) / embed --dry-run resolve")
+
+
+def check_decision_helpers_and_adapters():
+    import json
+    import tempfile
+    from unittest import mock
+
+    from tryon.decision import load_questions, load_state
+
+    good = {
+        "refund": {"type": "noul", "instructions": "Refund?"},
+        "team": {"type": "choice", "instructions": "Team?", "criteria": {"a": "x", "b": "y"}},
+        "urgency": {"type": "score", "instructions": "Urgency?", "criteria": ["low", "high"]},
+    }
+    assert load_questions(good) == good
+    assert load_questions(json.dumps(good)) == good
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
+        json.dump(good, f)
+    assert load_questions(f.name) == good
+    for bad in (
+        {}, "not json", {"q": {"type": "maybe", "instructions": "x"}}, {"q": {"type": "noul"}},
+        {"q": {"type": "choice", "instructions": "x", "criteria": {"only": "one"}}},
+        {"q": {"type": "score", "instructions": "x", "criteria": ["only-one"]}},
+    ):
+        try:
+            load_questions(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"expected ValueError for {bad!r}")
+    assert load_state('{"a": 1}') == {"a": 1} and load_state("plain text") == "plain text"
+
+    # Jev: payload shape + error handling (no network)
+    from tryon.api.typesafe import JevAdapter
+
+    adapter = JevAdapter(api_key="test")
+    fake = mock.Mock(status_code=200)
+    fake.json.return_value = {"model": "jev-1.13.0", "answers": {"refund": {"type": "noul", "noul": 0.9}},
+                              "usage": {"input_tokens": 12, "output_tokens": 0}}
+    with mock.patch("tryon.api.typesafe.adapter.requests.post", return_value=fake) as post:
+        out = adapter.decide(questions=good, state="I want my money back")
+    body = post.call_args.kwargs["json"]
+    assert post.call_args.args[0].endswith("/v1/systemone")
+    assert body["model"] == "jev-latest" and body["state"] == "I want my money back" and body["questions"] == good
+    assert post.call_args.kwargs["headers"]["Authorization"] == "Bearer test"
+    assert out["answers"]["refund"]["noul"] == 0.9
+    try:
+        adapter.decide(questions=good, state=None)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Jev must require a state")
+    bad = mock.Mock(status_code=401, text="nope")
+    with mock.patch("tryon.api.typesafe.adapter.requests.post", return_value=bad):
+        try:
+            adapter.decide(questions=good, state="x")
+        except RuntimeError as exc:
+            assert "401" in str(exc)
+        else:
+            raise AssertionError("expected RuntimeError on HTTP 401")
+    try:
+        JevAdapter(api_key="test", model="jev-9")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown Jev model must be rejected")
+
+    # Liquid d1: invalid variant / missing deps raise clear errors before touching weights
+    from tryon.models.liquid_d1 import LiquidD1Adapter
+
+    try:
+        LiquidD1Adapter(variant="d1-70B")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown d1 variant must be rejected")
+    print("\u2713 decide: question schema validation, Jev request/response, d1 variant checks")
+
+
+def check_embeddings_packaging_and_adapters():
+    from pathlib import Path
+
+    import numpy as np
+
+    from tryon.cli.registry import get_model
+    from tryon.cli.runner import _package_embeddings
+
+    with tempfile.TemporaryDirectory() as tmp:
+        dense = {"model": "m", "kind": "dense", "labels": ["a", "b"],
+                 "embeddings": np.arange(6, dtype="float32").reshape(2, 3), "scores": [0.5, 0.25]}
+        packaged = _package_embeddings(dense, Path(tmp), "embed_test")
+        assert packaged["output_kind"] == "embeddings" and packaged["count"] == 2 and packaged["dim"] == 3
+        assert packaged["shapes"] == [[3], [3]] and packaged["scores"] == [0.5, 0.25]
+        saved = np.load(packaged["output_path"])
+        assert saved["emb_1"].tolist() == [3.0, 4.0, 5.0]
+
+        multi = {"model": "m", "kind": "multi_vector", "labels": ["p1"],
+                 "embeddings": [np.ones((5, 128), dtype="float32")]}
+        packaged = _package_embeddings(multi, Path(tmp), "embed_multi")
+        assert packaged["dim"] == 128 and packaged["shapes"] == [[5, 128]] and packaged["kind"] == "multi_vector"
+    assert get_model("embed", "embeddinggemma-2").output_kind == "embeddings"
+
+    from tryon.models.embeddinggemma import EmbeddingGemma2Adapter
+    from tryon.models.pplx_embed import PplxEmbedLateAdapter
+
+    for factory in (lambda: EmbeddingGemma2Adapter(modalities="audio-only"), lambda: PplxEmbedLateAdapter(variant="3b")):
+        try:
+            factory()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid option must be rejected before heavy imports")
+    print("\u2713 embed: .npz packaging for dense + multi-vector, adapter option validation")
+
+
+def check_haiku_and_relight_adapters():
+    from unittest import mock
+
+    from tryon.api.claude import ClaudeUnderstandAdapter
+    from tryon.api.fal import FalH3MaxAdapter
+
+    adapter = ClaudeUnderstandAdapter(api_key="test")
+    block = mock.Mock(type="text", text="cotton, navy, slim fit")
+    message = mock.Mock(content=[block], model="claude-haiku-5-5", stop_reason="end_turn", usage=None)
+    with mock.patch.object(adapter.client.messages, "create", return_value=message) as create:
+        out = adapter.understand(image="https://example.com/a.png", prompt="describe", effort="high", thinking=False)
+    kwargs = create.call_args.kwargs
+    assert out["text"] == "cotton, navy, slim fit"
+    assert kwargs["model"] == "claude-haiku-5-5" and kwargs["thinking"] == {"type": "disabled"}
+    assert kwargs["extra_body"] == {"output_config": {"effort": "high"}}
+    assert "temperature" not in kwargs and "top_p" not in kwargs  # non-default values return 400 on Haiku 5.5
+    assert kwargs["messages"][0]["content"][0] == {"type": "image", "source": {"type": "url", "url": "https://example.com/a.png"}}
+    for bad in ({"effort": "max", "thinking": False}, {"effort": "turbo"}):
+        try:
+            adapter.understand(prompt="x", **bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    try:
+        ClaudeUnderstandAdapter(api_key="test", model="claude-haiku-4-5")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("only claude-haiku-5-5 is registered")
+
+    fal = FalH3MaxAdapter(api_key="test")
+    with mock.patch.object(fal, "_run_endpoint", return_value=b"mp4") as run:
+        assert fal.generate_relight("https://e.com/v.mp4", "https://e.com/sphere.png", resolution="2K", seed=7) == b"mp4"
+    endpoint, payload = run.call_args.args
+    assert endpoint == "minimax/h3-max/relight"
+    assert payload["video_url"] == "https://e.com/v.mp4" and payload["reference_image_url"] == "https://e.com/sphere.png"
+    assert payload["resolution"] == "2K" and payload["aspect_ratio"] == "16:9" and payload["seed"] == 7
+    assert "prompt" not in payload  # the relight endpoint has no prompt field
+    for bad in ({"resolution": "4K"}, {"aspect_ratio": "5:4"}):
+        try:
+            fal.generate_relight("https://e.com/v.mp4", "https://e.com/s.png", **bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    print("\u2713 Claude Haiku 5.5 request shape + H3 Max Relight payload/validation")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -1239,6 +1447,10 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_decide_embed_haiku_relight_dry_runs()
+    check_decision_helpers_and_adapters()
+    check_embeddings_packaging_and_adapters()
+    check_haiku_and_relight_adapters()
     check_video_wave_dry_runs()
     check_veo_seedance_validation()
     check_registry_has_no_flag_collisions()

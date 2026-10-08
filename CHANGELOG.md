@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🧭 New `decide` + `embed` services, Claude Haiku 5.5, H3 Max Relight (Oct 2026 wave)
+- **`decide` service** (calibrated yes/no, choice and score answers; shared question schema in `tryon/decision.py`)
+  - `jev` — Typesafe AI Jev, `tryon.api.typesafe.JevAdapter` (`POST /v1/systemone`, `TYPESAFE_API_KEY`, optional `TYPESAFE_BASE_URL`; text/JSON only; early access, sign-ups paused 2026-09-22). New provider in the MCP Connect catalog
+  - `d1-3b`, `d1-omni-600m` — Liquid AI open-weight d1 decision models, `tryon.models.liquid_d1.LiquidD1Adapter` (text/JSON + images; omni adds one 16 kHz speech clip). Needs transformers>=5.14 / 5.15 in a separate env; LFM Open License v1.0
+- **`embed` service** (new `output_kind="embeddings"`: vectors saved to `.npz`, response carries shapes/labels/optional `--query` scores)
+  - `embeddinggemma-2` — Google EmbeddingGemma 2 (740M; text/code/image/video/audio in one 768-d space, Matryoshka `--dim`), `tryon.models.embeddinggemma`
+  - `pplx-embed-v2-late-0.6b`, `pplx-embed-v2-late-9b` — Perplexity multimodal late-interaction (multi-vector, MaxSim) retrievers, MIT, `tryon.models.pplx_embed`. Local-only: Perplexity's hosted API serves only the v1 dense models
+- **Claude Haiku 5.5** (`claude-haiku-5-5`): `understand` via the first-party Anthropic Messages API, new `tryon.api.claude.ClaudeUnderstandAdapter` (text + image, `--effort`, `--no-thinking`; `anthropic>=0.75.0` added to `install_requires`)
+- **MiniMax H3 Max Relight** (`fal-h3-max-relight`): Fal `minimax/h3-max/relight` — re-light a clip from a lighting-sphere image (`FalH3MaxAdapter.generate_relight`)
+- Planner: named-model pins for all of the above; `decide` / `embed` are named-model-only (no intent, no default change)
+- Docs: new pages `api-reference/claude.md`, `api-reference/typesafe-jev.md`, `local-models/liquid-d1.md`, `local-models/embeddinggemma.md`, `local-models/pplx-embed.md`; Fal, CLI, MCP, configuration, planner and integrate-next pages updated
+- **NVIDIA PivotOPD** not integrated: it is a research method (paper only; code "coming soon", no checkpoints) — tracked as `watch` in `integrate-next`
+- Studio: no capability screens yet for `decide` / `embed` (tools are live to MCP clients and the Agent chat); tracked in `integrate-next`
+
 #### 🎬 Video — model-wave audit (Seedance 2.5, MiniMax H3, Gemini Omni 1.1 Flash, Veo 3.1, Sora 2, Cosmos 3)
 - **Cosmos 3 Nano local** (`cosmos3-local`, `tryon.models.cosmos3.Cosmos3LocalAdapter`): new Path B twin of the NIM `cosmos3`, Diffusers `Cosmos3OmniPipeline`, `nvidia/Cosmos3-Nano` (BF16/CUDA, OpenMDW 1.1). Env: `COSMOS3_MODEL_ID` / `COSMOS3_MODEL_PATH`. MCP tool `video_generate_cosmos3_local`; planner pins `cosmos3-local`, `cosmos 3 local`. Docs: `docs/docs/local-models/cosmos3.md`
 - **Gemini Omni 1.1 Flash**: `gemini-omni` now targets `gemini-omni-1.1-flash` (the `gemini-omni-flash-preview` endpoint was deprecated 30 Sep 2026 and the old id is rejected). New `--resolution` (360p/720p/1080p/4k) and `--video` (extend an existing clip by 3-10s)

@@ -25,7 +25,7 @@ This page is the Docusaurus guide for the server. Keep it next to:
 
 ## Why it matters
 
-- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, bg-remove, and tts tools directly.
+- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, bg-remove, and tts, decide, and embed tools directly.
 - Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
 - New registry models appear as tools with **zero hand-written MCP wrappers**.
 - CLI and MCP cannot drift — one runner, one registry.
@@ -291,6 +291,30 @@ OpenTryOn's first `tts` service. Same `ELEVENLABS_API_KEY` for both models; sync
 `tts` has no dedicated Studio capability screen yet (those are currently Image / VTON / Understand / Video / BG Remove) -- the tools are live via Studio's Agent chat and any MCP client as soon as the server restarts.
 
 See [ElevenLabs Eleven v4 / v4 Turbo](../api-reference/elevenlabs.md).
+
+## Decide tools (decision models)
+
+The new `decide` service wraps "System One" models that return typed, calibrated answers instead of text. Every tool takes `questions` (JSON string or file path; schema on the [Jev page](../api-reference/typesafe-jev.md#question-schema)) plus a `state` and/or media.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `decide_jev` | Typesafe AI Jev (text/JSON only) | `TYPESAFE_API_KEY` |
+| `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
+| `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
+
+## Embed tools (embeddings)
+
+The new `embed` service saves vectors to an `.npz` file under the output dir and returns its path, shapes, labels and (with `query`) similarity scores — not the raw vectors.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `embed_embeddinggemma_2` | Google EmbeddingGemma 2 (768-d; text/code/image/video/audio) | local/GPU |
+| `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
+| `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |
+
+Also new: `understand_claude_haiku_5_5` (`ANTHROPIC_API_KEY`) and `video_generate_fal_h3_max_relight` (`FAL_KEY`). `decide` and `embed` have no Studio capability screens yet; the tools are live to Studio's Agent chat (named-model only) and any MCP client after a server restart.
+
+See [Claude Haiku 5.5](../api-reference/claude.md), [Typesafe Jev](../api-reference/typesafe-jev.md), [Liquid d1](../local-models/liquid-d1.md), [EmbeddingGemma 2](../local-models/embeddinggemma.md), [pplx-embed-v2-late](../local-models/pplx-embed.md).
 
 ## Related
 

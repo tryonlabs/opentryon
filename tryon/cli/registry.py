@@ -58,7 +58,7 @@ class ModelSpec:
     import_path: str  # dotted submodule path, e.g. "tryon.api.vton.flux_vto"
     class_name: str
     method: str
-    output_kind: str  # "images" | "image_bytes" | "video_bytes" | "audio_bytes" | "text"
+    output_kind: str  # "images" | "image_bytes" | "video_bytes" | "audio_bytes" | "text" | "embeddings"
     args: List[Arg] = field(default_factory=list)
     alt_method_on_image: Optional[str] = None
     alt_image_dest: str = "image"
@@ -1338,6 +1338,29 @@ _UNDERSTAND = {
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
         ],
     ),
+    "claude-haiku-5-5": ModelSpec(
+        id="claude-haiku-5-5",
+        label="Claude Haiku 5.5 (Anthropic multimodal understanding, fastest Claude)",
+        import_path="tryon.api.claude", class_name="ClaudeUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="ANTHROPIC_API_KEY",
+        notes="First-party Anthropic Messages API (released 2026-10-07). Text + image in, text out; "
+        "no video. 1M context, 128K max output. Adaptive thinking on by default; --effort "
+        "(default medium) controls depth and --no-thinking disables it (not allowed at xhigh/max). "
+        "temperature/top_p/top_k are not exposed (non-default values return 400). "
+        "Same ANTHROPIC_API_KEY the planner chat already uses.",
+        args=[
+            Arg(("--claude-model",), "claude_model", target="init", call_name="model",
+                default="claude-haiku-5-5", choices=["claude-haiku-5-5"], help="Claude model id"),
+            Arg(("--image", "-i"), "image", help="Optional image to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--system",), "system", help="Optional system prompt"),
+            Arg(("--effort",), "effort", choices=["low", "medium", "high", "xhigh", "max"],
+                help="Effort level (API default medium)"),
+            Arg(("--no-thinking",), "thinking", action="store_false", default=True,
+                help="Disable thinking (only valid at high effort or below)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, default=4096, help="Max output tokens (includes thinking)"),
+        ],
+    ),
     "qwen3.8-max": ModelSpec(
         id="qwen3.8-max", label="Qwen3.8-Max (DashScope multimodal understanding)",
         import_path="tryon.api.qwen", class_name="QwenUnderstandAdapter",
@@ -2230,7 +2253,8 @@ _VIDEO_GENERATE = {
             "Third-party Fal hoster for MiniMax H3 Max (joint MiniMax + fal.ai release). "
             "T2V, first/last I2V, and reference-to-video. 480P/768P, 5–15s. "
             "First-party MiniMax (no R2V): --model minimax-h3-max. "
-            "Dedicated lip-sync/dubbing endpoint: --model fal-h3-max-lipsync."
+            "Dedicated lip-sync/dubbing endpoint: --model fal-h3-max-lipsync. "
+            "Video relighting from a lighting sphere: --model fal-h3-max-relight."
         ),
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt (required)"),
@@ -2318,6 +2342,33 @@ _VIDEO_GENERATE = {
                 choices=["480P", "768P", "1080P", "2K"]),
             Arg(("--enable-transcription",), "enable_transcription", action="store_true",
                 help="Transcribe the audio to guide lip sync accuracy"),
+            Arg(("--no-safety-checker",), "enable_safety_checker", action="store_false",
+                default=True, help="Disable Fal safety checker"),
+            Arg(("--seed",), "seed", type=int, help="Optional RNG seed"),
+        ],
+    ),
+    "fal-h3-max-relight": ModelSpec(
+        id="fal-h3-max-relight",
+        label="MiniMax H3 Max Relight (Fal, video + lighting sphere -> video)",
+        import_path="tryon.api.fal",
+        class_name="FalH3MaxAdapter",
+        method="generate_relight",
+        output_kind="video_bytes",
+        env_hint="FAL_KEY",
+        notes=(
+            "Fal-hosted H3 Max video relighting (minimax/h3-max/relight): re-lights an existing clip "
+            "(<=15s) from a lighting-sphere reference image while keeping subjects, motion, camera "
+            "and audio. No prompt field. 480P-2K ($0.05-$0.32/s on Fal). Same FAL_KEY as "
+            "--model fal-h3-max. Cloud-only: Fal-hosted post-trained endpoint, no open weights."
+        ),
+        args=[
+            Arg(("--video",), "video", required=True, help="Source video to relight (path or URL, <=15s)"),
+            Arg(("--reference-image",), "reference_image", required=True,
+                help="Lighting-sphere render that defines the target lighting"),
+            Arg(("--resolution",), "resolution", default="768P",
+                choices=["480P", "768P", "1080P", "2K"]),
+            Arg(("--aspect-ratio",), "aspect_ratio", default="16:9",
+                choices=["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"]),
             Arg(("--no-safety-checker",), "enable_safety_checker", action="store_false",
                 default=True, help="Disable Fal safety checker"),
             Arg(("--seed",), "seed", type=int, help="Optional RNG seed"),
@@ -2651,6 +2702,144 @@ _TTS = {
     ),
 }
 
+# --------------------------------------------------------------------------
+# decide  ("System One" decision models: state + typed questions -> calibrated answers)
+# --------------------------------------------------------------------------
+
+_DECIDE_QUESTIONS_HELP = (
+    "Questions as a JSON string or path to a JSON file: "
+    '{"name": {"type": "noul|choice|score", "instructions": "...", "criteria": {...}|[...]}}'
+)
+
+_DECIDE = {
+    "d1-3b": ModelSpec(
+        id="d1-3b",
+        label="Liquid AI d1-3B (open-weight decision model, text + images)",
+        import_path="tryon.models.liquid_d1", class_name="LiquidD1Adapter",
+        method="decide", output_kind="text", extra="local",
+        notes="Not a chat model: returns typed, calibrated answers (noul yes/no, choice, score) in one "
+        "forward pass with zero output tokens. Text/JSON state and/or images. 3.12B, bfloat16, "
+        "32K context, needs transformers>=5.14 (separate env; the shared opentryon[local] pin is older). "
+        "LFM Open License v1.0. Use for garment attribute classification, try-on QC gating, routing. "
+        "Audio too: --model d1-omni-600m. Hosted twin: --model jev (text only).",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge; optional when --image is set"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to judge (path or URL)"),
+            Arg(("--variant",), "variant", target="init", default="d1-3B", choices=["d1-3B"], help="d1 variant"),
+            Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path (default LiquidAI/d1-3B)"),
+            Arg(("--device",), "device", target="init", choices=["cuda", "mps", "cpu"], help="Device (default best available)"),
+        ],
+    ),
+    "d1-omni-600m": ModelSpec(
+        id="d1-omni-600m",
+        label="Liquid AI d1-omni-600M (open-weight decision model, text + images + speech)",
+        import_path="tryon.models.liquid_d1", class_name="LiquidD1Adapter",
+        method="decide", output_kind="text", extra="local",
+        notes="Small (587M, float16, 16K context) decision model that also accepts one 16 kHz mono "
+        "speech clip (<=30s) via --audio; images and audio cannot be combined. Needs "
+        "transformers>=5.15. Lower quality than d1-3B (Decision Index 15.95 vs 48.57) but far lighter. "
+        "LFM Open License v1.0.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to judge (path or URL); not with --audio"),
+            Arg(("--audio",), "audio", help="16 kHz mono audio file (<=30s); not with --image"),
+            Arg(("--variant",), "variant", target="init", default="d1-omni-600M", choices=["d1-omni-600M"], help="d1 variant"),
+            Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path (default LiquidAI/d1-omni-600M)"),
+            Arg(("--device",), "device", target="init", choices=["cuda", "mps", "cpu"], help="Device (default best available)"),
+        ],
+    ),
+    "jev": ModelSpec(
+        id="jev",
+        label="Typesafe AI Jev (hosted decision model, text/JSON)",
+        import_path="tryon.api.typesafe", class_name="JevAdapter",
+        method="decide", output_kind="text", env_hint="TYPESAFE_API_KEY",
+        notes="First-party Typesafe System One API (POST /v1/systemone): calibrated choice/score/yes-no "
+        "answers in 70-500ms, output tokens free. Text/JSON state only (no image/audio/video, no "
+        "streaming). Early access: TypeSafe paused new sign-ups on 2026-09-22 -- check "
+        "console.typesafe.ai. Also served via OpenRouter / Vercel AI Gateway / DigitalOcean; set "
+        "TYPESAFE_BASE_URL for a compatible gateway. Open-weight image-capable alternative: --model d1-3b.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
+            Arg(("--jev-model",), "jev_model", target="init", call_name="model", default="jev-latest",
+                choices=["jev-latest", "jev-preview", "jev-1.13.0"], help="Jev model id/alias"),
+        ],
+    ),
+}
+
+# --------------------------------------------------------------------------
+# embed  (multimodal embeddings; vectors saved to .npz)
+# --------------------------------------------------------------------------
+
+_PPLX_EMBED_ARGS = [
+    Arg(("--text", "-t"), "text", nargs="+", help="Text passage(s) to index"),
+    Arg(("--image", "-i"), "image", nargs="+", help="Image(s)/rendered page(s) to index (path or URL)"),
+    Arg(("--query", "-q"), "query", help="Optional text query; returns MaxSim scores against every input"),
+    Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path override"),
+    Arg(("--device",), "device", target="init", help="Device (default cuda if available, else cpu)"),
+]
+
+_EMBED = {
+    "embeddinggemma-2": ModelSpec(
+        id="embeddinggemma-2",
+        label="Google EmbeddingGemma 2 (open-weight multimodal embeddings, 768-d)",
+        import_path="tryon.models.embeddinggemma", class_name="EmbeddingGemma2Adapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="740M open model (google/embeddinggemma-2): text, code, images, video and audio in one "
+        "shared 768-d space, Matryoshka 512/256/128 via --dim. 8,192-token shared context; use "
+        "bfloat16/float32, not float16. --modalities loads only needed encoders (text 270M, "
+        "text+image 440M, text+audio 570M, full 740M). Vectors saved to .npz; --query adds cosine "
+        "scores. Needs sentence-transformers. Apache-2.0 tag (card also links Gemma terms). "
+        "Late-interaction alternative: --model pplx-embed-v2-late-0.6b.",
+        args=[
+            Arg(("--text", "-t"), "text", nargs="+", help="Text(s) to embed (prompted with --task)"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to embed (path or URL)"),
+            Arg(("--audio",), "audio", nargs="+", help="Audio file(s) to embed (mono 16 kHz)"),
+            Arg(("--video",), "video", nargs="+", help="Video file(s) to embed (sampled at 1 fps)"),
+            Arg(("--query", "-q"), "query", help="Optional search query; returns cosine scores against every input"),
+            Arg(("--task",), "task", default="Document",
+                choices=["SearchQuery", "Document", "QuestionAnswering", "FactChecking",
+                         "CodeRetrieval", "Classification", "Clustering", "SentenceSimilarity"],
+                help="Text prompt name (images/audio/video are unprefixed)"),
+            Arg(("--dim",), "dim", type=int, choices=[768, 512, 256, 128], help="Matryoshka truncation (re-normalised)"),
+            Arg(("--modalities",), "modalities", target="init", default="full",
+                choices=["text", "text+image", "text+audio", "full"], help="Which encoders to load"),
+            Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path (default google/embeddinggemma-2)"),
+            Arg(("--device",), "device", target="init", help="Device override"),
+        ],
+    ),
+    "pplx-embed-v2-late-0.6b": ModelSpec(
+        id="pplx-embed-v2-late-0.6b",
+        label="Perplexity pplx-embed-v2-late 0.6B (open-weight multi-vector retriever)",
+        import_path="tryon.models.pplx_embed", class_name="PplxEmbedLateAdapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="MIT-licensed late-interaction (ColBERT-style) retriever: one 128-d vector per token, "
+        "MaxSim scoring, text + images + rendered pages with no OCR. 0.6B shares an embedding space "
+        "with the 9B, so a 0.6B query encoder can search a 9B index. No Perplexity-hosted API for "
+        "v2-late (their hosted Embeddings API serves the v1 dense models only). Needs "
+        "sentence-transformers>=6.0.0. Encode text and images in separate runs for large corpora.",
+        args=[
+            *_PPLX_EMBED_ARGS,
+            Arg(("--variant",), "variant", target="init", default="0.6b", choices=["0.6b"], help="Model size"),
+        ],
+    ),
+    "pplx-embed-v2-late-9b": ModelSpec(
+        id="pplx-embed-v2-late-9b",
+        label="Perplexity pplx-embed-v2-late 9B (open-weight multi-vector retriever)",
+        import_path="tryon.models.pplx_embed", class_name="PplxEmbedLateAdapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="Higher-accuracy 9B (7.4B active) sibling of pplx-embed-v2-late-0.6b (ViDoRe v3 nDCG@10 "
+        "65.2 vs 62.3, vendor-reported). Same MaxSim/128-d multi-vector output and shared "
+        "embedding space. Large GPU needed (F32 safetensors). MIT.",
+        args=[
+            *_PPLX_EMBED_ARGS,
+            Arg(("--variant",), "variant", target="init", default="9b", choices=["9b"], help="Model size"),
+        ],
+    ),
+}
+
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "vton": _VTON,
     "generate": _GENERATE,
@@ -2659,6 +2848,8 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "video-generate": _VIDEO_GENERATE,
     "bg-remove": _BG_REMOVE,
     "tts": _TTS,
+    "decide": _DECIDE,
+    "embed": _EMBED,
 }
 
 SERVICE_HELP = {
@@ -2669,6 +2860,8 @@ SERVICE_HELP = {
     "video-generate": "Text/image-to-video generation",
     "bg-remove": "Background removal",
     "tts": "Text-to-speech",
+    "decide": "Typed, calibrated decisions (yes/no, choice, score) about text/images via System One models",
+    "embed": "Multimodal embeddings (dense or multi-vector) saved to .npz",
 }
 
 
