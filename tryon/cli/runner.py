@@ -189,7 +189,42 @@ def _package_result(spec: ModelSpec, result: Any, output_dir: Path, prefix: str)
             json.dump(result, f, indent=2, default=str)
         return {"output_kind": "text", "result": result, "output_path": str(path)}
 
+    if spec.output_kind == "embeddings":
+        return _package_embeddings(result, output_dir, prefix)
+
     return {"output_kind": "raw", "result": repr(result)}
+
+
+def _package_embeddings(result: Dict[str, Any], output_dir: Path, prefix: str) -> Dict[str, Any]:
+    """Save embedding vectors to a compressed ``.npz`` and return a JSON-safe summary.
+
+    Dense adapters return an ``(n, dim)`` matrix; multi-vector (late-interaction)
+    adapters return a list of ``(tokens, dim)`` matrices. Full vectors live in the
+    ``.npz`` (keys ``emb_0 ... emb_{n-1}``); the response carries shapes, labels,
+    optional query ``scores`` and a short preview so MCP/LLM callers are not flooded.
+    """
+    import numpy as np
+
+    embeddings = result["embeddings"]
+    arrays = [np.asarray(row, dtype="float32") for row in embeddings]
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{prefix}.npz"
+    np.savez_compressed(path, **{f"emb_{i}": a for i, a in enumerate(arrays)})
+    packaged: Dict[str, Any] = {
+        "output_kind": "embeddings",
+        "output_path": str(path),
+        "output_paths": [str(path)],
+        "model": result.get("model"),
+        "kind": result.get("kind"),
+        "count": len(arrays),
+        "dim": int(arrays[0].shape[-1]) if arrays else 0,
+        "shapes": [list(a.shape) for a in arrays],
+        "labels": result.get("labels", []),
+        "preview": [round(float(x), 5) for x in arrays[0].reshape(-1)[:8]] if arrays else [],
+    }
+    if "scores" in result:
+        packaged["scores"] = result["scores"]
+    return packaged
 
 
 def _save_images(images, output_dir: Path, prefix: str) -> tuple[List[Path], List[str]]:
@@ -282,6 +317,14 @@ def run_service(service: str, argv: List[str]) -> int:
 
     if packaged["output_kind"] == "audio_bytes":
         print(f"\u2713 Saved: {packaged['output_path']}")
+        return 0
+
+    if packaged["output_kind"] == "embeddings":
+        print(f"\u2713 Saved: {packaged['output_path']}")
+        print(f"  {packaged['count']} embedding(s), dim={packaged['dim']}, kind={packaged['kind']}")
+        if "scores" in packaged:
+            for label, score in zip(packaged["labels"], packaged["scores"]):
+                print(f"  {score:+.4f}  {label}")
         return 0
 
     if packaged["output_kind"] == "text":

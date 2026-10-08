@@ -28,6 +28,9 @@ Adding a new local or API model? Start with
 | [DeepSeek-VL2](./deepseek-vl2) | Image/Video Understanding | Single-GPU (tiny) to 40GB+ (small/base) | - | Open DeepSeek-VL2; no first-party hosted API exists. Needs DeepSeek's own `deepseek_vl2` package (not on PyPI) |
 | [DeepSeek-OCR](./deepseek-ocr) | Document/Image OCR | Requires flash-attn + CUDA | - | "Contexts Optical Compression"; care labels, size tags, SKU sheets. No first-party hosted API exists |
 | [Ternary Bonsai 2 27B](./ternary-bonsai) | Image/Text Understanding | 5.9-8.5GB on disk (ternary-quantized) | Fast (CPU/Metal-friendly) | OpenAI-compatible client for PrismML's own llama.cpp/MLX server — no torch needed on the OpenTryOn side |
+| [Liquid d1](./liquid-d1) | Decision model (`decide`) | d1-3B ~3B / d1-omni-600M ~0.6B | Fast (1 forward pass) | Calibrated yes/no, choice, score answers about text, images (and speech for omni); needs transformers>=5.15 |
+| [EmbeddingGemma 2](./embeddinggemma) | Multimodal embeddings (`embed`) | 270M-740M by modality | Fast | One 768-d space for text, code, image, video, audio; Apache-2.0 tag |
+| [pplx-embed-v2-late](./pplx-embed) | Multi-vector retrieval (`embed`) | 0.6B (340M active) / 9B (7.4B active) | Moderate | ColBERT-style MaxSim over text, images and pages; MIT; no hosted API |
 | [Limite 1B - Violetto](./limite) | Text Math Reasoning (out of fashion/media scope) | ~2.1GB | Fast | Text-only 1B math model; named-model-only, not a fashion/media fit — see the page for why it's here |
 
 ## Requirements

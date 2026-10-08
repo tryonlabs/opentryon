@@ -56,6 +56,7 @@ setup(
         "PyJWT>=2.10.1",
         "google-genai>=1.52.0",
         "openai>=2.9.0",
+        "anthropic>=0.75.0",  # Claude Haiku 5.5 understand adapter
         "fastapi==0.124.0",
         "uvicorn[standard]==0.38.0",
         "python-multipart==0.0.20",

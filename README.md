@@ -18,8 +18,8 @@ API tutorials, configuration, examples, and agent guides live there — not in t
 |---|---|
 | **Virtual try-on** | FLUX VTO, **Google Vertex VTO**, **OutfitAnyone-Plus**, **Photoroom** (try-on + virtual model), Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local), **Leffa** / **CatVTON** (local weights), **Muse Image** (composition) |
 | **Generate / edit** | Nano Banana family, FLUX.2, GPT Image (1.5 + **2.5** Flare/Sunburst), Luma Photon, Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image, Pruna P-Image / **P-Image-Ideogram** / Edit / Upscale, **Qwen-Image** (API + local), **Muse Image**; local FLUX.2-dev Turbo |
-| **Understand** | Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **NVIDIA Nemotron Omni / Cosmos 3 Reasoner**, **Hy4 preview** (TokenHub + local vLLM) |
-| **Video** | Veo 3.1, Sora (deprecated), Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni 1.1 Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3 / H3 Max** (API + local H3 + **Fal H3 Max**), **Wan** (API + **3.0** + local 2.2), **Runway Gen-4.5**, **NVIDIA Cosmos 3** (API + local) |
+| **Understand** | **Claude Haiku 5.5**, Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **NVIDIA Nemotron Omni / Cosmos 3 Reasoner**, **Hy4 preview** (TokenHub + local vLLM) |
+| **Video** | Veo 3.1, Sora (deprecated), Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni 1.1 Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3 / H3 Max** (API + local H3 + **Fal H3 Max** + **Relight**), **Wan** (API + **3.0** + local 2.2), **Runway Gen-4.5**, **NVIDIA Cosmos 3** (API + local) |
 | **Other** | BEN2 background removal, garment/human preprocessing, fashion datasets, planner agent (registry `invoke_model`) |
 
 ## Four ways to use it
@@ -96,6 +96,8 @@ opentryon understand --model kimi-k3 --help    # list that model's flags
 | `video-generate` | Text/image-to-video | `veo`, `sora`, `gemini-omni`, … |
 | `bg-remove` | Background removal | `ben2` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo` |
+| `decide` | Calibrated yes/no, choice, score decisions | `jev`, `d1-3b`, `d1-omni-600m` |
+| `embed` | Multimodal embeddings (`.npz`) | `embeddinggemma-2`, `pplx-embed-v2-late-0.6b`, … |
 
 Models marked local need `pip install opentryon[local]`. Full table and flags: [Unified CLI](https://tryonlabs.github.io/opentryon/docs/getting-started/cli).
 

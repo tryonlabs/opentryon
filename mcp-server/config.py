@@ -180,6 +180,15 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Unlocks tts eleven-v4 / eleven-v4-turbo (text-to-speech). OpenTryOn's first tts service model.",
     ),
     (
+        "typesafe",
+        "Typesafe AI (Jev)",
+        "https://console.typesafe.ai",
+        ("TYPESAFE_API_KEY",),
+        "Unlocks decide jev (hosted System One decision model, text/JSON). Early access -- new "
+        "sign-ups were paused on 2026-09-22. Optional TYPESAFE_BASE_URL for an OpenRouter/Vercel/"
+        "DigitalOcean-compatible gateway.",
+    ),
+    (
         "aws",
         "Amazon Bedrock",
         "https://console.aws.amazon.com/bedrock/",

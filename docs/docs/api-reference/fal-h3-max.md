@@ -13,7 +13,7 @@ keywords:
 
 # MiniMax H3 Max (Fal)
 
-OpenTryOn’s **first third-party hoster** adapter. [Fal](https://fal.ai/minimax-h3-max) jointly released MiniMax H3 Max with MiniMax and hosts a post-trained stack with **T2V, I2V, reference-to-video, and a dedicated lip-sync/dubbing endpoint**.
+OpenTryOn’s **first third-party hoster** adapter. [Fal](https://fal.ai/minimax-h3-max) jointly released MiniMax H3 Max with MiniMax and hosts a post-trained stack with **T2V, I2V, reference-to-video, a dedicated lip-sync/dubbing endpoint, and video relighting**.
 
 This is **not** the MiniMax first-party V2 API. Official MiniMax H3 Max (`--model minimax-h3-max`, `MINIMAX_API_KEY`) is T2V / first-last I2V only. Use Fal when you want R2V, lip-sync, or Fal’s queue.
 
@@ -22,11 +22,12 @@ This is **not** the MiniMax first-party V2 API. Official MiniMax H3 Max (`--mode
 | `minimax-h3-max` | MiniMax V2 | T2V, I2V | `MINIMAX_API_KEY` |
 | `fal-h3-max` | Fal queue | T2V, I2V, **R2V** | `FAL_KEY` |
 | `fal-h3-max-lipsync` | Fal queue | Image + audio → lip-synced video | `FAL_KEY` |
+| `fal-h3-max-relight` | Fal queue | Video + lighting-sphere image → relit video | `FAL_KEY` |
 | `minimax-h3` | MiniMax V2 | T2V, I2V, R2V (Python), 2K | `MINIMAX_API_KEY` |
 
 No open weights for H3 Max. Local H3-Base is `--model minimax-h3-local`.
 
-Docs: [T2V](https://fal.ai/models/minimax/h3-max/text-to-video/api), [I2V](https://fal.ai/models/minimax/h3-max/image-to-video/api), [R2V](https://fal.ai/models/minimax/h3-max/reference-to-video/api), [Lip Sync](https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api), [queue](https://docs.fal.ai/model-apis/inference/queue).
+Docs: [T2V](https://fal.ai/models/minimax/h3-max/text-to-video/api), [I2V](https://fal.ai/models/minimax/h3-max/image-to-video/api), [R2V](https://fal.ai/models/minimax/h3-max/reference-to-video/api), [Lip Sync](https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api), [Relight](https://fal.ai/models/minimax/h3-max/relight/api), [queue](https://docs.fal.ai/model-apis/inference/queue).
 
 ## Environment
 
@@ -62,6 +63,10 @@ opentryon video-generate --model fal-h3-max \
 opentryon video-generate --model fal-h3-max-lipsync \
   --image portrait.jpg --audio line.wav \
   --resolution 1080P --enable-transcription
+
+# Relight an existing clip from a lighting-sphere render (no prompt)
+opentryon video-generate --model fal-h3-max-relight \
+  --video runway.mp4 --reference-image warm_sunset_sphere.png --resolution 1080P
 ```
 
 | Flag | Notes |
@@ -88,6 +93,21 @@ No `--prompt` — only an image and an audio track. Resolution ceiling is higher
 | `--enable-transcription` | Transcribe the audio to guide lip-sync accuracy |
 | `--no-safety-checker` | Disable Fal’s safety checker |
 | `--seed` | Optional |
+
+### `fal-h3-max-relight` flags
+
+Video-to-video: **subjects, motion, camera and audio are preserved; only the lighting changes** to match a lighting-sphere render. There is no prompt field — the sphere image fully defines the lighting.
+
+| Flag | Notes |
+|---|---|
+| `--video` | Source clip (path or URL), up to 15 s; converted to 24 fps and trimmed to a valid frame count (≥ ~2.33 s) — required |
+| `--reference-image` | Lighting-sphere render that defines the target lighting — required |
+| `--resolution` | `480P`, `768P`, `1080P`, or `2K` (default **768P**; 1080P / 2K are upscaled and refined from 768P) |
+| `--aspect-ratio` | `adaptive`, `21:9`, `16:9` (default), `4:3`, `1:1`, `3:4`, `9:16` |
+| `--no-safety-checker` | Disable Fal’s safety checker |
+| `--seed` | Optional |
+
+Fal pricing is per output second: $0.05 (480p), $0.08 (768p), $0.16 (1080p), $0.32 (2K).
 
 ## Python
 
@@ -123,10 +143,17 @@ open("lipsync.mp4", "wb").write(
         resolution="1080P",
     )
 )
+open("relit.mp4", "wb").write(
+    adapter.generate_relight(
+        video="runway.mp4",
+        reference_image="warm_sunset_sphere.png",
+        resolution="1080P",
+    )
+)
 ```
 
 ## Notes
 
 - Jobs go through Fal’s **queue** (`POST https://queue.fal.run/minimax/h3-max/...` → poll `status_url` → download `video.url`).
-- MCP tools: `video_generate_fal_h3_max` and `video_generate_fal_h3_max_lipsync` (generated from the registry).
-- Planner: `fal h3 max` / `fal-h3-max` pin T2V/I2V/R2V. `h3 max lip sync` / `fal-h3-max-lipsync` pin the dubbing endpoint. A bare `h3 max` still pins first-party `minimax-h3-max`.
+- MCP tools: `video_generate_fal_h3_max`, `video_generate_fal_h3_max_lipsync` and `video_generate_fal_h3_max_relight` (generated from the registry).
+- Planner: `fal h3 max` / `fal-h3-max` pin T2V/I2V/R2V. `h3 max lip sync` / `fal-h3-max-lipsync` pin the dubbing endpoint. `h3 max relight` / `fal-h3-max-relight` pin the relight endpoint. A bare `h3 max` still pins first-party `minimax-h3-max`.

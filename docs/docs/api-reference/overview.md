@@ -564,7 +564,7 @@ Also available via the CLI/MCP registry:
 | `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
 | `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
 | `MiniMaxH3Adapter` | `minimax-h3` / `minimax-h3-max` | [MiniMax H3](minimax-h3) |
-| `FalH3MaxAdapter` | `fal-h3-max` / `fal-h3-max-lipsync` | [MiniMax H3 Max (Fal)](fal-h3-max) |
+| `FalH3MaxAdapter` | `fal-h3-max` / `fal-h3-max-lipsync` / `fal-h3-max-relight` | [MiniMax H3 Max (Fal)](fal-h3-max) |
 | `PVideo2ProAdapter` | `p-video-2-pro` | [Pruna AI](pruna) |
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
 | `RunwayVideoAdapter` | `runway-gen4.5` | [Runway Gen-4.5](runway-gen4.5) |
@@ -674,6 +674,32 @@ Thinking is always on (`thinking.type` only supports `enabled`); use
 See [GLM-5.3-FlashX Documentation](glm) for complete details.
 
 ---
+
+### `ClaudeUnderstandAdapter`
+
+Adapter for Anthropic's **Claude Haiku 5.5** (`claude-haiku-5-5`) — fast, low-cost text and image understanding (no video).
+
+```python
+from tryon.api.claude import ClaudeUnderstandAdapter
+
+adapter = ClaudeUnderstandAdapter()  # reads ANTHROPIC_API_KEY
+result = adapter.understand("garment.jpg", prompt="List fabric, colour and fit.", effort="low", thinking=False)
+print(result["text"])
+```
+
+See [Claude Haiku 5.5](claude) for details.
+
+### `JevAdapter`
+
+Adapter for Typesafe AI's **Jev** "System One" decision model (`decide` service): calibrated yes/no, choice and score answers about text/JSON state.
+
+```python
+from tryon.api.typesafe import JevAdapter
+
+out = JevAdapter().decide(state="Red satin gown", questions={"formal": {"type": "noul", "instructions": "Formal wear?"}})
+```
+
+See [Typesafe Jev](typesafe-jev) for details. Open-weight, image-capable twins: [Liquid d1](../local-models/liquid-d1.md).
 
 ### `DeepSeekUnderstandAdapter`
 

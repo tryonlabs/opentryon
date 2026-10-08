@@ -154,6 +154,14 @@ async def check_dry_run_calls() -> None:
         ("generate_grok_imagine_image", {"prompt": "product shot", "dry_run": True}, False),
         ("bg_remove_ben2", {"image": "i.jpg", "dry_run": True}, True),
         ("tts_eleven_v4", {"text": "Welcome to the spring collection.", "dry_run": True}, False),
+        ("understand_claude_haiku_5_5", {"image": "i.jpg", "prompt": "fabric?", "effort": "low", "dry_run": True}, False),
+        ("video_generate_fal_h3_max_relight", {"video": "clip.mp4", "reference_image": "sphere.png", "dry_run": True}, False),
+        ("decide_jev", {"questions": "q.json", "state": "red satin gown", "dry_run": True}, False),
+        ("decide_d1_3b", {"questions": "q.json", "state": "x", "image": ["a.jpg"], "dry_run": True}, True),
+        ("decide_d1_omni_600m", {"questions": "q.json", "audio": "clip.wav", "dry_run": True}, True),
+        ("embed_embeddinggemma_2", {"text": ["red gown"], "query": "formal dress", "dry_run": True}, True),
+        ("embed_pplx_embed_v2_late_0_6b", {"image": ["p1.png"], "query": "wool coat", "dry_run": True}, True),
+        ("embed_pplx_embed_v2_late_9b", {"text": ["passage"], "dry_run": True}, True),
         ("tts_eleven_v4_turbo", {"text": "[whispers] Hello.", "dry_run": True}, False),
     ]
     checked = 0
@@ -304,6 +312,15 @@ async def check_list_and_set_api_keys() -> None:
     assert any(
         u["service"] == "video-generate" and u["model"] == "cosmos3"
         for u in by_id["nvidia"]["unlocks"]
+    )
+    assert "typesafe" in by_id
+    assert by_id["typesafe"]["vars"][0]["name"] == "TYPESAFE_API_KEY"
+    assert any(
+        u["service"] == "decide" and u["model"] == "jev" for u in by_id["typesafe"]["unlocks"]
+    )
+    assert any(
+        u["service"] == "understand" and u["model"] == "claude-haiku-5-5"
+        for u in by_id["anthropic"]["unlocks"]
     )
     assert "tokenhub" in by_id
     assert by_id["tokenhub"]["vars"][0]["name"] == "TOKENHUB_API_KEY"

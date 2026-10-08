@@ -11,6 +11,7 @@ Docs:
   https://fal.ai/models/minimax/h3-max/image-to-video/api
   https://fal.ai/models/minimax/h3-max/reference-to-video/api
   https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
+  https://fal.ai/models/minimax/h3-max/relight/api
   https://docs.fal.ai/model-apis/inference/queue
 
 Env:
@@ -52,8 +53,11 @@ T2V_ENDPOINT = "minimax/h3-max/text-to-video"
 I2V_ENDPOINT = "minimax/h3-max/image-to-video"
 R2V_ENDPOINT = "minimax/h3-max/reference-to-video"
 LIPSYNC_ENDPOINT = "minimax/h3-max/lip-sync/image-to-video"
+RELIGHT_ENDPOINT = "minimax/h3-max/relight"
 RESOLUTIONS = ("480P", "768P")
 LIPSYNC_RESOLUTIONS = ("480P", "768P", "1080P", "2K")
+RELIGHT_RESOLUTIONS = ("480P", "768P", "1080P", "2K")
+RELIGHT_RATIOS = ("adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16")
 LIPSYNC_AUDIO_MIN_SECONDS = 5
 LIPSYNC_AUDIO_MAX_SECONDS = 14.8
 T2V_RATIOS = ("21:9", "16:9", "4:3", "1:1", "3:4", "9:16")
@@ -442,3 +446,43 @@ class FalH3MaxAdapter:
         if seed is not None:
             payload["seed"] = int(seed)
         return self._run_endpoint(LIPSYNC_ENDPOINT, payload)
+
+    def generate_relight(
+        self,
+        video: MediaLike,
+        reference_image: ImageLike,
+        resolution: str = "768P",
+        aspect_ratio: str = "16:9",
+        enable_safety_checker: bool = True,
+        seed: Optional[int] = None,
+    ) -> bytes:
+        """H3 Max Relight — re-light an existing clip from a lighting-sphere image.
+
+        Video-to-video: subjects, motion, camera and audio are preserved; only
+        the lighting changes to match ``reference_image`` (a lighting sphere
+        render). There is no prompt field. Source video up to 15s is converted
+        to 24 fps; 1080P / 2K are upscaled and refined from 768P.
+        """
+        res = (resolution or "768P").strip()
+        if res not in RELIGHT_RESOLUTIONS:
+            raise ValueError(
+                f"resolution must be one of {list(RELIGHT_RESOLUTIONS)} for relight (got {res!r})."
+            )
+        if aspect_ratio not in RELIGHT_RATIOS:
+            raise ValueError(
+                f"aspect_ratio must be one of {list(RELIGHT_RATIOS)} (got {aspect_ratio!r})."
+            )
+        if not video:
+            raise ValueError("video is required for relight.")
+        if reference_image is None:
+            raise ValueError("reference_image (lighting sphere) is required for relight.")
+        payload: Dict[str, Any] = {
+            "video_url": self._prepare_media_uri(video, kind="video"),
+            "reference_image_url": self._prepare_image_uri(reference_image),
+            "resolution": res,
+            "aspect_ratio": aspect_ratio,
+            "enable_safety_checker": bool(enable_safety_checker),
+        }
+        if seed is not None:
+            payload["seed"] = int(seed)
+        return self._run_endpoint(RELIGHT_ENDPOINT, payload)

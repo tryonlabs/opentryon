@@ -199,6 +199,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | Tool | Model | Requires | Notes |
 |---|---|---|---|
 | `understand_llava_next` | LLaVA-NeXT (local VLM captioning) | local/GPU | Fashion-oriented captioning helper |
+| `understand_claude_haiku_5_5` | Claude Haiku 5.5 (Anthropic) | `ANTHROPIC_API_KEY` | Text + image (no video); `effort`, thinking toggle |
 | `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI) | `MOONSHOT_API_KEY` | Image + video; optional thinking |
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
 | `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |
@@ -264,6 +265,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_minimax_h3_max` | MiniMax H3 Max (official API, fast) | `MINIMAX_API_KEY` |
 | `video_generate_fal_h3_max` | MiniMax H3 Max (Fal, T2V / I2V / R2V) | `FAL_KEY` |
 | `video_generate_fal_h3_max_lipsync` | MiniMax H3 Max Lip Sync (Fal, image + audio → video) | `FAL_KEY` |
+| `video_generate_fal_h3_max_relight` | MiniMax H3 Max Relight (Fal, video + lighting sphere → video) | `FAL_KEY` |
 | `video_generate_minimax_h3_local` | MiniMax H3 (local Diffusers) | local/GPU |
 | `video_generate_wan_api` | Alibaba Wan 2.x (DashScope) | `DASHSCOPE_API_KEY` |
 | `video_generate_wan_3_0` | Alibaba Wan 3.0 (DashScope) | `DASHSCOPE_API_KEY` |
@@ -288,6 +290,28 @@ First-party ElevenLabs API, `ELEVENLABS_API_KEY`. OpenTryOn's first `tts` servic
 | `tts_eleven_v4_turbo` | ElevenLabs Eleven v4 Turbo (~100ms latency; audio tags e.g. `[whispers]`) | `ELEVENLABS_API_KEY` |
 
 See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenlabs.md).
+
+### decide -- Calibrated decisions (no text output)
+
+"System One" models: `questions` (JSON string or path; `noul` / `choice` / `score`) plus a `state` and/or media in, typed answers with probabilities out. Named-model-only in the planner.
+
+| Tool | Model | Requires |
+|---|---|---|
+| `decide_jev` | Typesafe AI Jev (text/JSON only; early access) | `TYPESAFE_API_KEY` |
+| `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
+| `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
+
+### embed -- Embeddings
+
+Vectors are saved to an `.npz` file; the tool returns the path, shapes, labels and optional `query` scores.
+
+| Tool | Model | Requires |
+|---|---|---|
+| `embed_embeddinggemma_2` | Google EmbeddingGemma 2 (768-d; text/code/image/video/audio) | local/GPU |
+| `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
+| `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |
+
+See [`claude.md`](../docs/docs/api-reference/claude.md), [`typesafe-jev.md`](../docs/docs/api-reference/typesafe-jev.md), [`liquid-d1.md`](../docs/docs/local-models/liquid-d1.md), [`embeddinggemma.md`](../docs/docs/local-models/embeddinggemma.md), [`pplx-embed.md`](../docs/docs/local-models/pplx-embed.md).
 
 Run `list_opentryon_tools()` at any time for the live, authoritative version of this table (including per-model parameter docs) plus real-time configuration status.
 

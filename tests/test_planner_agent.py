@@ -136,6 +136,32 @@ def check_named_model_nvidia_nim_dry_run():
     print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni / cosmos3-local")
 
 
+def check_named_model_pins_for_wave3_models():
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    fashion = slice_for_intent("fashion")
+    cases = {
+        "describe this with claude haiku 5.5": "claude-haiku-5-5",
+        "use claude-haiku-5-5 to read the care label": "claude-haiku-5-5",
+        "relight the clip with h3 max relight": "fal-h3-max-relight",
+        "classify with liquid d1-omni-600m": "d1-omni-600m",
+        "classify with d1-3b": "d1-3b",
+        "ask typesafe jev whether this is formal": "jev",
+        "embed these with embeddinggemma 2": "embeddinggemma-2",
+        "index the lookbook with pplx-embed-v2-late-9b": "pplx-embed-v2-late-9b",
+        "index the lookbook with pplx-embed-v2-late": "pplx-embed-v2-late-0.6b",
+    }
+    for prompt, expected in cases.items():
+        hit = match_named_model(prompt, fashion)
+        assert hit is not None and hit.model == expected, (prompt, hit and hit.model)
+    # the new services are named-model-only: no intent routes to them and defaults are unchanged
+    from tryon.agents.planner.bind import DEFAULT_MODEL, INTENT_SERVICES
+
+    assert not any(s in ("decide", "embed") for svcs in INTENT_SERVICES.values() for s in svcs)
+    assert DEFAULT_MODEL["understand"] == ("understand", "kimi-k2.6")
+    print("\u2713 planner pins claude-haiku-5-5 / fal-h3-max-relight / d1 / jev / embed models; defaults unchanged")
+
+
 def check_named_model_google_vton_dry_run():
     agent = PlannerAgent(
         classifier=lambda **kwargs: Plan(intent="vton", task=kwargs["prompt"], reason="try-on")
@@ -891,6 +917,7 @@ def main():
     check_model_swap_and_fashion_dry_run()
     check_named_model_wan_30_dry_run()
     check_named_model_nvidia_nim_dry_run()
+    check_named_model_pins_for_wave3_models()
     check_named_model_google_vton_dry_run()
     check_named_model_outfitanyone_and_photoroom_dry_run()
     check_named_model_leffa_and_catvton_dry_run()
