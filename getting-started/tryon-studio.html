@@ -9,8 +9,8 @@
 <meta name="description" content="OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), datasets (Fashion-MNIST, VITON-HD), garment segmentation, pose estimation, and TryOnDiffusion implementation.">
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io/opentryon"><link rel="stylesheet" href="/opentryon/assets/css/styles.0ecc2d9e.css">
-<script src="/opentryon/assets/js/runtime~main.ed69aa90.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.1dce6609.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.ed53cb27.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.34ff725b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -36,7 +36,7 @@
 <ul>
 <li class="">OpenTryOn classifies intent with a cheap planner LLM, then runs a <strong>filtered slice</strong> of the same tools the capability screens use (<code>invoke_model</code>).</li>
 <li class="">If you name a model (<code>wan-3.0</code>, <code>hy4-preview</code>, <code>leffa</code>, …) that registry id is exclusive for the turn.</li>
-<li class="">Otherwise the planner uses the capability default: VTON <code>kling-ai</code>, generate/edit <code>nano-banana-pro</code>, understand <code>kimi-k2.6</code>, video <code>sora</code>, bg-remove <code>ben2</code>.</li>
+<li class="">Otherwise the planner uses the capability default: VTON <code>kling-ai</code>, generate/edit <code>nano-banana-pro</code>, understand <code>kimi-k2.6</code>, video <code>veo</code>, bg-remove <code>ben2</code>.</li>
 <li class="">This turn’s first attached image is <code>person_image</code> / <code>image</code>; the second is <code>garment_image</code>. Follow-ups reuse the latest prior user photos.</li>
 <li class="">Returned <code>images_base64</code> / <code>video_base64</code> persist as chat attachments.</li>
 <li class="">Questions such as “what is Hy4 preview?” are answered from the live registry catalog (label + notes), not by guessing.</li>

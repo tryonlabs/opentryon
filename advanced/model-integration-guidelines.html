@@ -9,8 +9,8 @@
 <meta name="description" content="OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. Features virtual try-on APIs (Amazon Nova Canvas, Kling AI, Segmind), datasets (Fashion-MNIST, VITON-HD), garment segmentation, pose estimation, and TryOnDiffusion implementation.">
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io/opentryon"><link rel="stylesheet" href="/opentryon/assets/css/styles.0ecc2d9e.css">
-<script src="/opentryon/assets/js/runtime~main.ed69aa90.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.1dce6609.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.ed53cb27.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.34ff725b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -62,10 +62,10 @@
 </li>
 <li class="">
 <p>Method names (shared vocabulary):</p>
-<table><thead><tr><th>Service</th><th>Methods</th></tr></thead><tbody><tr><td><code>generate</code> / <code>edit</code></td><td><code>generate_text_to_image</code>, <code>generate_image_edit</code>, <code>generate_multi_image</code></td></tr><tr><td><code>vton</code></td><td><code>generate_and_decode</code> (or thin wrapper)</td></tr><tr><td><code>understand</code></td><td><code>understand</code> / <code>understand_image</code> / <code>understand_video</code></td></tr><tr><td><code>video-generate</code></td><td><code>generate_text_to_video</code>, <code>generate_image_to_video</code></td></tr><tr><td><code>bg-remove</code></td><td><code>remove_background</code></td></tr></tbody></table>
+<table><thead><tr><th>Service</th><th>Methods</th></tr></thead><tbody><tr><td><code>generate</code> / <code>edit</code></td><td><code>generate_text_to_image</code>, <code>generate_image_edit</code>, <code>generate_multi_image</code></td></tr><tr><td><code>vton</code></td><td><code>generate_and_decode</code> (or thin wrapper)</td></tr><tr><td><code>understand</code></td><td><code>understand</code> / <code>understand_image</code> / <code>understand_video</code></td></tr><tr><td><code>video-generate</code></td><td><code>generate_text_to_video</code>, <code>generate_image_to_video</code></td></tr><tr><td><code>bg-remove</code></td><td><code>remove_background</code></td></tr><tr><td><code>tts</code></td><td><code>generate_speech</code></td></tr></tbody></table>
 </li>
 <li class="">
-<p>Returns: images → <code>List[Image.Image]</code> (or bytes if needed); video → raw <code>bytes</code>; understand → <code>dict</code>.</p>
+<p>Returns: images → <code>List[Image.Image]</code> (or bytes if needed); video → raw <code>bytes</code>; audio → raw <code>bytes</code>; understand → <code>dict</code>.</p>
 </li>
 <li class="">
 <p>Module docstring: summary, official docs link, model ids, 1–2 examples.</p>
@@ -161,8 +161,8 @@
 <table><thead><tr><th>Kind</th><th>Look at</th></tr></thead><tbody><tr><td>Local diffusion image</td><td><code>tryon/models/flux2_turbo/</code></td></tr><tr><td>Local VLM</td><td><code>tryon/models/kimi_vl/</code></td></tr><tr><td>Local VTON weights</td><td><code>tryon/models/ootdiffusion/</code> (if present)</td></tr></tbody></table>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-service-and-output_kind-mapping">5. Service and <code>output_kind</code> mapping<a href="#5-service-and-output_kind-mapping" class="hash-link" aria-label="Direct link to 5-service-and-output_kind-mapping" title="Direct link to 5-service-and-output_kind-mapping" translate="no">​</a></h2>
-<table><thead><tr><th>Capability</th><th>Registry service</th><th>Typical <code>output_kind</code></th></tr></thead><tbody><tr><td>Virtual try-on</td><td><code>vton</code></td><td><code>images</code></td></tr><tr><td>Text/image → image</td><td><code>generate</code></td><td><code>images</code></td></tr><tr><td>Image edit</td><td><code>edit</code></td><td><code>images</code></td></tr><tr><td>Caption / VLM / LLM</td><td><code>understand</code></td><td><code>text</code></td></tr><tr><td>Text/image → video</td><td><code>video-generate</code></td><td><code>video_bytes</code></td></tr><tr><td>Background remove</td><td><code>bg-remove</code></td><td><code>images</code></td></tr></tbody></table>
-<p>New category only if none of the above fit — adding a service is a product decision, not a drive-by.</p>
+<table><thead><tr><th>Capability</th><th>Registry service</th><th>Typical <code>output_kind</code></th></tr></thead><tbody><tr><td>Virtual try-on</td><td><code>vton</code></td><td><code>images</code></td></tr><tr><td>Text/image → image</td><td><code>generate</code></td><td><code>images</code></td></tr><tr><td>Image edit</td><td><code>edit</code></td><td><code>images</code></td></tr><tr><td>Caption / VLM / LLM</td><td><code>understand</code></td><td><code>text</code></td></tr><tr><td>Text/image → video</td><td><code>video-generate</code></td><td><code>video_bytes</code></td></tr><tr><td>Background remove</td><td><code>bg-remove</code></td><td><code>images</code></td></tr><tr><td>Text-to-speech</td><td><code>tts</code></td><td><code>audio_bytes</code></td></tr></tbody></table>
+<p>New category only if none of the above fit — adding a service is a product decision, not a drive-by. <code>tts</code> (ElevenLabs Eleven v4 / v4 Turbo, 21 Sep 2026) was the first new category added after v0.0.5; see <code>tryon/cli/runner.py</code> <code>_package_result</code>/<code>_save_audio</code> for the <code>audio_bytes</code> handling it introduced (extension sniffed from magic bytes, not from the requested <code>output_format</code>).</p>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="6-product-surfaces-out-of-opentryon-scope-unless-asked">6. Product surfaces (out of OpenTryOn scope unless asked)<a href="#6-product-surfaces-out-of-opentryon-scope-unless-asked" class="hash-link" aria-label="Direct link to 6. Product surfaces (out of OpenTryOn scope unless asked)" title="Direct link to 6. Product surfaces (out of OpenTryOn scope unless asked)" translate="no">​</a></h2>
 <table><thead><tr><th>Surface</th><th>When to touch</th></tr></thead><tbody><tr><td>OpenTryOn CLI / MCP</td><td><strong>Always</strong> for model integrations</td></tr><tr><td>TryOn Studio <code>services.ts</code></td><td>Optional mirror so the local UI lists the model</td></tr><tr><td>tryon-server</td><td>Only when productizing with auth/credits</td></tr><tr><td>tryon-agent-backend</td><td>Only when an agent tool should call the model</td></tr><tr><td>Third-party marketplace publish</td><td>Separate Efficio / packaging track — not this guidelines doc</td></tr></tbody></table>
