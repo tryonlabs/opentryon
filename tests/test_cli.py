@@ -14,6 +14,7 @@ import io
 import os
 import sys
 import tempfile
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -1262,6 +1263,96 @@ def check_haiku_and_relight_adapters():
     print("\u2713 Claude Haiku 5.5 request shape + H3 Max Relight payload/validation")
 
 
+def check_nano_banana_21_and_fashn_vton_local():
+    import sys
+    import types
+    from unittest import mock
+
+    cases = [
+        (["generate", "--model", "nano-banana-2.1", "--prompt", "banner", "--aspect-ratio", "8:1", "--resolution", "4K"],
+         "NanoBanana21Adapter", "generate_text_to_image", ["'aspect_ratio': '8:1'", "'resolution': '4K'"]),
+        (["edit", "--model", "nano-banana-2.1", "--image", "a.jpg", "--prompt", "make it blue", "--aspect-ratio", "1:4"],
+         "NanoBanana21Adapter", "generate_image_edit", ["'aspect_ratio': '1:4'"]),
+        (["vton", "--model", "fashn-vton-1.5", "--person-image", "p.jpg", "--garment-image", "g.png",
+          "--category", "one-pieces", "--garment-photo-type", "flat-lay", "--num-samples", "2", "--steps", "20",
+          "--no-segmentation-free", "--weights-dir", "/tmp/w"],
+         "FashnVTONLocalAdapter", "generate_and_decode",
+         ["'category': 'one-pieces'", "'garment_photo_type': 'flat-lay'", "'num_timesteps': 20", "'segmentation_free': False", "'weights_dir': '/tmp/w'"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+    # 8:1 is a 2.1-only ratio: the older Nano Banana 2 spec must still reject it
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        try:
+            code = cli_main(["generate", "--model", "nano-banana-2", "--prompt", "x", "--aspect-ratio", "8:1", "--dry-run"])
+        except SystemExit as exc:
+            code = exc.code
+    assert code != 0
+
+    from tryon.api.nano_banana import NanoBanana2Adapter, NanoBanana21Adapter
+
+    assert NanoBanana21Adapter.MODEL_NAME == "gemini-nano-banana-2.1"
+    assert NanoBanana2Adapter.MODEL_NAME == "gemini-3.1-flash-image-preview"
+    assert {"1:4", "4:1", "1:8", "8:1"} <= set(NanoBanana21Adapter.ASPECT_RATIOS)
+    assert not ({"1:4", "4:1", "1:8", "8:1"} & set(NanoBanana2Adapter.ASPECT_RATIOS))
+    adapter = NanoBanana21Adapter(api_key="test")
+    try:
+        adapter.generate_text_to_image("x", aspect_ratio="7:1")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown ratio must be rejected")
+
+    # FASHN VTON local: validation + pipeline call shape using a stub fashn_vton package
+    from PIL import Image
+
+    calls = {}
+
+    class StubPipeline:
+        def __init__(self, weights_dir, device=None):
+            calls["init"] = (weights_dir, device)
+
+        def __call__(self, **kwargs):
+            calls["call"] = kwargs
+            return types.SimpleNamespace(images=[Image.new("RGB", (8, 8))] * kwargs["num_samples"])
+
+    stub = types.ModuleType("fashn_vton")
+    stub.TryOnPipeline = StubPipeline
+    with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(sys.modules, {"fashn_vton": stub}):
+        from tryon.models.fashn_vton import FashnVTONLocalAdapter
+        import tryon.models.fashn_vton.adapter as fv
+
+        with mock.patch.object(fv, "ensure_weights", side_effect=lambda d: d):
+            adapter = FashnVTONLocalAdapter(weights_dir=tmp, device="cpu")
+            images = adapter.generate_and_decode(Image.new("RGB", (4, 4)), Image.new("RGB", (4, 4)),
+                                                 category="bottoms", num_samples=2, seed=7)
+        assert len(images) == 2 and calls["init"] == (tmp, "cpu")
+        assert calls["call"]["category"] == "bottoms" and calls["call"]["seed"] == 7
+        assert calls["call"]["segmentation_free"] is True and calls["call"]["guidance_scale"] == 1.5
+        for bad in ({"category": "shoes"}, {"garment_photo_type": "mannequin"}, {"num_samples": 5}, {"num_timesteps": 0}):
+            try:
+                adapter.generate_and_decode(Image.new("RGB", (4, 4)), Image.new("RGB", (4, 4)), **bad)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(bad)
+        # weights helper: present files short-circuit; missing ones trigger HF downloads
+        w = Path(tmp) / "w"
+        (w / "dwpose").mkdir(parents=True)
+        (w / "model.safetensors").write_bytes(b"x")
+        for name in fv.DWPOSE_FILES:
+            (w / "dwpose" / name).write_bytes(b"x")
+        assert fv.ensure_weights(w) == w
+    print("\u2713 nano-banana-2.1 (generate/edit, wide ratios) and fashn-vton-1.5 (local VTON) resolve and validate")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -1447,6 +1538,7 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_nano_banana_21_and_fashn_vton_local()
     check_decide_embed_haiku_relight_dry_runs()
     check_decision_helpers_and_adapters()
     check_embeddings_packaging_and_adapters()

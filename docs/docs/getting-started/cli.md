@@ -28,9 +28,9 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `muse-image` |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
-| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `fashn-vton-1.5` (local), `muse-image` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-local` (local), `muse-image` |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `claude-haiku-5-5`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `fal-h3-max-relight`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3`, `cosmos3-local` (local) |
 | `bg-remove` | Background removal | `ben2` (local) |
@@ -162,6 +162,11 @@ opentryon vton --model qwen-image-local \
 # Dedicated local VTON (needs GPU + opentryon[local])
 opentryon vton --model leffa --person-image model.jpg --garment-image garment.jpg
 opentryon vton --model catvton --person-image model.jpg --garment-image garment.jpg
+# Apache-2.0 maskless local VTON (pip install 'git+https://github.com/fashn-AI/fashn-vton-1.5.git')
+opentryon vton --model fashn-vton-1.5 --person-image model.jpg --garment-image garment.jpg --category tops
+
+# Nano Banana 2.1 (GEMINI_API_KEY): successor to nano-banana-2, adds 1:4 / 4:1 / 1:8 / 8:1
+opentryon generate --model nano-banana-2.1 --prompt "Panoramic lookbook banner" --aspect-ratio 4:1
 
 # Text-to-video
 opentryon video-generate --model veo \
@@ -249,7 +254,7 @@ opentryon vton --model flux-vto \
 
 ## Local (GPU-only) Models
 
-Local models (`flux2-turbo`, `kimi-vl`, `qwen3.8`, `deepseek-vl2`, `deepseek-ocr`, `limite-1b-violetto`, `qwen-image-local`, `leffa`, `catvton`, `llava-next`, `ben2`, `ltx-2.5`, `minimax-h3-local`, `wan-2.2`) need the
+Local models (`fashn-vton-1.5`, `flux2-turbo`, `kimi-vl`, `qwen3.8`, `deepseek-vl2`, `deepseek-ocr`, `limite-1b-violetto`, `qwen-image-local`, `leffa`, `catvton`, `llava-next`, `ben2`, `ltx-2.5`, `minimax-h3-local`, `wan-2.2`) need the
 `local` extra:
 
 ```bash

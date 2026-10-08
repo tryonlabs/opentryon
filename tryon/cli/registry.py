@@ -106,6 +106,8 @@ _QWEN_IMAGE_VERSIONS = [
 _GEMINI_ASPECT_RATIOS = [
     "1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9",
 ]
+# Nano Banana 2.1 adds wide / panoramic ratios on top of the shared Gemini set.
+_GEMINI_21_ASPECT_RATIOS = _GEMINI_ASPECT_RATIOS + ["1:4", "4:1", "1:8", "8:1"]
 _LUMA_ASPECT_RATIOS = ["1:1", "3:4", "4:3", "9:16", "16:9", "9:21", "21:9"]
 _IDEOGRAM_ASPECT_RATIOS = [
     "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "10:16", "16:10", "1:3", "3:1",
@@ -133,11 +135,11 @@ _PHOTOROOM_SIZES = [
 ]
 
 
-def _gemini_aspect_ratio() -> Arg:
+def _gemini_aspect_ratio(wide: bool = False) -> Arg:
     return Arg(
         ("--aspect-ratio",), "aspect_ratio",
-        choices=_GEMINI_ASPECT_RATIOS,
-        help="Gemini-supported aspect ratio",
+        choices=_GEMINI_21_ASPECT_RATIOS if wide else _GEMINI_ASPECT_RATIOS,
+        help="Gemini-supported aspect ratio" + (" (2.1 adds 1:4, 4:1, 1:8, 8:1)" if wide else ""),
     )
 
 
@@ -599,6 +601,44 @@ _VTON = {
             *_qwen_image_local_sample_args(t2i=False),
         ],
     ),
+    "fashn-vton-1.5": ModelSpec(
+        id="fashn-vton-1.5",
+        label="FASHN VTON v1.5 (open-weight local VTON, Apache-2.0)",
+        import_path="tryon.models.fashn_vton",
+        class_name="FashnVTONLocalAdapter",
+        method="generate_and_decode",
+        output_kind="images",
+        extra="local",
+        notes=(
+            "Maskless pixel-space try-on (972M; Apache-2.0 code + weights, the commercial-friendly local "
+            "option vs Leffa/CatVTON). Garment may be worn on a model or a flat-lay. ~2GB weights "
+            "auto-download to ~/.cache/opentryon/fashn-vton-1.5 (override FASHN_VTON_WEIGHTS_DIR). Needs "
+            "pip install opentryon[local] plus: pip install 'git+https://github.com/fashn-AI/fashn-vton-1.5.git' "
+            "(pulls onnxruntime-gpu; CPU-only: swap to onnxruntime). bf16 on Ampere+ GPUs. Hosted twin: "
+            "--model fashn-tryon-max / fashn-tryon-v1.6 (FASHN_API_KEY). fashn-human-parser has its own "
+            "licence -- review before commercial use."
+        ),
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment image: worn on a model or flat-lay (path or URL)", required=True),
+            Arg(("--category",), "category", default="tops", choices=["tops", "bottoms", "one-pieces"],
+                help="tops (shirts, jackets), bottoms (pants, skirts), one-pieces (dresses, jumpsuits)"),
+            Arg(("--garment-photo-type",), "garment_photo_type", default="model", choices=["model", "flat-lay"],
+                help="'model' if the garment is worn by someone, 'flat-lay' for product shots"),
+            Arg(("--num-samples",), "num_samples", type=int, default=1, choices=[1, 2, 3, 4],
+                help="Number of output images"),
+            Arg(("--steps",), "num_timesteps", type=int, default=30,
+                help="Diffusion steps: 20 fast, 30 balanced, 50 quality"),
+            Arg(("--guidance-scale",), "guidance_scale", type=float, default=1.5,
+                help="Classifier-free guidance strength"),
+            Arg(("--seed",), "seed", type=int, default=42),
+            Arg(("--no-segmentation-free",), "segmentation_free", action="store_false", default=True,
+                help="Disable segmentation-free mode (default preserves body features / garment volume)"),
+            Arg(("--weights-dir",), "weights_dir", target="init",
+                help="Directory with model.safetensors + dwpose/ (default FASHN_VTON_WEIGHTS_DIR or the cache dir)"),
+            Arg(("--device",), "device", target="init", help="Device override (cuda/cpu)"),
+        ],
+    ),
     "leffa": ModelSpec(
         id="leffa",
         label="Leffa (open-weight local VTON, CVPR 2025)",
@@ -733,10 +773,10 @@ _VTON = {
 # --------------------------------------------------------------------------
 
 
-def _nano_banana_generate_args(with_resolution: bool, with_grounding: bool) -> List[Arg]:
+def _nano_banana_generate_args(with_resolution: bool, with_grounding: bool, wide: bool = False) -> List[Arg]:
     args = [
         Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
-        _gemini_aspect_ratio(),
+        _gemini_aspect_ratio(wide),
     ]
     if with_resolution:
         args.append(Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]))
@@ -778,6 +818,15 @@ _GENERATE = {
         import_path="tryon.api.nano_banana", class_name="NanoBanana2Adapter",
         method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
         args=_nano_banana_generate_args(with_resolution=True, with_grounding=True),
+    ),
+    "nano-banana-2.1": ModelSpec(
+        id="nano-banana-2.1", label="Nano Banana 2.1 (gemini-nano-banana-2.1)",
+        import_path="tryon.api.nano_banana", class_name="NanoBanana21Adapter",
+        method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
+        notes="GA 2026-10-06; successor to nano-banana-2 (gemini-3.1-flash-image is deprecated, no shutdown "
+        "date yet). Better quality, text rendering and multi-turn character consistency at Flash speed/cost; "
+        "1K/2K/4K plus wide ratios 1:4, 4:1, 1:8, 8:1. Same GEMINI_API_KEY.",
+        args=_nano_banana_generate_args(with_resolution=True, with_grounding=True, wide=True),
     ),
     "nano-banana-2-lite": ModelSpec(
         id="nano-banana-2-lite", label="Nano Banana 2 Lite (Gemini 3.1 Flash-Lite Image)",
@@ -1036,6 +1085,18 @@ _EDIT = {
             _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
             _gemini_aspect_ratio(),
+            Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]),
+        ],
+    ),
+    "nano-banana-2.1": ModelSpec(
+        id="nano-banana-2.1", label="Nano Banana 2.1",
+        import_path="tryon.api.nano_banana", class_name="NanoBanana21Adapter",
+        method="generate_image_edit", output_kind="images", env_hint="GEMINI_API_KEY",
+        notes="GA 2026-10-06; successor to nano-banana-2. Adds wide ratios 1:4, 4:1, 1:8, 8:1.",
+        args=[
+            _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
+            _gemini_aspect_ratio(wide=True),
             Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]),
         ],
     ),

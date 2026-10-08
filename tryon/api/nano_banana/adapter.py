@@ -917,6 +917,7 @@ class NanoBanana2Adapter:
 
     # Preview model ID per https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image-preview
     MODEL_NAME = "gemini-3.1-flash-image-preview"
+    ASPECT_RATIOS = GEMINI_3_PRO_ASPECT_RATIOS
 
     def __init__(self, api_key: Optional[str] = None):
         """
@@ -998,10 +999,10 @@ class NanoBanana2Adapter:
         config = {}
         image_config_params = {}
         if aspect_ratio:
-            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+            if aspect_ratio not in self.ASPECT_RATIOS:
                 raise ValueError(
                     f"Invalid aspect ratio '{aspect_ratio}'. "
-                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                    f"Valid options: {list(self.ASPECT_RATIOS.keys())}"
                 )
             image_config_params["aspect_ratio"] = aspect_ratio
         image_config_params["image_size"] = resolution
@@ -1058,10 +1059,10 @@ class NanoBanana2Adapter:
         config = {}
         image_config_params = {}
         if aspect_ratio:
-            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+            if aspect_ratio not in self.ASPECT_RATIOS:
                 raise ValueError(
                     f"Invalid aspect ratio '{aspect_ratio}'. "
-                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                    f"Valid options: {list(self.ASPECT_RATIOS.keys())}"
                 )
             image_config_params["aspect_ratio"] = aspect_ratio
         image_config_params["image_size"] = resolution
@@ -1113,10 +1114,10 @@ class NanoBanana2Adapter:
         config = {}
         image_config_params = {}
         if aspect_ratio:
-            if aspect_ratio not in GEMINI_3_PRO_ASPECT_RATIOS:
+            if aspect_ratio not in self.ASPECT_RATIOS:
                 raise ValueError(
                     f"Invalid aspect ratio '{aspect_ratio}'. "
-                    f"Valid options: {list(GEMINI_3_PRO_ASPECT_RATIOS.keys())}"
+                    f"Valid options: {list(self.ASPECT_RATIOS.keys())}"
                 )
             image_config_params["aspect_ratio"] = aspect_ratio
         image_config_params["image_size"] = resolution
@@ -1168,6 +1169,44 @@ class NanoBanana2Adapter:
                 )
             )
         return results
+
+
+class NanoBanana21Adapter(NanoBanana2Adapter):
+    """
+    Adapter for Nano Banana 2.1 (``gemini-nano-banana-2.1``), GA 6 Oct 2026.
+
+    The successor to Nano Banana 2 (``gemini-3.1-flash-image``, now deprecated
+    with no shutdown date announced): same Flash speed and cost, with better
+    visual quality, prompt adherence, multi-turn character consistency and
+    text rendering. Supports 1K / 2K / 4K output and adds the wide / panoramic
+    aspect ratios 1:4, 4:1, 1:8 and 8:1.
+
+    Same API surface as :class:`NanoBanana2Adapter` (text-to-image, image
+    edit, multi-image composition); only the model id and aspect-ratio set
+    differ.
+
+    Reference: https://ai.google.dev/gemini-api/docs/image-generation
+    Changelog: https://ai.google.dev/gemini-api/docs/changelog
+
+    Example:
+        >>> adapter = NanoBanana21Adapter()
+        >>> images = adapter.generate_text_to_image(
+        ...     prompt="Panoramic lookbook banner, linen collection on a beach",
+        ...     resolution="2K",
+        ...     aspect_ratio="4:1",
+        ... )
+    """
+
+    MODEL_NAME = "gemini-nano-banana-2.1"
+    # Exact pixel sizes for the new ratios are not published; only keys are validated.
+    ASPECT_RATIOS = {
+        **GEMINI_3_PRO_ASPECT_RATIOS,
+        "1:4": {},
+        "4:1": {},
+        "1:8": {},
+        "8:1": {},
+    }
+
 
 
 class NanoBanana2LiteAdapter:

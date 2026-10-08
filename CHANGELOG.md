@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🍌 Nano Banana 2.1 + FASHN VTON v1.5 (local)
+- **Nano Banana 2.1** (`nano-banana-2.1`, `NanoBanana21Adapter`, model `gemini-nano-banana-2.1`, GA 2026-10-06): `generate` + `edit`. Successor to Nano Banana 2 (`gemini-3.1-flash-image` is deprecated upstream, no shutdown date yet); adds wide ratios `1:4`, `4:1`, `1:8`, `8:1` on top of 1K/2K/4K. `NanoBanana2Adapter` now reads its ratio set from a class attribute (behaviour unchanged). Same `GEMINI_API_KEY`; not registered under `vton`
+- **FASHN VTON v1.5 local** (`fashn-vton-1.5`, `tryon.models.fashn_vton.FashnVTONLocalAdapter`): maskless pixel-space try-on, 972M parameters, **Apache-2.0** code + weights. Model-worn or flat-lay garments, `tops` / `bottoms` / `one-pieces`, 1-4 samples. ~2 GB weights auto-download (override `FASHN_VTON_WEIGHTS_DIR`); needs `pip install "git+https://github.com/fashn-AI/fashn-vton-1.5.git"` (pulls `onnxruntime-gpu`). Hosted twin remains `fashn-tryon-max` / `fashn-tryon-v1.6`
+- MCP tools `generate_nano_banana_2_1`, `edit_nano_banana_2_1`, `vton_fashn_vton_1_5`; planner pins `nano banana 2.1`, `fashn vton 1.5`. Docs: new `local-models/fashn-vton.md`; Nano Banana, FASHN, CLI, MCP, configuration pages updated
+
 #### 🧭 New `decide` + `embed` services, Claude Haiku 5.5, H3 Max Relight (Oct 2026 wave)
 - **`decide` service** (calibrated yes/no, choice and score answers; shared question schema in `tryon/decision.py`)
   - `jev` — Typesafe AI Jev, `tryon.api.typesafe.JevAdapter` (`POST /v1/systemone`, `TYPESAFE_API_KEY`, optional `TYPESAFE_BASE_URL`; text/JSON only; early access, sign-ups paused 2026-09-22). New provider in the MCP Connect catalog

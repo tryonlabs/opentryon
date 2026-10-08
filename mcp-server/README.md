@@ -27,7 +27,7 @@ This means:
 ```bash
 cd opentryon
 pip install -e .              # core (API-backed) models
-# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, qwen-image-local, leffa, catvton, flux2-turbo, ben2, ltx-2.5, wan-2.2):
+# or, to also enable local/GPU models (llava-next, kimi-vl, qwen3.8, qwen-image-local, leffa, catvton, fashn-vton-1.5, flux2-turbo, ben2, ltx-2.5, wan-2.2):
 pip install -e ".[local]"
 
 cd mcp-server
@@ -146,6 +146,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `vton_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
 | `vton_leffa` | Leffa (CVPR 2025 local VTON) | local/GPU |
 | `vton_catvton` | CatVTON (ICLR 2025 local VTON, CC BY-NC-SA) | local/GPU |
+| `vton_fashn_vton_1_5` | FASHN VTON v1.5 (maskless local VTON, Apache-2.0) | local/GPU |
 | `vton_muse_image` | Muse Image (composition try-on) | `MODEL_API_KEY` |
 
 ### generate -- Text-to-image generation
@@ -154,7 +155,8 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 |---|---|---|
 | `generate_nano_banana` | Nano Banana (Gemini 2.5 Flash Image) | `GEMINI_API_KEY` |
 | `generate_nano_banana_pro` | Nano Banana Pro (Gemini 3 Pro Image Preview) | `GEMINI_API_KEY` |
-| `generate_nano_banana_2` | Nano Banana 2 (Gemini 3.1 Flash Image) | `GEMINI_API_KEY` |
+| `generate_nano_banana_2` | Nano Banana 2 (Gemini 3.1 Flash Image; deprecated upstream) | `GEMINI_API_KEY` |
+| `generate_nano_banana_2_1` | Nano Banana 2.1 (`gemini-nano-banana-2.1`; adds 1:4/4:1/1:8/8:1) | `GEMINI_API_KEY` |
 | `generate_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `generate_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `generate_flux2_turbo` | FLUX.2-dev Turbo (local, 8-step) | local/GPU |
@@ -178,6 +180,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_nano_banana` | Nano Banana (Gemini 2.5 Flash Image) | `GEMINI_API_KEY` |
 | `edit_nano_banana_pro` | Nano Banana Pro | `GEMINI_API_KEY` |
 | `edit_nano_banana_2` | Nano Banana 2 | `GEMINI_API_KEY` |
+| `edit_nano_banana_2_1` | Nano Banana 2.1 | `GEMINI_API_KEY` |
 | `edit_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `edit_flux2_turbo` | FLUX.2-dev Turbo (local, image-to-image) | local/GPU |
