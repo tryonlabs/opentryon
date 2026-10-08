@@ -300,6 +300,10 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU. **No first-part
 
    Covers `decide --model jev`. See [Typesafe Jev](../api-reference/typesafe-jev.md).
 
+### FASHN VTON v1.5 (local, no cloud key)
+
+No API key. `pip install opentryon[local]` plus `pip install "git+https://github.com/fashn-AI/fashn-vton-1.5.git"`. Weights (~2 GB) auto-download to `~/.cache/opentryon/fashn-vton-1.5`; set `FASHN_VTON_WEIGHTS_DIR` to use your own folder. Covers `vton --model fashn-vton-1.5`. See [FASHN VTON v1.5](../local-models/fashn-vton.md).
+
 ### Liquid d1 / EmbeddingGemma 2 / pplx-embed-v2-late (local, no cloud key)
 
 No API key. Need `pip install opentryon[local]` plus newer libraries in a separate env (`transformers>=5.15` for d1; `sentence-transformers` for the embedders — `>=6.0.0` for pplx). Optional overrides: `LIQUID_D1_MODEL_ID`, `EMBEDDINGGEMMA_MODEL_ID`, `PPLX_EMBED_MODEL_ID`. See [Liquid d1](../local-models/liquid-d1.md), [EmbeddingGemma 2](../local-models/embeddinggemma.md), [pplx-embed-v2-late](../local-models/pplx-embed.md).

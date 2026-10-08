@@ -141,6 +141,9 @@ def check_named_model_pins_for_wave3_models():
 
     fashion = slice_for_intent("fashion")
     cases = {
+        "make it with nano banana 2.1": "nano-banana-2.1",
+        "try it on with fashn vton 1.5": "fashn-vton-1.5",
+        "use fashn-vton-1.5 locally": "fashn-vton-1.5",
         "describe this with claude haiku 5.5": "claude-haiku-5-5",
         "use claude-haiku-5-5 to read the care label": "claude-haiku-5-5",
         "relight the clip with h3 max relight": "fal-h3-max-relight",

@@ -20,6 +20,7 @@ Available Models:
       I2I/VTON, the local counterpart to the hosted qwen-image DashScope API
     - LeffaAdapter: CVPR 2025 dedicated local VTON (VITON-HD / DressCode)
     - CatVTONAdapter: ICLR 2025 concatenation VTON (<8GB @ 1024x768; CC BY-NC-SA)
+    - FashnVTONLocalAdapter: FASHN VTON v1.5, maskless pixel-space VTON (972M; Apache-2.0 code + weights)
     - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
     - Cosmos3LocalAdapter: NVIDIA Cosmos 3 Nano (16B) open-weight text/image-to-video
       (Diffusers, BF16/CUDA), the local counterpart to the hosted NIM `cosmos3`
@@ -69,6 +70,7 @@ from .kimi_vl import KimiVLAdapter
 from .leffa import LeffaAdapter
 from .limite import LimiteAdapter
 from .ltx25 import LTX25Adapter
+from .fashn_vton import FashnVTONLocalAdapter
 from .cosmos3 import Cosmos3LocalAdapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
@@ -85,6 +87,7 @@ __all__ = [
     "LeffaAdapter",
     "LimiteAdapter",
     "LTX25Adapter",
+    "FashnVTONLocalAdapter",
     "Cosmos3LocalAdapter",
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",

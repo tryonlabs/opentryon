@@ -1,11 +1,13 @@
 ---
 sidebar_position: 6
 title: Nano Banana (Gemini Image Generation)
-description: Generate high-quality images using Google's Gemini image generation models (Nano Banana, Nano Banana Pro, Nano Banana 2, Nano Banana 2 Lite)
+description: Generate high-quality images using Google's Gemini image generation models (Nano Banana, Nano Banana Pro, Nano Banana 2, Nano Banana 2.1, Nano Banana 2 Lite)
 keywords:
   - nano banana
   - nano banana 2
   - nano banana 2 lite
+  - nano banana 2.1
+  - gemini-nano-banana-2.1
   - gemini image generation
   - image generation
   - text to image
@@ -24,11 +26,12 @@ Nano Banana provides adapters for Google's Gemini image generation models, enabl
 
 ## Overview
 
-The `tryon.api.nano_banana` module provides four adapters:
+The `tryon.api.nano_banana` module provides five adapters:
 
 - **NanoBananaAdapter**: Gemini 2.5 Flash Image — Fast, efficient, 1024px resolution
 - **NanoBananaProAdapter**: Gemini 3 Pro Image Preview — Advanced, up to 4K resolution, search grounding
 - **NanoBanana2Adapter**: Gemini 3.1 Flash Image (Nano Banana 2) — Pro capabilities at Flash speed; 512px–4K, subject consistency, precise instruction following. See [Google's announcement](https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/).
+- **NanoBanana21Adapter**: Nano Banana 2.1 (`gemini-nano-banana-2.1`, GA 6 Oct 2026) — successor to Nano Banana 2 with better quality, text rendering and multi-turn character consistency, 1K/2K/4K, plus wide ratios `1:4`, `4:1`, `1:8`, `8:1`. `gemini-3.1-flash-image` (Nano Banana 2) is deprecated with no shutdown date announced.
 - **NanoBanana2LiteAdapter**: Gemini 3.1 Flash-Lite Image (Nano Banana 2 Lite) — Google's fastest/cheapest tier; 1K resolution only, up to 14 reference images, but "not optimized for multiple reference inputs or multi-turn sequential editing" per Google's docs. See [Google DeepMind's announcement](https://deepmind.google/models/gemini-image/flash-lite/).
 
 ## Prerequisites
@@ -308,13 +311,30 @@ images = adapter.generate_text_to_image(
 
 Same method signatures as Nano Banana Pro: `generate_image_edit()`, `generate_multi_image()`, `generate_batch()`, all with `resolution` (default `"2K"`), `aspect_ratio`, and optional `use_search_grounding`.
 
+## NanoBanana21Adapter (Nano Banana 2.1)
+
+`NanoBanana21Adapter` subclasses `NanoBanana2Adapter`: identical methods (`generate_text_to_image`, `generate_image_edit`, `generate_multi_image`, `generate_batch`) and options, with model id `gemini-nano-banana-2.1` and four extra aspect ratios.
+
+```python
+from tryon.api.nano_banana import NanoBanana21Adapter
+
+adapter = NanoBanana21Adapter()
+images = adapter.generate_text_to_image(
+    prompt="Panoramic lookbook banner, linen collection on a beach",
+    resolution="2K",
+    aspect_ratio="4:1",   # 1:4, 4:1, 1:8 and 8:1 are new in 2.1
+)
+```
+
+CLI / MCP: `opentryon generate --model nano-banana-2.1 ...`, `opentryon edit --model nano-banana-2.1 ...` (`generate_nano_banana_2_1`, `edit_nano_banana_2_1`). Same `GEMINI_API_KEY`. Pixel sizes for the new ratios are not published, so the adapter validates only the ratio names. Not registered under `vton` (composition try-on stays on `nano-banana-2-lite`).
+
 ### When to Use Which Model
 
 | Use case | Adapter |
 |---------|--------|
 | Fastest iteration, 1024px | **NanoBananaAdapter** |
 | Maximum quality, 4K, search grounding | **NanoBananaProAdapter** |
-| Pro quality at Flash speed, rapid edits | **NanoBanana2Adapter** |
+| Pro quality at Flash speed, rapid edits | **NanoBanana21Adapter** (preferred) / **NanoBanana2Adapter** |
 | Lowest latency/cost, high-volume pipelines | **NanoBanana2LiteAdapter** |
 
 ## NanoBanana2LiteAdapter (Gemini 3.1 Flash-Lite Image — Nano Banana 2 Lite)

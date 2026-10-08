@@ -184,14 +184,15 @@ Local Diffusers twin (`pip install opentryon[local]` + CUDA):
 
 See [Qwen-Image local](../local-models/qwen-image.md).
 
-## Local dedicated VTON (Leffa + CatVTON)
+## Local dedicated VTON (Leffa + CatVTON + FASHN VTON 1.5)
 
 | MCP tool | Backend | Needs |
 |---|---|---|
 | `vton_leffa` | franciszzj/Leffa (CVPR 2025) | GPU + `opentryon[local]` |
 | `vton_catvton` | zhengchong/CatVTON (ICLR 2025, CC BY-NC-SA) | GPU + `opentryon[local]` |
+| `vton_fashn_vton_1_5` | fashn-ai/fashn-vton-1.5 (maskless, Apache-2.0) | GPU + `opentryon[local]` + `fashn_vton` |
 
-See [Leffa](../local-models/leffa.md) and [CatVTON](../local-models/catvton.md).
+See [Leffa](../local-models/leffa.md), [CatVTON](../local-models/catvton.md) and [FASHN VTON v1.5](../local-models/fashn-vton.md). Nano Banana 2.1 adds `generate_nano_banana_2_1` and `edit_nano_banana_2_1` (`GEMINI_API_KEY`).
 
 Qwen3.8 is a native multimodal / coding / agent family; OpenTryOn’s MCP tools
 expose the **understand** entry point (image and/or video + prompt). Full

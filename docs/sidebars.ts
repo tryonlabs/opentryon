@@ -115,6 +115,7 @@ const sidebars: SidebarsConfig = {
         'local-models/wan-2.2',
         'local-models/leffa',
         'local-models/catvton',
+        'local-models/fashn-vton',
         'local-models/deepseek-vl2',
         'local-models/deepseek-ocr',
         'local-models/ternary-bonsai',

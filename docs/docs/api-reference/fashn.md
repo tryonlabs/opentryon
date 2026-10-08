@@ -23,6 +23,8 @@ FASHN exposes a universal `POST /v1/run` + `GET /v1/status/{id}` API. This adapt
 | `tryon-max` | `fashn-tryon-max` | High-fidelity photoshoots / e-commerce catalogs (up to 4K, prompt-based styling) |
 | `tryon-v1.6` | `fashn-tryon-v1.6` | Fast real-time try-on (1 credit/image, ~5–8s) |
 
+**Open-weight twin:** FASHN open-sourced VTON v1.5 (Apache-2.0). Run it on your own GPU with `--model fashn-vton-1.5` — see [FASHN VTON v1.5 (local)](../local-models/fashn-vton.md).
+
 **Location note:** like Pruna's P-Image-Try-On, this adapter lives under `tryon.api.vton` (a use-case directory) rather than a dedicated `tryon.api.fashn/` package -- see [Adding a New Model Integration](../advanced/new-model-checklist.md#1-decide-where-the-adapter-lives).
 
 **References:**
