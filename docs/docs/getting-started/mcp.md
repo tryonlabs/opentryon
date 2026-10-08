@@ -288,6 +288,8 @@ OpenTryOn's first `tts` service. Same `ELEVENLABS_API_KEY` for both models; sync
 |---|---|---|
 | `tts_eleven_v4` | ElevenLabs Eleven v4 (most expressive; 90+ languages, 10K char limit) | `ELEVENLABS_API_KEY` |
 | `tts_eleven_v4_turbo` | ElevenLabs Eleven v4 Turbo (~100ms latency; audio tags for delivery control) | `ELEVENLABS_API_KEY` |
+| `tts_gemini_3_8_flash_tts` | Gemini 3.8 Flash TTS (30 voices, 130+ languages, two-speaker `dialogue`) | `GEMINI_API_KEY` |
+| `tts_gemini_3_8_flash_lite_tts` | Gemini 3.8 Flash-Lite TTS (fast, low cost) | `GEMINI_API_KEY` |
 
 `tts` has no dedicated Studio capability screen yet (those are currently Image / VTON / Understand / Video / BG Remove) -- the tools are live via Studio's Agent chat and any MCP client as soon as the server restarts.
 
@@ -313,7 +315,7 @@ The new `embed` service saves vectors to an `.npz` file under the output dir and
 | `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
 | `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |
 
-Also new: `understand_claude_haiku_5_5` (`ANTHROPIC_API_KEY`) and `video_generate_fal_h3_max_relight` (`FAL_KEY`). `decide` and `embed` have no Studio capability screens yet; the tools are live to Studio's Agent chat (named-model only) and any MCP client after a server restart.
+Also new: `understand_gemini_3_8_flash` (`GEMINI_API_KEY`; image/video/audio/PDF), `understand_claude_haiku_5_5` (`ANTHROPIC_API_KEY`) and `video_generate_fal_h3_max_relight` (`FAL_KEY`). `decide` and `embed` have no Studio capability screens yet; the tools are live to Studio's Agent chat (named-model only) and any MCP client after a server restart.
 
 See [Claude Haiku 5.5](../api-reference/claude.md), [Typesafe Jev](../api-reference/typesafe-jev.md), [Liquid d1](../local-models/liquid-d1.md), [EmbeddingGemma 2](../local-models/embeddinggemma.md), [pplx-embed-v2-late](../local-models/pplx-embed.md).
 

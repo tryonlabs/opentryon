@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 💎 Gemini 3.8 Flash understanding + Gemini 3.8 TTS
+- **`gemini-3.8-flash`** (`understand`, `tryon.api.gemini.GeminiUnderstandAdapter`): text + image + video + audio + PDF in, text out; 1M context, 65,536 max output; `--thinking-level low|medium|high` (`minimal` is rejected by the API). Large media goes through the Files API, YouTube links are passed through. First Gemini model in the `understand` service
+- **`gemini-3.8-flash-tts`**, **`gemini-3.8-flash-lite-tts`** (`tts`, `GeminiTTSAdapter`): second TTS vendor. Interactions API over plain REST (independent of the installed `google-genai`), 30 prebuilt voices + custom `voice_...` ids, `--style` delivery control, inline `<sigh>`/`<short pause>` tags, WAV (default) / `audio/l16` / `mulaw` / `alaw` output, two-speaker `--dialogue`
+- Same `GEMINI_API_KEY`; MCP tools `understand_gemini_3_8_flash`, `tts_gemini_3_8_flash_tts`, `tts_gemini_3_8_flash_lite_tts`; planner pins `gemini 3.8 flash`, `gemini tts` (defaults unchanged). New docs page `api-reference/gemini-3-8.md`
+- Not wired: Gemini voices listing, voice design and voice replication endpoints
+
 #### 🍌 Nano Banana 2.1 + FASHN VTON v1.5 (local)
 - **Nano Banana 2.1** (`nano-banana-2.1`, `NanoBanana21Adapter`, model `gemini-nano-banana-2.1`, GA 2026-10-06): `generate` + `edit`. Successor to Nano Banana 2 (`gemini-3.1-flash-image` is deprecated upstream, no shutdown date yet); adds wide ratios `1:4`, `4:1`, `1:8`, `8:1` on top of 1K/2K/4K. `NanoBanana2Adapter` now reads its ratio set from a class attribute (behaviour unchanged). Same `GEMINI_API_KEY`; not registered under `vton`
 - **FASHN VTON v1.5 local** (`fashn-vton-1.5`, `tryon.models.fashn_vton.FashnVTONLocalAdapter`): maskless pixel-space try-on, 972M parameters, **Apache-2.0** code + weights. Model-worn or flat-lay garments, `tops` / `bottoms` / `one-pieces`, 1-4 samples. ~2 GB weights auto-download (override `FASHN_VTON_WEIGHTS_DIR`); needs `pip install "git+https://github.com/fashn-AI/fashn-vton-1.5.git"` (pulls `onnxruntime-gpu`). Hosted twin remains `fashn-tryon-max` / `fashn-tryon-v1.6`

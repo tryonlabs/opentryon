@@ -202,6 +202,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | Tool | Model | Requires | Notes |
 |---|---|---|---|
 | `understand_llava_next` | LLaVA-NeXT (local VLM captioning) | local/GPU | Fashion-oriented captioning helper |
+| `understand_gemini_3_8_flash` | Gemini 3.8 Flash (Google) | `GEMINI_API_KEY` | Image + video + audio + PDF; `thinking_level` low/medium/high |
 | `understand_claude_haiku_5_5` | Claude Haiku 5.5 (Anthropic) | `ANTHROPIC_API_KEY` | Text + image (no video); `effort`, thinking toggle |
 | `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI) | `MOONSHOT_API_KEY` | Image + video; optional thinking |
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
@@ -285,12 +286,14 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 
 ### tts -- Text-to-speech
 
-First-party ElevenLabs API, `ELEVENLABS_API_KEY`. OpenTryOn's first `tts` service (synchronous -- audio bytes come back directly, no job/poll cycle).
+ElevenLabs (`ELEVENLABS_API_KEY`) and Google Gemini 3.8 TTS (`GEMINI_API_KEY`). OpenTryOn's first `tts` service (synchronous -- audio bytes come back directly, no job/poll cycle).
 
 | Tool | Model | Requires |
 |---|---|---|
 | `tts_eleven_v4` | ElevenLabs Eleven v4 (most expressive; 90+ languages, 10K char limit) | `ELEVENLABS_API_KEY` |
 | `tts_eleven_v4_turbo` | ElevenLabs Eleven v4 Turbo (~100ms latency; audio tags e.g. `[whispers]`) | `ELEVENLABS_API_KEY` |
+| `tts_gemini_3_8_flash_tts` | Gemini 3.8 Flash TTS (30 voices, 130+ languages, two-speaker `dialogue`) | `GEMINI_API_KEY` |
+| `tts_gemini_3_8_flash_lite_tts` | Gemini 3.8 Flash-Lite TTS (fast, low cost) | `GEMINI_API_KEY` |
 
 See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenlabs.md).
 

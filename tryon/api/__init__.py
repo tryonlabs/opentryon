@@ -56,6 +56,8 @@ _LAZY_ATTRS = {
     "DeepSeekUnderstandAdapter": ".deepseek",
     "ClaudeUnderstandAdapter": ".claude",
     "ElevenLabsAdapter": ".elevenlabs",
+    "GeminiUnderstandAdapter": ".gemini",
+    "GeminiTTSAdapter": ".gemini",
     "SeedanceAdapter": ".byteplus",
     "SeedreamAdapter": ".byteplus",
     "IdeogramAdapter": ".ideogram",

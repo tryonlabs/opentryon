@@ -1422,6 +1422,29 @@ _UNDERSTAND = {
             Arg(("--max-tokens",), "max_tokens", type=int, default=4096, help="Max output tokens (includes thinking)"),
         ],
     ),
+    "gemini-3.8-flash": ModelSpec(
+        id="gemini-3.8-flash",
+        label="Gemini 3.8 Flash (Google multimodal understanding: image, video, audio, PDF)",
+        import_path="tryon.api.gemini", class_name="GeminiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="GEMINI_API_KEY",
+        notes="Google's most capable Flash model (stable since 2026-09-02). Text + image + video + audio + "
+        "PDF in, text out; 1M-token context, 65,536 max output. --thinking-level low|medium|high "
+        "('minimal' is rejected by the API). Media over ~18MB goes through the Files API; YouTube URLs are "
+        "passed to Gemini directly. Same GEMINI_API_KEY as Nano Banana / Veo / Omni.",
+        args=[
+            Arg(("--gemini-model",), "gemini_model", target="init", call_name="model",
+                default="gemini-3.8-flash", choices=["gemini-3.8-flash"], help="Gemini model id"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to understand (path or URL)"),
+            Arg(("--video",), "video", nargs="+", help="Video(s) (path, URL, or YouTube link)"),
+            Arg(("--audio",), "audio", nargs="+", help="Audio clip(s) (path or URL)"),
+            Arg(("--pdf",), "pdf", nargs="+", help="PDF document(s) (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--system",), "system", help="Optional system instruction"),
+            Arg(("--thinking-level",), "thinking_level", choices=["low", "medium", "high"],
+                help="Reasoning depth (API default if omitted)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (<= 65536)"),
+        ],
+    ),
     "qwen3.8-max": ModelSpec(
         id="qwen3.8-max", label="Qwen3.8-Max (DashScope multimodal understanding)",
         import_path="tryon.api.qwen", class_name="QwenUnderstandAdapter",
@@ -2695,7 +2718,52 @@ _BG_REMOVE = {
     ),
 }
 
+_GEMINI_TTS_VOICES = ["Zephyr", "Puck", "Charon", "Kore", "Fenrir", "Leda", "Orus", "Aoede", "Callirrhoe", "Autonoe", "Enceladus", "Iapetus", "Umbriel", "Algieba", "Despina", "Erinome", "Algenib", "Rasalgethi", "Laomedeia", "Achernar", "Alnilam", "Schedar", "Gacrux", "Pulcherrima", "Achird", "Zubenelgenubi", "Vindemiatrix", "Sadachbia", "Sadaltager", "Sulafat"]
+
+_GEMINI_TTS_NOTES = (
+    "Google Gemini 3.8 TTS over the Interactions API (GEMINI_API_KEY). Text in, WAV out (24 kHz mono "
+    "16-bit by default; --audio-format audio/l16|audio/mulaw|audio/alaw with --sample-rate). 30 prebuilt "
+    "voices or a custom voice_... id; --style sets delivery (not spoken); inline tags like <sigh> or "
+    "<short pause> go in --text (the transcript is read verbatim). Two-speaker dialogue: --dialogue "
+    "turns.json --speaker Joe=Puck Jane=Kore (exactly two prebuilt voices per request)."
+)
+
+
+def _gemini_tts_args(default_model: str) -> List[Arg]:
+    return [
+        Arg(("--text", "-t"), "text", help="Text to speak (required unless --dialogue is set)"),
+        Arg(("--voice",), "voice", default="Kore",
+            help="Prebuilt voice name (" + ", ".join(_GEMINI_TTS_VOICES[:6]) + ", ...) or a custom voice_... id"),
+        Arg(("--style",), "style", help='Delivery direction, e.g. "cheerful and friendly" (not spoken)'),
+        Arg(("--dialogue",), "dialogue",
+            help='Two-speaker mode: JSON string or file of [{"speaker","text","style"?}] turns'),
+        Arg(("--speaker",), "speakers", nargs="+", help="With --dialogue: exactly two Name=Voice entries"),
+        Arg(("--audio-format",), "mime_type", default="audio/wav",
+            choices=["audio/wav", "audio/l16", "audio/mulaw", "audio/alaw"], help="Output encoding"),
+        Arg(("--sample-rate",), "sample_rate", type=int, choices=[8000, 16000, 24000], help="Sample rate in Hz"),
+        Arg(("--tts-model",), "tts_model", target="init", call_name="model", default=default_model,
+            choices=["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts"], help="Gemini TTS model id"),
+    ]
+
+
 _TTS = {
+    "gemini-3.8-flash-tts": ModelSpec(
+        id="gemini-3.8-flash-tts",
+        label="Gemini 3.8 Flash TTS (Google text-to-speech, most expressive, 130+ languages)",
+        import_path="tryon.api.gemini", class_name="GeminiTTSAdapter",
+        method="generate_speech", output_kind="audio_bytes", env_hint="GEMINI_API_KEY",
+        notes=_GEMINI_TTS_NOTES + " Faster/cheaper sibling: --model gemini-3.8-flash-lite-tts. "
+        "Other TTS vendor: --model eleven-v4.",
+        args=_gemini_tts_args("gemini-3.8-flash-tts"),
+    ),
+    "gemini-3.8-flash-lite-tts": ModelSpec(
+        id="gemini-3.8-flash-lite-tts",
+        label="Gemini 3.8 Flash-Lite TTS (Google text-to-speech, fast/low-cost, 100+ languages)",
+        import_path="tryon.api.gemini", class_name="GeminiTTSAdapter",
+        method="generate_speech", output_kind="audio_bytes", env_hint="GEMINI_API_KEY",
+        notes=_GEMINI_TTS_NOTES + " Most expressive / complex multi-speaker: --model gemini-3.8-flash-tts.",
+        args=_gemini_tts_args("gemini-3.8-flash-lite-tts"),
+    ),
     "eleven-v4": ModelSpec(
         id="eleven-v4",
         label="ElevenLabs Eleven v4 (text-to-speech, expressive)",
