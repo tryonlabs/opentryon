@@ -1353,6 +1353,117 @@ def check_nano_banana_21_and_fashn_vton_local():
     print("\u2713 nano-banana-2.1 (generate/edit, wide ratios) and fashn-vton-1.5 (local VTON) resolve and validate")
 
 
+def check_gemini_38_understand_and_tts():
+    import base64
+    import json
+    from unittest import mock
+
+    cases = [
+        (["understand", "--model", "gemini-3.8-flash", "--image", "a.jpg", "b.jpg", "--video", "v.mp4",
+          "--audio", "n.mp3", "--pdf", "sheet.pdf", "--prompt", "compare", "--thinking-level", "medium",
+          "--max-tokens", "2000"],
+         "GeminiUnderstandAdapter", "understand",
+         ["'image': ['a.jpg', 'b.jpg']", "'video': ['v.mp4']", "'pdf': ['sheet.pdf']", "'thinking_level': 'medium'", "'model': 'gemini-3.8-flash'"]),
+        (["tts", "--model", "gemini-3.8-flash-tts", "--text", "Welcome", "--voice", "Puck", "--style", "warm",
+          "--audio-format", "audio/l16", "--sample-rate", "16000"],
+         "GeminiTTSAdapter", "generate_speech", ["'voice': 'Puck'", "'mime_type': 'audio/l16'", "'sample_rate': 16000", "'model': 'gemini-3.8-flash-tts'"]),
+        (["tts", "--model", "gemini-3.8-flash-lite-tts", "--dialogue", "turns.json", "--speaker", "Joe=Puck", "Jane=Kore"],
+         "GeminiTTSAdapter", "generate_speech", ["'speakers': ['Joe=Puck', 'Jane=Kore']", "'model': 'gemini-3.8-flash-lite-tts'"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+
+    from tryon.api.gemini import GeminiTTSAdapter, GeminiUnderstandAdapter
+
+    # --- TTS: request shape (mocked HTTP) ---
+    tts = GeminiTTSAdapter(api_key="test")
+    wav = b"RIFF\x00\x00\x00\x00WAVEfmt "
+    ok = mock.Mock(status_code=200)
+    ok.json.return_value = {"steps": [{"type": "model_output", "content": [{"type": "audio", "data": base64.b64encode(wav).decode()}]}]}
+    with mock.patch("tryon.api.gemini.tts.requests.post", return_value=ok) as post:
+        assert tts.generate_speech("Have a wonderful day!", voice="Kore", style="cheerful") == wav
+    body = post.call_args.kwargs["json"]
+    assert post.call_args.args[0].endswith("/v1beta/interactions")
+    assert post.call_args.kwargs["headers"]["x-goog-api-key"] == "test"
+    assert body["model"] == "gemini-3.8-flash-tts" and body["response_format"] == {"type": "audio"}
+    assert body["generation_config"] == {"speech_config": [{"voice": "Kore"}]}
+    item = body["input"][0]["content"][0]
+    assert item["text"] == "Have a wonderful day!" and item["annotations"] == [{"type": "speech_metadata", "style": "cheerful"}]
+
+    with mock.patch("tryon.api.gemini.tts.requests.post", return_value=ok) as post:
+        tts.generate_speech(text=None, dialogue=json.dumps([
+            {"speaker": "Joe", "text": "Hi Jane", "style": "cheerful"}, {"speaker": "Jane", "text": "Hey Joe"}]),
+            speakers=["Joe=Puck", "Jane=Kore"], mime_type="audio/l16", sample_rate=16000)
+    body = post.call_args.kwargs["json"]
+    assert body["generation_config"]["speech_config"] == {"speakers": [
+        {"speaker": "Joe", "voice": "Puck"}, {"speaker": "Jane", "voice": "Kore"}]}
+    assert body["response_format"] == {"type": "audio", "mime_type": "audio/l16", "sample_rate": 16000}
+    turns = body["input"][0]["content"]
+    assert turns[0]["annotations"][0]["speaker"] == "Joe" and turns[1]["annotations"] == [{"type": "speech_metadata", "speaker": "Jane"}]
+
+    for bad in (
+        dict(text="x", voice="NotAVoice"), dict(text=""), dict(text="x", mime_type="audio/mp3"),
+        dict(text="x", sample_rate=44100), dict(text="x", speakers=["a=b"]),
+        dict(text="x", dialogue=[{"speaker": "A", "text": "t"}], speakers=["A=Puck", "B=Kore"]),
+        dict(dialogue=[{"speaker": "A", "text": "t"}], speakers=["A=Puck"]),
+        dict(dialogue=[{"speaker": "C", "text": "t"}], speakers=["A=Puck", "B=Kore"]),
+        dict(dialogue=[{"speaker": "A", "text": "t"}], speakers=["A=voice_123", "B=Kore"]),
+    ):
+        try:
+            tts.generate_speech(**bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    err = mock.Mock(status_code=403, text="denied")
+    with mock.patch("tryon.api.gemini.tts.requests.post", return_value=err):
+        try:
+            tts.generate_speech("x")
+        except RuntimeError as exc:
+            assert "403" in str(exc)
+        else:
+            raise AssertionError("expected RuntimeError")
+    try:
+        GeminiTTSAdapter(api_key="test", model="gemini-2.5-flash-preview-tts")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("legacy TTS ids are not registered")
+
+    # --- Understand: parts + config (mocked client) ---
+    adapter = GeminiUnderstandAdapter(api_key="test")
+    response = mock.Mock(text="a red dress", usage_metadata=None)
+    with tempfile.TemporaryDirectory() as tmp:
+        img = Path(tmp) / "a.png"
+        from PIL import Image as _Image
+        _Image.new("RGB", (4, 4)).save(img)
+        with mock.patch.object(adapter.client.models, "generate_content", return_value=response) as gen:
+            out = adapter.understand(image=str(img), video="https://www.youtube.com/watch?v=abc",
+                                     prompt="describe", system="be brief", thinking_level="medium", max_tokens=100)
+    kwargs = gen.call_args.kwargs
+    assert out["text"] == "a red dress" and kwargs["model"] == "gemini-3.8-flash"
+    parts = kwargs["contents"][0].parts
+    assert parts[0].inline_data is not None and parts[1].file_data.file_uri.startswith("https://www.youtube.com/")
+    assert parts[-1].text == "describe"
+    assert kwargs["config"].max_output_tokens == 100 and kwargs["config"].system_instruction == "be brief"
+    assert str(kwargs["config"].thinking_config.thinking_level).upper().endswith("MEDIUM")
+    for bad in ({"thinking_level": "minimal"}, {"max_tokens": 70000}, {"prompt": ""}):
+        try:
+            adapter.understand(**bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    print("\u2713 gemini-3.8-flash understand + gemini-3.8-flash(-lite)-tts: CLI, request shapes, validation")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -1538,6 +1649,7 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_gemini_38_understand_and_tts()
     check_nano_banana_21_and_fashn_vton_local()
     check_decide_embed_haiku_relight_dry_runs()
     check_decision_helpers_and_adapters()

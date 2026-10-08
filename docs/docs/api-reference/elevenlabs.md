@@ -24,6 +24,8 @@ an input to [Pruna P-Video-Avatar](pruna.md) (which accepts a pre-generated
 `--audio` file) for a talking-head clip with a specific branded/cloned
 voice.
 
+> A second TTS vendor is available: [Gemini 3.8 Flash TTS](gemini-3-8.md) (`gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts`, `GEMINI_API_KEY`) with 30 prebuilt voices and two-speaker dialogue.
+
 ## Capabilities
 
 | Capability | `eleven-v4` | `eleven-v4-turbo` |

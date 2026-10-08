@@ -286,6 +286,10 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU. **No first-part
 
    Covers `tts --model eleven-v4` and `tts --model eleven-v4-turbo` — OpenTryOn's first `tts` service (text -> speech audio, no image/video needed). Default voice is ElevenLabs' premade "Rachel"; override with `--voice-id`. See [ElevenLabs Eleven v4 / v4 Turbo](../api-reference/elevenlabs.md).
 
+### Gemini 3.8 Flash (gemini-3.8-flash / gemini-3.8-flash-tts / gemini-3.8-flash-lite-tts)
+
+Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GEMINI_API_BASE_URL`). Covers `understand --model gemini-3.8-flash` and `tts --model gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`. See [Gemini 3.8 Flash](../api-reference/gemini-3-8.md).
+
 ### Anthropic (claude-haiku-5-5)
 
 1. Create a key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)

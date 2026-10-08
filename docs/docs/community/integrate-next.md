@@ -248,7 +248,9 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 17. ~~`nano-banana-2.1`~~ **shipped** (Path A, `generate` + `edit`, 8 Oct 2026). Successor to `nano-banana-2`, which Google deprecated.
 18. ~~`fashn-vton-1.5`~~ **shipped** (Path B local VTON, 8 Oct 2026). Apache-2.0 code + weights; first commercial-friendly local try-on. VRAM not published by FASHN — measure on first GPU run.
 
-Next candidates from the 8 Oct 2026 survey (not started): `gemini-3.8-flash` (`understand`; no Gemini model there yet), Gemini 3.8 Flash TTS (second `tts` vendor), `gemini-embedding-2-preview` (hosted `embed`), Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), Qwen-Image-2.1 local (non-commercial licence), FLUX 3 (status unclear), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
+19. ~~`gemini-3.8-flash`~~ **shipped** (Path A, `understand`) and 20. ~~`gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`~~ **shipped** (Path A, second `tts` vendor), 8 Oct 2026. Voices endpoint / voice design / replication not wired yet.
+
+Next candidates from the 8 Oct 2026 survey (not started): `gemini-embedding-2-preview` (hosted `embed`), Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), Qwen-Image-2.1 local (non-commercial licence), FLUX 3 (status unclear), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
 
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 

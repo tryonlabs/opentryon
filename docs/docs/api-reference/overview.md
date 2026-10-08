@@ -675,6 +675,19 @@ See [GLM-5.3-FlashX Documentation](glm) for complete details.
 
 ---
 
+### `GeminiUnderstandAdapter` / `GeminiTTSAdapter`
+
+Gemini 3.8 Flash multimodal understanding (image, video, audio, PDF → text) and Gemini 3.8 Flash / Flash-Lite text-to-speech (WAV audio, 30 voices, two-speaker dialogue). Both use `GEMINI_API_KEY`.
+
+```python
+from tryon.api.gemini import GeminiUnderstandAdapter, GeminiTTSAdapter
+
+text = GeminiUnderstandAdapter().understand(video="runway.mp4", prompt="Summarise the looks.")["text"]
+wav = GeminiTTSAdapter().generate_speech("Welcome to the spring collection.", voice="Kore", style="warm")
+```
+
+See [Gemini 3.8 Flash](gemini-3-8) for details.
+
 ### `ClaudeUnderstandAdapter`
 
 Adapter for Anthropic's **Claude Haiku 5.5** (`claude-haiku-5-5`) — fast, low-cost text and image understanding (no video).

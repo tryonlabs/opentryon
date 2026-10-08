@@ -93,6 +93,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/deepseek',
         'api-reference/claude',
         'api-reference/typesafe-jev',
+        'api-reference/gemini-3-8',
         'api-reference/hy4',
         'api-reference/qwen-image',
         'api-reference/elevenlabs',
