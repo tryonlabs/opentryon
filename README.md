@@ -1,11 +1,20 @@
-# OpenTryOn
+<div align="center">
+
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tryonlabs/opentryon/main/docs/static/img/brand/opentryon-logo-dark.png">
+    <img src="https://raw.githubusercontent.com/tryonlabs/opentryon/main/docs/static/img/brand/opentryon-logo-light.png" alt="OpenTryOn" width="420">
+  </picture>
+</h1>
+
+Open-source AI toolkit for fashion technology: virtual try-on, image/video generation & editing, multimodal understanding, background removal, preprocessing, datasets, and TryOnDiffusion research code.
 
 [![Documentation](https://img.shields.io/badge/Documentation-Read%20Docs-teal?style=flat-square)](https://tryonlabs.github.io/opentryon/)
 [![PyPI](https://img.shields.io/pypi/v/opentryon?style=flat-square)](https://pypi.org/project/opentryon/)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-blue?style=flat-square&logo=discord)](https://discord.gg/T5mPpZHxkY)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc/4.0/)
 
-Open-source AI toolkit for fashion technology: virtual try-on, image/video generation & editing, multimodal understanding, background removal, preprocessing, datasets, and TryOnDiffusion research code.
+</div>
 
 **Current release: [v0.0.5](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5)** — dedicated VTON (Vertex, OutfitAnyone-Plus, Photoroom, Leffa, CatVTON), ChatGPT Images 2.5, MiniMax H3 / H3 Max + Fal H3 Max, NVIDIA NIM, Hy4, Qwen-Image, Wan 3.0, planner as registry super-agent.
 
