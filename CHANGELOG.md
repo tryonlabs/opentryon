@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Qwen-Image-2.1 Pro/Turbo + THX-01 decision model
+- **Qwen-Image-2.1** hosted: `qwen-image-2.1-pro` and `qwen-image-2.1-turbo` on `generate`, `edit`, and `vton` (DashScope; up to 10 refs on 2.1 Pro). Also selectable via `--model qwen-image --model-version qwen-image-2.1-pro|turbo`
+- **Qwen-Image-2.1** local: `qwen-image-2.1-local` and `qwen-image-2.1-turbo-local` (`QwenImage21LocalAdapter`, HF `Qwen/Qwen-Image-2.1` and `Qwen/Qwen-Image-2.1-Turbo`, Diffusers `QwenImage21Pipeline`)
+- **THX-01**: hosted `decide thx-01` (`Thx01Adapter`, `HALX_API_KEY`, https://api.hal-x.ai/v1/systemone) and local `decide thx-01-local` (`pip install thx01`, weights `doofz/THX-01`, Apache-2.0). MCP provider catalog key `halx`
+
 #### 🖼 FLUX 3 Image (BFL)
 - **`flux3-image`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageAdapter`): first-party `POST /v1/flux-3-image` with aspect-ratio tiers, resolution up to `4k`, optional grounding, and up to 10 reference images on edit. Same `BFL_API_KEY` as FLUX.2 / FLUX VTO; MCP tools `generate_flux3_image` and `edit_flux3_image`; planner pins `flux 3 image`. Docs: `docs/docs/api-reference/flux3-image.md`
 

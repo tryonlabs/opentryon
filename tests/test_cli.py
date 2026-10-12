@@ -616,6 +616,39 @@ def check_qwen_image_dry_runs():
     print("\u2713 generate/edit/vton qwen-image --dry-run resolve the expected calls")
 
 
+def check_qwen_image_21_and_thx01_dry_runs():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "generate", "--model", "qwen-image-2.1-pro",
+            "--prompt", "editorial still", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "QwenImageAdapter" in printed and "'model': 'qwen-image-2.1-pro'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "edit", "--model", "qwen-image-2.1-pro",
+            "--images", "data/model-1.jpg",
+            "--prompt", "Change jacket color", "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "generate_image_edit" in printed and "'model': 'qwen-image-2.1-pro'" in printed, printed
+
+    questions = '{"ok": {"type": "noul", "instructions": "Is this valid?"}}'
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "decide", "--model", "thx-01",
+            "--state", "Refund request", "--questions", questions, "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "Thx01Adapter" in printed and "decide" in printed, printed
+
+    print("\u2713 qwen-image-2.1-pro and thx-01 decide --dry-run resolve expected calls")
+
+
 def check_qwen_image_local_helpers():
     from tryon.models.qwen_image.adapter import (
         QwenImageLocalAdapter,
@@ -1684,6 +1717,7 @@ if __name__ == "__main__":
     check_hy4_dry_runs()
     check_nvidia_nim_dry_runs()
     check_qwen_image_dry_runs()
+    check_qwen_image_21_and_thx01_dry_runs()
     check_qwen_image_local_helpers()
     check_qwen_image_local_dry_runs()
     check_kimi_understand_requires_image_or_video()

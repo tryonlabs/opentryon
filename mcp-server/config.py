@@ -189,6 +189,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "DigitalOcean-compatible gateway.",
     ),
     (
+        "halx",
+        "HAL-X (THX-01)",
+        "https://api.hal-x.ai/docs/thx-01/",
+        ("HALX_API_KEY",),
+        "Unlocks decide thx-01 (hosted 322M decision model; TypeSafe System One compatible). "
+        "Open weights: decide thx-01-local (pip install thx01).",
+    ),
+    (
         "aws",
         "Amazon Bedrock",
         "https://console.aws.amazon.com/bedrock/",

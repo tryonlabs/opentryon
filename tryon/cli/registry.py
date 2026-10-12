@@ -97,6 +97,8 @@ def _hy4_understand_args(*, endpoint: str) -> List[Arg]:
 _QWEN_IMAGE_VERSIONS = [
     "qwen-image-3.0-pro",
     "qwen-image-3.0",
+    "qwen-image-2.1-pro",
+    "qwen-image-2.1-turbo",
     "qwen-image-2.0-pro",
     "qwen-image-2.0",
 ]
@@ -192,6 +194,21 @@ def _gpt_image_25_edit_args(default_version: str) -> List[Arg]:
     ]
 
 
+def _qwen_image_pinned_common_args(dashscope_model: str) -> List[Arg]:
+    tail = _qwen_image_common_args()[1:]
+    return [
+        Arg(
+            ("--model-version",),
+            "model_version",
+            target="init",
+            call_name="model",
+            default=dashscope_model,
+            choices=[dashscope_model],
+            help=f"DashScope model id (fixed: {dashscope_model})",
+        ),
+    ] + tail
+
+
 def _qwen_image_common_args() -> List[Arg]:
     return [
         Arg(("--model-version",), "model_version", target="init", call_name="model",
@@ -253,6 +270,29 @@ def _muse_image_common_args() -> List[Arg]:
             default=True,
             help="Disable built-in code/layout tool",
         ),
+    ]
+
+
+def _qwen_image_21_local_core_args(default_model_id: str) -> List[Arg]:
+    return [
+        Arg(("--width",), "width", type=int, help="Output width in pixels"),
+        Arg(("--height",), "height", type=int, help="Output height in pixels"),
+        Arg(
+            ("--model-id",),
+            "model_id",
+            target="init",
+            default=default_model_id,
+            help=f"HF repo id or local path (default {default_model_id})",
+        ),
+        Arg(
+            ("--no-kv-cache",),
+            "use_kv_cache",
+            action="store_false",
+            default=True,
+            help="Disable prefix KV cache reuse (Qwen-Image-2.1)",
+        ),
+        Arg(("--seed",), "seed", type=int),
+        Arg(("--num-images",), "num_images", type=int, default=1),
     ]
 
 
@@ -578,6 +618,78 @@ _VTON = {
             Arg(("--garment-description",), "garment_description",
                 help="Short garment description used to build the default prompt"),
             *_qwen_image_common_args(),
+        ],
+    ),
+    "qwen-image-2.1-pro": ModelSpec(
+        id="qwen-image-2.1-pro",
+        label="Qwen-Image-2.1 Pro (DashScope)",
+        import_path="tryon.api.qwen",
+        class_name="QwenImageAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        env_hint="DASHSCOPE_API_KEY",
+        notes="DashScope qwen-image-2.1-pro: up to 10 reference images on edit/VTON; thinking + prompt rewrite.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_qwen_image_pinned_common_args("qwen-image-2.1-pro"),
+        ],
+    ),
+    "qwen-image-2.1-turbo": ModelSpec(
+        id="qwen-image-2.1-turbo",
+        label="Qwen-Image-2.1 Turbo (DashScope)",
+        import_path="tryon.api.qwen",
+        class_name="QwenImageAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        env_hint="DASHSCOPE_API_KEY",
+        notes="DashScope qwen-image-2.1-turbo hosted API (fast tier). Open weights: --model qwen-image-2.1-turbo-local.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_qwen_image_pinned_common_args("qwen-image-2.1-turbo"),
+        ],
+    ),
+    "qwen-image-2.1-local": ModelSpec(
+        id="qwen-image-2.1-local",
+        label="Qwen-Image-2.1 (open-weight, local)",
+        import_path="tryon.models.qwen_image_21",
+        class_name="QwenImage21LocalAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        extra="local",
+        notes="HF Qwen/Qwen-Image-2.1 (Diffusers QwenImage21Pipeline). Hosted twin: qwen-image-2.1-pro.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_qwen_image_21_local_core_args("Qwen/Qwen-Image-2.1"),
+        ],
+    ),
+    "qwen-image-2.1-turbo-local": ModelSpec(
+        id="qwen-image-2.1-turbo-local",
+        label="Qwen-Image-2.1 Turbo (open-weight, local 8-step)",
+        import_path="tryon.models.qwen_image_21",
+        class_name="QwenImage21LocalAdapter",
+        method="generate_virtual_tryon",
+        output_kind="images",
+        extra="local",
+        notes="HF Qwen/Qwen-Image-2.1-Turbo. Hosted twin: qwen-image-2.1-turbo.",
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Person/model image (path or URL)", required=True),
+            _img(("--garment-image", "--cloth-image"), "garment", "Garment reference image (path or URL)", required=True),
+            Arg(("--prompt",), "prompt", "Full styling prompt (overrides --garment-description)"),
+            Arg(("--garment-description",), "garment_description",
+                help="Short garment description used to build the default prompt"),
+            *_qwen_image_21_local_core_args("Qwen/Qwen-Image-2.1-Turbo"),
         ],
     ),
     "qwen-image-local": ModelSpec(
@@ -1031,6 +1143,46 @@ _GENERATE = {
             *_qwen_image_common_args(),
         ],
     ),
+    "qwen-image-2.1-pro": ModelSpec(
+        id="qwen-image-2.1-pro", label="Qwen-Image-2.1 Pro (DashScope)",
+        import_path="tryon.api.qwen", class_name="QwenImageAdapter",
+        method="generate_text_to_image", output_kind="images", env_hint="DASHSCOPE_API_KEY",
+        notes="Alibaba Model Studio qwen-image-2.1-pro (T2I + edit up to 10 refs).",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_qwen_image_pinned_common_args("qwen-image-2.1-pro"),
+        ],
+    ),
+    "qwen-image-2.1-turbo": ModelSpec(
+        id="qwen-image-2.1-turbo", label="Qwen-Image-2.1 Turbo (DashScope)",
+        import_path="tryon.api.qwen", class_name="QwenImageAdapter",
+        method="generate_text_to_image", output_kind="images", env_hint="DASHSCOPE_API_KEY",
+        notes="Hosted qwen-image-2.1-turbo. Local open weights: qwen-image-2.1-turbo-local.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_qwen_image_pinned_common_args("qwen-image-2.1-turbo"),
+        ],
+    ),
+    "qwen-image-2.1-local": ModelSpec(
+        id="qwen-image-2.1-local", label="Qwen-Image-2.1 (open-weight, local T2I)",
+        import_path="tryon.models.qwen_image_21", class_name="QwenImage21LocalAdapter",
+        method="generate_text_to_image", output_kind="images", extra="local",
+        notes="HF Qwen/Qwen-Image-2.1 via QwenImage21Pipeline. Hosted twin: qwen-image-2.1-pro.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_qwen_image_21_local_core_args("Qwen/Qwen-Image-2.1"),
+        ],
+    ),
+    "qwen-image-2.1-turbo-local": ModelSpec(
+        id="qwen-image-2.1-turbo-local", label="Qwen-Image-2.1 Turbo (local 8-step)",
+        import_path="tryon.models.qwen_image_21", class_name="QwenImage21LocalAdapter",
+        method="generate_text_to_image", output_kind="images", extra="local",
+        notes="HF Qwen/Qwen-Image-2.1-Turbo. Hosted twin: qwen-image-2.1-turbo.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            *_qwen_image_21_local_core_args("Qwen/Qwen-Image-2.1-Turbo"),
+        ],
+    ),
     "qwen-image-local": ModelSpec(
         id="qwen-image-local", label="Qwen-Image-2512 (open-weight, local T2I)",
         import_path="tryon.models.qwen_image", class_name="QwenImageLocalAdapter",
@@ -1322,6 +1474,54 @@ _EDIT = {
                 help="1–3 reference images (paths or URLs)"),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
             *_qwen_image_common_args(),
+        ],
+    ),
+    "qwen-image-2.1-pro": ModelSpec(
+        id="qwen-image-2.1-pro", label="Qwen-Image-2.1 Pro (DashScope edit)",
+        import_path="tryon.api.qwen", class_name="QwenImageAdapter",
+        method="generate_image_edit", output_kind="images", env_hint="DASHSCOPE_API_KEY",
+        notes="Up to 10 reference images on qwen-image-2.1-pro.",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True,
+                help="1–10 reference images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_qwen_image_pinned_common_args("qwen-image-2.1-pro"),
+        ],
+    ),
+    "qwen-image-2.1-turbo": ModelSpec(
+        id="qwen-image-2.1-turbo", label="Qwen-Image-2.1 Turbo (DashScope edit)",
+        import_path="tryon.api.qwen", class_name="QwenImageAdapter",
+        method="generate_image_edit", output_kind="images", env_hint="DASHSCOPE_API_KEY",
+        notes="Hosted qwen-image-2.1-turbo edit (up to 10 refs per 2.1 family docs).",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True,
+                help="1–10 reference images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_qwen_image_pinned_common_args("qwen-image-2.1-turbo"),
+        ],
+    ),
+    "qwen-image-2.1-local": ModelSpec(
+        id="qwen-image-2.1-local", label="Qwen-Image-2.1 (open-weight, local edit)",
+        import_path="tryon.models.qwen_image_21", class_name="QwenImage21LocalAdapter",
+        method="generate_image_edit", output_kind="images", extra="local",
+        notes="HF Qwen/Qwen-Image-2.1 unified T2I+edit pipeline.",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True,
+                help="1–10 reference images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_qwen_image_21_local_core_args("Qwen/Qwen-Image-2.1"),
+        ],
+    ),
+    "qwen-image-2.1-turbo-local": ModelSpec(
+        id="qwen-image-2.1-turbo-local", label="Qwen-Image-2.1 Turbo (local edit)",
+        import_path="tryon.models.qwen_image_21", class_name="QwenImage21LocalAdapter",
+        method="generate_image_edit", output_kind="images", extra="local",
+        notes="HF Qwen/Qwen-Image-2.1-Turbo.",
+        args=[
+            Arg(("--images",), "image", nargs="+", required=True,
+                help="1–10 reference images (paths or URLs)"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            *_qwen_image_21_local_core_args("Qwen/Qwen-Image-2.1-Turbo"),
         ],
     ),
     "qwen-image-local": ModelSpec(
@@ -2977,6 +3177,33 @@ _DECIDE = {
             Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
             Arg(("--jev-model",), "jev_model", target="init", call_name="model", default="jev-latest",
                 choices=["jev-latest", "jev-preview", "jev-1.13.0"], help="Jev model id/alias"),
+        ],
+    ),
+    "thx-01": ModelSpec(
+        id="thx-01",
+        label="HAL-X THX-01 (hosted decision model)",
+        import_path="tryon.api.hal_x", class_name="Thx01Adapter",
+        method="decide", output_kind="text", env_hint="HALX_API_KEY",
+        notes="First-party HAL-X System One API (POST https://api.hal-x.ai/v1/systemone): "
+        "322M Apache-2.0 decision model; choice/noul/score plus native number/excerpt/citations. "
+        "TypeSafe/Jev-compatible request shape. Open-weight local twin: --model thx-01-local.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
+        ],
+    ),
+    "thx-01-local": ModelSpec(
+        id="thx-01-local",
+        label="THX-01 (open-weight local decision model, Apache-2.0)",
+        import_path="tryon.models.thx01", class_name="Thx01LocalAdapter",
+        method="decide", output_kind="text", extra="local",
+        notes="HF doofz/THX-01 via pip install thx01. Hosted twin: --model thx-01 (HALX_API_KEY).",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
+            Arg(("--model-id",), "model_id", target="init", default="doofz/THX-01",
+                help="HF repo id or local path"),
+            Arg(("--device",), "device", target="init", help="Device override passed to thx01.load"),
         ],
     ),
 }

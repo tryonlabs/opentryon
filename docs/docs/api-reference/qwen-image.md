@@ -35,6 +35,9 @@ Qwen3.8 (understand) and Qwen-Image (generate / edit / vton) share
 | Edit | `opentryon edit --model qwen-image` | `QwenImageAdapter` | same image API, I2I |
 | VTON | `opentryon vton --model qwen-image` | `QwenImageAdapter.generate_virtual_tryon` | I2I with person + garment |
 | Local generate / edit / VTON | `opentryon … --model qwen-image-local` | `QwenImageLocalAdapter` | Diffusers ([local docs](../local-models/qwen-image.md)) |
+| **2.1 Pro (hosted)** | `… --model qwen-image-2.1-pro` | `QwenImageAdapter` | DashScope `qwen-image-2.1-pro` (up to 10 refs) |
+| **2.1 Turbo (hosted)** | `… --model qwen-image-2.1-turbo` | `QwenImageAdapter` | DashScope fast tier |
+| **2.1 / 2.1-Turbo (local)** | `… --model qwen-image-2.1-local` / `qwen-image-2.1-turbo-local` | `QwenImage21LocalAdapter` | [Qwen-Image-2.1 local](../local-models/qwen-image-21.md) |
 
 For local Qwen3.8-27B understanding, see [Qwen3.8 local](../local-models/qwen3.8.md).
 For local Qwen-Image T2I / edit / VTON, see [Qwen-Image local](../local-models/qwen-image.md)
