@@ -28,6 +28,7 @@ LOCAL_INFERENCE_DEPS = [
     "huggingface-hub>=0.36.0",
     "nest-asyncio>=1.5.0",
     "decord>=0.6.0",  # video frame sampling for Kimi-VL understand_video()
+    "thx01>=0.1.0",  # local THX-01 (doofz/THX-01); decide thx-01-local
 ]
 
 setup(

@@ -16,6 +16,7 @@ Docs:
 
 Models:
     qwen-image-3.0-pro (default), qwen-image-3.0,
+    qwen-image-2.1-pro, qwen-image-2.1-turbo,
     qwen-image-2.0-pro, qwen-image-2.0
 
 Env:
@@ -49,9 +50,13 @@ GENERATION_PATH = "/services/aigc/multimodal-generation/generation"
 VALID_MODELS = {
     "qwen-image-3.0-pro",
     "qwen-image-3.0",
+    "qwen-image-2.1-pro",
+    "qwen-image-2.1-turbo",
     "qwen-image-2.0-pro",
     "qwen-image-2.0",
 }
+
+_QWEN_IMAGE_21_MODELS = frozenset({"qwen-image-2.1-pro", "qwen-image-2.1-turbo"})
 VALID_PROMPT_EXTEND_MODES = {"direct", "agent"}
 
 DEFAULT_TRYON_PROMPT = (
@@ -157,6 +162,12 @@ class QwenImageAdapter:
             )
         return resolved
 
+    @staticmethod
+    def _max_i2i_images(model: str) -> int:
+        if model in _QWEN_IMAGE_21_MODELS:
+            return 10
+        return 3
+
     # -- core call --------------------------------------------------------
 
     def _generate(
@@ -253,8 +264,12 @@ class QwenImageAdapter:
             raise ValueError("prompt is required.")
         if not images:
             raise ValueError("At least one input image is required.")
-        if len(images) > 3:
-            raise ValueError("Qwen-Image I2I accepts at most 3 reference images.")
+        resolved_model = self._resolve_model(kwargs.get("model"))
+        max_refs = self._max_i2i_images(resolved_model)
+        if len(images) > max_refs:
+            raise ValueError(
+                f"Qwen-Image I2I accepts at most {max_refs} reference images for {resolved_model}."
+            )
         content: List[Dict[str, Any]] = [
             {"image": self._image_uri(img)} for img in images
         ]

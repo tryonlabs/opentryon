@@ -71,6 +71,7 @@ _LAZY_ATTRS = {
     "MuseImageAdapter": ".muse",
     "WanVideoAdapter": ".wan",
     "RunwayVideoAdapter": ".runway",
+    "Thx01Adapter": ".hal_x",
 }
 
 __all__ = sorted(_LAZY_ATTRS)

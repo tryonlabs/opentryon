@@ -75,6 +75,8 @@ from .cosmos3 import Cosmos3LocalAdapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
 from .qwen_image import QwenImageLocalAdapter
+from .qwen_image_21 import QwenImage21LocalAdapter
+from .thx01 import Thx01LocalAdapter
 from .ternary_bonsai import TernaryBonsaiAdapter
 from .wan22 import Wan22Adapter
 
@@ -92,6 +94,8 @@ __all__ = [
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",
     "QwenImageLocalAdapter",
+    "QwenImage21LocalAdapter",
+    "Thx01LocalAdapter",
     "TernaryBonsaiAdapter",
     "Wan22Adapter",
 ]

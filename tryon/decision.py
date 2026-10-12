@@ -28,6 +28,7 @@ import os
 from typing import Any, Dict, Optional, Union
 
 VALID_QUESTION_TYPES = {"noul", "choice", "score"}
+THX_EXTENDED_QUESTION_TYPES = VALID_QUESTION_TYPES | {"number", "excerpt"}
 
 Questions = Union[Dict[str, Dict[str, Any]], str]
 
@@ -64,6 +65,51 @@ def load_questions(questions: Questions) -> Dict[str, Dict[str, Any]]:
             raise ValueError(f"question {name!r}: 'choice' needs a criteria object with >= 2 options.")
         if qtype == "score" and not (isinstance(criteria, list) and 2 <= len(criteria) <= 10):
             raise ValueError(f"question {name!r}: 'score' needs an ordered criteria list of 2-10 levels.")
+    return questions
+
+
+def load_thx_questions(questions: Questions) -> Dict[str, Dict[str, Any]]:
+    """Validate questions for THX-01 (includes ``number`` and ``excerpt`` types)."""
+    if isinstance(questions, str):
+        text = questions.strip()
+        if os.path.isfile(text):
+            with open(text, "r", encoding="utf-8") as f:
+                text = f.read()
+        try:
+            questions = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                "questions must be a dict, a JSON string, or a path to a JSON file "
+                f"(could not parse JSON: {exc})."
+            ) from exc
+    if not isinstance(questions, dict) or not questions:
+        raise ValueError("questions must be a non-empty object mapping question name -> spec.")
+
+    for name, spec in questions.items():
+        if not isinstance(spec, dict):
+            raise ValueError(f"question {name!r} must be an object.")
+        qtype = spec.get("type")
+        if qtype not in THX_EXTENDED_QUESTION_TYPES:
+            raise ValueError(
+                f"question {name!r}: type must be one of {sorted(THX_EXTENDED_QUESTION_TYPES)} "
+                f"(got {qtype!r})."
+            )
+        if not (spec.get("instructions") or spec.get("question")):
+            raise ValueError(
+                f"question {name!r}: 'instructions' or 'question' is required."
+            )
+        criteria = spec.get("criteria")
+        if qtype == "choice" and not (
+            (isinstance(criteria, dict) and len(criteria) >= 2)
+            or (isinstance(criteria, list) and len(criteria) >= 2)
+        ):
+            raise ValueError(
+                f"question {name!r}: 'choice' needs criteria with >= 2 options."
+            )
+        if qtype == "score" and not (isinstance(criteria, list) and 2 <= len(criteria) <= 10):
+            raise ValueError(
+                f"question {name!r}: 'score' needs an ordered criteria list of 2-10 levels."
+            )
     return questions
 
 
