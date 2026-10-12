@@ -157,6 +157,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_nano_banana_pro` | Nano Banana Pro (Gemini 3 Pro Image Preview) | `GEMINI_API_KEY` |
 | `generate_nano_banana_2` | Nano Banana 2 (Gemini 3.1 Flash Image; deprecated upstream) | `GEMINI_API_KEY` |
 | `generate_nano_banana_2_1` | Nano Banana 2.1 (`gemini-nano-banana-2.1`; adds 1:4/4:1/1:8/8:1) | `GEMINI_API_KEY` |
+| `generate_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
 | `generate_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `generate_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `generate_flux2_turbo` | FLUX.2-dev Turbo (local, 8-step) | local/GPU |
@@ -181,6 +182,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_nano_banana_pro` | Nano Banana Pro | `GEMINI_API_KEY` |
 | `edit_nano_banana_2` | Nano Banana 2 | `GEMINI_API_KEY` |
 | `edit_nano_banana_2_1` | Nano Banana 2.1 | `GEMINI_API_KEY` |
+| `edit_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
 | `edit_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `edit_flux2_turbo` | FLUX.2-dev Turbo (local, image-to-image) | local/GPU |

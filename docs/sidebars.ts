@@ -67,6 +67,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/p-image-ideogram',
         'api-reference/fashn',
         'api-reference/flux2',
+        'api-reference/flux3-image',
         'api-reference/nano-banana',
         'api-reference/gpt-image',
         'api-reference/veo',

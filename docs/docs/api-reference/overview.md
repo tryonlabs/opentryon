@@ -504,6 +504,35 @@ See [FLUX.2 API Documentation](flux2) for complete details.
 
 ---
 
+### `Flux3ImageAdapter`
+
+Adapter for [FLUX 3 Image](https://docs.bfl.ml/flux_3/flux3_image_overview) — unified generate/edit on `POST /v1/flux-3-image`.
+
+```python
+from tryon.api import Flux3ImageAdapter
+
+adapter = Flux3ImageAdapter()
+
+images = adapter.generate_text_to_image(
+    prompt="Editorial fashion still",
+    aspect_ratio="3:4",
+    resolution="2k",
+    grounding=True,
+)
+```
+
+**Parameters:**
+- `api_key` (str, optional): BFL API key. Defaults to `BFL_API_KEY`
+
+**Methods:**
+- `generate_text_to_image(prompt, aspect_ratio, resolution, safety_tolerance, grounding, ...)` — Text-only generation
+- `generate_image_edit(prompt, input_image, reference_images, ...)` — Edit or restyle with references
+- `generate_multi_image(prompt, images, ...)` — Compose from multiple references (up to 10)
+
+Registry id: `flux3-image` on `generate` and `edit`. See [FLUX 3 Image](flux3-image) for CLI and MCP notes.
+
+---
+
 ### `Flux2FlexAdapter`
 
 Adapter for FLUX.2 [FLEX] - flexible image generation with advanced controls.
