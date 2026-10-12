@@ -785,6 +785,67 @@ def _nano_banana_generate_args(with_resolution: bool, with_grounding: bool, wide
     return args
 
 
+def _flux3_image_args(*, for_edit: bool) -> List[Arg]:
+    aspect_choices = [
+        "auto",
+        "21:9",
+        "2:1",
+        "16:9",
+        "3:2",
+        "7:5",
+        "4:3",
+        "5:4",
+        "1:1",
+        "4:5",
+        "3:4",
+        "5:7",
+        "2:3",
+        "9:16",
+        "1:2",
+        "9:21",
+    ]
+    args: List[Arg] = []
+    if for_edit:
+        args.append(
+            _img(("--image", "-i"), "input_image", "Primary reference image (path or URL)", required=True)
+        )
+        args.append(
+            Arg(
+                ("--reference-images",),
+                "reference_images",
+                nargs="+",
+                help="Additional reference images (up to 9 more; 10 total with --image)",
+            )
+        )
+    args.extend(
+        [
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--aspect-ratio",), "aspect_ratio", default="auto", choices=aspect_choices),
+            Arg(
+                ("--resolution",),
+                "resolution",
+                default="1k",
+                choices=["768sq", "1k", "1.5k", "2k", "4k"],
+            ),
+            Arg(
+                ("--safety-tolerance",),
+                "safety_tolerance",
+                type=int,
+                default=2,
+                choices=list(range(5)),
+            ),
+            Arg(
+                ("--no-grounding",),
+                "grounding",
+                action="store_false",
+                default=True,
+                help="Disable web and image search grounding before generation",
+            ),
+        ]
+    )
+    return args
+
+
 def _flux2_generate_args(is_flex: bool) -> List[Arg]:
     args = [
         Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
@@ -834,6 +895,17 @@ _GENERATE = {
         method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
         notes="Fastest/cheapest Nano Banana tier; 1K resolution only.",
         args=_nano_banana_generate_args(with_resolution=False, with_grounding=False),
+    ),
+    "flux3-image": ModelSpec(
+        id="flux3-image",
+        label="FLUX 3 Image",
+        import_path="tryon.api.flux3",
+        class_name="Flux3ImageAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        env_hint="BFL_API_KEY",
+        notes="BFL unified generate/edit endpoint; resolution tiers up to 4k; optional grounding.",
+        args=_flux3_image_args(for_edit=False),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",
@@ -1110,6 +1182,17 @@ _EDIT = {
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing instruction"),
             _gemini_aspect_ratio(),
         ],
+    ),
+    "flux3-image": ModelSpec(
+        id="flux3-image",
+        label="FLUX 3 Image",
+        import_path="tryon.api.flux3",
+        class_name="Flux3ImageAdapter",
+        method="generate_image_edit",
+        output_kind="images",
+        env_hint="BFL_API_KEY",
+        notes="Same BFL endpoint as generate; describe edits and optional layout boxes in the prompt.",
+        args=_flux3_image_args(for_edit=True),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",
