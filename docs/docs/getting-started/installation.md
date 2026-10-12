@@ -72,7 +72,7 @@ pip install -U opentryon
 pip install -U "opentryon[local]"
 ```
 
-Verify the version (current stable: **0.0.5**):
+Verify the version (current stable: **0.0.6**):
 
 ```bash
 python -c "import tryon; print(tryon.__version__)"
