@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 12 October 2026
+
 ### Added
 
 #### Qwen-Image-2.1 Pro/Turbo + THX-01 decision model
@@ -52,6 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated / Changed
 - **Sora 2** (`sora`): OpenAI removed the Sora video API on 24 Sep 2026. The registry id and adapter are kept for backwards compatibility (adapter emits a `DeprecationWarning`; label/notes flag the removal)
 - **Planner default video model changed from `sora` to `veo`** (`tryon/agents/planner/bind.py`, `catalog.py`, Studio docs)
+- `gemini-omni` now targets `gemini-omni-1.1-flash` and rejects the deprecated `gemini-omni-flash-preview`; `veo` is Veo 3.1 only and rejects the shut-down Veo 3.0 ids (see the video-wave entry above)
+- New core dependency `anthropic>=0.75.0` (Claude Haiku 5.5); new `[local]` dependency `thx01>=0.1.0` (`decide thx-01-local`)
+- Registry grew from 90 to 132 models (137 MCP tools) across nine services; `tts`, `decide` and `embed` are new since 0.0.5
 
 #### 🧮 Understanding — Limite 1B - Violetto (out of fashion/media scope)
 - **Limite 1B - Violetto** (`LimiteAdapter` / CLI `--model limite-1b-violetto`): new local model, `tryon.models.limite`
@@ -405,6 +410,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive demos
 - Complete documentation
 
+[0.0.6]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.6
 [0.0.5]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5
 [0.0.4]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.4
 [0.0.3]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.3

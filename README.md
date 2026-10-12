@@ -16,7 +16,7 @@ Open-source AI toolkit for fashion technology: virtual try-on, image/video gener
 
 </div>
 
-**Current release: [v0.0.5](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5)** — dedicated VTON (Vertex, OutfitAnyone-Plus, Photoroom, Leffa, CatVTON), ChatGPT Images 2.5, MiniMax H3 / H3 Max + Fal H3 Max, NVIDIA NIM, Hy4, Qwen-Image, Wan 3.0, planner as registry super-agent.
+**Current release: [v0.0.6](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.6)** — new `decide` + `embed` services, Gemini 3.8 Flash + TTS, Claude Haiku 5.5, Nano Banana 2.1, FLUX 3 Image, Qwen-Image-2.1, FASHN VTON 1.5 (local), Veo 3.1 / Omni 1.1 / Seedance references, Cosmos 3 local, ElevenLabs TTS, DeepSeek (132 models, 9 services).
 
 📚 **Full documentation:** [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)  
 API tutorials, configuration, examples, and agent guides live there — not in this README.

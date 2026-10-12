@@ -1,7 +1,7 @@
 ---
 slug: /
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.5 adds dedicated VTON (Vertex, OutfitAnyone-Plus, Photoroom, Leffa, CatVTON), ChatGPT Images 2.5, MiniMax H3 / H3 Max + Fal H3 Max, NVIDIA NIM, Hy4, Qwen-Image, and Wan 3.0 on the v0.0.4 CLI/MCP media surface.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.6 adds new decide + embed services, Gemini 3.8 Flash + TTS, Claude Haiku 5.5, Nano Banana 2.1, FLUX 3 Image, Qwen-Image-2.1, FASHN VTON 1.5 (local), Veo 3.1 / Omni 1.1 / Seedance references, Cosmos 3 local, ElevenLabs TTS, DeepSeek on the v0.0.5 CLI/MCP surface.
 keywords:
   - virtual try-on
   - fashion AI
@@ -58,7 +58,7 @@ image: /img/opentryon-social-card.jpg
 
 # Welcome to OpenTryOn
 
-OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.5](https://pypi.org/project/opentryon/0.0.5/)** on PyPI.
+OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.6](https://pypi.org/project/opentryon/0.0.6/)** on PyPI.
 
 ## 🎯 What is OpenTryOn?
 
@@ -71,7 +71,7 @@ OpenTryOn gives you four ways to run fashion AI models:
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
-## 🚀 Key Features (v0.0.5)
+## 🚀 Key Features (v0.0.6)
 
 ### Developer surfaces
 - Unified **registry-driven CLI** with `--dry-run`

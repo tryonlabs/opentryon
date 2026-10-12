@@ -1,6 +1,6 @@
 # API Reference
 
-Complete API reference for OpenTryOn modules. **Current package: v0.0.5.**
+Complete API reference for OpenTryOn modules. **Current package: v0.0.6.**
 
 Models are also available through the unified **CLI**, **MCP server**, and (for upstream media HTTP) **OpenAPI / Postman** snapshots:
 
