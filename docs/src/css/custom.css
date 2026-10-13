@@ -704,7 +704,7 @@ tbody tr:hover {
 }
 
 [data-theme='dark'] .footer__copyright {
-  color: var(--ot-text-3);
+  color: var(--ot-text-muted); /* text-3 is 3.7:1 on the sheet; text-muted is 7.0:1 */
 }
 
 /* ---------- Content sheet (platform parity) ---------- */
