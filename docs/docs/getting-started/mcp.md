@@ -323,6 +323,7 @@ The new `embed` service saves vectors to an `.npz` file under the output dir and
 
 | MCP tool | Backend | Needs |
 |---|---|---|
+| `embed_gemini_embedding_2` | Google Gemini Embedding 2 (3072-d Matryoshka; text/image/audio/video/PDF) | `GEMINI_API_KEY` |
 | `embed_embeddinggemma_2` | Google EmbeddingGemma 2 (768-d; text/code/image/video/audio) | local/GPU |
 | `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
 | `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |

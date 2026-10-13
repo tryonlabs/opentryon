@@ -60,6 +60,7 @@ _LAZY_ATTRS = {
     "ElevenLabsAdapter": ".elevenlabs",
     "GeminiUnderstandAdapter": ".gemini",
     "GeminiTTSAdapter": ".gemini",
+    "GeminiEmbeddingAdapter": ".gemini",
     "SeedanceAdapter": ".byteplus",
     "SeedreamAdapter": ".byteplus",
     "IdeogramAdapter": ".ideogram",

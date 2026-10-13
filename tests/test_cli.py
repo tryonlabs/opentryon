@@ -1498,6 +1498,94 @@ def check_gemini_38_understand_and_tts():
     print("\u2713 gemini-3.8-flash understand + gemini-3.8-flash(-lite)-tts: CLI, request shapes, validation")
 
 
+def check_gemini_embedding_2():
+    import io as _io
+    from unittest import mock
+
+    import numpy as np
+    from PIL import Image
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["embed", "--model", "gemini-embedding-2", "--text", "linen shirt", "--image", "a.jpg",
+                         "--query", "summer top", "--task", "question answering", "--dim", "768",
+                         "--aggregate", "--dry-run"])
+    printed = buf.getvalue()
+    assert code == 0 and "GeminiEmbeddingAdapter" in printed and ".embed(" in printed, printed
+    for needle in ("'output_dimensionality': 768", "'aggregate': True", "'task': 'question answering'"):
+        assert needle in printed, (needle, printed)
+
+    from tryon.api.gemini import GeminiEmbeddingAdapter
+    from tryon.api.gemini.embed import format_text
+
+    assert format_text("q", "search result", "query") == "task: search result | query: q"
+    assert format_text("d", "search result", "document") == "title: none | text: d"
+    assert format_text("x", "clustering", "document") == "task: clustering | query: x"
+    for bad in (("x", "bogus", "query"), ("x", "search result", "bogus")):
+        try:
+            format_text(*bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+
+    adapter = GeminiEmbeddingAdapter(api_key="test")
+    calls = []
+
+    def fake_embed(model, contents, config=None):
+        calls.append((model, contents, config))
+        n = 1 if len(contents) and not hasattr(contents[0], "parts") else len(contents)
+        rows = [mock.Mock(values=[float(i + 1), 0.0, 2.0]) for i in range(n)]
+        return mock.Mock(embeddings=rows)
+
+    img = Image.new("RGB", (8, 8), "red")
+    with mock.patch.object(adapter.client.models, "embed_content", side_effect=fake_embed):
+        out = adapter.embed(text=["red dress"], image=[img], query="dress", output_dimensionality=768, batch_size=1)
+        assert out["model"] == "gemini-embedding-2" and out["kind"] == "dense"
+        assert out["embeddings"].shape == (2, 3) and len(out["labels"]) == 2 and len(out["scores"]) == 2
+        assert np.allclose(np.linalg.norm(out["embeddings"], axis=1), 1.0)
+        # batch_size=1 -> two item calls + one query call
+        assert len(calls) == 3 and calls[0][2].output_dimensionality == 768
+        sent = calls[0][1][0].parts[0].text
+        assert sent == "title: none | text: red dress", sent
+        assert calls[2][1][0].parts[0].text == "task: search result | query: dress"
+
+        calls.clear()
+        agg = adapter.embed(text="Linen shirt", image=[img], aggregate=True)
+        assert agg["embeddings"].shape == (1, 3) and len(calls) == 1
+        parts = calls[0][1]
+        assert parts[0].text == "Linen shirt", "text must stay unprefixed inside an aggregated multimodal embedding"
+
+    for kwargs in (
+        {},
+        {"text": "x", "output_dimensionality": 64},
+        {"text": "x", "output_dimensionality": 4096},
+        {"text": "x", "query": "q", "query_image": img},
+        {"image": [img] * 7, "aggregate": True},
+        {"pdf": ["a.pdf", "b.pdf"], "aggregate": True},
+        {"text": "x", "batch_size": 0},
+    ):
+        try:
+            adapter.embed(**kwargs)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(kwargs)
+    try:
+        GeminiEmbeddingAdapter._read(__file__, "video")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unsupported extension must be rejected")
+    try:
+        GeminiEmbeddingAdapter(api_key="test", model="gemini-embedding-001")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("gemini-embedding-001 is not exposed")
+    print("✓ gemini-embedding-2: CLI, task prefixes, per-input vs aggregate, dim/limit validation")
+
+
 def check_fashn_catalogue_endpoints_and_fashion_embeddings():
     import base64
     import sys
@@ -2258,6 +2346,7 @@ if __name__ == "__main__":
     check_fashion_florence_and_extract_outfit()
     check_fashn_catalogue_endpoints_and_fashion_embeddings()
     check_gemini_38_understand_and_tts()
+    check_gemini_embedding_2()
     check_nano_banana_21_and_fashn_vton_local()
     check_decide_embed_haiku_relight_dry_runs()
     check_decision_helpers_and_adapters()

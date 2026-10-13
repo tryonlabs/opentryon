@@ -95,6 +95,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/claude',
         'api-reference/typesafe-jev',
         'api-reference/gemini-3-8',
+        'api-reference/gemini-embedding-2',
         'api-reference/hy4',
         'api-reference/qwen-image',
         'api-reference/hal-x-thx01',

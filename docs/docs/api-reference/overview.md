@@ -717,6 +717,17 @@ wav = GeminiTTSAdapter().generate_speech("Welcome to the spring collection.", vo
 
 See [Gemini 3.8 Flash](gemini-3-8) for details.
 
+### Gemini Embedding 2 (multimodal embeddings)
+
+```python
+from tryon.api.gemini import GeminiEmbeddingAdapter
+
+out = GeminiEmbeddingAdapter().embed(image=["boot1.jpg", "boot2.jpg"], query="black leather ankle boots")
+print(out["scores"])  # cosine similarity per image; out["embeddings"] is an L2-normalised array
+```
+
+See [Gemini Embedding 2](gemini-embedding-2) for details.
+
 ### `ClaudeUnderstandAdapter`
 
 Adapter for Anthropic's **Claude Haiku 5.5** (`claude-haiku-5-5`) — fast, low-cost text and image understanding (no video).

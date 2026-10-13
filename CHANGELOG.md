@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `embed` service: **`gemini-embedding-2`** — Google's hosted multimodal embeddings (text, images, audio, video, PDF in one space; 3072-d, Matryoshka `--dim` 128–3072). New `GeminiEmbeddingAdapter` in `tryon.api.gemini`; one vector per input by default, `--aggregate` fuses inputs, text is task-prefixed (`--task`, `--role`) because the model has no `task_type`. Uses `GEMINI_API_KEY`.
+- Docs: new page `api-reference/gemini-embedding-2.md`; CLI, MCP and configuration pages updated.
+
 ## [0.0.7] - 13 October 2026
 
 ### Removed
