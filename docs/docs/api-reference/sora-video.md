@@ -185,42 +185,30 @@ while True:
 
 ## CLI Usage
 
-The package includes a command-line interface for easy video generation:
-
-### Basic Text-to-Video
-
-```bash
-python sora_video.py --prompt "A fashion model walking in the rain" \
-                     --output walk.mp4
-```
-
-### High-Quality with Sora 2 Pro
+:::caution
+The Sora API was removed upstream on 24 Sep 2026, so these commands only illustrate the adapter's interface. The old root `sora_video.py` wrapper was removed in v0.0.7; use the unified CLI.
+:::
 
 ```bash
-python sora_video.py --prompt "Cinematic fashion runway show" \
-                     --model sora-2-pro \
-                     --duration 12 \
-                     --resolution 1920x1080 \
-                     --output runway.mp4
+# Text-to-video
+opentryon video-generate --model sora \
+  --prompt "A fashion model walking in the rain"
+
+# Longer clip at a higher resolution
+opentryon video-generate --model sora \
+  --prompt "Cinematic fashion runway show" \
+  --duration 12 --resolution 1920x1080
+
+# Image-to-video
+opentryon video-generate --model sora --image model_photo.jpg \
+  --prompt "The model waves and smiles" --duration 4
+
+# Asynchronous mode: return a video id immediately instead of polling
+opentryon video-generate --model sora \
+  --prompt "Fabric flowing in slow motion" --duration 8 --no-wait
 ```
 
-### Image-to-Video
-
-```bash
-python sora_video.py --image model_photo.jpg \
-                     --prompt "The model waves and smiles" \
-                     --duration 4 \
-                     --output animated.mp4
-```
-
-### Asynchronous Mode
-
-```bash
-python sora_video.py --prompt "Fabric flowing in slow motion" \
-                     --duration 8 \
-                     --async \
-                     --output fabric.mp4
-```
+Sora 2 Pro (`model_version="sora-2-pro"`) is selected through the Python adapter. For hosted video today see [Veo 3.1](veo), [Seedance](seedance-seedream) or [Gemini Omni](gemini-omni).
 
 ## API Reference
 

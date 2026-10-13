@@ -400,29 +400,33 @@ This is **composition** try-on via the Gemini Developer API (`GEMINI_API_KEY`). 
 
 ## Command Line Usage
 
-Use the `image_gen.py` script for command-line image generation:
+Use the unified `opentryon` CLI (the old root `image_gen.py` wrapper was removed in v0.0.7). Results are saved under `outputs/` (override with `--output-dir`):
 
 ```bash
 # Text-to-image with Nano Banana
-python image_gen.py --provider nano-banana --prompt "A stylish fashion model wearing a modern casual outfit"
+opentryon generate --model nano-banana --prompt "A stylish fashion model wearing a modern casual outfit"
 
 # Text-to-image with Nano Banana Pro (4K)
-python image_gen.py --provider nano-banana-pro --prompt "Professional fashion photography of elegant evening wear" --resolution 4K
+opentryon generate --model nano-banana-pro --resolution 4K \
+  --prompt "Professional fashion photography of elegant evening wear"
 
-# Text-to-image with Nano Banana 2 (Pro quality at Flash speed)
-python image_gen.py --provider nano-banana-2 --prompt "A fashion model wearing seasonal collection" --resolution 2K
+# Nano Banana 2.1 (Pro quality at Flash speed; adds wide ratios such as 4:1)
+opentryon generate --model nano-banana-2.1 --resolution 2K --aspect-ratio 4:1 \
+  --prompt "A fashion model wearing seasonal collection"
 
 # Image editing
-python image_gen.py --provider nano-banana --mode edit --image person.jpg --prompt "Change the outfit to a formal business suit"
+opentryon edit --model nano-banana --image person.jpg \
+  --prompt "Change the outfit to a formal business suit"
 
-# Multi-image composition
-python image_gen.py --provider nano-banana --mode compose --images outfit1.jpg outfit2.jpg --prompt "Create a fashion catalog layout"
-
-# Batch generation
-python image_gen.py --provider nano-banana --batch prompts.txt --output-dir results/
+# Batch generation: loop in your shell, one prompt per line
+while IFS= read -r prompt; do
+  opentryon generate --model nano-banana --prompt "$prompt" --output-dir results/
+done < prompts.txt
 ```
 
-## Input Format Support
+Multi-image composition (several garment or outfit images in one request) is available from the Python adapters (`generate_multi_image`, shown above) rather than the CLI.
+
+## Input Format Support## Input Format Support
 
 Both adapters support multiple input formats:
 
