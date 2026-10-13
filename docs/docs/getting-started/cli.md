@@ -37,7 +37,7 @@ opentryon <service> --model <model> [params...]
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
 | `decide` | Calibrated yes/no, choice and score decisions about text/images ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local) |
 | `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
-| `embed` | Multimodal embeddings saved to `.npz` | `embeddinggemma-2` (local), `pplx-embed-v2-late-0.6b` (local), `pplx-embed-v2-late-9b` (local), `marqo-fashionsiglip` (local), `moda-fashion-distilled` (local), `moda-pro-lite` (local), `zooclaw-fashionsiglip2` (local) |
+| `embed` | Multimodal embeddings saved to `.npz` | `gemini-embedding-2`, `embeddinggemma-2` (local), `pplx-embed-v2-late-0.6b` (local), `pplx-embed-v2-late-9b` (local), `marqo-fashionsiglip` (local), `moda-fashion-distilled` (local), `moda-pro-lite` (local), `zooclaw-fashionsiglip2` (local) |
 
 Models marked "local" run on your own GPU and require
 `pip install opentryon[local]`; everything else calls a cloud API and needs
@@ -254,6 +254,9 @@ opentryon edit --model qie-2511-extract-outfit --image model_wearing_look.jpg
 # Fashion catalogue search (local): by text or by photo
 opentryon embed --model marqo-fashionsiglip --image catalogue/*.jpg --query "black leather ankle boots"
 
+# Embeddings (hosted, GEMINI_API_KEY): text/image/audio/video/PDF in one space; --aggregate fuses inputs
+opentryon embed --model gemini-embedding-2 --image boot1.jpg boot2.jpg --query "black leather ankle boots" --dim 768
+
 # Embeddings (local GPU): vectors -> outputs/*.npz, --query adds similarity scores
 opentryon embed --model embeddinggemma-2 --text "red gown" --image dress.jpg --query "formal dress"
 opentryon embed --model pplx-embed-v2-late-0.6b --image page1.png page2.png --query "wool coat"
@@ -312,7 +315,7 @@ stack trace:
 - [Limite 1B - Violetto (local, out of fashion/media scope)](../local-models/limite.md)
 - [ElevenLabs Eleven v4 / v4 Turbo (text-to-speech)](../api-reference/elevenlabs.md)
 - [Gemini 3.8 Flash (understanding + TTS)](../api-reference/gemini-3-8.md) · [Claude Haiku 5.5](../api-reference/claude.md) · [Typesafe Jev](../api-reference/typesafe-jev.md)
-- [Liquid d1](../local-models/liquid-d1.md) · [EmbeddingGemma 2](../local-models/embeddinggemma.md) · [pplx-embed-v2-late](../local-models/pplx-embed.md)
+- [Gemini Embedding 2](../api-reference/gemini-embedding-2.md) · [Liquid d1](../local-models/liquid-d1.md) · [EmbeddingGemma 2](../local-models/embeddinggemma.md) · [pplx-embed-v2-late](../local-models/pplx-embed.md)
 - [Hy4 preview TokenHub](../api-reference/hy4.md)
 - [Hy4 local vLLM/SGLang](../local-models/hy4.md)
 - [Qwen-Image generation, edit, and try-on](../api-reference/qwen-image.md)

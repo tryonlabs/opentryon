@@ -281,7 +281,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 11. ~~`fal-h3-max-relight`~~ **shipped** (Path A Fal, `video-generate`, 8 Oct 2026). Video + lighting-sphere image in, relit video out; no prompt field.
 12. ~~`claude-haiku-5-5`~~ **shipped** (Path A, `understand`, 8 Oct 2026; model released 7 Oct 2026). First Anthropic adapter in `tryon/api/claude`.
 13. ~~`jev` / `d1-3b` / `d1-omni-600m`~~ **shipped** (new `decide` service, 8 Oct 2026). "System One" decision models: typed questions in, calibrated probabilities out. Jev is API (early access, sign-ups paused 2026-09-22) and text-only; Liquid d1 is Path B local with images (and speech for omni).
-14. ~~`embeddinggemma-2` / `pplx-embed-v2-late-0.6b` / `pplx-embed-v2-late-9b`~~ **shipped** (new `embed` service with `output_kind="embeddings"`, 8 Oct 2026). Both local-only: Perplexity's hosted Embeddings API serves the v1 dense models, not v2-late.
+14. ~~`embeddinggemma-2` / `pplx-embed-v2-late-0.6b` / `pplx-embed-v2-late-9b`~~ **shipped** (new `embed` service with `output_kind="embeddings"`, 8 Oct 2026). Both local-only: Perplexity's hosted Embeddings API serves the v1 dense models, not v2-late. Hosted counterpart **`gemini-embedding-2`** shipped 13 Oct 2026 (stable id, `GEMINI_API_KEY`, text/image/audio/video/PDF, `--aggregate`).
 15. `pplx-embed-v2-context-9b-preview` — `watch`: text-only contextual preview, weights/interface may change before GA.
 16. **NVIDIA PivotOPD** — `watch`, **not integratable today**. It is a training method (on-policy distillation for multi-turn agents, arXiv 2609.40285), not a model: the project page lists code as "coming soon" and releases no checkpoints or API. Nothing to wrap in the registry; revisit if NVIDIA publishes student checkpoints.
 
@@ -290,7 +290,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 
 19. ~~`gemini-3.8-flash`~~ **shipped** (Path A, `understand`) and 20. ~~`gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`~~ **shipped** (Path A, second `tts` vendor), 8 Oct 2026. Voices endpoint / voice design / replication not wired yet.
 
-Next candidates from the 8 Oct 2026 survey (not started): `gemini-embedding-2-preview` (hosted `embed`), Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), Qwen-Image-2.1 local (non-commercial licence), FLUX 3 (status unclear), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
+Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
 
 21. ~~FASHN catalogue endpoints~~ **shipped** (Path A, 13 Oct 2026): `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video`, `fashn-bg-remove` via `tryon.api.fashn.FashnAdapter`.
 22. ~~Fashion embeddings~~ **shipped** (Path B, 13 Oct 2026): `marqo-fashionsiglip`, `moda-fashion-distilled`, `moda-pro-lite`, `zooclaw-fashionsiglip2` in the `embed` service. 

@@ -288,7 +288,7 @@ No API key. Needs `pip install opentryon[local]` and a CUDA GPU. **No first-part
 
 ### Gemini 3.8 Flash (gemini-3.8-flash / gemini-3.8-flash-tts / gemini-3.8-flash-lite-tts)
 
-Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GEMINI_API_BASE_URL`). Covers `understand --model gemini-3.8-flash` and `tts --model gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`. See [Gemini 3.8 Flash](../api-reference/gemini-3-8.md).
+Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GEMINI_API_BASE_URL`). Covers `understand --model gemini-3.8-flash` and `tts --model gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`, and `embed --model gemini-embedding-2`. See [Gemini 3.8 Flash](../api-reference/gemini-3-8.md) and [Gemini Embedding 2](../api-reference/gemini-embedding-2.md).
 
 ### Anthropic (claude-haiku-5-5)
 

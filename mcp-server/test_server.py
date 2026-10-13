@@ -187,6 +187,7 @@ async def check_dry_run_calls() -> None:
         ("generate_qwen_image_2_1_turbo_local", {"prompt": "editorial still", "dry_run": True}, True),
         ("decide_d1_3b", {"questions": "q.json", "state": "x", "image": ["a.jpg"], "dry_run": True}, True),
         ("decide_d1_omni_600m", {"questions": "q.json", "audio": "clip.wav", "dry_run": True}, True),
+        ("embed_gemini_embedding_2", {"text": ["red gown"], "image": ["a.jpg"], "aggregate": True, "dry_run": True}, False),
         ("embed_embeddinggemma_2", {"text": ["red gown"], "query": "formal dress", "dry_run": True}, True),
         ("embed_pplx_embed_v2_late_0_6b", {"image": ["p1.png"], "query": "wool coat", "dry_run": True}, True),
         ("embed_pplx_embed_v2_late_9b", {"text": ["passage"], "dry_run": True}, True),

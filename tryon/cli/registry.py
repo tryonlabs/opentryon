@@ -3491,6 +3491,37 @@ _EMBED = {
         "Benchmarks are in the paper (the card lists none). Plain transformers (AutoModel/AutoProcessor).",
         args=list(_FASHION_EMBED_COMMON),
     ),
+    "gemini-embedding-2": ModelSpec(
+        id="gemini-embedding-2",
+        label="Gemini Embedding 2 (Google hosted multimodal embeddings, 3072-d)",
+        import_path="tryon.api.gemini", class_name="GeminiEmbeddingAdapter",
+        method="embed", output_kind="embeddings", env_hint="GEMINI_API_KEY",
+        notes="Hosted (GEMINI_API_KEY): text, images (PNG/JPEG, <=6), audio (MP3/WAV <=180 s), video (MP4/MOV "
+        "<=120 s, no audio track) and PDF (1 file, <=6 pages) in ONE embedding space, 100+ languages. Default "
+        "3072-d; --dim 128-3072 (768/1536/3072 recommended) is re-normalised. One vector per input by default; "
+        "--aggregate fuses all inputs into one (e.g. title + product photo; text then left unprefixed). Text is "
+        "task-prefixed for you (--task, --role; the model has no task_type). Not comparable with "
+        "gemini-embedding-001 or other models. Vectors saved to .npz; --query / --query-image add cosine scores.",
+        args=[
+            Arg(("--text", "-t"), "text", nargs="+", help="Text(s) to embed (task-prefixed per --task/--role)"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to embed (PNG/JPEG; path or URL)"),
+            Arg(("--audio",), "audio", nargs="+", help="Audio file(s) (MP3/WAV, <=180 s)"),
+            Arg(("--video",), "video", nargs="+", help="Video file(s) (MP4/MOV, <=120 s)"),
+            Arg(("--pdf",), "pdf", nargs="+", help="PDF file(s) (<=6 pages each)"),
+            Arg(("--query", "-q"), "query", help="Text query; returns cosine scores against every input"),
+            Arg(("--query-image",), "query_image", help='Image query ("more like this"); returns cosine scores'),
+            Arg(("--task",), "task", default="search result",
+                choices=["search result", "question answering", "fact checking", "code retrieval",
+                         "classification", "clustering", "sentence similarity"],
+                help="Text task prefix (images/audio/video/PDF are never prefixed)"),
+            Arg(("--role",), "role", default="document", choices=["document", "query"],
+                help="Whether --text items are documents or queries (retrieval tasks only)"),
+            Arg(("--dim",), "output_dimensionality", type=int,
+                help="Output dimensionality 128-3072 (default 3072; 768/1536/3072 recommended)"),
+            Arg(("--aggregate",), "aggregate", action="store_true",
+                help="Fuse all inputs into ONE embedding instead of one per input"),
+        ],
+    ),
     "embeddinggemma-2": ModelSpec(
         id="embeddinggemma-2",
         label="Google EmbeddingGemma 2 (open-weight multimodal embeddings, 768-d)",
