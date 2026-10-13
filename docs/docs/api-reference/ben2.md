@@ -65,31 +65,35 @@ for i, img in enumerate(results):
 
 ## Command Line Usage
 
-BEN2 can be used directly from the command line:
+Use the unified `opentryon` CLI (the old root `bg_remove.py` wrapper was removed in v0.0.7):
 
 ```bash
-# Single image background removal
-python bg_remove.py --mode single --image model.jpg --output_dir outputs
+# Single image background removal (saved under outputs/)
+opentryon bg-remove --model ben2 --image model.jpg
+
+# Choose the output directory
+opentryon bg-remove --model ben2 --image model.jpg --output-dir results
 
 # With foreground refinement for higher quality
-python bg_remove.py --mode single --image model.jpg --refine
+opentryon bg-remove --model ben2 --image model.jpg --refine
 
-# Batch processing multiple images
-python bg_remove.py --mode batch --images model_1.jpg model_2.jpg model_3.jpg
-
-# Batch with refinement
-python bg_remove.py --mode batch --images *.jpg --refine --output_dir results
+# Several images: loop in your shell (the CLI processes one image per call)
+for f in model_1.jpg model_2.jpg model_3.jpg; do
+  opentryon bg-remove --model ben2 --image "$f" --refine --output-dir results
+done
 ```
+
+For in-process batches use `remove_background_batch` from the Python API below. A hosted alternative is `--model fashn-bg-remove` (`FASHN_API_KEY`, 1 credit per image).
 
 ### CLI Arguments
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
-| `--mode` | string | `single` | Processing mode: `single` or `batch` |
-| `--image` | string | - | Path/URL for single image mode |
-| `--images` | list | - | Multiple paths/URLs for batch mode |
-| `--output_dir` | string | `ben2_outputs` | Output directory for results |
-| `--refine` | flag | False | Enable foreground refinement |
+| `--model` | string | - | `ben2` (local) or `fashn-bg-remove` (hosted) |
+| `--image`, `-i` | string | - | Image path or URL (required) |
+| `--refine` | flag | False | Enable foreground refinement (`ben2` only) |
+| `--output-dir`, `-o` | string | `outputs` | Output directory for results |
+| `--dry-run` | flag | False | Print the resolved call without running it |
 
 ## Python API
 
