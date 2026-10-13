@@ -106,6 +106,7 @@ opentryon understand --model kimi-k3 --help    # list that model's flags
 | `bg-remove` | Background removal | `ben2` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo` |
 | `decide` | Calibrated yes/no, choice, score decisions | `jev`, `d1-3b`, `d1-omni-600m` |
+| `classify` | Try-on safety gating (fixed-label classifier) | `tryon-safety-classifier` |
 | `embed` | Multimodal embeddings (`.npz`) | `embeddinggemma-2`, `pplx-embed-v2-late-0.6b`, … |
 
 Models marked local need `pip install opentryon[local]`. Full table and flags: [Unified CLI](https://tryonlabs.github.io/opentryon/docs/getting-started/cli).

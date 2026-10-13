@@ -20,7 +20,7 @@ single `opentryon` command with three levels of control: **service** &rarr;
 opentryon <service> --model <model> [params...]
 ```
 
-- **service**: what kind of task -- `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`
+- **service**: what kind of task -- `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`, `tts`, `decide`, `embed`, `classify`
 - **model**: which adapter/provider to use for that service, e.g. `--model flux-vto`
 - **parameters**: model-specific flags (image inputs, prompts, sampling knobs, etc.)
 
@@ -28,7 +28,7 @@ opentryon <service> --model <model> [params...]
 
 | Service | What it does | Models |
 |---|---|---|
-| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `fashn-vton-1.5` (local), `muse-image` |
+| `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `fashn-vton-1.5` (local), `muse-image`, `klein-4b-tryon` (local) |
 | `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-model-create` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-product-to-model`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `qie-2511-extract-outfit` (local) |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `claude-haiku-5-5`, `gemini-3.8-flash`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope), `fashion-florence` (local) |
@@ -36,6 +36,7 @@ opentryon <service> --model <model> [params...]
 | `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
 | `decide` | Calibrated yes/no, choice and score decisions about text/images ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local) |
+| `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
 | `embed` | Multimodal embeddings saved to `.npz` | `embeddinggemma-2` (local), `pplx-embed-v2-late-0.6b` (local), `pplx-embed-v2-late-9b` (local), `marqo-fashionsiglip` (local), `moda-fashion-distilled` (local), `moda-pro-lite` (local), `zooclaw-fashionsiglip2` (local) |
 
 Models marked "local" run on your own GPU and require
@@ -239,6 +240,12 @@ opentryon edit --model fashn-product-to-model --image jacket.jpg --prompt "studi
 opentryon edit --model fashn-model-swap --model-image look.jpg --prompt "woman with red hair"
 opentryon edit --model fashn-reframe --image look.jpg --aspect-ratio 16:9
 opentryon video-generate --model fashn-image-to-video --image look.jpg --duration 5 --resolution 720p
+
+# Gate a product before try-on (pass ALL its photos; local)
+opentryon classify --model tryon-safety-classifier --image front.jpg back.jpg
+
+# Try-on on the Apache-2.0 FLUX.2 klein 4B LoRA (person must be clothing-agnostic, or pass --mask-image)
+opentryon vton --model klein-4b-tryon --person-image person_agnostic.png --top-image shirt.png --bottom-image jeans.png
 
 # Garment tagging and extraction (local GPU)
 opentryon understand --model fashion-florence --image dress.jpg

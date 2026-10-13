@@ -130,6 +130,8 @@ const sidebars: SidebarsConfig = {
         'local-models/fashion-embeddings',
         'local-models/fashion-florence',
         'local-models/extract-outfit',
+        'local-models/klein-tryon',
+        'local-models/tryon-safety-classifier',
       ],
     },
     {

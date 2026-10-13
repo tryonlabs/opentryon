@@ -309,6 +309,14 @@ The new `decide` service wraps "System One" models that return typed, calibrated
 
 Same key as `vton_fashn_tryon_max`. `edit_fashn_product_to_model`, `edit_fashn_model_swap`, `edit_fashn_face_to_model`, `edit_fashn_reframe`, `edit_fashn_edit`, `generate_fashn_model_create`, `video_generate_fashn_image_to_video` and `bg_remove_fashn_bg_remove`. See [FASHN catalogue endpoints](../api-reference/fashn.md#catalogue-endpoints-product-to-model-model-swap-).
 
+## Classify tools (safety gating)
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `classify_tryon_safety_classifier` | Genlook try-on safety classifier (pass all photos of one product) | local/GPU |
+
+Also new: `vton_klein_4b_tryon` (FLUX.2-klein-4B try-on LoRA, local). See [Try-on safety classifier](../local-models/tryon-safety-classifier.md) and [FLUX.2-klein-4B try-on](../local-models/klein-tryon.md).
+
 ## Embed tools (embeddings)
 
 The new `embed` service saves vectors to an `.npz` file under the output dir and returns its path, shapes, labels and (with `query`) similarity scores — not the raw vectors.

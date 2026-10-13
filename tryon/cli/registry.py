@@ -751,6 +751,43 @@ _VTON = {
             Arg(("--device",), "device", target="init", help="Device override (cuda/cpu)"),
         ],
     ),
+    "klein-4b-tryon": ModelSpec(
+        id="klein-4b-tryon",
+        label="FLUX.2-klein-4B try-on LoRA (xocialize, local, Apache-2.0 stack)",
+        import_path="tryon.models.klein_tryon",
+        class_name="Klein4BTryOnAdapter",
+        method="generate_and_decode",
+        output_kind="images",
+        extra="local",
+        notes=(
+            "Community rank-32 LoRA (xocialize/tryon-FLUX.2-klein-4B-lora) on FLUX.2-klein-4B; both Apache-2.0, "
+            "unlike the klein-9B try-on LoRAs (9B base is non-commercial). Inputs are ordered person, top, bottom "
+            "(--dress-image fills both slots). The person image must be CLOTHING-AGNOSTIC (outfit area greyed): pass "
+            "--mask-image (white = clothing region) and it is greyed here; this adapter does not segment. v1 LoRA "
+            "trained on 273 tuples, no metrics; weakest on all-dark outfits. Defaults are BFL's klein-4B settings "
+            "(4 steps, guidance 1.0) -- the card gives none, so tune. Needs CUDA (~13GB+), diffusers from GitHub "
+            "(Flux2KleinPipeline) and peft: pip install git+https://github.com/huggingface/diffusers.git peft accelerate."
+        ),
+        args=[
+            _img(("--person-image", "--model-image"), "person", "Full-body person photo, clothing-agnostic (or use --mask-image)", required=True),
+            Arg(("--top-image",), "top", help="Isolated upper-body garment"),
+            Arg(("--bottom-image",), "bottom", help="Isolated lower-body garment"),
+            Arg(("--dress-image",), "dress", help="One-piece garment (used for both top and bottom slots)"),
+            Arg(("--mask-image",), "mask", help="Clothing-region mask (white = replace); greyed out of the person image"),
+            Arg(("--prompt", "-p"), "prompt", help="Defaults to the LoRA trigger prompt (must start with TRYON)"),
+            Arg(("--steps",), "num_inference_steps", type=int, default=4, help="Denoising steps (klein-4B default 4)"),
+            Arg(("--guidance-scale",), "guidance_scale", type=float, default=1.0),
+            Arg(("--height",), "height", type=int, help="Output height (default: person size, long side <= 1024, multiple of 16)"),
+            Arg(("--width",), "width", type=int, help="Output width"),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--num-images",), "num_images", type=int, default=1),
+            Arg(("--lora-id",), "lora_id", target="init", help="LoRA repo id or path (default xocialize/tryon-FLUX.2-klein-4B-lora)"),
+            Arg(("--base-model-id",), "base_model_id", target="init", help="Base model (default black-forest-labs/FLUX.2-klein-4B)"),
+            Arg(("--dtype",), "dtype", target="init", default="bfloat16", choices=["bfloat16", "float16", "float32"]),
+            Arg(("--no-cpu-offload",), "cpu_offload", target="init", action="store_false", default=True,
+                help="Disable CPU offload (needs ~13GB+ VRAM)"),
+        ],
+    ),
     "leffa": ModelSpec(
         id="leffa",
         label="Leffa (open-weight local VTON, CVPR 2025)",
@@ -3512,6 +3549,37 @@ _EMBED = {
     ),
 }
 
+# --------------------------------------------------------------------------
+# classify  (fixed-label image classifiers: safety gating, garment attributes, QC)
+# --------------------------------------------------------------------------
+
+_CLASSIFY = {
+    "tryon-safety-classifier": ModelSpec(
+        id="tryon-safety-classifier",
+        label="Genlook try-on safety classifier (gate garments before try-on, local)",
+        import_path="tryon.models.tryon_safety", class_name="TryOnSafetyAdapter",
+        method="classify", output_kind="text", extra="local",
+        notes="Apache-2.0 SigLIP2-so400m classifier: from ALL photos of ONE product, what a try-on would show -- "
+        "level ok/revealing/lingerie/adult, subject, swimwear coverage, ravewear tag, and `blocked` "
+        "(P(adult) >= --adult-threshold, default 0.3; use it for the gate). Reported 94.6% four-level accuracy "
+        "(5-fold CV, 2,596 products); hardest: sheer lingerie vs adult, festival wear; trained on western "
+        "e-commerce photos. Classifies products, not people. Re-implements the model's inference (no remote code "
+        "executed); weights pinned to tag v1.0. pip install open_clip_torch safetensors.",
+        args=[
+            Arg(("--image", "-i"), "image", nargs="+", required=True,
+                help="ALL photos of one product (path or URL); more photos -> steadier score"),
+            Arg(("--adult-threshold",), "adult_threshold", type=float,
+                help="Override the blocked threshold (variant default 0.3)"),
+            Arg(("--variant",), "variant", target="init", default="finetuned", choices=["finetuned", "frozen"],
+                help="finetuned (~0.9GB, best at catching adult) or frozen (~120KB heads on public SigLIP2)"),
+            Arg(("--revision",), "revision", target="init", default="v1.0", help="Hub tag/revision to pin"),
+            Arg(("--model-id",), "model_id", target="init",
+                help="Hub repo id or local folder (default Genlook/tryon-safety-classifier)"),
+            Arg(("--device",), "device", target="init", choices=["cuda", "mps", "cpu"], help="Device (default cuda if available)"),
+        ],
+    ),
+}
+
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "vton": _VTON,
     "generate": _GENERATE,
@@ -3522,6 +3590,7 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "tts": _TTS,
     "decide": _DECIDE,
     "embed": _EMBED,
+    "classify": _CLASSIFY,
 }
 
 SERVICE_HELP = {
@@ -3534,6 +3603,7 @@ SERVICE_HELP = {
     "tts": "Text-to-speech",
     "decide": "Typed, calibrated decisions (yes/no, choice, score) about text/images via System One models",
     "embed": "Multimodal embeddings (dense or multi-vector) saved to .npz",
+    "classify": "Fixed-label image classification (try-on safety gating, garment attributes) with calibrated probabilities",
 }
 
 
