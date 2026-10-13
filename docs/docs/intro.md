@@ -1,5 +1,6 @@
 ---
 slug: /
+hide_table_of_contents: true
 title: OpenTryOn
 description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.7 adds FASHN catalogue endpoints (product-to-model, model swap, reframe, image-to-video), fashion retrieval embeddings, Fashion Florence, Extract-Outfit, a commercially clean klein-4B try-on, and a try-on safety classifier (new classify service); 148 models, 10 services on the v0.0.6 CLI/MCP surface.
 keywords:
@@ -53,8 +54,12 @@ keywords:
   - FASHN
   - OpenAPI
   - Swagger
-image: /img/opentryon-social-card.jpg
+image: /img/brand/opentryon-social-card.png
 ---
+
+import HomeHero from '@site/src/components/HomeHero';
+
+<HomeHero />
 
 # Welcome to OpenTryOn
 

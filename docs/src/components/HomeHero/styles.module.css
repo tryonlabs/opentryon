@@ -1,0 +1,235 @@
+/* Home hero — TryOn Labs brand. Colors come from the tokens in src/css/custom.css. */
+
+.home {
+  margin: 0 0 3rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 2.5rem;
+  padding: 2.75rem 2.5rem;
+  border-radius: 16px;
+  background: var(--ot-navy);
+  color: var(--ot-ivory);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Warm coral glow in the corner, the way a garment sits behind the form */
+.hero::after {
+  content: '';
+  position: absolute;
+  right: -120px;
+  top: -140px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 89, 65, 0.28) 0%, rgba(240, 89, 65, 0) 70%);
+  pointer-events: none;
+}
+
+:global([data-theme='dark']) .hero {
+  /* tryon-docs dark sheet (#181816) with a hairline, not a navy well */
+  background: var(--ot-surface);
+  box-shadow: inset 0 0 0 1px var(--ot-hairline);
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  font-family: var(--ot-font-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ot-coral-400);
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-family: var(--ot-font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 3.6vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--ot-ivory);
+}
+
+.lead {
+  margin: 0 0 1.75rem;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: rgba(243, 239, 231, 0.8);
+  max-width: 34rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Secondary CTA on the always-navy hero: ivory outline, both themes */
+.actions .ghost {
+  color: var(--ot-ivory);
+  background: transparent;
+  border: 1px solid var(--ot-ivory);
+  text-decoration: none;
+}
+
+.actions .ghost:hover {
+  color: var(--ot-navy); /* dark text on the ivory fill in both themes */
+  background: var(--ot-ivory);
+  border-color: var(--ot-ivory);
+}
+
+.emblem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.markImage {
+  width: min(150px, 40vw);
+  height: auto;
+}
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 1.5rem 0 0;
+  border: 1px solid var(--ot-hairline);
+  border-radius: 16px;
+  background: var(--ot-surface);
+  overflow: hidden;
+}
+
+.stat {
+  padding: 1.1rem 1.4rem;
+}
+
+.stat + .stat {
+  border-left: 1px solid var(--ot-hairline);
+}
+
+.statValue {
+  margin: 0;
+  font-family: var(--ot-font-display);
+  font-size: 2.2rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ot-text);
+}
+
+:global([data-theme='dark']) .statValue {
+  color: var(--ot-ivory);
+}
+
+.statLabel {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ot-text-muted);
+}
+
+/* Surface cards */
+.surfaces {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.card {
+  position: relative;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.4rem 1.5rem 1.5rem;
+  border: 1px solid var(--ot-hairline);
+  border-radius: 16px;
+  background: var(--ot-surface);
+  box-shadow: var(--ot-shadow-card);
+  color: var(--ot-text);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--ot-coral-500);
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: var(--ot-text);
+}
+
+.cardTitle {
+  margin: 0;
+  text-decoration: none;
+  font-size: 1.4rem;
+  color: var(--ifm-heading-color);
+}
+
+.cardBody {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ot-text-muted);
+}
+
+.cardCode {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  background: var(--ot-ground);
+}
+
+.cardArrow {
+  position: absolute;
+  right: 1.4rem;
+  top: 1.25rem;
+  font-size: 1.2rem;
+  color: var(--ot-coral-600);
+  transition: transform 0.2s ease;
+}
+
+.card:hover .cardArrow {
+  transform: translateX(3px);
+}
+
+@media (max-width: 996px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
+  }
+
+  .emblem {
+    order: -1;
+  }
+
+  .markImage {
+    width: 96px;
+  }
+}
+
+@media (max-width: 640px) {
+  .surfaces {
+    grid-template-columns: 1fr;
+  }
+
+  .stat {
+    padding: 0.9rem 0.8rem;
+  }
+
+  .statValue {
+    font-size: 1.7rem;
+  }
+}

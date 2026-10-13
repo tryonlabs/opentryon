@@ -1,327 +1,347 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * OpenTryOn docs — TryOn Labs brand system.
+ *
+ * Tokens mirror tryon-frontend/brand/kit/tokens/brand.css:
+ *   Navy #0F0134 · Graphite #41424C · Coral #F05941 (scale 50–950)
+ *   Ivory #F3EFE7 · Ground #F8FAFC · Hairline rgba(15,1,52,.08)
+ *   Display: Newsreader (Medium 500 only) · Text: Mulish
+ *
+ * Fonts are loaded from Google Fonts in docusaurus.config.ts (`stylesheets`).
  */
 
-/* Import Roboto font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap');
-
-/* TryOn Labs Brand Colors */
-/* Primary Teal: #1FA08F */
-/* Primary Dark: #1a8a7a */
-/* Secondary Blue-Gray: #486876 */
-/* Neutral Dark: #131E32 */
-/* Neutral Light: #BDB7C0 */
-
-/* You can override the default Infima variables here. */
 :root {
-  /* Primary brand color - TryOn Labs Teal */
-  --ifm-color-primary: #1FA08F;
-  --ifm-color-primary-dark: #1a8a7a;
-  --ifm-color-primary-darker: #178070;
-  --ifm-color-primary-darkest: #12685a;
-  --ifm-color-primary-light: #2fb5a3;
-  --ifm-color-primary-lighter: #3fc0ad;
-  --ifm-color-primary-lightest: #5fcfbf;
-  
-  /* Secondary color - Blue-Gray */
-  --ifm-color-secondary: #486876;
-  --ifm-color-secondary-dark: #3d5762;
-  --ifm-color-secondary-darker: #36515a;
-  --ifm-color-secondary-darkest: #2c4249;
-  --ifm-color-secondary-light: #5a7a8a;
-  --ifm-color-secondary-lighter: #6e8a98;
-  --ifm-color-secondary-lightest: #8fa5b0;
-  
-  /* Text colors */
-  --ifm-font-color-base: #131E32;
-  --ifm-heading-color: #131E32;
-  --ifm-color-content: #131E32;
-  --ifm-color-content-secondary: #486876;
-  
-  /* Background colors */
-  --ifm-background-color: #ffffff;
-  --ifm-background-surface-color: #f0f4f6;
-  
-  /* Code block colors */
-  --ifm-code-font-size: 95%;
-  --ifm-code-background: linear-gradient(135deg, #e0f7f5 0%, #b2ede8 100%);
-  --ifm-code-color: #1a8a7a;
-  --docusaurus-highlighted-code-line-bg: rgba(31, 160, 143, 0.1);
-  
-  /* Link colors */
-  --ifm-link-color: #1FA08F;
-  --ifm-link-hover-color: #1a8a7a;
-  
-  /* Border colors */
-  --ifm-border-color: #c2d4da;
-  --ifm-hr-border-color: #e2e8f0;
-  
-  /* Set Roboto as the default font family */
-  --ifm-font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --ifm-heading-font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  
-  /* Navbar colors */
-  --ifm-navbar-background-color: #ffffff;
-  --ifm-navbar-shadow: 0 2px 8px rgba(19, 30, 50, 0.08);
-  --ifm-navbar-height: 70px;
-  --ifm-navbar-padding-vertical: 0.75rem;
-  --ifm-navbar-padding-horizontal: 1.5rem;
-  --ifm-navbar-item-padding-vertical: 0.5rem;
-  --ifm-navbar-item-padding-horizontal: 1rem;
+  /* Brand tokens */
+  --ot-navy: #0F0134;
+  --ot-graphite: #41424C;
+  --ot-ground: #F8FAFC;
+  --ot-ivory: #F3EFE7;
+  --ot-white: #FFFFFF;
+  --ot-coral-50: #FEF2F0;
+  --ot-coral-100: #FDE8E4;
+  --ot-coral-200: #FBD1CA;
+  --ot-coral-300: #F9B1A6;
+  --ot-coral-400: #F58571;
+  --ot-coral-500: #F05941;
+  --ot-coral-600: #E2412B;
+  --ot-coral-700: #BE3120;
+  --ot-coral-800: #9C2C1E;
+  --ot-coral-900: #812A20;
+  --ot-hairline: rgba(15, 1, 52, 0.08);
+
+  /* Semantic surfaces (light) */
+  --ot-surface: var(--ot-white);
+  --ot-page: var(--ot-ground);
+  --ot-surface-muted: var(--ot-ground);
+  --ot-text: var(--ot-navy);
+  --ot-text-muted: var(--ot-graphite);
+  --ot-text-3: #6b6c75;
+  --ot-accent: var(--ot-coral-700);
+  --ot-accent-strong: var(--ot-coral-800);
+
+  --ot-radius-sheet: 16px;
+  --ot-radius-control: 10px;
+  --ot-radius-pill: 9999px;
+
+  --ot-font-main: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ot-font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --ot-font-mono: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Infima overrides */
+  --ifm-font-family-base: var(--ot-font-main);
+  --ifm-heading-font-family: var(--ot-font-display);
+  --ifm-font-family-monospace: var(--ot-font-mono);
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-font-weight: 500;
+  --ifm-heading-line-height: 1.15;
+  --ifm-code-font-size: 90%;
+
+  --ifm-color-primary: var(--ot-coral-600);
+  --ifm-color-primary-dark: var(--ot-coral-700);
+  --ifm-color-primary-darker: var(--ot-coral-800);
+  --ifm-color-primary-darkest: var(--ot-coral-900);
+  --ifm-color-primary-light: var(--ot-coral-500);
+  --ifm-color-primary-lighter: var(--ot-coral-400);
+  --ifm-color-primary-lightest: var(--ot-coral-300);
+  --ifm-link-color: var(--ot-coral-700);
+  --ifm-link-hover-color: var(--ot-coral-800);
+  --ifm-link-decoration: underline;
+
+  --ifm-font-color-base: var(--ot-graphite);
+  --ifm-heading-color: var(--ot-navy);
+  --ifm-color-content: var(--ot-graphite);
+  --ifm-color-content-secondary: var(--ot-text-muted);
+  --ifm-background-color: var(--ot-ground);
+  --ifm-background-surface-color: var(--ot-surface-muted);
+  --ifm-border-color: var(--ot-hairline);
+  --ifm-hr-border-color: var(--ot-hairline);
+  --ifm-global-border-width: 1px;
+  --ifm-global-radius: var(--ot-radius-control);
+
+  /* Code */
+  --ifm-code-background: var(--ot-ground);
+  --ifm-code-color: var(--ot-text);
+  --docusaurus-highlighted-code-line-bg: rgba(226, 65, 43, 0.10);
+
+  /* Navbar and sidebar */
+  --ifm-navbar-background-color: var(--ot-surface);
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-height: 68px;
+  --ifm-navbar-padding-horizontal: 24px;
+  --ifm-navbar-link-color: var(--ot-text);
+  --ifm-menu-color: var(--ot-graphite);
+  --ifm-menu-color-background-active: rgba(226, 65, 43, 0.08);
+  --ifm-menu-color-active: var(--ot-coral-700);
+  --doc-sidebar-width: 290px;
+
+  /* Footer is always navy */
+  --ifm-footer-background-color: var(--ot-surface);
+  --ifm-footer-color: var(--ot-graphite);
+  --ifm-footer-link-color: var(--ot-graphite);
+  --ifm-footer-link-hover-color: var(--ot-coral-700);
+  --ifm-footer-title-color: var(--ot-navy);
+
+  --ot-code-bg: #0F0134;
+  --ot-shadow-card: 0 1px 2px rgba(15, 1, 52, 0.04), 0 8px 24px rgba(15, 1, 52, 0.06);
 }
 
-/* Dark mode - adjusted for TryOn Labs brand colors */
-[data-theme='dark'] {
-  /* Primary brand color - lighter shades for dark mode */
-  --ifm-color-primary: #2fb5a3;
-  --ifm-color-primary-dark: #1FA08F;
-  --ifm-color-primary-darker: #1a8a7a;
-  --ifm-color-primary-darkest: #178070;
-  --ifm-color-primary-light: #3fc0ad;
-  --ifm-color-primary-lighter: #5fcfbf;
-  --ifm-color-primary-lightest: #7fded0;
-  
-  /* Secondary color - lighter shades for dark mode */
-  --ifm-color-secondary: #6e8a98;
-  --ifm-color-secondary-dark: #5a7a8a;
-  --ifm-color-secondary-darker: #486876;
-  --ifm-color-secondary-darkest: #3d5762;
-  --ifm-color-secondary-light: #8fa5b0;
-  --ifm-color-secondary-lighter: #a8b9c2;
-  --ifm-color-secondary-lightest: #c1ced4;
-  
-  /* Text colors for dark mode */
-  --ifm-font-color-base: #e2e8f0;
-  --ifm-heading-color: #ffffff;
-  --ifm-color-content: #e2e8f0;
-  --ifm-color-content-secondary: #BDB7C0;
-  
-  /* Background colors for dark mode */
-  --ifm-background-color: #131E32;
-  --ifm-background-surface-color: #1a2538;
-  
-  /* Code block colors for dark mode */
-  --docusaurus-highlighted-code-line-bg: rgba(31, 160, 143, 0.2);
-  
-  /* Link colors for dark mode */
-  --ifm-link-color: #2fb5a3;
-  --ifm-link-hover-color: #3fc0ad;
-  
-  /* Border colors for dark mode */
-  --ifm-border-color: #2d3a4f;
-  --ifm-hr-border-color: #2d3a4f;
-  
-  /* Navbar colors for dark mode */
-  --ifm-navbar-background-color: #131E32;
-  --ifm-navbar-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+/* ---------- Dark theme ---------- */
+/* ---------- Dark theme ----------
+   Same palette as tryon-docs (copied from tryon-studio globals.css
+   `[data-theme="dark"]`): warm charcoal panels lifted off #10100f,
+   stone text, coral accents. Never pure black. */
+:root[data-theme='dark'] {
+  --ot-page: #10100f; /* --background */
+  --ot-surface: #181816; /* --card-bg: sheets, navbar, sidebar, footer */
+  --ot-surface-muted: #141412; /* --field-bg: code wells */
+  --ot-surface-2: #1c1c19; /* hover / active rows */
+  --ot-surface-3: #262622; /* inline code, tertiary */
+  --ot-navy: #181816; /* dark stand-in: filled navy areas become the sheet */
+  --ot-ivory: #f5f5f4; /* --text-primary */
+  --ot-text: #f5f5f4;
+  --ot-text-muted: #a8a29e; /* --text-secondary */
+  --ot-text-3: #78716c; /* --text-tertiary */
+  --ot-hairline: #2e2e2a; /* --border-primary */
+  --ot-hairline-strong: #3f3f3a; /* --border-secondary */
+  --ot-accent: #f58571;
+  --ot-accent-strong: #f8a899;
+  --ot-tray: #241716; /* --pale-red */
+  --ot-success: #5dba86;
+  --ot-warning: #e0b050;
+  --ot-error: #e08a8a;
+  --ot-info: #7aa3d4;
+
+  --ifm-color-primary: #f58571;
+  --ifm-color-primary-dark: #f36e57;
+  --ifm-color-primary-darker: #f26249;
+  --ifm-color-primary-darkest: #e8402a;
+  --ifm-color-primary-light: #f79c8b;
+  --ifm-color-primary-lighter: #f8a899;
+  --ifm-color-primary-lightest: #fbc9bf;
+  --ifm-link-color: #f58571;
+  --ifm-link-hover-color: #f8a899;
+
+  --ifm-background-color: #10100f;
+  --ifm-background-surface-color: #181816;
+  --ifm-heading-color: #f5f5f4;
+  --ifm-font-color-base: #f5f5f4;
+  --ifm-color-content: #f5f5f4;
+  --ifm-color-content-secondary: #a8a29e;
+  --ifm-border-color: #2e2e2a;
+  --ifm-hr-border-color: #2e2e2a;
+  --ifm-code-background: #262622;
+  --ifm-code-color: #f5f5f4;
+  --docusaurus-highlighted-code-line-bg: rgba(245, 133, 113, 0.14);
+
+  --ifm-navbar-background-color: #181816;
+  --ifm-navbar-link-color: #a8a29e;
+  --ifm-menu-color: #a8a29e;
+  --ifm-menu-color-active: #f58571;
+  --ifm-menu-color-background-active: #1c1c19;
+  --ifm-menu-color-background-hover: #1c1c19;
+
+  --ifm-footer-background-color: #181816;
+  --ifm-footer-color: #a8a29e;
+  --ifm-footer-link-color: #a8a29e;
+  --ifm-footer-link-hover-color: #f58571;
+  --ifm-footer-title-color: #f5f5f4;
+
+  --ot-code-bg: #141412;
+  --ot-shadow-card: none;
 }
 
-/* Apply Roboto font to all text elements */
 body {
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  color: #131E32;
+  background: var(--ot-page);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  font-weight: 500; /* Medium weight for headings */
-  color: #131E32;
+/* ---------- Base typography ---------- */
+html {
+  -webkit-font-smoothing: antialiased;
 }
 
-/* TryOn Labs brand styling for headings */
+body {
+  background: var(--ot-page);
+  color: var(--ot-text);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--ot-font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ifm-heading-color);
+}
+
+h1 {
+  font-size: 2.6rem;
+  margin-bottom: 0.6em;
+}
+
 h2 {
-  border-left: 5px solid #1FA08F;
-  padding-left: 16px;
-  background: linear-gradient(90deg, rgba(31, 160, 143, 0.08) 0%, transparent 100%);
-  padding-top: 8px;
-  padding-bottom: 8px;
+  font-family: var(--ot-font-main);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  margin-top: 2.5em;
+}
+
+h3 {
+  font-family: var(--ot-font-main);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+h4,
+h5,
+h6 {
+  font-family: var(--ot-font-main);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ifm-heading-color);
 }
 
 h4 {
-  color: #486876;
-}
-
-/* Code blocks with TryOn Labs styling */
-code {
-  background: linear-gradient(135deg, #e0f7f5 0%, #b2ede8 100%);
-  color: #1a8a7a;
-  border: 1px solid #80e3db;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-pre {
-  background: linear-gradient(135deg, #f0f4f6 0%, #e0f7f5 100%);
-  border: 1px solid #c2d4da;
-  border-left: 4px solid #1FA08F;
-  border-radius: 8px;
-}
-
-pre code {
-  background: transparent;
-  border: none;
-  color: #131E32;
-}
-
-/* Blockquotes with TryOn Labs styling */
-blockquote {
-  border-left: 4px solid #486876;
-  background: linear-gradient(90deg, rgba(72, 104, 118, 0.08) 0%, transparent 100%);
-  color: #486876;
-  border-radius: 0 8px 8px 0;
-}
-
-/* Tables with TryOn Labs styling */
-table {
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-th {
-  background: linear-gradient(135deg, #1FA08F 0%, #1a8a7a 100%);
-  color: #ffffff;
-  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ot-text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
 }
 
-tr:nth-child(even) {
-  background-color: #f0f4f6;
+p,
+li {
+  font-size: 1rem;
 }
 
-tr:hover {
-  background-color: #e0f7f5;
+/* Keep the first heading of a page tight under the breadcrumb */
+.theme-doc-markdown > h1:first-child {
+  margin-top: 0.4rem;
 }
 
-/* Links */
 a {
-  color: #1FA08F;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
   transition: color 0.2s ease;
 }
 
-a:hover {
-  color: #1a8a7a;
+::selection {
+  background: rgba(240, 89, 65, 0.25);
 }
 
-/* Keep monospace font for code blocks */
-code, pre {
-  font-family: 'Roboto Mono', 'Courier New', monospace;
+/* ---------- Navbar ---------- */
+.navbar {
+  border-bottom: 1px solid var(--ot-hairline);
+  backdrop-filter: saturate(140%) blur(10px);
 }
 
-/* Dark mode adjustments */
-[data-theme='dark'] body {
-  color: #e2e8f0;
+.navbar__logo {
+  height: 32px;
+  margin-right: 10px;
 }
 
-[data-theme='dark'] h1,
-[data-theme='dark'] h2,
-[data-theme='dark'] h3,
-[data-theme='dark'] h4,
-[data-theme='dark'] h5,
-[data-theme='dark'] h6 {
-  color: #ffffff;
+.navbar__logo img {
+  height: 32px;
+  width: auto;
 }
 
-[data-theme='dark'] h2 {
-  border-left-color: #2fb5a3;
-  background: linear-gradient(90deg, rgba(47, 181, 163, 0.15) 0%, transparent 100%);
+/* Live text wordmark next to the mark, in Mulish like the rest of the brand */
+.navbar__brand,
+.navbar-sidebar__brand {
+  text-decoration: none;
 }
 
-[data-theme='dark'] h4 {
-  color: #6e8a98;
+.navbar__title {
+  font-family: var(--ot-font-main);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ot-text);
 }
 
-[data-theme='dark'] code {
-  background: rgba(31, 160, 143, 0.2);
-  color: #2fb5a3;
-  border-color: rgba(47, 181, 163, 0.3);
-}
-
-[data-theme='dark'] pre {
-  background: #1a2538;
-  border-color: #2d3a4f;
-  border-left-color: #2fb5a3;
-}
-
-[data-theme='dark'] blockquote {
-  border-left-color: #6e8a98;
-  background: linear-gradient(90deg, rgba(110, 138, 152, 0.15) 0%, transparent 100%);
-  color: #a8b9c2;
-}
-
-[data-theme='dark'] th {
-  background: linear-gradient(135deg, #2fb5a3 0%, #1FA08F 100%);
-}
-
-[data-theme='dark'] tr:nth-child(even) {
-  background-color: #1a2538;
-}
-
-[data-theme='dark'] tr:hover {
-  background-color: rgba(31, 160, 143, 0.1);
-}
-
-/* Footer styling - TryOn Labs brand colors */
-.footer {
-  background-color: #131E32;
-  color: #e2e8f0;
-}
-
-.footer__title {
-  color: #ffffff;
+.navbar__link {
   font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ot-text);
+  text-decoration: none;
 }
 
-.footer__link-item {
-  color: #BDB7C0;
-  transition: color 0.2s ease;
+/* Navigation text is not underlined; underlines are reserved for prose links */
+.menu__link,
+.navbar__link-with-icon,
+.footer__link-item,
+.pagination-nav__link,
+.breadcrumbs__link,
+.table-of-contents__link {
+  text-decoration: none;
 }
 
-.footer__link-item:hover {
-  color: #1FA08F;
+
+.navbar__link {
+  border-bottom: 2px solid transparent;
 }
 
-.footer__copyright {
-  color: #BDB7C0;
+.navbar__link:hover {
+  color: var(--ot-text);
 }
 
-/* Ensure footer links are visible */
-.footer a {
-  color: #BDB7C0;
+.navbar__link--active {
+  color: var(--ot-text);
+  border-bottom-color: var(--ot-coral-500);
 }
 
-.footer a:hover {
-  color: #1FA08F;
+/* Playground-style outline pill (platform Open Playground CTA) */
+.navbar-cta {
+  margin: 0 0.5rem 0 0.5rem;
+  padding: 0.6rem 1.1rem !important;
+  border: 1px solid var(--ot-coral-200) !important;
+  border-radius: var(--ot-radius-pill) !important;
+  background: var(--ot-surface);
+  color: var(--ot-coral-700) !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  border-bottom-width: 1px !important;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-/* Dark mode footer - already dark, ensure text is light */
-[data-theme='dark'] .footer {
-  background-color: #131E32;
-  color: #e2e8f0;
+.navbar-cta:hover {
+  background: var(--ot-coral-50);
+  border-color: var(--ot-coral-500) !important;
+  color: var(--ot-coral-700) !important;
 }
 
-[data-theme='dark'] .footer__title {
-  color: #ffffff;
+[data-theme='dark'] .navbar-cta {
+  background: transparent;
+  color: var(--ot-coral-400) !important;
+  border-color: rgba(240, 89, 65, 0.45) !important;
 }
 
-[data-theme='dark'] .footer__link-item,
-[data-theme='dark'] .footer a {
-  color: #BDB7C0;
+[data-theme='dark'] .navbar-cta:hover {
+  background: var(--ot-tray);
+  color: var(--ot-coral-400) !important;
 }
 
-[data-theme='dark'] .footer__link-item:hover,
-[data-theme='dark'] .footer a:hover {
-  color: #2fb5a3;
-}
-
-[data-theme='dark'] .footer__copyright {
-  color: #BDB7C0;
-}
-
-/* Reduce gap between navbar items */
 .navbar__items--right {
   gap: 0.25rem;
 }
@@ -331,7 +351,6 @@ code, pre {
   padding: 0.5rem 0.75rem;
 }
 
-/* Align icons and text in navbar links */
 .navbar__link-with-icon {
   display: inline-flex;
   align-items: center;
@@ -343,14 +362,373 @@ code, pre {
   display: block;
 }
 
-/* Increase navbar title size by 20% */
-.navbar__title {
-  font-size: 1.25rem;
+/* Icon links on the right: GitHub, Discord */
+.navbar__items--right > .navbar__item:first-of-type {
+  margin-left: 0.5rem;
 }
 
-/* Add border radius to navbar logo */
-.navbar__logo {
-  border-radius: 5px;
+/* Color mode toggle */
+.toggleButton_gllP,
+.colorModeToggle_DEke {
+  color: var(--ot-graphite);
+}
+
+/* ---------- Sidebar ---------- */
+.menu {
+  padding-top: 1.25rem;
+}
+
+.menu__list-item-collapsible,
+.menu__link {
+  border-radius: var(--ot-radius-control);
+}
+
+.menu__link {
+  font-size: 0.93rem;
+  font-weight: 500;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 600;
+  background: var(--ot-coral-50);
+  color: var(--ot-coral-700);
+}
+
+.menu__list-item-collapsible .menu__link--sublist {
+  font-weight: 700;
+  color: var(--ot-text);
+}
+
+/* ---------- Content chrome ---------- */
+.theme-doc-breadcrumbs {
+  font-size: 0.85rem;
+}
+
+.theme-doc-breadcrumbs a {
+  color: var(--ot-text-muted);
+}
+
+.theme-doc-footer,
+.pagination-nav {
+  border-top: 1px solid var(--ot-hairline);
+}
+
+.pagination-nav__link {
+  border: 1px solid var(--ot-hairline);
+  border-radius: 12px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ot-coral-500);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.pagination-nav__label {
+  font-family: var(--ot-font-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.table-of-contents__link--active {
+  color: var(--ot-coral-700);
+  font-weight: 700;
+}
+
+/* ---------- Buttons ---------- */
+.button {
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: var(--ot-radius-pill);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.button--primary {
+  --ifm-button-background-color: var(--ot-coral-700);
+  --ifm-button-border-color: var(--ot-coral-700);
+  --ifm-button-color: var(--ot-white);
+  --ifm-button-hover-background-color: var(--ot-coral-800);
+  --ifm-button-hover-border-color: var(--ot-coral-800);
+}
+
+.button--secondary {
+  --ifm-button-border-color: var(--ot-navy);
+  --ifm-button-background-color: transparent;
+  --ifm-button-color: var(--ot-navy);
+  --ifm-button-hover-background-color: var(--ot-navy);
+  --ifm-button-hover-color: var(--ot-ivory);
+}
+
+/* ---------- Code ---------- */
+code {
+  font-feature-settings: normal;
+  font-variant-ligatures: none; /* keep -- and -> as two characters */
+  font-size: 0.9em;
+  font-weight: 500;
+  background: rgba(15, 1, 52, 0.05);
+  color: var(--ot-text);
+  border: 1px solid var(--ot-hairline);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+pre {
+  font-variant-ligatures: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+[class*='codeBlockContainer'] {
+  --prism-background-color: var(--ot-code-bg);
+  background: var(--ot-code-bg) !important;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-weight: 400;
+  color: inherit;
+}
+
+/* ---------- Admonitions: sheet, hairline, thin accent (platform parity) ---------- */
+.alert {
+  --ifm-alert-background-color: var(--ot-surface);
+  --ifm-alert-foreground-color: var(--ot-text);
+  --ifm-alert-border-color: var(--ot-coral-500);
+  --ifm-alert-border-radius: 12px;
+  border: 1px solid var(--ot-hairline);
+  border-left: 3px solid var(--ifm-alert-border-color);
+  box-shadow: none;
+}
+
+.alert--info {
+  --ifm-alert-border-color: var(--ot-graphite);
+  border-left-color: var(--ot-graphite);
+}
+
+.alert--warning {
+  --ifm-alert-border-color: var(--ot-coral-400);
+  border-left-color: var(--ot-coral-400);
+}
+
+.alert--danger {
+  --ifm-alert-background-color: var(--ot-coral-50);
+  --ifm-alert-border-color: var(--ot-coral-700);
+  border-left-color: var(--ot-coral-700);
+}
+
+.alert--success {
+  --ifm-alert-border-color: var(--ot-navy);
+  border-left-color: var(--ot-navy);
+}
+
+/* ---------- Blockquotes ---------- */
+blockquote {
+  border: 1px solid var(--ot-hairline);
+  background: var(--ot-ivory);
+  color: var(--ot-text);
+  border-radius: var(--ot-radius-sheet);
+  padding: 12px 20px;
+}
+
+/* ---------- Tables ---------- */
+table {
+  border: 1px solid var(--ot-hairline);
+  border-radius: var(--ot-radius-sheet);
   overflow: hidden;
+  box-shadow: none;
+  font-size: 0.95rem;
 }
 
+thead th {
+  background: var(--ot-coral-50);
+  color: var(--ot-navy);
+  font-weight: 600;
+  border-bottom: 1px solid var(--ot-hairline);
+}
+
+tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+tbody tr:hover {
+  background: transparent;
+}
+
+/* ---------- Footer: a white sheet in light, as in tryon-docs ---------- */
+.footer {
+  background-color: var(--ot-surface);
+  color: var(--ot-graphite);
+  border-top: 1px solid var(--ot-hairline);
+}
+
+.footer__title {
+  color: var(--ot-navy);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.footer__link-item {
+  color: var(--ot-graphite);
+  transition: color 0.2s ease;
+}
+
+.footer__link-item:hover {
+  color: var(--ot-coral-700);
+}
+
+.footer__copyright {
+  color: var(--ot-text-3);
+  font-size: 0.85rem;
+}
+
+/* ---------- Search ---------- */
+.DocSearch-Button,
+.navbar-search-input {
+  border-radius: var(--ot-radius-pill);
+}
+
+/* ---------- Dark theme: components (tryon-docs palette) ---------- */
+[data-theme='dark'] .navbar {
+  border-bottom-color: var(--ot-hairline);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .navbar__link--active,
+[data-theme='dark'] .navbar__link:hover {
+  color: var(--ot-text);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  background: var(--ot-surface);
+  border-right-color: var(--ot-hairline);
+}
+
+[data-theme='dark'] .menu__link:hover,
+[data-theme='dark'] .menu__list-item-collapsible:hover {
+  background: var(--ot-surface-2);
+  color: var(--ot-text);
+}
+
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
+  background: var(--ot-surface-2);
+  color: var(--ot-accent);
+  box-shadow: none;
+}
+
+[data-theme='dark'] .menu__list-item-collapsible .menu__link--sublist {
+  color: var(--ot-text);
+}
+
+[data-theme='dark'] .table-of-contents__link--active {
+  color: var(--ot-accent);
+}
+
+[data-theme='dark'] .button--secondary {
+  --ifm-button-border-color: var(--ot-text);
+  --ifm-button-color: var(--ot-text);
+  --ifm-button-hover-background-color: var(--ot-text);
+  --ifm-button-hover-color: var(--ot-page);
+}
+
+[data-theme='dark'] code {
+  background: var(--ot-surface-3);
+  color: var(--ot-text);
+  border-color: var(--ot-hairline);
+}
+
+/* Admonitions: sheet with a semantic left accent, as in tryon-docs */
+[data-theme='dark'] .alert {
+  --ifm-alert-background-color: var(--ot-surface);
+  --ifm-alert-foreground-color: var(--ot-text);
+  border-color: var(--ot-hairline);
+}
+
+[data-theme='dark'] .alert--info { --ifm-alert-border-color: var(--ot-info); border-left-color: var(--ot-info); }
+[data-theme='dark'] .alert--success { --ifm-alert-border-color: var(--ot-success); border-left-color: var(--ot-success); }
+[data-theme='dark'] .alert--warning { --ifm-alert-border-color: var(--ot-warning); border-left-color: var(--ot-warning); }
+[data-theme='dark'] .alert--danger { --ifm-alert-border-color: var(--ot-error); border-left-color: var(--ot-error); }
+
+[data-theme='dark'] blockquote {
+  background: var(--ot-surface);
+  border-color: var(--ot-hairline);
+  color: var(--ot-text);
+}
+
+[data-theme='dark'] table {
+  border-color: var(--ot-hairline);
+}
+
+[data-theme='dark'] thead th {
+  background: var(--ot-surface-2);
+  color: var(--ot-text);
+}
+
+[data-theme='dark'] tbody tr:nth-child(even) {
+  background: rgba(245, 245, 244, 0.02);
+}
+
+[data-theme='dark'] tbody tr:hover {
+  background: var(--ot-tray);
+}
+
+[data-theme='dark'] pre {
+  background: var(--ot-surface-muted) !important;
+  border-color: var(--ot-hairline);
+}
+
+[data-theme='dark'] .footer {
+  background-color: var(--ot-surface);
+  color: var(--ot-text-muted);
+  border-top-color: var(--ot-hairline);
+}
+
+[data-theme='dark'] .footer__title {
+  color: var(--ot-text);
+}
+
+[data-theme='dark'] .footer__link-item {
+  color: var(--ot-text-muted);
+}
+
+[data-theme='dark'] .footer__link-item:hover {
+  color: var(--ot-accent);
+}
+
+[data-theme='dark'] .footer__copyright {
+  color: var(--ot-text-3);
+}
+
+/* ---------- Content sheet (platform parity) ---------- */
+[class*='docItemContainer'] > article {
+  background: var(--ot-surface);
+  border: 1px solid var(--ot-hairline);
+  border-radius: 16px;
+  padding: 2rem 2.25rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 996px) {
+  [class*='docItemContainer'] > article {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+}
+
+/* ---------- Motion preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

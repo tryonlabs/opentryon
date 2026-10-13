@@ -5,7 +5,15 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'OpenTryOn',
   tagline: 'Open-source AI toolkit for fashion tech and virtual try-on',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
+
+  // TryOn Labs brand fonts (Mulish for text, Newsreader Medium for display)
+  stylesheets: [
+    {
+      href: 'https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&family=Newsreader:wght@500&display=swap',
+      type: 'text/css',
+    },
+  ],
 
   // Set the production url of your site here
   url: 'https://tryonlabs.github.io',
@@ -66,7 +74,7 @@ const config: Config = {
           url: 'https://tryonlabs.ai',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://tryonlabs.github.io/opentryon/img/logo.png',
+            url: 'https://tryonlabs.github.io/opentryon/img/brand/app-icon-512.png',
           },
         },
         potentialAction: {
@@ -98,7 +106,7 @@ const config: Config = {
           name: 'TryOn Labs',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://tryonlabs.github.io/opentryon/img/logo.png',
+            url: 'https://tryonlabs.github.io/opentryon/img/brand/app-icon-512.png',
           },
         },
         datePublished: '2024-01-01',
@@ -190,7 +198,7 @@ const config: Config = {
       {name: 'bingbot', content: 'index, follow'},
       {name: 'language', content: 'English'},
       {name: 'revisit-after', content: '7 days'},
-      {name: 'theme-color', content: '#1FA08F'},
+      {name: 'theme-color', content: '#0F0134'},
       {name: 'apple-mobile-web-app-capable', content: 'yes'},
       {name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent'},
       {property: 'og:type', content: 'website'},
@@ -198,18 +206,23 @@ const config: Config = {
       {property: 'og:locale', content: 'en_US'},
       {property: 'og:image:width', content: '1200'},
       {property: 'og:image:height', content: '630'},
-      {property: 'og:image:type', content: 'image/jpeg'},
+      {property: 'og:image:type', content: 'image/png'},
       {name: 'twitter:card', content: 'summary_large_image'},
       {name: 'twitter:site', content: '@tryonlabs'},
       {name: 'twitter:creator', content: '@tryonlabs'},
       {name: 'twitter:image:alt', content: 'OpenTryOn - Open-source AI toolkit for fashion tech and virtual try-on'},
     ],
-    image: '/img/opentryon-social-card.jpg',
+    image: '/img/brand/opentryon-social-card.png',
+    colorMode: {
+      defaultMode: 'light',
+      respectPrefersColorScheme: true,
+    },
     navbar: {
       title: 'OpenTryOn',
       logo: {
-        alt: 'OpenTryOn Logo',
-        src: '/img/logo.png',
+        alt: 'OpenTryOn',
+        src: '/img/brand/opentryon-mark-light.svg',
+        srcDark: '/img/brand/opentryon-mark-dark.svg',
         href: '/', // Make logo clickable, links to home page (intro.md)
       },
       items: [
@@ -220,16 +233,16 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          type: 'doc',
-          docId: 'getting-started/mcp',
+          // Plain route link: doc-type items go active for every page in the same sidebar
+          to: '/getting-started/mcp',
           position: 'left',
           label: 'MCP',
         },
         {
-          type: 'doc',
-          docId: 'getting-started/tryon-studio',
-          position: 'left',
-          label: 'Studio',
+          to: '/getting-started/tryon-studio',
+          position: 'right',
+          label: 'Open Studio',
+          className: 'navbar-cta',
         },
         {
           type: 'html',
@@ -309,7 +322,7 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} TryOn Labs. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.github,
+      theme: prismThemes.dracula,
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['python', 'bash', 'yaml', 'json'],
     },
