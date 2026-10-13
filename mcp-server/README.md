@@ -188,6 +188,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_fashn_face_to_model` | FASHN Face to Model (headshot → try-on-ready avatar) | `FASHN_API_KEY` |
 | `edit_fashn_reframe` | FASHN Reframe (expand/crop to an aspect ratio) | `FASHN_API_KEY` |
 | `edit_fashn_edit` | FASHN Edit (prompt edit with optional mask/context) | `FASHN_API_KEY` |
+| `edit_qie_2511_extract_outfit` | QIE-2511 Extract-Outfit (worn photo → flat mockup, local) | local/GPU |
 | `edit_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
 | `edit_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
@@ -212,6 +213,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_llava_next` | LLaVA-NeXT (local VLM captioning) | local/GPU | Fashion-oriented captioning helper |
 | `understand_gemini_3_8_flash` | Gemini 3.8 Flash (Google) | `GEMINI_API_KEY` | Image + video + audio + PDF; `thinking_level` low/medium/high |
 | `understand_claude_haiku_5_5` | Claude Haiku 5.5 (Anthropic) | `ANTHROPIC_API_KEY` | Text + image (no video); `effort`, thinking toggle |
+| `understand_fashion_florence` | Fashion Florence (local garment tagger, JSON attributes) | local/GPU | category / colour / material / style tags |
 | `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI) | `MOONSHOT_API_KEY` | Image + video; optional thinking |
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
 | `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |

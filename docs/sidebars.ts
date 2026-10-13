@@ -128,6 +128,8 @@ const sidebars: SidebarsConfig = {
         'local-models/embeddinggemma',
         'local-models/pplx-embed',
         'local-models/fashion-embeddings',
+        'local-models/fashion-florence',
+        'local-models/extract-outfit',
       ],
     },
     {

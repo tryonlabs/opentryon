@@ -323,7 +323,7 @@ The new `embed` service saves vectors to an `.npz` file under the output dir and
 | `embed_moda_pro_lite` | MODA Pro Lite (fashion text-to-image) | local/GPU |
 | `embed_zooclaw_fashionsiglip2` | ZooClaw-FashionSigLIP2 | local/GPU |
 
-Also new: `understand_gemini_3_8_flash` (`GEMINI_API_KEY`; image/video/audio/PDF), `understand_claude_haiku_5_5` (`ANTHROPIC_API_KEY`) and `video_generate_fal_h3_max_relight` (`FAL_KEY`). `decide` and `embed` have no Studio capability screens yet; the tools are live to Studio's Agent chat (named-model only) and any MCP client after a server restart.
+Also new: `understand_fashion_florence` (local garment tagger), `edit_qie_2511_extract_outfit` (local garment extraction), `understand_gemini_3_8_flash` (`GEMINI_API_KEY`; image/video/audio/PDF), `understand_claude_haiku_5_5` (`ANTHROPIC_API_KEY`) and `video_generate_fal_h3_max_relight` (`FAL_KEY`). `decide` and `embed` have no Studio capability screens yet; the tools are live to Studio's Agent chat (named-model only) and any MCP client after a server restart.
 
 See [Claude Haiku 5.5](../api-reference/claude.md), [Typesafe Jev](../api-reference/typesafe-jev.md), [Liquid d1](../local-models/liquid-d1.md), [EmbeddingGemma 2](../local-models/embeddinggemma.md), [pplx-embed-v2-late](../local-models/pplx-embed.md).
 

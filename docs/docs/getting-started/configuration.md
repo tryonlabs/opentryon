@@ -308,6 +308,10 @@ Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GE
 
 Uses the same `FASHN_API_KEY` as `vton --model fashn-tryon-max`. Covers `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video` and `fashn-bg-remove`. See [FASHN](../api-reference/fashn.md).
 
+### Fashion Florence / Extract-Outfit (local, no cloud key)
+
+No API key. `pip install opentryon[local]`; Extract-Outfit also needs `pip install -U peft diffusers transformers accelerate` and a CUDA GPU (Qwen-Image-Edit-2511 base). Optional overrides: `FASHION_FLORENCE_MODEL_ID`, `EXTRACT_OUTFIT_LORA_ID`. See [Fashion Florence](../local-models/fashion-florence.md) and [Extract-Outfit](../local-models/extract-outfit.md).
+
 ### Fashion retrieval embeddings (local, no cloud key)
 
 No API key. `pip install opentryon[local]` plus `pip install open_clip_torch` for Marqo-FashionSigLIP and MODA (ZooClaw-FashionSigLIP2 needs only transformers). Covers `embed --model marqo-fashionsiglip | moda-fashion-distilled | moda-pro-lite | zooclaw-fashionsiglip2`. See [Fashion embeddings](../local-models/fashion-embeddings.md).
