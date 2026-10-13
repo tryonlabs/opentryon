@@ -304,6 +304,14 @@ Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GE
 
    Covers `decide --model jev`. See [Typesafe Jev](../api-reference/typesafe-jev.md).
 
+### FASHN catalogue endpoints (hosted)
+
+Uses the same `FASHN_API_KEY` as `vton --model fashn-tryon-max`. Covers `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video` and `fashn-bg-remove`. See [FASHN](../api-reference/fashn.md).
+
+### Fashion retrieval embeddings (local, no cloud key)
+
+No API key. `pip install opentryon[local]` plus `pip install open_clip_torch` for Marqo-FashionSigLIP and MODA (ZooClaw-FashionSigLIP2 needs only transformers). Covers `embed --model marqo-fashionsiglip | moda-fashion-distilled | moda-pro-lite | zooclaw-fashionsiglip2`. See [Fashion embeddings](../local-models/fashion-embeddings.md).
+
 ### FASHN VTON v1.5 (local, no cloud key)
 
 No API key. `pip install opentryon[local]` plus `pip install "git+https://github.com/fashn-AI/fashn-vton-1.5.git"`. Weights (~2 GB) auto-download to `~/.cache/opentryon/fashn-vton-1.5`; set `FASHN_VTON_WEIGHTS_DIR` to use your own folder. Covers `vton --model fashn-vton-1.5`. See [FASHN VTON v1.5](../local-models/fashn-vton.md).

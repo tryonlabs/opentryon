@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### 👗 FASHN catalogue endpoints + fashion retrieval embeddings
+- **FASHN catalogue endpoints** (`tryon.api.fashn.FashnAdapter`, extends `FashnVTONAdapter`; same `FASHN_API_KEY` and `/v1/run` + `/v1/status` protocol): `fashn-product-to-model`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit` (`edit`), `fashn-model-create` (`generate`), `fashn-image-to-video` (`video-generate`, 5/10 s, 480p-1080p, optional `--end-image`) and `fashn-bg-remove` (`bg-remove`). Per-endpoint aspect-ratio / resolution / quality-mode / `num_images` validation; `--face-reference` identity locking. Product-to-model generates a new person and does not replace try-on (`fashn-tryon-max`). Integrated from FASHN's published docs without live calls
+- **Fashion embeddings** in the `embed` service (`tryon.models.fashion_embed`): `marqo-fashionsiglip` (Apache-2.0), `moda-fashion-distilled` (MIT, image-only), `moda-pro-lite` (Apache-2.0), `zooclaw-fashionsiglip2` (Apache-2.0). Text or image queries (`--query` / `--query-image`) return cosine scores; vectors are saved to `.npz`. Needs `open_clip_torch` (ZooClaw uses transformers only)
+- 12 new MCP tools (144 models, 149 tools), planner pins for all of them, docs: new `local-models/fashion-embeddings.md`, FASHN page extended, CLI / MCP / config / planner pages updated
+- Backlog: the 13 Oct 2026 fashion-domain survey (Fashion Florence, Extract-Outfit, klein-4B try-on LoRA, try-on safety classifier, segmentation / measurement / 3D candidates and licence-blocked models) added to `docs/docs/community/integrate-next.md`
+
 ## [0.0.6] - 12 October 2026
 
 ### Added

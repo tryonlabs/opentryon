@@ -157,6 +157,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_nano_banana_pro` | Nano Banana Pro (Gemini 3 Pro Image Preview) | `GEMINI_API_KEY` |
 | `generate_nano_banana_2` | Nano Banana 2 (Gemini 3.1 Flash Image; deprecated upstream) | `GEMINI_API_KEY` |
 | `generate_nano_banana_2_1` | Nano Banana 2.1 (`gemini-nano-banana-2.1`; adds 1:4/4:1/1:8/8:1) | `GEMINI_API_KEY` |
+| `generate_fashn_model_create` | FASHN Model Create (fashion model from a prompt) | `FASHN_API_KEY` |
 | `generate_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
 | `generate_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `generate_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
@@ -182,6 +183,11 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_nano_banana_pro` | Nano Banana Pro | `GEMINI_API_KEY` |
 | `edit_nano_banana_2` | Nano Banana 2 | `GEMINI_API_KEY` |
 | `edit_nano_banana_2_1` | Nano Banana 2.1 | `GEMINI_API_KEY` |
+| `edit_fashn_product_to_model` | FASHN Product to Model (product photo → person wearing it) | `FASHN_API_KEY` |
+| `edit_fashn_model_swap` | FASHN Model Swap (change the model, keep the outfit) | `FASHN_API_KEY` |
+| `edit_fashn_face_to_model` | FASHN Face to Model (headshot → try-on-ready avatar) | `FASHN_API_KEY` |
+| `edit_fashn_reframe` | FASHN Reframe (expand/crop to an aspect ratio) | `FASHN_API_KEY` |
+| `edit_fashn_edit` | FASHN Edit (prompt edit with optional mask/context) | `FASHN_API_KEY` |
 | `edit_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
 | `edit_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
@@ -279,12 +285,14 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_runway_gen4_5` | Runway Gen-4.5 | `RUNWAYML_API_SECRET` |
 | `video_generate_cosmos3` | NVIDIA Cosmos 3 Generator nano | `NVIDIA_API_KEY` |
 | `video_generate_cosmos3_local` | NVIDIA Cosmos 3 Nano (local Diffusers) | local/GPU |
+| `video_generate_fashn_image_to_video` | FASHN Image to Video (5/10 s) | `FASHN_API_KEY` |
 
 ### bg-remove -- Background removal
 
 | Tool | Model | Requires |
 |---|---|---|
 | `bg_remove_ben2` | BEN2 background remover (local) | local/GPU |
+| `bg_remove_fashn_bg_remove` | FASHN Background Remove (hosted, 1 credit) | `FASHN_API_KEY` |
 
 ### tts -- Text-to-speech
 
@@ -318,6 +326,10 @@ Vectors are saved to an `.npz` file; the tool returns the path, shapes, labels a
 | `embed_embeddinggemma_2` | Google EmbeddingGemma 2 (768-d; text/code/image/video/audio) | local/GPU |
 | `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
 | `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |
+| `embed_marqo_fashionsiglip` | Marqo-FashionSigLIP (fashion image + text retrieval) | local/GPU |
+| `embed_moda_fashion_distilled` | MODA fashion-distilled (image-to-image fashion retrieval) | local/GPU |
+| `embed_moda_pro_lite` | MODA Pro Lite (fashion text-to-image encoder) | local/GPU |
+| `embed_zooclaw_fashionsiglip2` | ZooClaw-FashionSigLIP2 (fashion SigLIP2 retriever) | local/GPU |
 
 See [`claude.md`](../docs/docs/api-reference/claude.md), [`typesafe-jev.md`](../docs/docs/api-reference/typesafe-jev.md), [`liquid-d1.md`](../docs/docs/local-models/liquid-d1.md), [`embeddinggemma.md`](../docs/docs/local-models/embeddinggemma.md), [`pplx-embed.md`](../docs/docs/local-models/pplx-embed.md).
 
