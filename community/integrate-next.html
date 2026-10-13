@@ -10,8 +10,8 @@
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io/opentryon">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&amp;family=Newsreader:wght@500&amp;display=swap"><link rel="stylesheet" href="/opentryon/assets/css/styles.5cb23e6e.css">
-<script src="/opentryon/assets/js/runtime~main.077e835a.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.9169b9de.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.05f2e6d3.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.9b10352b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -122,7 +122,7 @@
 <p><del><code>jev</code> / <code>d1-3b</code> / <code>d1-omni-600m</code></del> <strong>shipped</strong> (new <code>decide</code> service, 8 Oct 2026). &quot;System One&quot; decision models: typed questions in, calibrated probabilities out. Jev is API (early access, sign-ups paused 2026-09-22) and text-only; Liquid d1 is Path B local with images (and speech for omni).</p>
 </li>
 <li class="">
-<p><del><code>embeddinggemma-2</code> / <code>pplx-embed-v2-late-0.6b</code> / <code>pplx-embed-v2-late-9b</code></del> <strong>shipped</strong> (new <code>embed</code> service with <code>output_kind=&quot;embeddings&quot;</code>, 8 Oct 2026). Both local-only: Perplexity&#x27;s hosted Embeddings API serves the v1 dense models, not v2-late.</p>
+<p><del><code>embeddinggemma-2</code> / <code>pplx-embed-v2-late-0.6b</code> / <code>pplx-embed-v2-late-9b</code></del> <strong>shipped</strong> (new <code>embed</code> service with <code>output_kind=&quot;embeddings&quot;</code>, 8 Oct 2026). Both local-only: Perplexity&#x27;s hosted Embeddings API serves the v1 dense models, not v2-late. Hosted counterpart <strong><code>gemini-embedding-2</code></strong> shipped 13 Oct 2026 (stable id, <code>GEMINI_API_KEY</code>, text/image/audio/video/PDF, <code>--aggregate</code>).</p>
 </li>
 <li class="">
 <p><code>pplx-embed-v2-context-9b-preview</code> — <code>watch</code>: text-only contextual preview, weights/interface may change before GA.</p>
@@ -140,7 +140,7 @@
 <p><del><code>gemini-3.8-flash</code></del> <strong>shipped</strong> (Path A, <code>understand</code>) and 20. <del><code>gemini-3.8-flash-tts</code> / <code>gemini-3.8-flash-lite-tts</code></del> <strong>shipped</strong> (Path A, second <code>tts</code> vendor), 8 Oct 2026. Voices endpoint / voice design / replication not wired yet.</p>
 </li>
 </ol>
-<p>Next candidates from the 8 Oct 2026 survey (not started): <code>gemini-embedding-2-preview</code> (hosted <code>embed</code>), Hy Image 3.5 Preview (TokenHub, <code>generate</code>/<code>edit</code>), Kling 4.0 (when its API lands), Qwen-Image-2.1 local (non-commercial licence), FLUX 3 (status unclear), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).</p>
+<p>Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, <code>generate</code>/<code>edit</code>), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).</p>
 <ol start="21">
 <li class=""><del>FASHN catalogue endpoints</del> <strong>shipped</strong> (Path A, 13 Oct 2026): <code>fashn-product-to-model</code>, <code>fashn-model-create</code>, <code>fashn-model-swap</code>, <code>fashn-face-to-model</code>, <code>fashn-reframe</code>, <code>fashn-edit</code>, <code>fashn-image-to-video</code>, <code>fashn-bg-remove</code> via <code>tryon.api.fashn.FashnAdapter</code>.</li>
 <li class=""><del>Fashion embeddings</del> <strong>shipped</strong> (Path B, 13 Oct 2026): <code>marqo-fashionsiglip</code>, <code>moda-fashion-distilled</code>, <code>moda-pro-lite</code>, <code>zooclaw-fashionsiglip2</code> in the <code>embed</code> service.</li>
