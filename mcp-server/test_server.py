@@ -174,6 +174,8 @@ async def check_dry_run_calls() -> None:
         ("embed_moda_fashion_distilled", {"image": ["a.jpg"], "query_image": "b.jpg", "dry_run": True}, True),
         ("embed_moda_pro_lite", {"text": ["boots"], "dry_run": True}, True),
         ("embed_zooclaw_fashionsiglip2", {"text": ["boots"], "image": ["a.jpg"], "dry_run": True}, True),
+        ("understand_fashion_florence", {"image": ["dress.jpg"], "dry_run": True}, True),
+        ("edit_qie_2511_extract_outfit", {"image": "look.jpg", "dry_run": True}, True),
         ("understand_claude_haiku_5_5", {"image": "i.jpg", "prompt": "fabric?", "effort": "low", "dry_run": True}, False),
         ("video_generate_fal_h3_max_relight", {"video": "clip.mp4", "reference_image": "sphere.png", "dry_run": True}, False),
         ("decide_jev", {"questions": "q.json", "state": "red satin gown", "dry_run": True}, False),

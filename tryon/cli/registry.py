@@ -1575,6 +1575,32 @@ _EDIT = {
             *_qwen_image_local_sample_args(t2i=False),
         ],
     ),
+    "qie-2511-extract-outfit": ModelSpec(
+        id="qie-2511-extract-outfit",
+        label="QIE-2511 Extract-Outfit (worn outfit photo -> flat mockup, local)",
+        import_path="tryon.models.extract_outfit", class_name="ExtractOutfitAdapter",
+        method="extract_outfit", output_kind="images", extra="local",
+        notes="Apache-2.0 LoRA (prithivMLmods/QIE-2511-Extract-Outfit) on Qwen-Image-Edit-2511: removes the body, "
+        "pose and background and renders the clothing as a flat studio mockup (garment extraction / 'try-off'). "
+        "Input must show the full outfit (cropped photos extract only the visible region). Same hardware as "
+        "qwen-image-local (CUDA, ~40GB+ bf16, CPU offload on by default); needs peft: pip install -U peft diffusers "
+        "transformers accelerate. Community adapter, no published metrics. Reverse direction: --model qwen-image-local / fashn-tryon-max.",
+        args=[
+            _img(("--image", "-i"), "image", "Photo showing the full outfit (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", default="Extract the clothing and create a flat mockup.",
+                help="Trigger prompt (the default activates the LoRA)"),
+            Arg(("--steps",), "num_inference_steps", type=int, default=40, help="Denoising steps"),
+            Arg(("--true-cfg-scale",), "true_cfg_scale", type=float, default=4.0),
+            Arg(("--guidance-scale",), "guidance_scale", type=float, default=1.0),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--num-images",), "num_images", type=int, default=1),
+            Arg(("--lora-id",), "lora_id", target="init", help="LoRA repo id or path (default prithivMLmods/QIE-2511-Extract-Outfit)"),
+            Arg(("--edit-model-id",), "edit_model_id", target="init", help="Base edit model (default Qwen/Qwen-Image-Edit-2511)"),
+            Arg(("--dtype",), "dtype", target="init", default="bfloat16", choices=["bfloat16", "float16", "float32"]),
+            Arg(("--no-cpu-offload",), "cpu_offload", target="init", action="store_false", default=True,
+                help="Disable CPU offload (needs ~40GB+ VRAM)"),
+        ],
+    ),
     "p-image-edit": ModelSpec(
         id="p-image-edit", label="Pruna P-Image-Edit",
         import_path="tryon.api.pruna", class_name="PImageEditAdapter",
@@ -1790,6 +1816,27 @@ _UNDERSTAND = {
             Arg(("--reasoning-effort",), "reasoning_effort", default="high",
                 choices=["none", "low", "high", "max"], help="Reasoning depth; none disables thinking"),
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+        ],
+    ),
+    "fashion-florence": ModelSpec(
+        id="fashion-florence",
+        label="Fashion Florence (open-weight garment tagger, JSON attributes)",
+        import_path="tryon.models.fashion_florence", class_name="FashionFlorenceAdapter",
+        method="understand", output_kind="text", extra="local",
+        notes="Florence-2-large LoRA (0.77B, MIT) fine-tuned on iMaterialist: one clothing photo -> JSON "
+        "{category, primary_color, material, style_tags}. Self-hosted catalogue tagging; ignores free-form "
+        "questions (use a VLM such as --model gemini-3.8-flash for those). Card metrics on iMaterialist: 89.5% "
+        "category, 52.7% colour / 42.6% material exact-match; weak on shoes/accessories -- validate on your own "
+        "catalogue. trust_remote_code; Florence-2's custom code targets the transformers 4.4x line pinned by "
+        "opentryon[local]. Runs on CPU (slow) or GPU (fp16).",
+        args=[
+            Arg(("--image", "-i"), "image", nargs="+", required=True, help="Clothing image(s) to tag (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt",
+                help="Override the tagging instruction (the fine-tune expects the default; changing it may break the JSON)"),
+            Arg(("--max-new-tokens",), "max_new_tokens", type=int, default=256),
+            Arg(("--num-beams",), "num_beams", type=int, default=3),
+            Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path (default anushreeberlia/fashion-florence)"),
+            Arg(("--device",), "device", target="init", choices=["cuda", "cpu"], help="Device (default cuda if available)"),
         ],
     ),
     "claude-haiku-5-5": ModelSpec(

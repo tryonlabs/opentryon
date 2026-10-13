@@ -11,6 +11,7 @@ Run:
 """
 import contextlib
 import io
+import json
 import os
 import sys
 import tempfile
@@ -1710,6 +1711,147 @@ def check_fashn_catalogue_endpoints_and_fashion_embeddings():
     print("\u2713 FASHN catalogue endpoints (payloads, polling, validation) and fashion embeddings (open_clip / SigLIP2)")
 
 
+def check_fashion_florence_and_extract_outfit():
+    import sys
+    import types
+    from unittest import mock
+
+    import torch
+    import transformers
+    from PIL import Image as _Image
+
+    cases = [
+        (["understand", "--model", "fashion-florence", "--image", "a.jpg", "b.jpg", "--num-beams", "2"],
+         "FashionFlorenceAdapter", "understand", ["'image': ['a.jpg', 'b.jpg']", "'num_beams': 2"]),
+        (["edit", "--model", "qie-2511-extract-outfit", "--image", "look.jpg", "--seed", "3", "--no-cpu-offload"],
+         "ExtractOutfitAdapter", "extract_outfit",
+         ["'image': 'look.jpg'", "Extract the clothing and create a flat mockup.", "'cpu_offload': False", "'seed': 3"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+
+    # ---- Fashion Florence: JSON parsing + generate flow with a stubbed model ----
+    from tryon.models.fashion_florence import FashionFlorenceAdapter
+    from tryon.models.fashion_florence.adapter import DEFAULT_PROMPT, parse_tags
+
+    good = {"category": "dress", "primary_color": "navy blue", "material": "cotton", "style_tags": ["casual"]}
+    assert parse_tags(json.dumps(good)) == good
+    assert parse_tags("Result: " + json.dumps(good) + " done") == good
+    assert parse_tags("no json here") is None and parse_tags("[1, 2]") is None
+
+    calls = []
+
+    class FakeBatch(dict):
+        def to(self, *args):
+            calls.append(("to", args))
+            return self
+
+    class FakeProcessor:
+        def __call__(self, text, images, return_tensors):
+            calls.append(("proc", text, images.size))
+            return FakeBatch(input_ids=torch.zeros(1, 3, dtype=torch.long), pixel_values=torch.zeros(1, 3, 4, 4))
+
+        def batch_decode(self, ids, skip_special_tokens):
+            return [json.dumps(good)]
+
+    class FakeModel(torch.nn.Module):
+        def generate(self, input_ids, pixel_values, max_new_tokens, num_beams):
+            calls.append(("gen", max_new_tokens, num_beams))
+            return torch.zeros(1, 2, dtype=torch.long)
+
+    with tempfile.TemporaryDirectory() as tmp, \
+         mock.patch.object(transformers.AutoModelForCausalLM, "from_pretrained", return_value=FakeModel()) as load_model, \
+         mock.patch.object(transformers.AutoProcessor, "from_pretrained", return_value=FakeProcessor()):
+        img = Path(tmp) / "a.png"
+        _Image.new("RGB", (8, 8)).save(img)
+        adapter = FashionFlorenceAdapter(device="cpu")
+        out = adapter.understand(str(img))
+        assert out["tags"] == good and out["model"] == "anushreeberlia/fashion-florence" and "results" not in out
+        assert load_model.call_args.kwargs["trust_remote_code"] is True
+        assert ("proc", DEFAULT_PROMPT, (8, 8)) in calls and ("gen", 256, 3) in calls
+        many = adapter.understand([str(img), str(img)], max_new_tokens=64, num_beams=1)
+        assert len(many["results"]) == 2 and many["results"][0]["tags"] == good and ("gen", 64, 1) in calls
+        for bad in (dict(image=[]), dict(image=str(img), max_new_tokens=0), dict(image=str(img), num_beams=0)):
+            try:
+                adapter.understand(**bad)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(bad)
+
+    # ---- Extract-Outfit: LoRA is attached once, before offload, with the trigger prompt ----
+    from tryon.models.extract_outfit import ExtractOutfitAdapter
+    from tryon.models.extract_outfit.adapter import TRIGGER_PROMPT
+
+    events = []
+
+    class FakePipe:
+        def load_lora_weights(self, lora_id):
+            events.append(("lora", lora_id))
+
+        def enable_model_cpu_offload(self):
+            events.append(("offload",))
+
+        def to(self, device):
+            events.append(("to", device))
+
+        def __call__(self, **kwargs):
+            events.append(("call", kwargs))
+            return types.SimpleNamespace(images=[_Image.new("RGB", (4, 4))] * kwargs["num_images_per_prompt"])
+
+    class FakePipeline:
+        @staticmethod
+        def from_pretrained(model_id, torch_dtype):
+            events.append(("base", model_id))
+            return FakePipe()
+
+    fake_diffusers = types.ModuleType("diffusers")
+    fake_diffusers.QwenImageEditPlusPipeline = FakePipeline
+    with mock.patch.dict(sys.modules, {"diffusers": fake_diffusers}):
+        adapter = ExtractOutfitAdapter(device="cuda")
+        assert adapter.lora_id == "prithivMLmods/QIE-2511-Extract-Outfit"
+        imgs = adapter.extract_outfit(_Image.new("RGB", (8, 8)), seed=5, num_images=2)
+        adapter.extract_outfit(_Image.new("RGB", (8, 8)))
+    kinds = [e[0] for e in events]
+    assert events[0] == ("base", "Qwen/Qwen-Image-Edit-2511") and events[1] == ("lora", "prithivMLmods/QIE-2511-Extract-Outfit")
+    assert kinds[:3] == ["base", "lora", "offload"] and kinds.count("lora") == 1 and kinds.count("base") == 1
+    call = next(e for e in events if e[0] == "call")[1]
+    assert call["prompt"] == TRIGGER_PROMPT and len(imgs) == 2 and call["num_images_per_prompt"] == 2
+    for bad in (dict(image=None), dict(image=[_Image.new("RGB", (4, 4))]), dict(image=_Image.new("RGB", (4, 4)), prompt=" ")):
+        try:
+            adapter.extract_outfit(**bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+
+    class NoPeftPipe(FakePipe):
+        def load_lora_weights(self, lora_id):
+            raise ImportError("PEFT backend is required")
+
+    class NoPeftPipeline:
+        @staticmethod
+        def from_pretrained(model_id, torch_dtype):
+            return NoPeftPipe()
+
+    fake_diffusers.QwenImageEditPlusPipeline = NoPeftPipeline
+    with mock.patch.dict(sys.modules, {"diffusers": fake_diffusers}):
+        try:
+            ExtractOutfitAdapter(device="cuda").extract_outfit(_Image.new("RGB", (4, 4)))
+        except ImportError as exc:
+            assert "peft" in str(exc)
+        else:
+            raise AssertionError("missing peft must raise a clear error")
+    print("\u2713 fashion-florence (JSON tags) and qie-2511-extract-outfit (LoRA on Edit-2511) resolve and validate")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -1901,6 +2043,7 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_fashion_florence_and_extract_outfit()
     check_fashn_catalogue_endpoints_and_fashion_embeddings()
     check_gemini_38_understand_and_tts()
     check_nano_banana_21_and_fashn_vton_local()

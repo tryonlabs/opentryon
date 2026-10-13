@@ -22,6 +22,8 @@ Available Models:
     - CatVTONAdapter: ICLR 2025 concatenation VTON (<8GB @ 1024x768; CC BY-NC-SA)
     - FashionOpenCLIPAdapter / ZooClawFashionSigLIP2Adapter: fashion-specific retrieval
       embeddings (Marqo-FashionSigLIP, MODA, ZooClaw-FashionSigLIP2) for the `embed` service
+    - FashionFlorenceAdapter: Fashion Florence (Florence-2 LoRA) structured garment tagging
+    - ExtractOutfitAdapter: Qwen-Image-Edit-2511 + Extract-Outfit LoRA (worn photo -> flat mockup)
     - FashnVTONLocalAdapter: FASHN VTON v1.5, maskless pixel-space VTON (972M; Apache-2.0 code + weights)
     - LTX25Adapter: LTX-2.5 open-weight text/image-to-video with synced audio
     - Cosmos3LocalAdapter: NVIDIA Cosmos 3 Nano (16B) open-weight text/image-to-video
@@ -74,6 +76,8 @@ from .limite import LimiteAdapter
 from .ltx25 import LTX25Adapter
 from .fashn_vton import FashnVTONLocalAdapter
 from .fashion_embed import FashionOpenCLIPAdapter, ZooClawFashionSigLIP2Adapter
+from .fashion_florence import FashionFlorenceAdapter
+from .extract_outfit import ExtractOutfitAdapter
 from .cosmos3 import Cosmos3LocalAdapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
@@ -95,6 +99,8 @@ __all__ = [
     "FashnVTONLocalAdapter",
     "FashionOpenCLIPAdapter",
     "ZooClawFashionSigLIP2Adapter",
+    "FashionFlorenceAdapter",
+    "ExtractOutfitAdapter",
     "Cosmos3LocalAdapter",
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",

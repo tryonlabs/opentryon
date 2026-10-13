@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🧵 Fashion Florence + QIE-2511 Extract-Outfit (local)
+- **`fashion-florence`** (`understand`, `tryon.models.fashion_florence.FashionFlorenceAdapter`): `anushreeberlia/fashion-florence`, a MIT Florence-2-large LoRA (0.77B) that tags one clothing photo as JSON `{category, primary_color, material, style_tags}`. Single image returns flat `{tags, raw}`; several return `{results: [...]}`. CPU or GPU; `trust_remote_code` (Florence-2 custom code targets the transformers 4.4x line)
+- **`qie-2511-extract-outfit`** (`edit`, `tryon.models.extract_outfit.ExtractOutfitAdapter`): Apache-2.0 LoRA `prithivMLmods/QIE-2511-Extract-Outfit` on Qwen-Image-Edit-2511 — worn outfit photo to flat studio mockup (garment extraction). Subclasses `QwenImageLocalAdapter`, attaches the LoRA before offload, trigger prompt as default; needs `peft`
+- MCP tools `understand_fashion_florence`, `edit_qie_2511_extract_outfit`; planner pins `fashion florence`, `extract outfit`. Docs: new `local-models/fashion-florence.md` and `local-models/extract-outfit.md`
+
 #### 👗 FASHN catalogue endpoints + fashion retrieval embeddings
 - **FASHN catalogue endpoints** (`tryon.api.fashn.FashnAdapter`, extends `FashnVTONAdapter`; same `FASHN_API_KEY` and `/v1/run` + `/v1/status` protocol): `fashn-product-to-model`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit` (`edit`), `fashn-model-create` (`generate`), `fashn-image-to-video` (`video-generate`, 5/10 s, 480p-1080p, optional `--end-image`) and `fashn-bg-remove` (`bg-remove`). Per-endpoint aspect-ratio / resolution / quality-mode / `num_images` validation; `--face-reference` identity locking. Product-to-model generates a new person and does not replace try-on (`fashn-tryon-max`). Integrated from FASHN's published docs without live calls
 - **Fashion embeddings** in the `embed` service (`tryon.models.fashion_embed`): `marqo-fashionsiglip` (Apache-2.0), `moda-fashion-distilled` (MIT, image-only), `moda-pro-lite` (Apache-2.0), `zooclaw-fashionsiglip2` (Apache-2.0). Text or image queries (`--query` / `--query-image`) return cosine scores; vectors are saved to `.npz`. Needs `open_clip_torch` (ZooClaw uses transformers only)
