@@ -1497,6 +1497,219 @@ def check_gemini_38_understand_and_tts():
     print("\u2713 gemini-3.8-flash understand + gemini-3.8-flash(-lite)-tts: CLI, request shapes, validation")
 
 
+def check_fashn_catalogue_endpoints_and_fashion_embeddings():
+    import base64
+    import sys
+    import types
+    from unittest import mock
+
+    import numpy as np
+    from PIL import Image as _Image
+
+    cases = [
+        (["edit", "--model", "fashn-product-to-model", "--image", "p.jpg", "--prompt", "studio",
+          "--face-reference", "f.jpg", "--face-reference-mode", "match_base", "--aspect-ratio", "4:5",
+          "--resolution", "2k", "--generation-mode", "balanced", "--num-images", "2"],
+         "FashnAdapter", "generate_product_to_model",
+         ["'product_image': 'p.jpg'", "'face_reference_mode': 'match_base'", "'resolution': '2k'", "'num_images': 2"]),
+        (["generate", "--model", "fashn-model-create", "--prompt", "full body, linen set"],
+         "FashnAdapter", "generate_model_create", ["'prompt': 'full body, linen set'"]),
+        (["edit", "--model", "fashn-model-swap", "--model-image", "m.jpg", "--prompt", "red hair"],
+         "FashnAdapter", "generate_model_swap", ["'model_image': 'm.jpg'"]),
+        (["edit", "--model", "fashn-face-to-model", "--face-image", "h.jpg", "--aspect-ratio", "2:3"],
+         "FashnAdapter", "generate_face_to_model", ["'face_image': 'h.jpg'"]),
+        (["edit", "--model", "fashn-reframe", "--image", "a.jpg", "--aspect-ratio", "16:9"],
+         "FashnAdapter", "generate_reframe", ["'aspect_ratio': '16:9'"]),
+        (["edit", "--model", "fashn-edit", "--image", "a.jpg", "--prompt", "side view", "--mask", "m.png"],
+         "FashnAdapter", "generate_image_edit", ["'mask': 'm.png'"]),
+        (["video-generate", "--model", "fashn-image-to-video", "--image", "a.jpg", "--duration", "10", "--resolution", "720p"],
+         "FashnAdapter", "generate_image_to_video", ["'duration': 10", "'resolution': '720p'"]),
+        (["bg-remove", "--model", "fashn-bg-remove", "--image", "a.jpg"],
+         "FashnAdapter", "remove_background", ["'image': 'a.jpg'"]),
+        (["embed", "--model", "marqo-fashionsiglip", "--image", "a.jpg", "b.jpg", "--query-image", "c.jpg"],
+         "FashionOpenCLIPAdapter", "embed", ["'variant': 'marqo-fashionsiglip'", "'query_image': 'c.jpg'"]),
+        (["embed", "--model", "moda-fashion-distilled", "--image", "a.jpg"],
+         "FashionOpenCLIPAdapter", "embed", ["'variant': 'moda-fashion-distilled'"]),
+        (["embed", "--model", "moda-pro-lite", "--text", "black boots", "--query", "ankle boots"],
+         "FashionOpenCLIPAdapter", "embed", ["'variant': 'moda-pro-lite'", "'query': 'ankle boots'"]),
+        (["embed", "--model", "zooclaw-fashionsiglip2", "--text", "black boots", "--image", "a.jpg"],
+         "ZooClawFashionSigLIP2Adapter", "embed", ["'text': ['black boots']"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+
+    # ---- FASHN adapter: payload shape, polling, decoding, validation (mocked HTTP) ----
+    from tryon.api.fashn import FashnAdapter
+
+    png = io.BytesIO()
+    _Image.new("RGB", (6, 6), "red").save(png, format="PNG")
+    data_uri = "data:image/png;base64," + base64.b64encode(png.getvalue()).decode()
+    adapter = FashnAdapter(api_key="test")
+
+    def run_response():
+        r = mock.Mock(status_code=200)
+        r.raise_for_status = lambda: None
+        r.json.return_value = {"id": "pred-1", "error": None}
+        return r
+
+    def status_response(output):
+        r = mock.Mock(status_code=200, headers={})
+        r.raise_for_status = lambda: None
+        r.json.return_value = {"id": "pred-1", "status": "completed", "output": output, "error": None}
+        return r
+
+    with mock.patch("tryon.api.fashn.adapter.requests.post", return_value=run_response()) as post, \
+         mock.patch("tryon.api.vton.fashn.requests.get", return_value=status_response([data_uri, data_uri])):
+        imgs = adapter.generate_product_to_model(
+            "https://e.com/p.jpg", prompt="studio", face_reference="https://e.com/f.jpg",
+            face_reference_mode="match_base", aspect_ratio="4:5", resolution="2k",
+            generation_mode="balanced", num_images=2, seed=7)
+    body = post.call_args.kwargs["json"]
+    assert post.call_args.args[0].endswith("/v1/run") and post.call_args.kwargs["headers"]["Authorization"] == "Bearer test"
+    assert body["model_name"] == "product-to-model"
+    inp = body["inputs"]
+    assert inp["product_image"] == "https://e.com/p.jpg" and inp["face_reference_mode"] == "match_base"
+    assert inp["resolution"] == "2k" and inp["generation_mode"] == "balanced" and inp["num_images"] == 2 and inp["seed"] == 7
+    assert inp["return_base64"] is True and inp["aspect_ratio"] == "4:5" and len(imgs) == 2 and imgs[0].size == (6, 6)
+
+    def get_router(url, **kwargs):  # one requests.get for both the status poll and the CDN download
+        if "/v1/status/" in url:
+            return status_response(["https://cdn.fashn.ai/x/output_0.mp4"])
+        return mock.Mock(content=b"mp4bytes", raise_for_status=lambda: None)
+
+    with mock.patch("tryon.api.fashn.adapter.requests.post", return_value=run_response()) as post, \
+         mock.patch("requests.get", side_effect=get_router):
+        video = adapter.generate_image_to_video("https://e.com/a.jpg", duration=10, resolution="720p", end_image="https://e.com/b.jpg")
+    assert video == b"mp4bytes"
+    vin = post.call_args.kwargs["json"]
+    assert vin["model_name"] == "image-to-video" and vin["inputs"]["duration"] == 10 and vin["inputs"]["end_image"] == "https://e.com/b.jpg"
+
+    with mock.patch("tryon.api.fashn.adapter.requests.post", return_value=run_response()) as post, \
+         mock.patch("tryon.api.vton.fashn.requests.get", return_value=status_response([data_uri])):
+        adapter.generate_reframe("https://e.com/a.jpg", "16:9")
+        adapter.remove_background("https://e.com/a.jpg")
+        adapter.generate_model_create("woman in linen", face_reference="https://e.com/f.jpg")
+    names = [c.kwargs["json"]["model_name"] for c in post.call_args_list]
+    assert names == ["reframe", "background-remove", "model-create"], names
+
+    for call, args in (
+        (adapter.generate_product_to_model, dict(product_image="x", resolution="8k")),
+        (adapter.generate_product_to_model, dict(product_image="x", num_images=5)),
+        (adapter.generate_product_to_model, dict(product_image="x", face_reference_mode="match_base")),
+        (adapter.generate_product_to_model, dict(product_image="x", aspect_ratio="21:9")),
+        (adapter.generate_face_to_model, dict(face_image="x", aspect_ratio="16:9")),
+        (adapter.generate_reframe, dict(image="x", aspect_ratio="7:3")),
+        (adapter.generate_image_to_video, dict(image="x", duration=7)),
+        (adapter.generate_image_to_video, dict(image="x", resolution="4k")),
+        (adapter.generate_model_create, dict(prompt="  ")),
+        (adapter.generate_image_edit, dict(image="x", prompt="")),
+    ):
+        try:
+            call(**args)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError((call.__name__, args))
+    try:
+        adapter.generate()
+    except NotImplementedError:
+        pass
+    else:
+        raise AssertionError("inherited try-on entry point must be blocked")
+
+    # ---- Fashion embeddings with stubbed open_clip / transformers (real torch) ----
+    import torch
+
+    class FakeClip(torch.nn.Module):
+        def encode_image(self, x):
+            return torch.stack([x.mean(dim=(1, 2, 3)), x.std(dim=(1, 2, 3)) + 1, torch.ones(x.shape[0])], dim=1)
+
+        def encode_text(self, tokens):
+            return torch.stack([tokens.float().mean(dim=1), tokens.float().std(dim=1) + 1, torch.ones(tokens.shape[0])], dim=1)
+
+    fake_oc = types.ModuleType("open_clip")
+    loaded = []
+
+    def create(hub):
+        loaded.append(hub)
+        return FakeClip(), None, lambda im: torch.tensor(np.asarray(im.resize((4, 4)), dtype="float32")).permute(2, 0, 1) / 255.0
+
+    fake_oc.create_model_and_transforms = create
+    fake_oc.get_tokenizer = lambda hub: (lambda texts: torch.tensor([[float(len(t)), float(ord(t[0]))] for t in texts]))
+    with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(sys.modules, {"open_clip": fake_oc}):
+        from tryon.models.fashion_embed import FashionOpenCLIPAdapter
+
+        a = Path(tmp) / "a.png"
+        b = Path(tmp) / "b.png"
+        _Image.new("RGB", (8, 8), "red").save(a)
+        _Image.new("RGB", (8, 8), "blue").save(b)
+        marqo = FashionOpenCLIPAdapter(variant="marqo-fashionsiglip", device="cpu")
+        out = marqo.embed(text=["black boots"], image=[str(a), str(b)], query="ankle boots")
+        assert loaded[-1] == "hf-hub:Marqo/marqo-fashionSigLIP"
+        assert out["embeddings"].shape == (3, 3) and out["kind"] == "dense" and len(out["scores"]) == 3
+        assert np.allclose(np.linalg.norm(out["embeddings"], axis=1), 1.0, atol=1e-5)
+        out2 = marqo.embed(image=[str(a), str(b)], query_image=str(a))
+        assert abs(out2["scores"][0] - 1.0) < 1e-5  # an image is most similar to itself
+
+        moda = FashionOpenCLIPAdapter(variant="moda-fashion-distilled", device="cpu")
+        assert moda.embed(image=[str(a)])["embeddings"].shape == (1, 3)
+        assert loaded[-1] == "hf-hub:HopitAI/moda-fashion-distilled"
+        for bad in (dict(text=["boots"]), dict(image=[str(a)], query="boots")):
+            try:
+                moda.embed(**bad)
+            except ValueError as exc:
+                assert "image-only" in str(exc)
+            else:
+                raise AssertionError(bad)
+        for bad in (dict(), dict(image=[str(a)], query="x", query_image=str(a))):
+            try:
+                marqo.embed(**bad)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(bad)
+    try:
+        FashionOpenCLIPAdapter(variant="fashionclip-9000")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown variant must be rejected")
+
+    import transformers
+
+    class FakeProcessor:
+        def __call__(self, text=None, images=None, **kw):
+            assert text is None or (kw.get("padding") == "max_length" and kw.get("max_length") == 64)
+            n = len(text) if text is not None else len(images)
+            return types.SimpleNamespace(to=lambda d: {"n": torch.tensor([float(n)])})
+
+    class FakeSig(torch.nn.Module):
+        def get_text_features(self, n):
+            return torch.ones(int(n.item()), 4)
+
+        def get_image_features(self, n):
+            return torch.arange(1, 5).float().repeat(int(n.item()), 1)
+
+    with tempfile.TemporaryDirectory() as tmp, \
+         mock.patch.object(transformers.AutoProcessor, "from_pretrained", return_value=FakeProcessor()), \
+         mock.patch.object(transformers.AutoModel, "from_pretrained", return_value=FakeSig()):
+        from tryon.models.fashion_embed import ZooClawFashionSigLIP2Adapter
+
+        img = Path(tmp) / "a.png"
+        _Image.new("RGB", (8, 8)).save(img)
+        zoo = ZooClawFashionSigLIP2Adapter(device="cpu")
+        out = zoo.embed(text=["a", "b"], image=[str(img)], query="q")
+        assert out["embeddings"].shape == (3, 4) and len(out["scores"]) == 3 and out["model"] == "srpone/zooclaw-fashionsiglip2"
+    print("\u2713 FASHN catalogue endpoints (payloads, polling, validation) and fashion embeddings (open_clip / SigLIP2)")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -1688,6 +1901,7 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_fashn_catalogue_endpoints_and_fashion_embeddings()
     check_gemini_38_understand_and_tts()
     check_nano_banana_21_and_fashn_vton_local()
     check_decide_embed_haiku_relight_dry_runs()

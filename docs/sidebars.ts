@@ -127,6 +127,7 @@ const sidebars: SidebarsConfig = {
         'local-models/liquid-d1',
         'local-models/embeddinggemma',
         'local-models/pplx-embed',
+        'local-models/fashion-embeddings',
       ],
     },
     {

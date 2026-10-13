@@ -208,7 +208,9 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "FASHN AI",
         "https://app.fashn.ai/api",
         ("FASHN_API_KEY",),
-        "",
+        "Unlocks vton fashn-tryon-max / fashn-tryon-v1.6 plus the catalogue endpoints: fashn-product-to-model, "
+        "fashn-model-create, fashn-model-swap, fashn-face-to-model, fashn-reframe, fashn-edit, "
+        "fashn-image-to-video and fashn-bg-remove.",
     ),
     (
         "pruna",

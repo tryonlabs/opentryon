@@ -885,6 +885,29 @@ _VTON = {
 # --------------------------------------------------------------------------
 
 
+def _fashn_common_args(modes: bool = True, n: bool = True, fmt: str = "png") -> List[Arg]:
+    """Shared FASHN image-endpoint flags (resolution tier, quality mode, seed, count, format)."""
+    args = [Arg(("--resolution",), "resolution", choices=["1k", "2k", "4k"], help="Output tier (~1/4/16 MP); default 1k")]
+    if modes:
+        args.append(Arg(("--generation-mode",), "generation_mode", choices=["fast", "balanced", "quality"],
+                        help="Quality tier; credits = mode x resolution (1..5). Omit for FASHN's automatic pick"))
+    args.append(Arg(("--seed",), "seed", type=int, help="Seed (default 42 server-side)"))
+    if n:
+        args.append(Arg(("--num-images",), "num_images", type=int, choices=[1, 2, 3, 4], help="Images per request (multiplies credits)"))
+    args.append(Arg(("--output-format",), "output_format", default=fmt, choices=["png", "jpeg"]))
+    return args
+
+
+_FASHN_FACE_ARGS = [
+    Arg(("--face-reference",), "face_reference", help="Identity reference portrait (+3 credits, ~+20s)"),
+    Arg(("--face-reference-mode",), "face_reference_mode", choices=["match_base", "match_reference"],
+        help="match_reference follows the reference face's pose/expression; match_base keeps the base"),
+]
+
+_FASHN_NOTE = ("FASHN catalogue endpoint over the universal /v1/run API (same FASHN_API_KEY as "
+               "fashn-tryon-max). ")
+
+
 def _nano_banana_generate_args(with_resolution: bool, with_grounding: bool, wide: bool = False) -> List[Arg]:
     args = [
         Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
@@ -1273,6 +1296,21 @@ _GENERATE = {
                 help="JPEG/WebP quality 0–100 (default 80)"),
         ],
     ),
+    "fashn-model-create": ModelSpec(
+        id="fashn-model-create", label="FASHN Model Create (fashion model from a prompt)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_model_create", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Experimental lifecycle. Prompt (+ optional pose/composition reference) -> a new "
+        "fashion model photo; --face-reference keeps one identity across generations (capped at 2K).",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Model, outfit, pose and scene description"),
+            Arg(("--image-reference",), "image_reference", help="Optional composition/pose inspiration (not copied exactly)"),
+            Arg(("--aspect-ratio",), "aspect_ratio",
+                choices=["21:9", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "4:5", "5:4", "1:1"], help="Default 1:1"),
+            *_FASHN_FACE_ARGS,
+            *_fashn_common_args(),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
@@ -1564,6 +1602,78 @@ _EDIT = {
             Arg(("--output-quality",), "output_quality", type=int, default=80, help="JPEG/WebP quality 0-100"),
             Arg(("--enhance-details",), "enhance_details", action="store_true"),
             Arg(("--enhance-realism",), "enhance_realism", action="store_true"),
+        ],
+    ),
+    "fashn-product-to-model": ModelSpec(
+        id="fashn-product-to-model", label="FASHN Product to Model (product photo -> person wearing it)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_product_to_model", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Preview lifecycle. Clothing, shoes, hats, jewellery, bags. Generates a NEW person "
+        "(it does not keep an existing photo's pose/background -- use --model fashn-tryon-max for that). "
+        "--image-prompt guides pose/lighting, --background-reference anchors the scene, --face-reference fixes identity.",
+        args=[
+            _img(("--product-image", "--image", "-i"), "product_image", "Product photo (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", help='Styling / person / background, e.g. "tucked-in, studio background"'),
+            Arg(("--image-prompt",), "image_prompt", help="Inspiration image for pose, environment and lighting"),
+            Arg(("--background-reference",), "background_reference", help="Backdrop image (people in it are ignored)"),
+            Arg(("--aspect-ratio",), "aspect_ratio",
+                choices=["1:1", "3:4", "4:3", "9:16", "16:9", "2:3", "3:2", "4:5", "5:4"],
+                help="Default: inherited from the most specific image supplied"),
+            *_FASHN_FACE_ARGS,
+            *_fashn_common_args(),
+        ],
+    ),
+    "fashn-model-swap": ModelSpec(
+        id="fashn-model-swap", label="FASHN Model Swap (change the model, keep the outfit)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_model_swap", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Experimental lifecycle. Changes face, skin tone and hair while preserving clothing "
+        "and pose; --face-reference gives repeatable campaign identities.",
+        args=[
+            _img(("--model-image", "--image", "-i"), "model_image", "Source fashion photo (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", help='Identity guidance, e.g. "Asian woman with blue hair" (auto if omitted)'),
+            *_FASHN_FACE_ARGS,
+            *_fashn_common_args(),
+        ],
+    ),
+    "fashn-face-to-model": ModelSpec(
+        id="fashn-face-to-model", label="FASHN Face to Model (headshot -> try-on-ready avatar)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_face_to_model", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Experimental lifecycle. Turns a selfie/headshot into an upper-body avatar usable as "
+        "the person image for fashn-tryon-max when no full-body photo exists. Vertical ratios only.",
+        args=[
+            _img(("--face-image", "--image", "-i"), "face_image", "Headshot or selfie (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", help='Body shape guidance, e.g. "athletic build" (inferred if omitted)'),
+            Arg(("--aspect-ratio",), "aspect_ratio", choices=["1:1", "4:5", "3:4", "2:3", "9:16"], help="Default 2:3"),
+            *_fashn_common_args(fmt="jpeg"),
+        ],
+    ),
+    "fashn-reframe": ModelSpec(
+        id="fashn-reframe", label="FASHN Reframe (expand or crop to a new aspect ratio)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_reframe", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Experimental lifecycle. FASHN decides whether to outpaint or crop; errors if the image "
+        "already has the target ratio.",
+        args=[
+            _img(("--image", "-i"), "image", "Source image (path or URL)", required=True),
+            Arg(("--aspect-ratio",), "aspect_ratio", required=True,
+                choices=["21:9", "1:1", "4:3", "3:2", "2:3", "5:4", "4:5", "3:4", "16:9", "9:16"]),
+            *_fashn_common_args(),
+        ],
+    ),
+    "fashn-edit": ModelSpec(
+        id="fashn-edit", label="FASHN Edit (prompt edit preserving subject and product)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_image_edit", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Pose/view changes, styling, lighting, small fixes. Optional --mask (white = prioritise, "
+        "same size as the image) and --image-context (background/pose/texture reference).",
+        args=[
+            _img(("--image", "-i"), "image", "Source image (path or URL)", required=True),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Edit instruction"),
+            Arg(("--mask",), "mask", help="Mask image, same dimensions as the source"),
+            Arg(("--image-context",), "image_context", help="Visual reference for the edit"),
+            *_fashn_common_args(),
         ],
     ),
 }
@@ -2982,6 +3092,20 @@ _VIDEO_GENERATE = {
             Arg(("--seed",), "seed", type=int),
         ],
     ),
+    "fashn-image-to-video": ModelSpec(
+        id="fashn-image-to-video", label="FASHN Image to Video (animate a fashion still)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="generate_image_to_video", output_kind="video_bytes", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "5 or 10 s MP4; credits 5s = 1/3/6 and 10s = 2/6/12 at 480p/720p/1080p. Leave --prompt "
+        "empty for automatic motion (FASHN advises short guidance only). --end-image sets the final frame.",
+        args=[
+            _img(("--image", "-i"), "image", "Source image (path or URL, min 301x301)", required=True),
+            Arg(("--prompt", "-p"), "prompt", help="Optional short motion guidance"),
+            Arg(("--duration",), "duration", type=int, default=5, choices=[5, 10], help="Clip length in seconds"),
+            Arg(("--resolution",), "resolution", default="1080p", choices=["480p", "720p", "1080p"]),
+            Arg(("--end-image",), "end_image", help="Optional final frame"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
@@ -2997,6 +3121,15 @@ _BG_REMOVE = {
         args=[
             _img(("--image", "-i"), "image", "Input image (path, URL, or base64)", required=True),
             Arg(("--refine",), "refine", action="store_true", help="Refined foreground enhancement"),
+        ],
+    ),
+    "fashn-bg-remove": ModelSpec(
+        id="fashn-bg-remove", label="FASHN Background Remove (hosted, 1 credit)",
+        import_path="tryon.api.fashn", class_name="FashnAdapter",
+        method="remove_background", output_kind="images", env_hint="FASHN_API_KEY",
+        notes=_FASHN_NOTE + "Transparent-background PNG in 1-3 s (min 128x128). Local alternative: --model ben2.",
+        args=[
+            _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
         ],
     ),
 }
@@ -3220,7 +3353,60 @@ _PPLX_EMBED_ARGS = [
     Arg(("--device",), "device", target="init", help="Device (default cuda if available, else cpu)"),
 ]
 
+_FASHION_EMBED_COMMON = [
+    Arg(("--text", "-t"), "text", nargs="+", help="Product titles / descriptions to embed (text-capable models)"),
+    Arg(("--image", "-i"), "image", nargs="+", help="Product photos to embed (path or URL)"),
+    Arg(("--query", "-q"), "query", help="Text query; returns cosine scores against every input"),
+    Arg(("--query-image",), "query_image", help='Image query ("more like this"); returns cosine scores'),
+    Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path override"),
+    Arg(("--device",), "device", target="init", help="Device (default cuda if available, else cpu)"),
+]
+
 _EMBED = {
+    "marqo-fashionsiglip": ModelSpec(
+        id="marqo-fashionsiglip",
+        label="Marqo-FashionSigLIP (fashion image + text retrieval, 768-d)",
+        import_path="tryon.models.fashion_embed", class_name="FashionOpenCLIPAdapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="Fashion-specific SigLIP (ViT-B/16, ~0.2B, Apache-2.0) fine-tuned on 1M+ fashion products; Marqo "
+        "reports up to +57% MRR/recall over FashionCLIP (vendor-reported). Text + image in one 768-d space, "
+        "L2-normalised. pip install open_clip_torch. Search by text (--query) or by photo (--query-image).",
+        args=[*_FASHION_EMBED_COMMON,
+              Arg(("--variant",), "variant", target="init", default="marqo-fashionsiglip",
+                  choices=["marqo-fashionsiglip"], help="Checkpoint")],
+    ),
+    "moda-fashion-distilled": ModelSpec(
+        id="moda-fashion-distilled",
+        label="MODA fashion-distilled (HopitAI, image-to-image fashion retrieval)",
+        import_path="tryon.models.fashion_embed", class_name="FashionOpenCLIPAdapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="MIT. Distilled from a 3-model ensemble; reports 67.63 fine R@1 on LookBench vs 63.84 for "
+        "FashionSigLIP (vendor-reported). IMAGE-ONLY here (the card documents no text usage): use --image / "
+        "--query-image. Text search: --model moda-pro-lite or marqo-fashionsiglip. pip install open_clip_torch.",
+        args=[*_FASHION_EMBED_COMMON,
+              Arg(("--variant",), "variant", target="init", default="moda-fashion-distilled",
+                  choices=["moda-fashion-distilled"], help="Checkpoint")],
+    ),
+    "moda-pro-lite": ModelSpec(
+        id="moda-pro-lite",
+        label="MODA Pro Lite (HopitAI, 213M fashion text-to-image encoder)",
+        import_path="tryon.models.fashion_embed", class_name="FashionOpenCLIPAdapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="Apache-2.0, 213M, catalogue/title search. Bare encoder via open_clip (the 'Plus' multi-view recipe "
+        "and ANN helpers from the model card are not wired). pip install open_clip_torch.",
+        args=[*_FASHION_EMBED_COMMON,
+              Arg(("--variant",), "variant", target="init", default="moda-pro-lite",
+                  choices=["moda-pro-lite"], help="Checkpoint")],
+    ),
+    "zooclaw-fashionsiglip2": ModelSpec(
+        id="zooclaw-fashionsiglip2",
+        label="ZooClaw-FashionSigLIP2 (fashion SigLIP2 retrieval encoder, 768-d)",
+        import_path="tryon.models.fashion_embed", class_name="ZooClawFashionSigLIP2Adapter",
+        method="embed", output_kind="embeddings", extra="local",
+        notes="Apache-2.0 SigLIP2-base fine-tune (~375M; 384px images, 64 text tokens), arXiv 2606.27708. "
+        "Benchmarks are in the paper (the card lists none). Plain transformers (AutoModel/AutoProcessor).",
+        args=list(_FASHION_EMBED_COMMON),
+    ),
     "embeddinggemma-2": ModelSpec(
         id="embeddinggemma-2",
         label="Google EmbeddingGemma 2 (open-weight multimodal embeddings, 768-d)",

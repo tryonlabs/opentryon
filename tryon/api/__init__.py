@@ -23,6 +23,7 @@ _LAZY_ATTRS = {
     "NanoBanana2LiteAdapter": ".nano_banana",
     "PImageTryOnAdapter": ".vton",
     "FashnVTONAdapter": ".vton",
+    "FashnAdapter": ".fashn",
     "GoogleVTONAdapter": ".vton",
     "OutfitAnyonePlusAdapter": ".vton",
     "PhotoroomVTONAdapter": ".vton",

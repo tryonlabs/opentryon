@@ -305,6 +305,10 @@ The new `decide` service wraps "System One" models that return typed, calibrated
 | `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
 | `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
 
+## FASHN catalogue tools (hosted, `FASHN_API_KEY`)
+
+Same key as `vton_fashn_tryon_max`. `edit_fashn_product_to_model`, `edit_fashn_model_swap`, `edit_fashn_face_to_model`, `edit_fashn_reframe`, `edit_fashn_edit`, `generate_fashn_model_create`, `video_generate_fashn_image_to_video` and `bg_remove_fashn_bg_remove`. See [FASHN catalogue endpoints](../api-reference/fashn.md#catalogue-endpoints-product-to-model-model-swap-).
+
 ## Embed tools (embeddings)
 
 The new `embed` service saves vectors to an `.npz` file under the output dir and returns its path, shapes, labels and (with `query`) similarity scores — not the raw vectors.
@@ -314,6 +318,10 @@ The new `embed` service saves vectors to an `.npz` file under the output dir and
 | `embed_embeddinggemma_2` | Google EmbeddingGemma 2 (768-d; text/code/image/video/audio) | local/GPU |
 | `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
 | `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |
+| `embed_marqo_fashionsiglip` | Marqo-FashionSigLIP (fashion image + text retrieval) | local/GPU |
+| `embed_moda_fashion_distilled` | MODA fashion-distilled (image-to-image) | local/GPU |
+| `embed_moda_pro_lite` | MODA Pro Lite (fashion text-to-image) | local/GPU |
+| `embed_zooclaw_fashionsiglip2` | ZooClaw-FashionSigLIP2 | local/GPU |
 
 Also new: `understand_gemini_3_8_flash` (`GEMINI_API_KEY`; image/video/audio/PDF), `understand_claude_haiku_5_5` (`ANTHROPIC_API_KEY`) and `video_generate_fal_h3_max_relight` (`FAL_KEY`). `decide` and `embed` have no Studio capability screens yet; the tools are live to Studio's Agent chat (named-model only) and any MCP client after a server restart.
 
