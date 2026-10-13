@@ -227,7 +227,7 @@ Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — o
 
 ## Fashion-domain survey — 13 Oct 2026
 
-Fashion-specific models and APIs found on Hugging Face (model API, sorted by recency and likes, 2026), GitHub topic searches and the web. Licences were read from model cards; benchmark numbers are the authors' own and were not reproduced. "Unverified" means a single secondary source. The first four rows have shipped.
+Fashion-specific models and APIs found on Hugging Face (model API, sorted by recency and likes, 2026), GitHub topic searches and the web. Licences were read from model cards; benchmark numbers are the authors' own and were not reproduced. "Unverified" means a single secondary source. All six rows in this table have shipped.
 
 ### Fits today's services
 
@@ -237,8 +237,8 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 | **Fashion embeddings** — Marqo-FashionSigLIP, MODA (`moda-fashion-distilled`, `moda-pro-lite`), ZooClaw-FashionSigLIP2 | `embed`, Path B, `open_clip` / transformers | Catalogue search by text or photo with fashion-tuned encoders. | Apache-2.0 / MIT. MODA distilled is image-only here. Benchmarks vendor-reported. MODA Plus multi-view recipe, Matryoshka and fp16 variants not wired. | **shipped** (`marqo-fashionsiglip`, `moda-fashion-distilled`, `moda-pro-lite`, `zooclaw-fashionsiglip2`) |
 | **Fashion Florence** (`anushreeberlia/fashion-florence`) | `understand`, Path B | Florence-2-large LoRA (0.77B) → JSON tags: category, colour, material, style. Cheap catalogue tagging. | MIT, `trust_remote_code`. Card: 89.5% category, 42.6% material (exact match); the paper (arXiv 2605.09827) reports 94.6% / 63.0% on a different set. | **shipped** (`fashion-florence`) |
 | **`prithivMLmods/QIE-2511-Extract-Outfit`** | `edit`, Path B | Worn photo → flat-lay mockup (garment extraction) on Qwen-Image-Edit-2511; fits our `qwen-image-local` setup. | Apache-2.0 LoRA on an Apache-2.0 base. Community LoRA; needs a full-outfit photo. | **shipped** (`qie-2511-extract-outfit`) |
-| **`xocialize/tryon-FLUX.2-klein-4B-lora`** | `vton`, Path B | Try-on LoRA on FLUX.2 klein **4B** — commercially clean stack. Inputs: masked person + top + bottom garment. | Apache-2.0 LoRA + Apache-2.0 base. ~273 training tuples, no metrics, weakest on all-dark outfits. | `next` |
-| **Genlook `tryon-safety-classifier`** | gating; needs a design choice | Gate garments before rendering them onto a shopper photo (ok / revealing / lingerie / adult + swimwear, subject). 94.6% four-level accuracy (their cross-validation). | Apache-2.0. Fixed-label classifier — does not fit the `decide` question schema; needs a small `classify` service or a fixed-label adapter. | `next` |
+| **`xocialize/tryon-FLUX.2-klein-4B-lora`** | `vton`, Path B | Try-on LoRA on FLUX.2 klein **4B** — commercially clean stack. Inputs: masked person + top + bottom garment. | Apache-2.0 LoRA + Apache-2.0 base. ~273 training tuples, no metrics, weakest on all-dark outfits. | **shipped** (`klein-4b-tryon`) |
+| **Genlook `tryon-safety-classifier`** | gating; needs a design choice | Gate garments before rendering them onto a shopper photo (ok / revealing / lingerie / adult + swimwear, subject). 94.6% four-level accuracy (their cross-validation). | Apache-2.0. Fixed-label classifier — does not fit the `decide` question schema; needs a small `classify` service or a fixed-label adapter. | **shipped** (`tryon-safety-classifier`, new `classify` service) |
 
 ### Needs a new service (design pass first)
 
@@ -294,7 +294,8 @@ Next candidates from the 8 Oct 2026 survey (not started): `gemini-embedding-2-pr
 
 21. ~~FASHN catalogue endpoints~~ **shipped** (Path A, 13 Oct 2026): `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video`, `fashn-bg-remove` via `tryon.api.fashn.FashnAdapter`.
 22. ~~Fashion embeddings~~ **shipped** (Path B, 13 Oct 2026): `marqo-fashionsiglip`, `moda-fashion-distilled`, `moda-pro-lite`, `zooclaw-fashionsiglip2` in the `embed` service. 
-23. ~~`fashion-florence` / `qie-2511-extract-outfit`~~ **shipped** (Path B local, `understand` / `edit`, 13 Oct 2026). Next from the fashion survey: klein-4B try-on LoRA, tryon-safety-classifier (see the survey above).
+23. ~~`fashion-florence` / `qie-2511-extract-outfit`~~ **shipped** (Path B local, `understand` / `edit`, 13 Oct 2026). 
+24. ~~`klein-4b-tryon` / `tryon-safety-classifier`~~ **shipped** (Path B local, `vton` / new `classify` service, 13 Oct 2026). The remaining survey rows are new-service ideas (`segment`, `measure`, `detect`, 3D garments) and licence-blocked models.
 
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 

@@ -1852,6 +1852,217 @@ def check_fashion_florence_and_extract_outfit():
     print("\u2713 fashion-florence (JSON tags) and qie-2511-extract-outfit (LoRA on Edit-2511) resolve and validate")
 
 
+def check_klein_tryon_and_tryon_safety():
+    import sys
+    import types
+    from unittest import mock
+
+    import numpy as np
+    import torch
+    from PIL import Image as _Image
+    from safetensors.torch import save_file
+
+    cases = [
+        (["vton", "--model", "klein-4b-tryon", "--person-image", "p.png", "--top-image", "t.png",
+          "--bottom-image", "b.png", "--mask-image", "m.png", "--steps", "6", "--seed", "2"],
+         "Klein4BTryOnAdapter", "generate_and_decode",
+         ["'person': 'p.png'", "'top': 't.png'", "'bottom': 'b.png'", "'mask': 'm.png'", "'num_inference_steps': 6"]),
+        (["vton", "--model", "klein-4b-tryon", "--person-image", "p.png", "--dress-image", "d.png", "--no-cpu-offload"],
+         "Klein4BTryOnAdapter", "generate_and_decode", ["'dress': 'd.png'", "'cpu_offload': False"]),
+        (["classify", "--model", "tryon-safety-classifier", "--image", "a.jpg", "b.jpg",
+          "--adult-threshold", "0.2", "--variant", "frozen"],
+         "TryOnSafetyAdapter", "classify", ["'image': ['a.jpg', 'b.jpg']", "'adult_threshold': 0.2", "'variant': 'frozen'", "'revision': 'v1.0'"]),
+    ]
+    for argv, cls, method, needles in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert cls in printed and f".{method}(" in printed, printed
+        for needle in needles:
+            assert needle in printed, (needle, printed)
+
+    # ---- klein try-on: reference order, dress duplication, grey masking, size snapping, LoRA-before-offload ----
+    from tryon.models.klein_tryon import Klein4BTryOnAdapter
+    from tryon.models.klein_tryon.adapter import TRYON_PROMPT, apply_agnostic_mask, output_size
+
+    person = _Image.new("RGB", (400, 600), (200, 10, 10))
+    mask = _Image.new("L", (400, 600), 0)
+    mask.paste(255, (100, 100, 300, 400))
+    agnostic = apply_agnostic_mask(person, mask)
+    assert agnostic.getpixel((200, 200)) == (128, 128, 128) and agnostic.getpixel((10, 10)) == (200, 10, 10)
+    assert output_size(_Image.new("RGB", (1500, 2000)), None, None) == (1024, 768)  # long side capped at 1024
+    assert output_size(_Image.new("RGB", (400, 600)), None, None) == (608, 400)     # never upscales; multiples of 16
+    assert output_size(_Image.new("RGB", (400, 600)), 1010, 500) == (1008, 496)     # explicit sizes are snapped
+
+    events = []
+
+    class FakePipe:
+        def load_lora_weights(self, lora_id, weight_name=None):
+            events.append(("lora", lora_id, weight_name))
+
+        def enable_model_cpu_offload(self):
+            events.append(("offload",))
+
+        def to(self, device):
+            events.append(("to", device))
+
+        def __call__(self, **kw):
+            events.append(("call", kw))
+            return types.SimpleNamespace(images=[_Image.new("RGB", (8, 8))] * kw["num_images_per_prompt"])
+
+    class FakePipeline:
+        @staticmethod
+        def from_pretrained(model_id, torch_dtype):
+            events.append(("base", model_id))
+            return FakePipe()
+
+    fake_diffusers = types.ModuleType("diffusers")
+    fake_diffusers.Flux2KleinPipeline = FakePipeline
+    top = _Image.new("RGB", (50, 50), (1, 1, 1))
+    bottom = _Image.new("RGB", (50, 50), (2, 2, 2))
+    dress = _Image.new("RGB", (50, 50), (3, 3, 3))
+    with mock.patch.dict(sys.modules, {"diffusers": fake_diffusers}):
+        adapter = Klein4BTryOnAdapter(device="cuda")
+        imgs = adapter.generate_and_decode(person, top=top, bottom=bottom, mask=mask, seed=5, num_images=2)
+        adapter.generate_and_decode(person, dress=dress)
+    kinds = [e[0] for e in events]
+    assert events[0] == ("base", "black-forest-labs/FLUX.2-klein-4B")
+    assert events[1] == ("lora", "xocialize/tryon-FLUX.2-klein-4B-lora", "tryon-klein-4b.safetensors")
+    assert kinds[:3] == ["base", "lora", "offload"] and kinds.count("base") == 1 and len(imgs) == 2
+    calls = [e[1] for e in events if e[0] == "call"]
+    first, second = calls
+    assert first["prompt"] == TRYON_PROMPT and first["num_inference_steps"] == 4 and first["guidance_scale"] == 1.0
+    assert (first["height"], first["width"]) == (608, 400)
+    assert first["image"][0].getpixel((200, 200)) == (128, 128, 128)               # person was greyed by the mask
+    assert [im.getpixel((0, 0)) for im in first["image"][1:]] == [(1, 1, 1), (2, 2, 2)]  # order: person, top, bottom
+    assert [im.getpixel((0, 0)) for im in second["image"][1:]] == [(3, 3, 3), (3, 3, 3)]  # dress fills both slots
+    for bad in (
+        dict(person=None, top=top, bottom=bottom),
+        dict(person=person, top=top),
+        dict(person=person, bottom=bottom),
+        dict(person=person, top=top, bottom=bottom, dress=dress),
+        dict(person=person, dress=dress, prompt="Dress the person"),
+        dict(person=person, dress=dress, prompt=" "),
+        dict(person=person, dress=dress, num_inference_steps=0),
+    ):
+        try:
+            adapter.generate_and_decode(**bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    for bad_init in (dict(dtype="int8"),):
+        try:
+            Klein4BTryOnAdapter(device="cuda", **bad_init)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad_init)
+
+    class NoPeftPipe(FakePipe):
+        def load_lora_weights(self, lora_id, weight_name=None):
+            raise ImportError("PEFT backend is required")
+
+    class NoPeftPipeline:
+        @staticmethod
+        def from_pretrained(model_id, torch_dtype):
+            return NoPeftPipe()
+
+    fake_diffusers.Flux2KleinPipeline = NoPeftPipeline
+    with mock.patch.dict(sys.modules, {"diffusers": fake_diffusers}):
+        try:
+            Klein4BTryOnAdapter(device="cuda").generate_and_decode(person, dress=dress)
+        except ImportError as exc:
+            assert "peft" in str(exc)
+        else:
+            raise AssertionError("missing peft must raise a clear error")
+
+    # ---- safety classifier: real safetensors in a local folder + stubbed open_clip tower ----
+    from tryon.models.tryon_safety import TryOnSafetyAdapter
+
+    labels = {"safety": ["ok", "revealing", "lingerie", "adult"], "subject": ["human_clothing", "pet", "not_clothing"],
+              "swim": ["not_swimwear", "regular", "near_micro", "micro"], "rave": ["no", "yes"]}
+    config = {
+        "open_clip_name": "hf-hub:fake/model", "default_variant": "finetuned", "heads": labels,
+        "variants": {
+            "finetuned": {"subfolder": None, "embedding_scale": 10.0, "adult_threshold": 0.3},
+            "frozen": {"subfolder": "frozen", "adult_threshold": 0.3},
+        },
+    }
+
+    def head_state(in_dim, adult_bias):
+        state = {}
+        for name, labs in labels.items():
+            n = len(labs)
+            bias = torch.zeros(n)
+            if name == "safety":
+                bias[3] = adult_bias
+            if name == "swim":
+                bias[3] = 5.0
+            if name == "rave":
+                bias[1] = 5.0
+            state[f"heads.{name}.weight"] = torch.zeros(n, in_dim)
+            state[f"heads.{name}.bias"] = bias
+        return state
+
+    def make_dir(root, adult_bias):
+        fine = head_state(4, adult_bias)
+        fine["visual.1.weight"] = torch.eye(4, 48)
+        fine["visual.1.bias"] = torch.zeros(4)
+        save_file(fine, str(root / "model.safetensors"))
+        (root / "frozen").mkdir(exist_ok=True)
+        save_file(head_state(8, adult_bias), str(root / "frozen" / "model.safetensors"))
+        (root / "config.json").write_text(json.dumps(config))
+
+    class FakeModel:
+        def __init__(self):
+            self.visual = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(48, 4))
+
+    fake_oc = types.ModuleType("open_clip")
+    fake_oc.create_model_and_transforms = lambda name: (
+        FakeModel(), None, lambda im: torch.tensor(np.asarray(im.resize((4, 4)), dtype="float32")).permute(2, 0, 1) / 255.0)
+    with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(sys.modules, {"open_clip": fake_oc}):
+        root = Path(tmp)
+        make_dir(root, adult_bias=5.0)
+        a = root / "a.png"
+        _Image.new("RGB", (8, 8), "red").save(a)
+        clf = TryOnSafetyAdapter(model_id=str(root), variant="finetuned", device="cpu")
+        out = clf.classify([str(a), str(a)])
+        assert out["level"] == "adult" and out["blocked"] is True and out["n_images"] == 2
+        assert out["subject"] == "human_clothing" and out["swimwear"] == "micro" and out["ravewear"] is True
+        assert abs(sum(out["probs"].values()) - 1.0) < 1e-5 and out["adult_threshold"] == 0.3
+        assert clf.classify(str(a), adult_threshold=1.0)["blocked"] is False  # threshold override
+        frozen = TryOnSafetyAdapter(model_id=str(root), variant="frozen", device="cpu").classify([str(a)])
+        assert frozen["variant"] == "frozen" and frozen["level"] == "adult"
+        make_dir(root, adult_bias=-5.0)
+        safe = TryOnSafetyAdapter(model_id=str(root), device="cpu").classify([str(a)])
+        assert safe["level"] != "adult" and safe["blocked"] is False
+        for bad in (dict(image=[]), dict(image=[None]), dict(image=[str(a)], adult_threshold=1.5)):
+            try:
+                clf.classify(**bad)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(bad)
+        try:
+            TryOnSafetyAdapter(model_id=str(root), variant="medium")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("unknown variant must be rejected")
+        # Hub downloads are pinned to a revision and fetch only config + safetensors (no remote code)
+        calls = []
+        fake_hub = types.ModuleType("huggingface_hub")
+        fake_hub.hf_hub_download = lambda repo, name, subfolder=None, revision=None: calls.append((repo, name, subfolder, revision)) or str(root / (subfolder or "") / name)
+        with mock.patch.dict(sys.modules, {"huggingface_hub": fake_hub}):
+            TryOnSafetyAdapter(device="cpu").classify([str(a)])
+        assert calls[0] == ("Genlook/tryon-safety-classifier", "config.json", None, "v1.0")
+        assert {c[1] for c in calls} == {"config.json", "model.safetensors"}
+    print("\u2713 klein-4b-tryon (reference order, masking, LoRA order) and tryon-safety-classifier (heads, threshold, pinned download)")
+
+
 def check_muse_image_requires_prompt():
     from tryon.api.muse import MuseImageAdapter
 
@@ -2043,6 +2254,7 @@ def check_new_media_models_dry_runs():
 
 
 if __name__ == "__main__":
+    check_klein_tryon_and_tryon_safety()
     check_fashion_florence_and_extract_outfit()
     check_fashn_catalogue_endpoints_and_fashion_embeddings()
     check_gemini_38_understand_and_tts()

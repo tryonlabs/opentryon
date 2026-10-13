@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### 🛡 FLUX.2-klein-4B try-on LoRA + try-on safety classifier (new `classify` service)
+- **`klein-4b-tryon`** (`vton`, `tryon.models.klein_tryon.Klein4BTryOnAdapter`): `xocialize/tryon-FLUX.2-klein-4B-lora` on `FLUX.2-klein-4B` — Apache-2.0 base and LoRA (the popular klein 9B try-on LoRAs sit on a non-commercial base). Ordered inputs person, top, bottom (`--dress-image` fills both slots); the person must be clothing-agnostic or pass `--mask-image` (greyed by the adapter; no segmentation is bundled). Defaults are BFL's klein-4B settings (4 steps, guidance 1.0). v1 community LoRA (273 training tuples, no published metrics). Needs CUDA, diffusers from GitHub and peft
+- **New `classify` service** with **`tryon-safety-classifier`** (`tryon.models.tryon_safety.TryOnSafetyAdapter`): Genlook's Apache-2.0 SigLIP2 classifier of what a try-on would show — `level` ok/revealing/lingerie/adult, `blocked` (P(adult) ≥ threshold, default 0.3), `subject`, `swimwear`, `ravewear` — computed over all photos of one product. Re-implements the model's inference instead of executing the repo's `tryon_safety.py`; downloads only `config.json` + `model.safetensors`, pinned to tag `v1.0`. Named-model-only in the planner
+- MCP tools `vton_klein_4b_tryon`, `classify_tryon_safety_classifier`; planner pins; docs: new `local-models/klein-tryon.md` and `local-models/tryon-safety-classifier.md`; survey rows marked shipped
+
 #### 🧵 Fashion Florence + QIE-2511 Extract-Outfit (local)
 - **`fashion-florence`** (`understand`, `tryon.models.fashion_florence.FashionFlorenceAdapter`): `anushreeberlia/fashion-florence`, a MIT Florence-2-large LoRA (0.77B) that tags one clothing photo as JSON `{category, primary_color, material, style_tags}`. Single image returns flat `{tags, raw}`; several return `{results: [...]}`. CPU or GPU; `trust_remote_code` (Florence-2 custom code targets the transformers 4.4x line)
 - **`qie-2511-extract-outfit`** (`edit`, `tryon.models.extract_outfit.ExtractOutfitAdapter`): Apache-2.0 LoRA `prithivMLmods/QIE-2511-Extract-Outfit` on Qwen-Image-Edit-2511 — worn outfit photo to flat studio mockup (garment extraction). Subclasses `QwenImageLocalAdapter`, attaches the LoRA before offload, trigger prompt as default; needs `peft`

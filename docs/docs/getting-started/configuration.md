@@ -308,6 +308,10 @@ Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GE
 
 Uses the same `FASHN_API_KEY` as `vton --model fashn-tryon-max`. Covers `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video` and `fashn-bg-remove`. See [FASHN](../api-reference/fashn.md).
 
+### FLUX.2-klein-4B try-on / try-on safety classifier (local, no cloud key)
+
+No API key. `klein-4b-tryon` needs a CUDA GPU, `pip install git+https://github.com/huggingface/diffusers.git peft accelerate` (overrides `KLEIN_TRYON_LORA_ID`, `KLEIN_TRYON_BASE_ID`). `tryon-safety-classifier` needs `pip install open_clip_torch safetensors` (override `TRYON_SAFETY_MODEL_ID`). See [klein try-on](../local-models/klein-tryon.md) and [safety classifier](../local-models/tryon-safety-classifier.md).
+
 ### Fashion Florence / Extract-Outfit (local, no cloud key)
 
 No API key. `pip install opentryon[local]`; Extract-Outfit also needs `pip install -U peft diffusers transformers accelerate` and a CUDA GPU (Qwen-Image-Edit-2511 base). Optional overrides: `FASHION_FLORENCE_MODEL_ID`, `EXTRACT_OUTFIT_LORA_ID`. See [Fashion Florence](../local-models/fashion-florence.md) and [Extract-Outfit](../local-models/extract-outfit.md).

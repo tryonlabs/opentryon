@@ -147,6 +147,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `vton_leffa` | Leffa (CVPR 2025 local VTON) | local/GPU |
 | `vton_catvton` | CatVTON (ICLR 2025 local VTON, CC BY-NC-SA) | local/GPU |
 | `vton_fashn_vton_1_5` | FASHN VTON v1.5 (maskless local VTON, Apache-2.0) | local/GPU |
+| `vton_klein_4b_tryon` | FLUX.2-klein-4B try-on LoRA (Apache-2.0 stack, local) | local/GPU |
 | `vton_muse_image` | Muse Image (composition try-on) | `MODEL_API_KEY` |
 
 ### generate -- Text-to-image generation
@@ -318,6 +319,14 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 | `decide_jev` | Typesafe AI Jev (text/JSON only; early access) | `TYPESAFE_API_KEY` |
 | `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
 | `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
+
+### classify -- Fixed-label classification
+
+| Tool | Model | Requires |
+|---|---|---|
+| `classify_tryon_safety_classifier` | Genlook try-on safety classifier (gate garments before try-on; Apache-2.0) | local/GPU |
+
+Pass **all photos of one product**; the result carries `level`, `blocked`, `probs`, `subject`, `swimwear`, `ravewear`. See [`tryon-safety-classifier.md`](../docs/docs/local-models/tryon-safety-classifier.md).
 
 ### embed -- Embeddings
 
