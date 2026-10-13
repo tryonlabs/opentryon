@@ -16,7 +16,7 @@ Open-source AI toolkit for fashion technology: virtual try-on, image/video gener
 
 </div>
 
-**Current release: [v0.0.6](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.6)** — new `decide` + `embed` services, Gemini 3.8 Flash + TTS, Claude Haiku 5.5, Nano Banana 2.1, FLUX 3 Image, Qwen-Image-2.1, FASHN VTON 1.5 (local), Veo 3.1 / Omni 1.1 / Seedance references, Cosmos 3 local, ElevenLabs TTS, DeepSeek (132 models, 9 services).
+**Current release: [v0.0.7](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.7)** — FASHN catalogue endpoints (product-to-model, model swap, reframe, image-to-video), fashion retrieval embeddings, Fashion Florence, Extract-Outfit, a commercially clean klein-4B try-on, and a try-on safety classifier (new `classify` service); 148 models, 10 services.
 
 📚 **Full documentation:** [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)  
 API tutorials, configuration, examples, and agent guides live there — not in this README.

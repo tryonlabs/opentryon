@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 13 October 2026
+
 ### Removed
 - **Deprecated root-level wrapper scripts** (each printed a deprecation warning and forwarded to a copy elsewhere): `bg_remove.py`, `caption_images.py`, `gpt_image.py`, `image_gen.py`, `luma_image.py`, `run_ootd.py`, `sora_video.py`, `veo_video.py`, `video_gen.py`, `vton.py` (now only in `examples/legacy/`), `fashion_agent.py`, `model_swap_agent.py`, `vton_agent.py` (`examples/agents/`), `luma_video_test.py`, `test_gpt_image.py`, `test_luma.py` (`tests/legacy/`). Use the `opentryon` CLI (for example `opentryon vton --model ...`) or run the copies under `examples/` and `tests/legacy/` directly. `main.py`, `run_demo.py` and `api_server.py` are real scripts and stay for now. The BEN2, Nano Banana and Sora docs now show the `opentryon` CLI instead of the removed scripts
 
@@ -431,6 +433,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive demos
 - Complete documentation
 
+[0.0.7]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.7
 [0.0.6]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.6
 [0.0.5]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5
 [0.0.4]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.4
