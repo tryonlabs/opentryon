@@ -142,7 +142,7 @@ Pick **one** for v0.1.0 Slice D (`tryon.models` + `opentryon[local]`). Many rese
 
 | Candidate | Path | Notes | Status |
 |---|---|---|---|
-| **SANA-Sprint** (NVLabs, HF Diffusers) | B | Fast local T2I (1–4 steps). Not a NIM. | `next` |
+| **SANA-Sprint** (NVLabs, HF Diffusers) | B | Fast local T2I (1–4 steps). Not a NIM. | shipped (`sana-sprint`) |
 | Cosmos 3 T2I | B / vLLM-Omni | NIM Generator does **not** expose T2I (one-frame video only in TRT-LLM). | `watch` |
 | FLUX.1-dev / schnell / Kontext via NIM | A | We already have BFL **FLUX.2**. Do not add a second FLUX stack. | `skip` |
 | FLUX.2 Klein 4B via NIM | A | Distilled FLUX.2; only if BFL does not offer Klein. | `watch` |
@@ -177,7 +177,7 @@ NVIDIA / Nemotron has no VTON NIM. Cloud dedicated VTON is already broad (FLUX V
 
 | Candidate | Path | Notes | Status |
 |---|---|---|---|
-| **NVIDIA LipSync** NIM | A | Audio → lip-dubbed video. Closest official A2V on the NIM catalog. | `next` |
+| **NVIDIA LipSync** NIM | A | Audio → lip-dubbed video. Self-hosted gRPC (no hosted REST). | shipped (`nvidia-lipsync` on `audio-to-video`) |
 | Cosmos 3 + sound | B / vLLM-Omni | T2V/I2V **with** synchronized audio. Not on Generator NIM. | `watch` |
 | Pruna P-Video-Avatar | — | Already shipped (`p-video-avatar`). | shipped |
 
@@ -213,7 +213,7 @@ The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candi
 
 | Candidate | Path | Notes | Status |
 |---|---|---|---|
-| **Microsoft TRELLIS** NIM | A | Text-to-3D and image-to-3D meshes; active NVIDIA 3D NIM (Edify 3D is gone). | `next` |
+| **Microsoft TRELLIS** NIM | A | Text-to-3D and image-to-3D meshes; active NVIDIA 3D NIM (Edify 3D is gone). | shipped (`trellis` on `generate-3d`) |
 | TRELLIS.2 4B | B | Local; Windows-skewed wheels as of 2026 — verify Linux before Path B. | `watch` |
 | Video VTON / 3D VTON | — | Research; no product API picked. | `watch` |
 
@@ -271,8 +271,8 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 2. ~~`google-vton`~~ **shipped** (Path A Vertex `virtual-try-on-001`, 29 Aug 2026).
 3. ~~`outfitanyone-plus` / `photoroom-vton` / `photoroom-virtual-model`~~ **shipped** (Path A, 29 Aug 2026).
 4. ~~`leffa` / `catvton`~~ **shipped** (Path B local VTON, 1 Sep 2026).
-5. **New services** only after one local VTON: LipSync (A2V), TRELLIS (3D).
-6. **SANA-Sprint** if we want a fast local T2I that is not another FLUX/Qwen clone.
+5. ~~**New services** LipSync (A2V), TRELLIS (3D)~~ **shipped** (`audio-to-video` / `generate-3d`, Oct 2026).
+6. ~~**SANA-Sprint**~~ **shipped** (`sana-sprint` on `generate`, local Diffusers).
 7. Optional: `nemotron-omni-local` if someone will run 30B-A3B.
 8. ~~`deepseek-flash`~~ **shipped** (Path A, `understand`, 21 Sep 2026).
 9. ~~`deepseek-vl2` / `deepseek-ocr`~~ **shipped** (Path B local, 21 Sep 2026). Both confirmed no first-party hosted API exists for either.

@@ -46,6 +46,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### 🖼 FLUX 3 Image (BFL)
 - **`flux3-image`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageAdapter`): first-party `POST /v1/flux-3-image` with aspect-ratio tiers, resolution up to `4k`, optional grounding, and up to 10 reference images on edit. Same `BFL_API_KEY` as FLUX.2 / FLUX VTO; MCP tools `generate_flux3_image` and `edit_flux3_image`; planner pins `flux 3 image`. Docs: `docs/docs/api-reference/flux3-image.md`
 
+#### 🔊 Audio-to-video + 3D (integrate-next Wave)
+- **`nvidia-lipsync`** (`audio-to-video`, `LipSyncAdapter`): NVIDIA Maxine LipSync NIM via self-hosted gRPC + nim-clients script (`LIPSYNC_GRPC_TARGET`, `LIPSYNC_CLIENT_SCRIPT`); no hosted REST
+- **`trellis`** (`generate-3d`, `TrellisMeshAdapter`): Microsoft TRELLIS on `ai.api.nvidia.com/v1/genai/microsoft/trellis` (GLB/STL; optional `TRELLIS_INFER_URL`)
+- **`sana-sprint`** (`generate`, local `SanaSprintAdapter`): NVLabs 1–4 step T2I via Diffusers `SanaSprintPipeline`
+- New CLI/MCP services: `audio-to-video`, `generate-3d`; runner `mesh_bytes` output kind
+
 #### 🎬 VideoJev (local video System One)
 - **`videojev-4b`** and **`videojev-35b-a3b`** (`decide`, `tryon.models.videojev.VideoJevAdapter`): open-weight temporal grounding + multiple-choice video QA via `predict_video` (MCG-NJU / Apache-2.0). No hosted VideoJev API — Typesafe Jev and THX-01 remain text-only. MCP tools `decide_videojev_4b` and `decide_videojev_35b_a3b`; planner pins `videojev`. Docs: `docs/docs/local-models/videojev.md`
 

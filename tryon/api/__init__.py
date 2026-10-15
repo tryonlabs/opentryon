@@ -41,6 +41,8 @@ _LAZY_ATTRS = {
     "Flux2FlexAdapter": ".flux2",
     "Flux3ImageAdapter": ".flux3",
     "Flux3VideoAdapter": ".flux3_video",
+    "TrellisMeshAdapter": ".nvidia.trellis_adapter",
+    "LipSyncAdapter": ".nvidia.lipsync_adapter",
     "LumaAIVideoAdapter": ".lumaAI.luma_video_adapter",
     "LumaRay32Adapter": ".lumaAI.ray32_adapter",
     "GPTImageAdapter": ".openAI.image_adapter",
