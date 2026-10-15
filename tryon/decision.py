@@ -25,12 +25,13 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 VALID_QUESTION_TYPES = {"noul", "choice", "score"}
 THX_EXTENDED_QUESTION_TYPES = VALID_QUESTION_TYPES | {"number", "excerpt"}
 
 Questions = Union[Dict[str, Dict[str, Any]], str]
+VideoJevQuestions = Union[List[Dict[str, Any]], str]
 
 
 def load_questions(questions: Questions) -> Dict[str, Dict[str, Any]]:
@@ -110,6 +111,48 @@ def load_thx_questions(questions: Questions) -> Dict[str, Dict[str, Any]]:
             raise ValueError(
                 f"question {name!r}: 'score' needs an ordered criteria list of 2-10 levels."
             )
+    return questions
+
+
+def load_videojev_questions(questions: VideoJevQuestions) -> List[Dict[str, Any]]:
+    """Load VideoJev-native question list (grounding + multiple-choice QA).
+
+    Each item is an object with ``id``, ``task`` (``grounding`` or ``choice``),
+    and ``query``. ``choice`` tasks also require ``options`` (list of strings).
+    """
+    if isinstance(questions, str):
+        text = questions.strip()
+        if os.path.isfile(text):
+            with open(text, "r", encoding="utf-8") as f:
+                text = f.read()
+        try:
+            questions = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                "VideoJev questions must be a JSON array, a JSON string, or a path "
+                f"to a JSON file (could not parse: {exc})."
+            ) from exc
+    if not isinstance(questions, list) or not questions:
+        raise ValueError("VideoJev questions must be a non-empty JSON array.")
+
+    for idx, item in enumerate(questions):
+        if not isinstance(item, dict):
+            raise ValueError(f"VideoJev question[{idx}] must be an object.")
+        if not item.get("id"):
+            raise ValueError(f"VideoJev question[{idx}]: 'id' is required.")
+        task = item.get("task")
+        if task not in {"grounding", "choice"}:
+            raise ValueError(
+                f"VideoJev question[{idx}]: 'task' must be 'grounding' or 'choice' (got {task!r})."
+            )
+        if not item.get("query"):
+            raise ValueError(f"VideoJev question[{idx}]: 'query' is required.")
+        if task == "choice":
+            options = item.get("options")
+            if not isinstance(options, list) or len(options) < 2:
+                raise ValueError(
+                    f"VideoJev question[{idx}]: 'choice' needs 'options' as a list with >= 2 strings."
+                )
     return questions
 
 

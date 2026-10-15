@@ -16,7 +16,7 @@ keywords:
 
 **Jev** is TypeSafe AI's first "System One" model. It does not write text: you send a *state* (text or JSON) and a set of named, typed *questions*, and it returns calibrated answers to all of them in one call (reported 70–500 ms, 32K context, output tokens free). OpenTryOn exposes it through the new `decide` service with `JevAdapter`.
 
-Use it for routing, moderation, attribute classification and QC gating over text or structured data (for example product copy, order notes or VLM captions). It has **no image, audio or video input** — for images use the open-weight [Liquid d1](../local-models/liquid-d1.md) models.
+Use it for routing, moderation, attribute classification and QC gating over text or structured data (for example product copy, order notes or VLM captions). It has **no image, audio or video input** — for images use the open-weight [Liquid d1](../local-models/liquid-d1.md) models; for **video** grounding and multiple-choice QA use open-weight [VideoJev](../local-models/videojev.md) (`videojev-4b` / `videojev-35b-a3b`).
 
 :::warning Early access
 Jev is waitlisted. TypeSafe paused new sign-ups on 22 Sep 2026; check [console.typesafe.ai](https://console.typesafe.ai) for current status. The model is also served through OpenRouter (`typesafe/jev-1.13`), Vercel AI Gateway and DigitalOcean Inference — set `TYPESAFE_BASE_URL` to a compatible gateway if you use one. Endpoint and field names here follow the published System One API (`POST /v1/systemone`); confirm against your account's docs.

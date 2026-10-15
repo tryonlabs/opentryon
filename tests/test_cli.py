@@ -1104,6 +1104,10 @@ def check_decide_embed_haiku_relight_dry_runs():
          "LiquidD1Adapter", "decide", ["'variant': 'd1-omni-600M'", "'audio': 'clip.wav'"]),
         (["decide", "--model", "jev", "--questions", "q.json", "--state", "red satin gown"],
          "JevAdapter", "decide", ["'model': 'jev-latest'", "'state': 'red satin gown'"]),
+        (["decide", "--model", "videojev-4b", "--questions", "vj.json", "--video", "clip.mp4"],
+         "VideoJevAdapter", "decide", ["'variant': '4b'", "'video': 'clip.mp4'"]),
+        (["decide", "--model", "videojev-35b-a3b", "--questions", "vj.json", "--video", "clip.mp4"],
+         "VideoJevAdapter", "decide", ["'variant': '35b-a3b'", "'context': 262144"]),
         (["embed", "--model", "embeddinggemma-2", "--text", "red gown", "--image", "a.jpg",
           "--query", "formal dress", "--dim", "256", "--modalities", "text+image"],
          "EmbeddingGemma2Adapter", "embed", ["'modalities': 'text+image'", "'dim': 256", "'query': 'formal dress'"]),
@@ -1209,7 +1213,19 @@ def check_decision_helpers_and_adapters():
         pass
     else:
         raise AssertionError("unknown d1 variant must be rejected")
-    print("\u2713 decide: question schema validation, Jev request/response, d1 variant checks")
+    from tryon.decision import load_videojev_questions
+
+    good_vj = [
+        {"id": "g1", "task": "grounding", "query": "walks runway"},
+        {"id": "q1", "task": "choice", "query": "Outfit?", "options": ["A. Gown", "B. Denim"]},
+    ]
+    assert load_videojev_questions(good_vj) == good_vj
+    try:
+        load_videojev_questions([{"id": "x", "task": "choice", "query": "?" }])
+        raise AssertionError("VideoJev choice without options must fail")
+    except ValueError:
+        pass
+    print("\u2713 decide: question schema validation, Jev request/response, d1 variant checks, VideoJev schema")
 
 
 def check_embeddings_packaging_and_adapters():
