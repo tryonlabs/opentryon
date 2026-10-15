@@ -164,6 +164,16 @@ async def check_dry_run_calls() -> None:
             {"input_image": "p.jpg", "prompt": "make it blue", "steps": 12, "dry_run": True},
             False,
         ),
+        (
+            "generate_flux3_image_klein_local",
+            {"prompt": "editorial still", "seed": 0, "dry_run": True},
+            False,
+        ),
+        (
+            "edit_flux3_image_klein_local",
+            {"input_image": "p.jpg", "prompt": "make it blue", "dry_run": True},
+            False,
+        ),
         ("video_generate_flux3_video", {"prompt": "runway walk", "duration": "8", "dry_run": True}, False),
         ("generate_3d_trellis", {"prompt": "red handbag", "output_format": "glb", "dry_run": True}, False),
         ("generate_sana_sprint", {"prompt": "editorial still", "dry_run": True}, True),
@@ -210,11 +220,7 @@ async def check_dry_run_calls() -> None:
     ]
     checked = 0
     for name, args, needs_local in cases:
-        if needs_local and not _HAS_TORCH:
-            # `_extra_missing` intentionally runs before the dry-run check
-            # (matches the CLI's `--dry-run` behavior) so a local-only model
-            # dry-runs as a clean failure, not a crash, when torch isn't
-            # installed. Confirm that instead of the success path.
+        if needs_local and not _HAS_TORCH and not args.get("dry_run"):
             tool = await server.mcp.get_tool(name)
             result = await tool.run(args)
             data = result.structured_content

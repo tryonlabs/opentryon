@@ -86,6 +86,6 @@ After the OpenTryOn MCP server loads the registry:
 - `generate_flux3_image_klein`
 - `edit_flux3_image_klein`
 
-## Local weights
+## Local weights (GPU)
 
-Klein distilled and base checkpoints (`black-forest-labs/flux-3-image-klein` and `-klein-base`) run on Hugging Face Diffusers / ComfyUI; they are not wired as a Path B registry id yet. Use the BFL API above or run weights directly per [BFL's Klein guide](https://docs.bfl.ml/flux_3/flux3_image_klein).
+OpenTryOn registers local inference as **`flux3-image-klein-local`** on `generate` and `edit` (`Flux3ImageKleinLocalAdapter`, Diffusers `ModularPipeline`). See **[FLUX 3 Image Klein (local)](../local-models/flux3-image-klein)** for install, VRAM notes, and CLI examples. Default weights: `black-forest-labs/flux-3-image-klein`; base checkpoint via `--model-id black-forest-labs/flux-3-image-klein-base`.

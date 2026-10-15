@@ -130,6 +130,7 @@ const sidebars: SidebarsConfig = {
         'local-models/liquid-d1',
         'local-models/videojev',
         'local-models/sana-sprint',
+        'local-models/flux3-image-klein',
         'local-models/embeddinggemma',
         'local-models/pplx-embed',
         'local-models/fashion-embeddings',

@@ -1048,6 +1048,57 @@ def _flux3_image_klein_args(*, for_edit: bool) -> List[Arg]:
     return args
 
 
+def _flux3_image_klein_local_args(*, for_edit: bool) -> List[Arg]:
+    args: List[Arg] = []
+    if for_edit:
+        args.append(
+            _img(("--image", "-i"), "input_image", "Primary reference image (path or URL)", required=True)
+        )
+        args.append(
+            Arg(
+                ("--reference-images",),
+                "reference_images",
+                nargs="+",
+                help="Additional references (multi-ref edits; use <ref_image_N> in prompt)",
+            )
+        )
+    args.extend(
+        [
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--width",), "width", type=int, default=1024 if not for_edit else None),
+            Arg(("--height",), "height", type=int, default=1024 if not for_edit else None),
+            Arg(
+                ("--steps",),
+                "num_inference_steps",
+                type=int,
+                help="Denoising steps (default 16 distilled / 50 base)",
+            ),
+            Arg(("--seed",), "seed", type=int),
+            Arg(
+                ("--model-id",),
+                "model_id",
+                target="init",
+                default="black-forest-labs/flux-3-image-klein",
+                help="HF repo: flux-3-image-klein (distilled) or flux-3-image-klein-base",
+            ),
+            Arg(
+                ("--guidance-scale",),
+                "guidance_scale",
+                target="init",
+                type=float,
+                help="CFG for klein-base only (default 3.5); ignored for distilled checkpoint",
+            ),
+            Arg(
+                ("--device",),
+                "device",
+                target="init",
+                choices=["cuda", "mps", "cpu"],
+            ),
+        ]
+    )
+    return args
+
+
 def _flux3_video_args() -> List[Arg]:
     aspect_choices = [
         "auto",
@@ -1198,6 +1249,21 @@ _GENERATE = {
             "contract; optional seed/steps; no grounding."
         ),
         args=_flux3_image_klein_args(for_edit=False),
+    ),
+    "flux3-image-klein-local": ModelSpec(
+        id="flux3-image-klein-local",
+        label="FLUX 3 Image Klein (local Diffusers)",
+        import_path="tryon.models.flux3_image_klein",
+        class_name="Flux3ImageKleinLocalAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        extra="local",
+        notes=(
+            "Open FLUX.3 Klein via ModularPipeline (default black-forest-labs/flux-3-image-klein). "
+            "RTX 3090+ class GPU recommended; needs pip install -U diffusers transformers. "
+            "Hosted twin: flux3-image (BFL_API_KEY)."
+        ),
+        args=_flux3_image_klein_local_args(for_edit=False),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",
@@ -1575,6 +1641,17 @@ _EDIT = {
         env_hint="BFL_API_KEY",
         notes="Same Klein endpoint as generate; bounding-box layout prompts supported.",
         args=_flux3_image_klein_args(for_edit=True),
+    ),
+    "flux3-image-klein-local": ModelSpec(
+        id="flux3-image-klein-local",
+        label="FLUX 3 Image Klein (local Diffusers)",
+        import_path="tryon.models.flux3_image_klein",
+        class_name="Flux3ImageKleinLocalAdapter",
+        method="generate_image_edit",
+        output_kind="images",
+        extra="local",
+        notes="Same ModularPipeline as generate; multi-ref + layout boxes in prompt.",
+        args=_flux3_image_klein_local_args(for_edit=True),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",

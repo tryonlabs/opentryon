@@ -311,7 +311,6 @@ def _save_audio(audio_bytes: bytes, output_dir: Path, prefix: str) -> Path:
 def run_service(service: str, argv: List[str]) -> int:
     args = parse_service_args(service, argv)
     spec = get_service(service)[args.model]
-    _check_extra(spec)
 
     values = vars(args)
     using_alt = bool(spec.alt_method_on_image and values.get(spec.alt_image_dest))
@@ -321,6 +320,8 @@ def run_service(service: str, argv: List[str]) -> int:
     if args.dry_run:
         print(f"[dry-run] {spec.class_name}(**{init_kwargs}).{method}(**{call_kwargs})")
         return 0
+
+    _check_extra(spec)
 
     if spec.env_hint:
         print(f"Using {spec.label} (env: {spec.env_hint})")
@@ -395,10 +396,6 @@ def invoke_model(
     except KeyError as e:
         return {"success": False, "error": e.args[0] if e.args else str(e)}
 
-    extra_error = _extra_missing(spec)
-    if extra_error:
-        return {"success": False, "error": extra_error}
-
     using_alt = bool(spec.alt_method_on_image and kwargs.get(spec.alt_image_dest))
     method = spec.alt_method_on_image if using_alt else spec.method
     init_kwargs, call_kwargs = _split_kwargs(spec, kwargs, using_alt)
@@ -409,6 +406,10 @@ def invoke_model(
             "dry_run": True,
             "call": f"{spec.class_name}(**{init_kwargs}).{method}(**{call_kwargs})",
         }
+
+    extra_error = _extra_missing(spec)
+    if extra_error:
+        return {"success": False, "error": extra_error}
 
     try:
         cls = _load_class(spec)
