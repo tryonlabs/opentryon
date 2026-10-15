@@ -165,6 +165,8 @@ def check_named_model_pins_for_wave3_models():
         "classify with liquid d1-omni-600m": "d1-omni-600m",
         "classify with d1-3b": "d1-3b",
         "ask typesafe jev whether this is formal": "jev",
+        "use videojev on this clip": "videojev-4b",
+        "videojev-35b-a3b grounding": "videojev-35b-a3b",
         "embed the catalogue with gemini embedding 2": "gemini-embedding-2",
         "embed these with embeddinggemma 2": "embeddinggemma-2",
         "index the lookbook with pplx-embed-v2-late-9b": "pplx-embed-v2-late-9b",

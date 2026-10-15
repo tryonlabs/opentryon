@@ -30,6 +30,7 @@ Adding a new local or API model? Start with
 | [DeepSeek-OCR](./deepseek-ocr) | Document/Image OCR | Requires flash-attn + CUDA | - | "Contexts Optical Compression"; care labels, size tags, SKU sheets. No first-party hosted API exists |
 | [Ternary Bonsai 2 27B](./ternary-bonsai) | Image/Text Understanding | 5.9-8.5GB on disk (ternary-quantized) | Fast (CPU/Metal-friendly) | OpenAI-compatible client for PrismML's own llama.cpp/MLX server — no torch needed on the OpenTryOn side |
 | [Liquid d1](./liquid-d1) | Decision model (`decide`) | d1-3B ~3B / d1-omni-600M ~0.6B | Fast (1 forward pass) | Calibrated yes/no, choice, score answers about text, images (and speech for omni); needs transformers>=5.15 |
+| [VideoJev](./videojev) | Video decision model (`decide`) | 4B / 35B-A3B MoE | Fast (direct scoring) | Temporal grounding + multiple-choice video QA; **local only** (no hosted API); Apache-2.0 |
 | [EmbeddingGemma 2](./embeddinggemma) | Multimodal embeddings (`embed`) | 270M-740M by modality | Fast | One 768-d space for text, code, image, video, audio; Apache-2.0 tag |
 | [FLUX.2-klein-4B try-on](./klein-tryon) | Virtual Try-On | ~13GB (offload) | Fast (4 steps) | Apache-2.0 base + LoRA (commercially clean); person + top + bottom, clothing-agnostic person input; v1 community LoRA |
 | [Try-on safety classifier](./tryon-safety-classifier) | Moderation (`classify`) | ~0.9GB (SigLIP2-so400m) | Fast | Gate garments before try-on: ok / revealing / lingerie / adult; Apache-2.0 |

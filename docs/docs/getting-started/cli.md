@@ -35,7 +35,7 @@ opentryon <service> --model <model> [params...]
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `flux3-video`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `fal-h3-max-relight`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3`, `cosmos3-local` (local), `fashn-image-to-video` |
 | `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
-| `decide` | Calibrated yes/no, choice and score decisions about text/images ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local) |
+| `decide` | Calibrated yes/no, choice and score decisions about text/images/video ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
 | `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
 | `embed` | Multimodal embeddings saved to `.npz` | `gemini-embedding-2`, `embeddinggemma-2` (local), `pplx-embed-v2-late-0.6b` (local), `pplx-embed-v2-late-9b` (local), `marqo-fashionsiglip` (local), `moda-fashion-distilled` (local), `moda-pro-lite` (local), `zooclaw-fashionsiglip2` (local) |
 
@@ -236,6 +236,7 @@ opentryon video-generate --model fal-h3-max-relight --video runway.mp4 --referen
 # Decisions: typed, calibrated answers (questions.json: see the Jev docs page for the schema)
 opentryon decide --model jev --questions questions.json --state "Red satin evening gown"        # TYPESAFE_API_KEY
 opentryon decide --model d1-3b --questions questions.json --image dress.jpg                     # local GPU
+opentryon decide --model videojev-4b --video clip.mp4 --questions videojev_tasks.json           # local GPU (VideoJev schema)
 
 # FASHN catalogue endpoints (same FASHN_API_KEY as fashn-tryon-max)
 opentryon edit --model fashn-product-to-model --image jacket.jpg --prompt "studio background" --resolution 2k

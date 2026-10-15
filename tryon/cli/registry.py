@@ -3519,6 +3519,83 @@ _DECIDE = {
     ),
 }
 
+_VIDEOJEV_QUESTIONS_HELP = (
+    "JSON array (or path): [{\"id\": \"...\", \"task\": \"grounding|choice\", "
+    "\"query\": \"...\", \"options\": [\"A.\", \"B.\"] (choice only)}]. "
+    "See docs/docs/local-models/videojev.md."
+)
+
+
+def _videojev_decide_args(*, variant: str, default_context: int) -> List[Arg]:
+    return [
+        Arg(("--questions", "-q"), "questions", required=True, help=_VIDEOJEV_QUESTIONS_HELP),
+        Arg(("--video",), "video", required=True, help="Video file path or http(s) URL"),
+        Arg(("--fps",), "fps", type=float, default=2.0, help="Frame sampling rate"),
+        Arg(("--max-frames",), "max_frames", type=int, default=2048, help="Max frames sampled from video"),
+        Arg(
+            ("--context",),
+            "context",
+            type=int,
+            default=default_context,
+            help="Model context length (8192 for 4B; 262144 for 35B QA)",
+        ),
+        Arg(
+            ("--threshold",),
+            "threshold",
+            type=float,
+            default=0.25,
+            help="Grounding probability threshold",
+        ),
+        Arg(
+            ("--variant",),
+            "variant",
+            target="init",
+            default=variant,
+            choices=["4b", "35b-a3b"],
+            help="VideoJev size tier",
+        ),
+        Arg(("--model-id",), "model_id", target="init", help="HF repo id or local checkpoint path"),
+        Arg(("--device",), "device", target="init", choices=["cuda", "cpu"], help="Device (CUDA recommended)"),
+    ]
+
+
+_DECIDE.update(
+    {
+        "videojev-4b": ModelSpec(
+            id="videojev-4b",
+            label="VideoJev-4B (local video System One, grounding + MC QA)",
+            import_path="tryon.models.videojev",
+            class_name="VideoJevAdapter",
+            method="decide",
+            output_kind="text",
+            extra="local",
+            notes=(
+                "Open-weight video decision model (MCG-NJU / Apache-2.0). Temporal grounding and "
+                "multiple-choice video QA via predict_video — not chat text generation. "
+                "No hosted VideoJev API; Typesafe Jev remains text-only. Needs CUDA, "
+                "transformers trust_remote_code, FlashAttention 2 recommended. "
+                "Larger tier: --model videojev-35b-a3b."
+            ),
+            args=_videojev_decide_args(variant="4b", default_context=8192),
+        ),
+        "videojev-35b-a3b": ModelSpec(
+            id="videojev-35b-a3b",
+            label="VideoJev-35B-A3B (local video System One, grounding + MC QA)",
+            import_path="tryon.models.videojev",
+            class_name="VideoJevAdapter",
+            method="decide",
+            output_kind="text",
+            extra="local",
+            notes=(
+                "MoE-backed VideoJev on Qwen3.6-35B-A3B. Same question schema as videojev-4b; "
+                "defaults to 262144 context for QA. Heavy VRAM; see VideoJev repo for base-model env vars "
+                "VIDEOJEV_BASE_35B."
+            ),
+            args=_videojev_decide_args(variant="35b-a3b", default_context=262144),
+        ),
+    }
+)
+
 # --------------------------------------------------------------------------
 # embed  (multimodal embeddings; vectors saved to .npz)
 # --------------------------------------------------------------------------
