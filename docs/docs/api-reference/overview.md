@@ -554,6 +554,14 @@ Registry id: `flux3-image-klein` on `generate` and `edit`. See [FLUX 3 Image Kle
 
 ---
 
+### `Flux3ImageKleinLocalAdapter`
+
+Local [FLUX 3 Image Klein](https://docs.bfl.ml/flux_3/flux3_image_klein) via Diffusers `ModularPipeline` (default `black-forest-labs/flux-3-image-klein`).
+
+Registry id: `flux3-image-klein-local` on `generate` and `edit`. See [FLUX 3 Image Klein (local)](../local-models/flux3-image-klein).
+
+---
+
 ### `Flux3VideoAdapter`
 
 Adapter for [FLUX 3 Video](https://docs.bfl.ml/flux_3/flux3_video) — `POST /v1/flux-3-video` (t2v, i2v keyframes, v2v, draft_enhance).

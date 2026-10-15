@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **`flux3-image-klein`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageKleinAdapter`): first-party `POST /v1/flux-3-image-klein` — distilled FLUX 3 Image sibling (seed/steps, safety 0–7, no grounding). Same `BFL_API_KEY` as `flux3-image`; MCP tools `generate_flux3_image_klein` and `edit_flux3_image_klein`; planner pins `flux 3 image klein`. Docs: `docs/docs/api-reference/flux3-image-klein.md`
+- **`flux3-image-klein-local`** (`generate` + `edit`, `tryon.models.flux3_image_klein.Flux3ImageKleinLocalAdapter`): Hugging Face `ModularPipeline` for `black-forest-labs/flux-3-image-klein` (and `-klein-base` via `--model-id` / `FLUX3_IMAGE_KLEIN_MODEL_ID`). MCP `generate_flux3_image_klein_local` / `edit_flux3_image_klein_local`; docs `docs/docs/local-models/flux3-image-klein.md`
 - `embed` service: **`gemini-embedding-2`** — Google's hosted multimodal embeddings (text, images, audio, video, PDF in one space; 3072-d, Matryoshka `--dim` 128–3072). New `GeminiEmbeddingAdapter` in `tryon.api.gemini`; one vector per input by default, `--aggregate` fuses inputs, text is task-prefixed (`--task`, `--role`) because the model has no `task_type`. Uses `GEMINI_API_KEY`.
 - Docs: new page `api-reference/gemini-embedding-2.md`; CLI, MCP and configuration pages updated.
 
