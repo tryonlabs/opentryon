@@ -1018,6 +1018,82 @@ def _flux3_image_args(*, for_edit: bool) -> List[Arg]:
     return args
 
 
+def _flux3_video_args() -> List[Arg]:
+    aspect_choices = [
+        "auto",
+        "21:9",
+        "2:1",
+        "16:9",
+        "4:3",
+        "1:1",
+        "3:4",
+        "9:16",
+        "9:21",
+    ]
+    return [
+        Arg(
+            ("--prompt", "-p"),
+            "prompt",
+            help="Text prompt (required for t2v/i2v/v2v; omit when using --draft-cache only)",
+        ),
+        Arg(
+            ("--image",),
+            "image",
+            help="Optional opening frame (switches to image-to-video)",
+            alt_only=True,
+        ),
+        Arg(
+            ("--end-image",),
+            "end_image",
+            help="Optional closing frame (image-to-video only)",
+            alt_only=True,
+        ),
+        Arg(
+            ("--video",),
+            "video",
+            help="Existing clip to continue from (video continuation / v2v)",
+        ),
+        Arg(
+            ("--draft-cache",),
+            "draft_cache",
+            help="Draft bundle from a prior --draft run (full-quality draft_enhance)",
+        ),
+        Arg(("--aspect-ratio",), "aspect_ratio", default="auto", choices=aspect_choices),
+        Arg(
+            ("--duration",),
+            "duration",
+            default="auto",
+            help='Seconds 5–20, or "auto" (v2v max 15)',
+        ),
+        Arg(
+            ("--resolution",),
+            "resolution",
+            default="hd",
+            choices=["hd", "fhd", "qhd", "uhd"],
+        ),
+        Arg(
+            ("--safety-tolerance",),
+            "safety_tolerance",
+            type=int,
+            default=2,
+            choices=list(range(8)),
+        ),
+        Arg(
+            ("--draft",),
+            "draft",
+            action="store_true",
+            help="Fast hd preview; result includes draft_cache URL for a later enhance pass",
+        ),
+        Arg(
+            ("--no-audio",),
+            "generate_audio",
+            action="store_false",
+            default=True,
+            help="Disable synchronized audio",
+        ),
+    ]
+
+
 def _flux2_generate_args(is_flex: bool) -> List[Arg]:
     args = [
         Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
@@ -2239,6 +2315,24 @@ _VIDEO_GENERATE = {
             Arg(("--video",), "video",
                 help="Existing clip (<=10s; local path or Files/http(s) URI) to extend by 3-10s"),
         ],
+    ),
+    "flux3-video": ModelSpec(
+        id="flux3-video",
+        label="FLUX 3 Video",
+        import_path="tryon.api.flux3_video",
+        class_name="Flux3VideoAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="BFL_API_KEY",
+        notes=(
+            "BFL unified video endpoint (t2v / i2v / v2v / draft_enhance). "
+            "Use --video to continue a clip, --draft for a fast preview, then "
+            "--draft-cache for full quality. Conversational video edit is a separate "
+            "BFL tool (/v1/flux-tools/video-edit-v1), not this adapter."
+        ),
+        args=_flux3_video_args(),
     ),
     "seedance": ModelSpec(
         id="seedance",

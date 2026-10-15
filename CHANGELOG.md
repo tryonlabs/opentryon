@@ -46,6 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### 🖼 FLUX 3 Image (BFL)
 - **`flux3-image`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageAdapter`): first-party `POST /v1/flux-3-image` with aspect-ratio tiers, resolution up to `4k`, optional grounding, and up to 10 reference images on edit. Same `BFL_API_KEY` as FLUX.2 / FLUX VTO; MCP tools `generate_flux3_image` and `edit_flux3_image`; planner pins `flux 3 image`. Docs: `docs/docs/api-reference/flux3-image.md`
 
+#### 🎬 FLUX 3 Video (BFL)
+- **`flux3-video`** (`video-generate`, `tryon.api.flux3_video.Flux3VideoAdapter`): first-party `POST /v1/flux-3-video` — t2v, i2v keyframes (`--image` / `--end-image`), v2v (`--video`), draft preview (`--draft`) and enhance (`--draft-cache`). Same `BFL_API_KEY`; MCP tool `video_generate_flux3_video`; planner pins `flux 3 video`. Docs: `docs/docs/api-reference/flux3-video.md`
+
 #### 💎 Gemini 3.8 Flash understanding + Gemini 3.8 TTS
 - **`gemini-3.8-flash`** (`understand`, `tryon.api.gemini.GeminiUnderstandAdapter`): text + image + video + audio + PDF in, text out; 1M context, 65,536 max output; `--thinking-level low|medium|high` (`minimal` is rejected by the API). Large media goes through the Files API, YouTube links are passed through. First Gemini model in the `understand` service
 - **`gemini-3.8-flash-tts`**, **`gemini-3.8-flash-lite-tts`** (`tts`, `GeminiTTSAdapter`): second TTS vendor. Interactions API over plain REST (independent of the installed `google-genai`), 30 prebuilt voices + custom `voice_...` ids, `--style` delivery control, inline `<sigh>`/`<short pause>` tags, WAV (default) / `audio/l16` / `mulaw` / `alaw` output, two-speaker `--dialogue`

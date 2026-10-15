@@ -154,6 +154,7 @@ async def check_dry_run_calls() -> None:
         ("generate_grok_imagine_image", {"prompt": "product shot", "dry_run": True}, False),
         ("generate_flux3_image", {"prompt": "editorial still", "resolution": "2k", "dry_run": True}, False),
         ("edit_flux3_image", {"input_image": "p.jpg", "prompt": "make it blue", "dry_run": True}, False),
+        ("video_generate_flux3_video", {"prompt": "runway walk", "duration": "8", "dry_run": True}, False),
         ("bg_remove_ben2", {"image": "i.jpg", "dry_run": True}, True),
         ("tts_eleven_v4", {"text": "Welcome to the spring collection.", "dry_run": True}, False),
         ("generate_nano_banana_2_1", {"prompt": "banner", "aspect_ratio": "4:1", "dry_run": True}, False),
