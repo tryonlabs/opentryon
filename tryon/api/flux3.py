@@ -22,7 +22,10 @@ class Flux3ImageAdapter:
     """
 
     BASE_URL = "https://api.bfl.ai"
-    ENDPOINT = "/v1/flux-3-image"
+    ENDPOINT_PATH = "/v1/flux-3-image"
+    API_PRODUCT = "FLUX 3 Image"
+    INCLUDE_GROUNDING = True
+    SAFETY_TOLERANCE_MAX = 4
     MAX_REFERENCE_IMAGES = 10
 
     _IN_PROGRESS_STATUSES = frozenset(
@@ -46,7 +49,7 @@ class Flux3ImageAdapter:
             )
 
         self.base_url = base_url or self.BASE_URL
-        self.endpoint = f"{self.base_url}{self.ENDPOINT}"
+        self.endpoint = f"{self.base_url}{self.ENDPOINT_PATH}"
         self.headers = {
             "x-key": self.api_key,
             "Content-Type": "application/json",
@@ -140,7 +143,7 @@ class Flux3ImageAdapter:
             return result["sample"]
         if "sample" in response_data:
             return response_data["sample"]
-        raise ValueError(f"No result sample in FLUX 3 Image response: {response_data}")
+        raise ValueError(f"No result sample in {self.API_PRODUCT} response: {response_data}")
 
     def _decode_sample(self, sample: str) -> Image.Image:
         if sample.startswith(("http://", "https://")):
@@ -174,20 +177,23 @@ class Flux3ImageAdapter:
         grounding: bool = True,
         **kwargs,
     ) -> List[Image.Image]:
-        if safety_tolerance < 0 or safety_tolerance > 4:
-            raise ValueError("safety_tolerance must be between 0 and 4")
+        if safety_tolerance < 0 or safety_tolerance > self.SAFETY_TOLERANCE_MAX:
+            raise ValueError(
+                f"safety_tolerance must be between 0 and {self.SAFETY_TOLERANCE_MAX}"
+            )
 
         payload = {
             "prompt": prompt,
             "aspect_ratio": aspect_ratio,
             "resolution": resolution,
             "safety_tolerance": safety_tolerance,
-            "grounding": grounding,
         }
+        if self.INCLUDE_GROUNDING:
+            payload["grounding"] = grounding
         images_field = self._images_payload(images)
         if images_field is not None:
             payload["images"] = images_field
-        payload.update(kwargs)
+        payload.update({k: v for k, v in kwargs.items() if v is not None})
 
         try:
             response = requests.post(
@@ -205,9 +211,11 @@ class Flux3ImageAdapter:
                 error_msg = error_data.get("detail", str(error_data))
             except Exception:
                 error_msg = e.response.text or str(e)
-            raise ValueError(f"BFL FLUX 3 Image API HTTP error ({e.response.status_code}): {error_msg}")
+            raise ValueError(
+                f"BFL {self.API_PRODUCT} API HTTP error ({e.response.status_code}): {error_msg}"
+            )
         except requests.exceptions.RequestException as e:
-            raise ValueError(f"Failed to connect to BFL FLUX 3 Image API: {str(e)}")
+            raise ValueError(f"Failed to connect to BFL {self.API_PRODUCT} API: {str(e)}")
 
         if "polling_url" in response_data:
             task_id = response_data.get("id", "unknown")
@@ -279,3 +287,21 @@ class Flux3ImageAdapter:
             grounding=grounding,
             **kwargs,
         )
+
+
+class Flux3ImageKleinAdapter(Flux3ImageAdapter):
+    """
+    Adapter for Black Forest Labs FLUX 3 Image Klein API.
+
+    Same unified generate/edit contract as :class:`Flux3ImageAdapter`, on the distilled
+    Klein endpoint (faster, open-weights sibling). Supports ``seed``, ``steps`` (1–16),
+    explicit ``width``/``height``, and ``output_format``; no ``grounding`` field.
+
+    Reference: https://docs.bfl.ml/flux_3/flux3_image_klein
+    API endpoint: POST https://api.bfl.ai/v1/flux-3-image-klein
+    """
+
+    ENDPOINT_PATH = "/v1/flux-3-image-klein"
+    API_PRODUCT = "FLUX 3 Image Klein"
+    INCLUDE_GROUNDING = False
+    SAFETY_TOLERANCE_MAX = 7

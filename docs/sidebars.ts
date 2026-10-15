@@ -68,6 +68,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/fashn',
         'api-reference/flux2',
         'api-reference/flux3-image',
+        'api-reference/flux3-image-klein',
         'api-reference/flux3-video',
         'api-reference/nano-banana',
         'api-reference/gpt-image',
