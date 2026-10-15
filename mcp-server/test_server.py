@@ -154,6 +154,16 @@ async def check_dry_run_calls() -> None:
         ("generate_grok_imagine_image", {"prompt": "product shot", "dry_run": True}, False),
         ("generate_flux3_image", {"prompt": "editorial still", "resolution": "2k", "dry_run": True}, False),
         ("edit_flux3_image", {"input_image": "p.jpg", "prompt": "make it blue", "dry_run": True}, False),
+        (
+            "generate_flux3_image_klein",
+            {"prompt": "editorial still", "resolution": "1k", "seed": 0, "dry_run": True},
+            False,
+        ),
+        (
+            "edit_flux3_image_klein",
+            {"input_image": "p.jpg", "prompt": "make it blue", "steps": 12, "dry_run": True},
+            False,
+        ),
         ("video_generate_flux3_video", {"prompt": "runway walk", "duration": "8", "dry_run": True}, False),
         ("generate_3d_trellis", {"prompt": "red handbag", "output_format": "glb", "dry_run": True}, False),
         ("generate_sana_sprint", {"prompt": "editorial still", "dry_run": True}, True),

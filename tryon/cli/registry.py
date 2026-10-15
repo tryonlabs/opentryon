@@ -1018,6 +1018,36 @@ def _flux3_image_args(*, for_edit: bool) -> List[Arg]:
     return args
 
 
+def _flux3_image_klein_args(*, for_edit: bool) -> List[Arg]:
+    args = _flux3_image_args(for_edit=for_edit)
+    args = [a for a in args if a.dest != "grounding"]
+    for i, arg in enumerate(args):
+        if arg.dest == "safety_tolerance":
+            args[i] = Arg(
+                ("--safety-tolerance",),
+                "safety_tolerance",
+                type=int,
+                default=2,
+                choices=list(range(8)),
+            )
+            break
+    args.extend(
+        [
+            Arg(("--seed",), "seed", type=int, help="Reproducibility seed (0–4294967295)"),
+            Arg(("--steps",), "steps", type=int, help="Denoising steps (1–16, default 16)"),
+            Arg(("--width",), "width", type=int, help="Exact output width (with --height)"),
+            Arg(("--height",), "height", type=int, help="Exact output height (with --width)"),
+            Arg(
+                ("--output-format",),
+                "output_format",
+                default="jpeg",
+                choices=["jpeg", "png"],
+            ),
+        ]
+    )
+    return args
+
+
 def _flux3_video_args() -> List[Arg]:
     aspect_choices = [
         "auto",
@@ -1154,6 +1184,20 @@ _GENERATE = {
         env_hint="BFL_API_KEY",
         notes="BFL unified generate/edit endpoint; resolution tiers up to 4k; optional grounding.",
         args=_flux3_image_args(for_edit=False),
+    ),
+    "flux3-image-klein": ModelSpec(
+        id="flux3-image-klein",
+        label="FLUX 3 Image Klein",
+        import_path="tryon.api.flux3",
+        class_name="Flux3ImageKleinAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        env_hint="BFL_API_KEY",
+        notes=(
+            "Distilled Klein sibling on POST /v1/flux-3-image-klein — faster, same edit/multi-ref "
+            "contract; optional seed/steps; no grounding."
+        ),
+        args=_flux3_image_klein_args(for_edit=False),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",
@@ -1520,6 +1564,17 @@ _EDIT = {
         env_hint="BFL_API_KEY",
         notes="Same BFL endpoint as generate; describe edits and optional layout boxes in the prompt.",
         args=_flux3_image_args(for_edit=True),
+    ),
+    "flux3-image-klein": ModelSpec(
+        id="flux3-image-klein",
+        label="FLUX 3 Image Klein",
+        import_path="tryon.api.flux3",
+        class_name="Flux3ImageKleinAdapter",
+        method="generate_image_edit",
+        output_kind="images",
+        env_hint="BFL_API_KEY",
+        notes="Same Klein endpoint as generate; bounding-box layout prompts supported.",
+        args=_flux3_image_klein_args(for_edit=True),
     ),
     "flux2-pro": ModelSpec(
         id="flux2-pro", label="FLUX.2 [pro]",

@@ -533,6 +533,27 @@ Registry id: `flux3-image` on `generate` and `edit`. See [FLUX 3 Image](flux3-im
 
 ---
 
+### `Flux3ImageKleinAdapter`
+
+Adapter for [FLUX 3 Image Klein](https://docs.bfl.ml/flux_3/flux3_image_klein) — unified generate/edit on `POST /v1/flux-3-image-klein` (distilled sibling; no grounding; optional `seed` / `steps` / exact width×height).
+
+```python
+from tryon.api import Flux3ImageKleinAdapter
+
+adapter = Flux3ImageKleinAdapter()
+
+images = adapter.generate_text_to_image(
+    prompt="Editorial fashion still",
+    aspect_ratio="3:4",
+    resolution="2k",
+    seed=0,
+)
+```
+
+Registry id: `flux3-image-klein` on `generate` and `edit`. See [FLUX 3 Image Klein](flux3-image-klein).
+
+---
+
 ### `Flux3VideoAdapter`
 
 Adapter for [FLUX 3 Video](https://docs.bfl.ml/flux_3/flux3_video) — `POST /v1/flux-3-video` (t2v, i2v keyframes, v2v, draft_enhance).
