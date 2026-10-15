@@ -8,6 +8,7 @@ local GPU resources for inference.
 Available Models:
     - Flux2TurboAdapter: FLUX.2-dev Turbo for fast image generation (8 steps)
       Supports both text-to-image and image-to-image generation
+    - Flux3ImageKleinLocalAdapter: FLUX 3 Image Klein (ModularPipeline T2I + multi-ref edit)
     - KimiVLAdapter: Kimi-VL open-weight multimodal model (image/video
       understanding), the local counterpart to the Kimi K2.6/K2.7 Code APIs
     - Qwen38Adapter: Qwen3.8-27B open-weight multimodal understanding,
@@ -72,6 +73,7 @@ from .catvton import CatVTONAdapter
 from .deepseek_ocr import DeepSeekOCRAdapter
 from .deepseek_vl2 import DeepSeekVL2Adapter
 from .flux2_turbo import Flux2TurboAdapter
+from .flux3_image_klein import Flux3ImageKleinLocalAdapter
 from .kimi_vl import KimiVLAdapter
 from .leffa import LeffaAdapter
 from .limite import LimiteAdapter
@@ -96,6 +98,7 @@ __all__ = [
     "DeepSeekOCRAdapter",
     "DeepSeekVL2Adapter",
     "Flux2TurboAdapter",
+    "Flux3ImageKleinLocalAdapter",
     "KimiVLAdapter",
     "LeffaAdapter",
     "LimiteAdapter",
