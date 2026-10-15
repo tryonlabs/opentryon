@@ -13,7 +13,7 @@ keywords:
 
 # FLUX 3 Image
 
-[FLUX 3 Image](https://docs.bfl.ml/flux_3/flux3_image_overview) is Black Forest Labs' unified still-image endpoint: one model handles text-to-image, edits, and compositions from up to **10** reference images. OpenTryOn exposes it as **`flux3-image`** on the `generate` and `edit` services (same adapter class, same `BFL_API_KEY`).
+[FLUX 3 Image](https://docs.bfl.ml/flux_3/flux3_image_overview) is Black Forest Labs' unified still-image endpoint: one model handles text-to-image, edits, and compositions from up to **10** reference images. OpenTryOn exposes it as **`flux3-image`** on the `generate` and `edit` services (same adapter class, same `BFL_API_KEY`). For video, see **[FLUX 3 Video](flux3-video)** (`flux3-video`).
 
 ## Prerequisites
 

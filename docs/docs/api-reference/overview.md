@@ -533,6 +533,30 @@ Registry id: `flux3-image` on `generate` and `edit`. See [FLUX 3 Image](flux3-im
 
 ---
 
+### `Flux3VideoAdapter`
+
+Adapter for [FLUX 3 Video](https://docs.bfl.ml/flux_3/flux3_video) — `POST /v1/flux-3-video` (t2v, i2v keyframes, v2v, draft_enhance).
+
+```python
+from tryon.api import Flux3VideoAdapter
+
+adapter = Flux3VideoAdapter()
+video_bytes = adapter.generate_text_to_video(
+    prompt="Runway walk under soft key light",
+    duration=8,
+    resolution="fhd",
+)
+```
+
+**Methods:**
+- `generate_text_to_video(...)` — t2v; pass `video=` for v2v or `draft_cache=` for draft enhance
+- `generate_image_to_video(image, prompt, end_image=..., ...)` — i2v keyframes
+- `enhance_draft(draft_cache, ...)` — full-quality render after `--draft`
+
+Registry id: `flux3-video` on `video-generate`. See [FLUX 3 Video](flux3-video).
+
+---
+
 ### `Flux2FlexAdapter`
 
 Adapter for FLUX.2 [FLEX] - flexible image generation with advanced controls.
