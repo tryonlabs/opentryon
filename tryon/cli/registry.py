@@ -58,7 +58,7 @@ class ModelSpec:
     import_path: str  # dotted submodule path, e.g. "tryon.api.vton.flux_vto"
     class_name: str
     method: str
-    output_kind: str  # "images" | "image_bytes" | "video_bytes" | "audio_bytes" | "text" | "embeddings"
+    output_kind: str  # "images" | "image_bytes" | "video_bytes" | "audio_bytes" | "mesh_bytes" | "text" | "embeddings"
     args: List[Arg] = field(default_factory=list)
     alt_method_on_image: Optional[str] = None
     alt_image_dest: str = "image"
@@ -1180,6 +1180,30 @@ _GENERATE = {
             Arg(("--steps",), "num_inference_steps", type=int, default=8),
             Arg(("--num-images",), "num_images", type=int, default=1),
             Arg(("--seed",), "seed", type=int),
+        ],
+    ),
+    "sana-sprint": ModelSpec(
+        id="sana-sprint",
+        label="SANA-Sprint 1.6B (local ultra-fast T2I, 1–4 steps)",
+        import_path="tryon.models.sana_sprint",
+        class_name="SanaSprintAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        extra="local",
+        notes=(
+            "NVLabs/MIT HAN 1–4 step distilled T2I at 1024px. Needs diffusers from GitHub "
+            "(SanaSprintPipeline), not the older opentryon[local] pin alone. "
+            "Apache-2.0 weights on Hugging Face."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--width",), "width", type=int, default=1024),
+            Arg(("--height",), "height", type=int, default=1024),
+            Arg(("--steps",), "num_inference_steps", type=int, default=2, help="1–4 steps"),
+            Arg(("--guidance-scale",), "guidance_scale", type=float, default=4.5),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--model-id",), "model_id", target="init", help="HF repo or local diffusers folder"),
+            Arg(("--device",), "device", target="init", choices=["cuda", "mps", "cpu"]),
         ],
     ),
     "gpt-image": ModelSpec(
@@ -3755,6 +3779,76 @@ _EMBED = {
 # classify  (fixed-label image classifiers: safety gating, garment attributes, QC)
 # --------------------------------------------------------------------------
 
+_AUDIO_TO_VIDEO = {
+    "nvidia-lipsync": ModelSpec(
+        id="nvidia-lipsync",
+        label="NVIDIA Maxine LipSync NIM (self-hosted gRPC)",
+        import_path="tryon.api.nvidia.lipsync_adapter",
+        class_name="LipSyncAdapter",
+        method="generate_audio_to_video",
+        output_kind="video_bytes",
+        env_hint="NVIDIA_API_KEY",
+        notes=(
+            "Lip-sync/dub existing video to new speech audio. No hosted REST — run the LipSync NIM "
+            "container and set LIPSYNC_GRPC_TARGET (default 127.0.0.1:8001) plus LIPSYNC_CLIENT_SCRIPT "
+            "to nim-clients/lipsync/python/scripts/lipsync.py. Input video: CFR H.264 MP4; audio: WAV/MP3. "
+            "Cloud alternative without self-hosting: video-generate --model fal-h3-max-lipsync."
+        ),
+        args=[
+            Arg(("--video",), "video", required=True, help="Source video (local CFR H.264 MP4 path)"),
+            Arg(("--audio",), "audio", required=True, help="Speech audio (local WAV or MP3 path)"),
+            Arg(
+                ("--grpc-target",),
+                "grpc_target",
+                target="init",
+                help="LipSync NIM gRPC host:port (default 127.0.0.1:8001)",
+            ),
+            Arg(
+                ("--client-script",),
+                "client_script",
+                target="init",
+                help="Path to NVIDIA nim-clients lipsync.py script",
+            ),
+        ],
+    ),
+}
+
+_GENERATE_3D = {
+    "trellis": ModelSpec(
+        id="trellis",
+        label="Microsoft TRELLIS (NVIDIA NIM, text/image → 3D)",
+        import_path="tryon.api.nvidia.trellis_adapter",
+        class_name="TrellisMeshAdapter",
+        method="generate_text_to_3d",
+        output_kind="mesh_bytes",
+        alt_method_on_image="generate_image_to_3d",
+        alt_image_dest="image",
+        env_hint="NVIDIA_API_KEY",
+        notes=(
+            "Hosted infer: POST ai.api.nvidia.com/v1/genai/microsoft/trellis (NVCF async). "
+            "Self-hosted NIM: TRELLIS_INFER_URL=http://127.0.0.1:8000/v1/infer. "
+            "Prompt max 77 chars; outputs GLB or STL."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", help="Text prompt (≤77 chars; required unless --image)"),
+            Arg(("--image", "-i"), "image", help="Reference image (switches to image-to-3D)", alt_only=True),
+            Arg(
+                ("--output-format",),
+                "output_format",
+                default="glb",
+                choices=["glb", "stl"],
+                help="Mesh format",
+            ),
+            Arg(("--seed",), "seed", type=int, default=0),
+            Arg(("--no-texture",), "no_texture", action="store_true", help="Skip texture baking (GLB only)"),
+            Arg(("--slat-cfg-scale",), "slat_cfg_scale", type=float),
+            Arg(("--ss-cfg-scale",), "ss_cfg_scale", type=float),
+            Arg(("--slat-sampling-steps",), "slat_sampling_steps", type=int),
+            Arg(("--ss-sampling-steps",), "ss_sampling_steps", type=int),
+        ],
+    ),
+}
+
 _CLASSIFY = {
     "tryon-safety-classifier": ModelSpec(
         id="tryon-safety-classifier",
@@ -3788,6 +3882,8 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "edit": _EDIT,
     "understand": _UNDERSTAND,
     "video-generate": _VIDEO_GENERATE,
+    "audio-to-video": _AUDIO_TO_VIDEO,
+    "generate-3d": _GENERATE_3D,
     "bg-remove": _BG_REMOVE,
     "tts": _TTS,
     "decide": _DECIDE,
@@ -3801,6 +3897,8 @@ SERVICE_HELP = {
     "edit": "Image editing (image + instruction -> image)",
     "understand": "Image understanding / captioning",
     "video-generate": "Text/image-to-video generation",
+    "audio-to-video": "Audio-driven video (lip-sync / dubbing)",
+    "generate-3d": "Text/image-to-3D mesh generation",
     "bg-remove": "Background removal",
     "tts": "Text-to-speech",
     "decide": "Typed, calibrated decisions (yes/no, choice, score) about text/images via System One models",

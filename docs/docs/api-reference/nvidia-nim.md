@@ -13,6 +13,8 @@ One key, `NVIDIA_API_KEY` from [build.nvidia.com](https://build.nvidia.com), unl
 | `nemotron-omni` | `understand` | `NemotronOmniUnderstandAdapter` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` |
 | `cosmos3-reasoner` | `understand` | `Cosmos3ReasonerAdapter` | `nvidia/cosmos3-nano-reasoner` |
 | `cosmos3` | `video-generate` | `Cosmos3VideoAdapter` | Cosmos 3 Generator nano (`POST` infer, `b64_video`) |
+| `trellis` | `generate-3d` | `TrellisMeshAdapter` | Microsoft TRELLIS (`POST` genai infer → GLB/STL) |
+| `nvidia-lipsync` | `audio-to-video` | `LipSyncAdapter` | Maxine LipSync NIM (self-hosted gRPC; no hosted REST) |
 
 Nemotron is **understanding / agents**, not T2I or VTON. Cosmos 3 Generator is **physics-aware T2V / I2V**. There is no NVIDIA VTON NIM — dedicated try-on APIs and local weights stay on the [integrate-next](../community/integrate-next.md) Wave 2 list.
 
@@ -112,9 +114,32 @@ The open `nvidia/Cosmos3-Nano` weights run through Diffusers as `--model cosmos3
 
 Named-model pins: `nemotron-omni`, `cosmos3-reasoner`, `cosmos3`, `cosmos3-local` (and longer phrases such as `cosmos 3 reasoner`). Defaults: `kimi-k2.6` / `veo`.
 
+## Generate 3D — TRELLIS
+
+```bash
+opentryon generate-3d --model trellis \
+  --prompt "Red leather handbag on a studio pedestal" \
+  --output-format glb
+
+opentryon generate-3d --model trellis --image product.jpg --output-format glb
+```
+
+MCP tool: `generate_3d_trellis`. Optional `TRELLIS_INFER_URL` for a local NIM container.
+
+## Audio-to-video — LipSync (self-hosted)
+
+```bash
+export LIPSYNC_CLIENT_SCRIPT=/path/to/nim-clients/lipsync/python/scripts/lipsync.py
+export LIPSYNC_GRPC_TARGET=127.0.0.1:8001
+
+opentryon audio-to-video --model nvidia-lipsync \
+  --video portrait.mp4 --audio line.wav
+```
+
+MCP tool: `audio_to_video_nvidia_lipsync`. For hosted dubbing without a GPU NIM, use `video-generate --model fal-h3-max-lipsync`.
+
 ## Not in this release
 
 - Nemotron Omni **local** weights (`nemotron-omni-local`) — 30B-A3B Path B later
 - Cosmos 3 Generator **super** (32B)
 - Cosmos Transfer / Predict 2.5
-- LipSync / TRELLIS (need new CLI services)

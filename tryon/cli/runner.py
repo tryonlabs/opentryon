@@ -182,6 +182,27 @@ def _package_result(spec: ModelSpec, result: Any, output_dir: Path, prefix: str)
             "audio_base64": encoded,
         }
 
+    if spec.output_kind == "mesh_bytes":
+        mesh_bytes: bytes
+        fmt = "glb"
+        if isinstance(result, tuple) and len(result) == 2:
+            mesh_bytes, fmt = result
+        elif isinstance(result, dict):
+            mesh_bytes = result.get("mesh_bytes") or result.get("bytes") or b""
+            fmt = (result.get("format") or result.get("output_format") or "glb").lower()
+        else:
+            mesh_bytes = result
+        fmt = fmt if fmt.startswith(".") else f".{fmt}"
+        path = _save_mesh(mesh_bytes, output_dir, prefix, fmt)
+        encoded = base64.b64encode(mesh_bytes).decode("utf-8")
+        return {
+            "output_kind": "mesh_bytes",
+            "output_path": str(path),
+            "output_paths": [str(path)],
+            "mesh_format": fmt.lstrip("."),
+            "mesh_base64": encoded,
+        }
+
     if spec.output_kind == "text":
         output_dir.mkdir(parents=True, exist_ok=True)
         path = output_dir / f"{prefix}.json"
@@ -254,6 +275,18 @@ def _save_video(video_bytes: bytes, output_dir: Path, prefix: str) -> Path:
     return path
 
 
+def _save_mesh(mesh_bytes: bytes, output_dir: Path, prefix: str, ext: str) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if not ext.startswith("."):
+        ext = f".{ext}"
+    if ext not in {".glb", ".stl"}:
+        ext = ".glb"
+    path = output_dir / f"{prefix}{ext}"
+    with open(path, "wb") as f:
+        f.write(mesh_bytes)
+    return path
+
+
 def _sniff_audio_extension(audio_bytes: bytes) -> str:
     """Best-effort extension from magic bytes. Headerless formats (raw PCM,
     u-law, A-law) have no signature and fall back to `.raw`."""
@@ -317,6 +350,10 @@ def run_service(service: str, argv: List[str]) -> int:
 
     if packaged["output_kind"] == "audio_bytes":
         print(f"\u2713 Saved: {packaged['output_path']}")
+        return 0
+
+    if packaged["output_kind"] == "mesh_bytes":
+        print(f"\u2713 Saved: {packaged['output_path']} ({packaged.get('mesh_format', 'glb')})")
         return 0
 
     if packaged["output_kind"] == "embeddings":

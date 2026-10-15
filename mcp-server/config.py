@@ -134,7 +134,10 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://build.nvidia.com",
         ("NVIDIA_API_KEY",),
         "One key for Nemotron Omni understand, Cosmos 3 Reasoner understand, "
-        "and Cosmos 3 Generator video. Optional COSMOS3_INFER_URL for a self-hosted Generator NIM.",
+        "Cosmos 3 Generator video, and TRELLIS generate-3d (hosted infer). Optional "
+        "COSMOS3_INFER_URL / TRELLIS_INFER_URL for self-hosted NIMs. LipSync "
+        "(audio-to-video nvidia-lipsync) is self-hosted gRPC — set LIPSYNC_GRPC_TARGET "
+        "and LIPSYNC_CLIENT_SCRIPT; key is for NGC when pulling the NIM image.",
     ),
     (
         "bfl",

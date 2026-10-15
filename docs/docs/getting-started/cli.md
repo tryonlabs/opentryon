@@ -20,7 +20,7 @@ single `opentryon` command with three levels of control: **service** &rarr;
 opentryon <service> --model <model> [params...]
 ```
 
-- **service**: what kind of task -- `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`, `tts`, `decide`, `embed`, `classify`
+- **service**: what kind of task -- `vton`, `generate`, `edit`, `understand`, `video-generate`, `audio-to-video`, `generate-3d`, `bg-remove`, `tts`, `decide`, `embed`, `classify`
 - **model**: which adapter/provider to use for that service, e.g. `--model flux-vto`
 - **parameters**: model-specific flags (image inputs, prompts, sampling knobs, etc.)
 
@@ -29,10 +29,12 @@ opentryon <service> --model <model> [params...]
 | Service | What it does | Models |
 |---|---|---|
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `fashn-vton-1.5` (local), `muse-image`, `klein-4b-tryon` (local) |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-model-create` |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `sana-sprint` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-model-create` |
 | `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-product-to-model`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `qie-2511-extract-outfit` (local) |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `claude-haiku-5-5`, `gemini-3.8-flash`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope), `fashion-florence` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `flux3-video`, `seedance`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `fal-h3-max-relight`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3`, `cosmos3-local` (local), `fashn-image-to-video` |
+| `audio-to-video` | Lip-sync / dub video to speech audio | `nvidia-lipsync` (self-hosted NIM gRPC) |
+| `generate-3d` | Text/image to 3D mesh | `trellis` (NVIDIA NIM) |
 | `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
 | `decide` | Calibrated yes/no, choice and score decisions about text/images/video ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
