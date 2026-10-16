@@ -309,6 +309,16 @@ The new `decide` service wraps "System One" models that return typed, calibrated
 
 Same key as `vton_fashn_tryon_max`. `edit_fashn_product_to_model`, `edit_fashn_model_swap`, `edit_fashn_face_to_model`, `edit_fashn_reframe`, `edit_fashn_edit`, `generate_fashn_model_create`, `video_generate_fashn_image_to_video` and `bg_remove_fashn_bg_remove`. See [FASHN catalogue endpoints](../api-reference/fashn.md#catalogue-endpoints-product-to-model-model-swap-).
 
+## Measure tools (Clad body sizing)
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `measure_clad_body_photo` | Photo + height → ISO 8559-1 measurements | `CLAD_API_KEY` |
+| `measure_clad_body_questionnaire` | Eight-question body model | `CLAD_API_KEY` |
+| `measure_clad_body_local` | Measure Anny/MHR params JSON | local / `clad-body` |
+
+See [Clad body API](../api-reference/clad-body.md).
+
 ## Classify tools (safety gating)
 
 | MCP tool | Backend | Needs |

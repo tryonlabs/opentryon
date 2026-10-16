@@ -245,7 +245,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 | Candidate | What it is | Notes | Status |
 |---|---|---|---|
 | **`segment` — garment / human parsing** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | Inherits the NVIDIA SegFormer licence (terms not confirmed — possibly non-commercial); `segformer_b2_clothes` is also "other". Find a commercial-clean parser first. Needs a mask output type. | `watch` |
-| **`measure` — body measurements / sizing** | `datar-psa/clad-body` (Apache-2.0, 25 ISO 8559-1 measurements, tagged per garment type). | Library consumes Anny/MHR meshes, not photos; photo input goes through Clad's hosted API ("free for now"). Small (31 stars). | `watch` |
+| **`measure` — body measurements / sizing** | Clad API (`clad-body-photo`, `clad-body-questionnaire`) + local `clad-body-local` on `datar-psa/clad-body`. | New `measure` service; ISO 8559-1 keys in JSON. `CLAD_API_KEY` at clad.you/developers. | **shipped** (Oct 2026) |
 | **`detect` — e-commerce detection** | Trendyol YOLOv9 (84 product classes) and a DINOv2 256-d embedder. | CC BY-SA 4.0 share-alike; paper in review. | `watch` |
 | **3D garments / sewing patterns** | `pygarment` / GarmentCode (MIT); DressWild and GarmentCrafter (2026). | Code / weights for the 2026 papers unverified. Large scope. | `watch` |
 

@@ -148,6 +148,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "FLUX 3 Video (flux3-video), and FLUX VTO.",
     ),
     (
+        "clad",
+        "Clad (body model API)",
+        "https://clad.you/developers",
+        ("CLAD_API_KEY",),
+        "Unlocks measure clad-body-photo and clad-body-questionnaire (ISO 8559-1 sizing). "
+        "Optional CLAD_API_BASE_URL (default https://api.clad.you).",
+    ),
+    (
         "kling",
         "Kling AI",
         "https://kling.ai/document-api/guides/get-started/overview",

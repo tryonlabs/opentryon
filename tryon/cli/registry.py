@@ -3981,6 +3981,123 @@ _GENERATE_3D = {
     ),
 }
 
+_MEASURE = {
+    "clad-body-photo": ModelSpec(
+        id="clad-body-photo",
+        label="Clad body from photo (ISO 8559-1 measurements)",
+        import_path="tryon.api.clad",
+        class_name="CladBodyApiAdapter",
+        method="measure_from_photo",
+        output_kind="text",
+        env_hint="CLAD_API_KEY",
+        notes=(
+            "Clad api.clad.you — one photo + height → async body job → ~25 ISO 8559-1 measurements "
+            "and optional GLB mesh (--include-mesh). Free tier; key at clad.you/developers."
+        ),
+        args=[
+            _img(("--photo", "-i"), "photo", "Full-body photo (path)", required=True),
+            Arg(
+                ("--height-cm",),
+                "height_cm",
+                type=float,
+                required=True,
+                help="Person height in cm (140–220)",
+            ),
+            Arg(
+                ("--max-wait-time",),
+                "max_wait_time",
+                type=int,
+                default=300,
+                help="Seconds to poll async photo job",
+            ),
+            Arg(
+                ("--include-mesh",),
+                "include_mesh",
+                action="store_true",
+                help="Include base64 GLB mesh in JSON (large)",
+            ),
+        ],
+    ),
+    "clad-body-questionnaire": ModelSpec(
+        id="clad-body-questionnaire",
+        label="Clad body from questionnaire (ISO 8559-1 measurements)",
+        import_path="tryon.api.clad",
+        class_name="CladBodyApiAdapter",
+        method="measure_from_questionnaire",
+        output_kind="text",
+        env_hint="CLAD_API_KEY",
+        notes="Eight-question Clad sizing flow → synchronous mesh + measurements (no photo).",
+        args=[
+            Arg(("--height-cm",), "height_cm", type=float, required=True),
+            Arg(("--mass-kg",), "mass_kg", type=float, required=True),
+            Arg(
+                ("--gender",),
+                "gender",
+                required=True,
+                choices=["female", "male"],
+            ),
+            Arg(
+                ("--body-shape",),
+                "body_shape",
+                required=True,
+                choices=["hourglass", "rectangle", "inverted_triangle", "pear", "apple"],
+            ),
+            Arg(("--belly",), "belly", type=int, required=True, choices=[1, 2, 3]),
+            Arg(("--build",), "build", type=int, required=True, choices=[1, 2, 3]),
+            Arg(("--legs",), "legs", type=int, default=2, choices=[1, 2, 3]),
+            Arg(("--arms",), "arms", type=int, default=2, choices=[1, 2, 3]),
+            Arg(("--cupsize",), "cupsize", help="A–F (female only)"),
+            Arg(("--ancestry",), "ancestry", default="mixed"),
+            Arg(
+                ("--include-mesh",),
+                "include_mesh",
+                action="store_true",
+                help="Include base64 GLB mesh in JSON (large)",
+            ),
+        ],
+    ),
+    "clad-body-local": ModelSpec(
+        id="clad-body-local",
+        label="Clad body local (measure Anny/MHR params)",
+        import_path="tryon.models.clad_body",
+        class_name="CladBodyLocalAdapter",
+        method="measure",
+        output_kind="text",
+        extra="local",
+        notes=(
+            "Apache-2.0 clad-body library on existing Anny or MHR param JSON — not photo reconstruction. "
+            "Install pip install 'clad-body[anny]' or 'clad-body[mhr]'. Hosted twin: clad-body-photo."
+        ),
+        args=[
+            Arg(
+                ("--params",),
+                "params",
+                required=True,
+                help="Path to Anny/MHR params JSON or inline JSON string",
+            ),
+            Arg(
+                ("--preset",),
+                "preset",
+                choices=["core", "standard", "enhanced", "fitted", "tops", "bottoms", "dresses", "outerwear"],
+                help="Measurement preset (cumulative tiers / garment tags)",
+            ),
+            Arg(
+                ("--only",),
+                "only",
+                nargs="+",
+                help="Specific measurement keys (e.g. bust_cm waist_cm hip_cm)",
+            ),
+            Arg(
+                ("--body-backend",),
+                "body_backend",
+                target="init",
+                default="anny",
+                choices=["anny", "mhr"],
+            ),
+        ],
+    ),
+}
+
 _CLASSIFY = {
     "tryon-safety-classifier": ModelSpec(
         id="tryon-safety-classifier",
@@ -4021,6 +4138,7 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "decide": _DECIDE,
     "embed": _EMBED,
     "classify": _CLASSIFY,
+    "measure": _MEASURE,
 }
 
 SERVICE_HELP = {
@@ -4036,6 +4154,7 @@ SERVICE_HELP = {
     "decide": "Typed, calibrated decisions (yes/no, choice, score) about text/images via System One models",
     "embed": "Multimodal embeddings (dense or multi-vector) saved to .npz",
     "classify": "Fixed-label image classification (try-on safety gating, garment attributes) with calibrated probabilities",
+    "measure": "Body measurements (ISO 8559-1) from photo, questionnaire, or parametric mesh",
 }
 
 

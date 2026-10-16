@@ -89,6 +89,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/wan',
         'api-reference/runway-gen4.5',
         'api-reference/nvidia-nim',
+        'api-reference/clad-body',
         'api-reference/ben2',
         'api-reference/kimi',
         'api-reference/qwen3.8',
@@ -131,6 +132,7 @@ const sidebars: SidebarsConfig = {
         'local-models/videojev',
         'local-models/sana-sprint',
         'local-models/flux3-image-klein',
+        'local-models/clad-body-local',
         'local-models/embeddinggemma',
         'local-models/pplx-embed',
         'local-models/fashion-embeddings',
@@ -168,6 +170,7 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       items: [
         'advanced/model-integration-guidelines',
+        'advanced/new-services-backlog',
         'advanced/new-model-checklist',
         'advanced/custom-models',
         'advanced/training-guide',

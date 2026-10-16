@@ -16,6 +16,7 @@ Adding a new local or API model? Start with
 |-------|------|--------------|-------|----------|
 | [FLUX.2-dev Turbo](./flux2-turbo) | Image Generation | 12GB+ | 6x faster | Fast text-to-image, image-to-image |
 | [FLUX 3 Image Klein](./flux3-image-klein) | Image Generation / Edit | RTX 3090+ class (see BFL) | ~16-step distilled | Open FLUX.3 Klein; API twin `flux3-image-klein` |
+| [Clad body (local)](./clad-body-local) | Body measurements (`measure`) | CPU (numpy paths) | Fast | ISO 8559-1 on Anny/MHR params; photo sizing via Clad API |
 | [Kimi-VL](./kimi-vl) | Image/Video Understanding | 24GB+ | - | Open-weight counterpart to the Kimi K2.6/K2.7 Code APIs |
 | [Qwen3.8](./qwen3.8) | Image/Video Understanding | ~50GB+ (bf16) | - | Open Qwen3.8-27B: multimodal understand + thinking; counterpart to DashScope Max |
 | [Hy4 preview](./hy4) | Text LLM (vLLM/SGLang) | Datacenter (FP8 ~770GB+, TP=8) | - | Open `tencent/Hy4-preview`; OpenTryOn calls localhost OpenAI API — not in-process |

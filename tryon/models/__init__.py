@@ -70,6 +70,7 @@ Requirements:
 """
 
 from .catvton import CatVTONAdapter
+from .clad_body import CladBodyLocalAdapter
 from .deepseek_ocr import DeepSeekOCRAdapter
 from .deepseek_vl2 import DeepSeekVL2Adapter
 from .flux2_turbo import Flux2TurboAdapter
@@ -95,6 +96,7 @@ from .wan22 import Wan22Adapter
 
 __all__ = [
     "CatVTONAdapter",
+    "CladBodyLocalAdapter",
     "DeepSeekOCRAdapter",
     "DeepSeekVL2Adapter",
     "Flux2TurboAdapter",
