@@ -54,6 +54,7 @@ _LAZY_ATTRS = {
     "Hy4Adapter": ".hy",
     "KimiUnderstandAdapter": ".kimi",
     "NemotronOmniUnderstandAdapter": ".nvidia",
+    "Nemotron35SuperVLUnderstandAdapter": ".nvidia",
     "Cosmos3ReasonerAdapter": ".nvidia",
     "Cosmos3VideoAdapter": ".nvidia",
     "QwenUnderstandAdapter": ".qwen",

@@ -110,6 +110,11 @@ async def check_dry_run_calls() -> None:
         ("understand_hy4_preview", {"prompt": "describe a linen trench", "dry_run": True}, False),
         ("understand_hy4_preview_local", {"prompt": "hello", "dry_run": True}, False),
         ("understand_nemotron_omni", {"image": "i.jpg", "dry_run": True}, False),
+        (
+            "understand_nemotron_3_5_super_vl",
+            {"image": "i.jpg", "prompt": "Describe", "dry_run": True},
+            False,
+        ),
         ("understand_cosmos3_reasoner", {"video": "clip.mp4", "prompt": "what happens?", "dry_run": True}, False),
         ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
         ("generate_muse_image", {"prompt": "editorial still", "dry_run": True}, False),
