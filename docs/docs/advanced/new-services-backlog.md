@@ -28,6 +28,12 @@ Docs: [Clad API](../api-reference/clad-body.md), [local](../local-models/clad-bo
 
 ---
 
+## Frontier MoE / long-context (`understand`)
+
+See [integrate-next — Frontier long-context MoE survey](../community/integrate-next.md#frontier-long-context-moe-survey--oct-2026): Kimi-K3, Muse Spark Open, Ling-3.1-flash, Beam, Nemotron 3.5 Super VL.
+
+---
+
 ## `detect` — after segment
 
 | Priority | Id (draft) | Path | API / model | Status |

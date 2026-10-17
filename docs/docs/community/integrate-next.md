@@ -47,6 +47,7 @@ Highest leverage: one NIM provider key unlocks understand + video. Nemotron is *
 | Nemotron 3 Nano / Super / Ultra (text) | Text-only agents | A NIM | — | Coding/planning MoE. No image/video I/O. Planner already uses other LLMs. | `skip` |
 | Nemotron OCR / Parse / page-table | Document OCR | A NIM | — | Useful later for PDP/catalog agents, not invoke-layer media. | `watch` |
 | Nemotron 3.5 Content Safety | Safety classifier | A NIM | — | Guardrail, not a generation/understand tool. | `watch` |
+| **Nemotron 3.5 Super VL 120B-A12B** | Understand (image + video + text, agentic reasoning) | A NIM | `nemotron-3.5-super-vl` | Hybrid Mamba–Transformer MoE; 1M context; GA on [build.nvidia.com](https://build.nvidia.com/nvidia/nemotron-3.5-super-vl-120b-a12b). HF weights for self-host. | `next` |
 
 **Nemotron 3 family (context, Aug 2026)**
 
@@ -206,6 +207,11 @@ The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candi
 | **DeepSeek-VL2** (`deepseek-vl2`) | B — Transformers + DeepSeek's own `deepseek_vl2` package (not on PyPI). No first-party hosted API exists (confirmed: `deepseek-flash`/`deepseek-v4-pro` are the only hosted models). | Local counterpart to `deepseek-flash`, same pairing pattern as `qwen3.8-max`/`qwen3.8`. Default `deepseek-ai/deepseek-vl2-tiny` (single-GPU friendly). | shipped |
 | **DeepSeek-OCR** (`deepseek-ocr`) | B — HF weights only, no first-party hosted endpoint (confirmed) | "Contexts Optical Compression" — real fashion fit: care labels, size tags, SKU/product-copy sheets. Needs flash-attn; distinct value from general captioning even though it shares the `understand` service. | shipped |
 | DeepSeek-V4-Pro (`deepseek-v4-pro`) | A — first-party, text-only (no image input) | Flagship reasoning (R-series folded into V4) but no vision — doesn't fit `understand`'s media-first contract. Better framed as an alternate `OPENTRYON_AGENT_LLM_PROVIDER` backend for the planner than a registry model, mirroring Nemotron's text-only agents. | `skip` |
+| **Kimi-K3 (2.8T MoE)** | A — Moonshot | 2.8T total / 104B active MoE, Kimi Delta Attention, 1M context, native multimodal. **`kimi-k3` is shipped** — re-verify Moonshot API model id and caps match this generation; if a distinct endpoint appears, add e.g. `kimi-k3-moe`. | `watch` |
+| **Muse Spark Open** | Understand / agents (coding + perception) | Meta — 816B MoE / 42B active; agent- and coding-oriented; 1M context; native audio/video perception; open weights (distinct from **`muse-image`** gen). | `watch` |
+| **Ling-3.1-flash** | Understand / reasoning | InclusionAI — 560B / 25B active hybrid-linear MoE; 1M context. Needs first-party API or open-weight hosting path. | `watch` |
+| **Beam** | Understand / agents | Reflection — 501B / 23B active frontier MoE; 1M context; **Apache-2.0** open weights. Path B (vLLM/SGLang) or Reflection API if offered. | `next` |
+| **Nemotron 3.5 Super VL** | Understand | See Wave 1 row — `nemotron-3.5-super-vl` on NIM (`NVIDIA_API_KEY`). | `next` |
 
 ### 3D model generation
 
@@ -222,6 +228,22 @@ The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candi
 Biology (AlphaFold, Evo2), CFD, weather, routing, chip sim, protein design — on the NIM catalog, not fashion media. DeepSeek-Prover-V2 (formal theorem proving) and DeepSeek-Coder (code LLM) — no fashion/media surface.
 
 **Exception shipped anyway:** [Limite 1B - Violetto](https://huggingface.co/paradigma-inc/limite-1b-violetto) (Paradigma Inc, `limite-1b-violetto`, Path B local) is a text-only 1B math-reasoning model with the same "no fashion/media surface" profile as DeepSeek-Prover-V2/Coder above — it was integrated on explicit request anyway (29 Sep 2026) as a reference point for a possible future **generic model gateway** direction for OpenTryOn, not because it fits the current fashion/media roadmap. It's named-model-only: no new planner intent, no capability-default change. If that "generic gateway" direction becomes real, re-evaluate whether text-only reasoning/coding/agent models (Nemotron 3 Nano/Super/Ultra, DeepSeek-Coder, DeepSeek-Prover-V2, etc. — currently `skip`/out-of-scope above) should move into this backlog properly rather than being one-off exceptions.
+
+---
+
+## Frontier long-context MoE survey — Oct 2026
+
+Public frontier models with **~1M token context** and large MoE footprints (industry round-up, Oct 2026). Fashion fit is **`understand`** (lookbooks, long PDP copy, video) and **planner/agent** backends — not VTON/T2I unless noted.
+
+| Candidate | Vendor | Scale (total / active) | Highlights | Path | Suggested id | Status |
+|---|---|---|---|---|---|---|
+| **Kimi-K3** | Moonshot AI | 2.8T / 104B (896 experts, 16 active) | Kimi Delta Attention; native multimodal | A | `kimi-k3` (shipped — confirm spec) | `watch` |
+| **Muse Spark Open** | Meta | 816B / 42B | Coding + agents; Blackwell Ultra training; audio/video in | A or B | `muse-spark-open` | `watch` |
+| **Ling-3.1-flash** | InclusionAI | 560B / 25B | Hybrid-linear MoE reasoning | A (or B if weights land) | `ling-3.1-flash` | `watch` |
+| **Beam** | Reflection | 501B / 23B | Open frontier MoE; Apache-2.0 | B (+ API if any) | `beam` | `next` |
+| **Nemotron 3.5 Super VL** | NVIDIA | 120B / 12B | Multimodal VLM; Mamba–Transformer hybrid; HF + NIM | A NIM | `nemotron-3.5-super-vl` | `next` |
+
+Suggested integrate order within this survey: **`nemotron-3.5-super-vl`** (same key as Omni) → **`beam`** (Apache-2.0 local) → **`muse-spark-open`** / **`ling-3.1-flash`** when API or weights are documented → re-check **`kimi-k3`** against Moonshot's latest model card.
 
 ---
 
@@ -292,6 +314,8 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 19. ~~`gemini-3.8-flash`~~ **shipped** (Path A, `understand`) and 20. ~~`gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`~~ **shipped** (Path A, second `tts` vendor), 8 Oct 2026. Voices endpoint / voice design / replication not wired yet.
 
 Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
+
+25. **Frontier MoE survey (Oct 2026)** — `next`: **`nemotron-3.5-super-vl`**, **`beam`** (Apache-2.0). `watch`: **Muse Spark Open**, **Ling-3.1-flash**, **Kimi-K3 2.8T** (vs shipped `kimi-k3`). See [Frontier long-context MoE survey](#frontier-long-context-moe-survey--oct-2026).
 
 21. ~~FASHN catalogue endpoints~~ **shipped** (Path A, 13 Oct 2026): `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video`, `fashn-bg-remove` via `tryon.api.fashn.FashnAdapter`.
 22. ~~Fashion embeddings~~ **shipped** (Path B, 13 Oct 2026): `marqo-fashionsiglip`, `moda-fashion-distilled`, `moda-pro-lite`, `zooclaw-fashionsiglip2` in the `embed` service. 
