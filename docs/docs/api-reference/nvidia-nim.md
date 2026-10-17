@@ -6,11 +6,12 @@ description: Path A NVIDIA NIM adapters — Nemotron 3 Nano Omni, Cosmos 3 Reaso
 
 # NVIDIA NIM (Nemotron / Cosmos)
 
-One key, `NVIDIA_API_KEY` from [build.nvidia.com](https://build.nvidia.com), unlocks three Wave 1 registry ids.
+One key, `NVIDIA_API_KEY` from [build.nvidia.com](https://build.nvidia.com), unlocks Nemotron / Cosmos / TRELLIS / LipSync registry ids.
 
 | CLI `--model` | Service | Adapter | Upstream id |
 |---|---|---|---|
 | `nemotron-omni` | `understand` | `NemotronOmniUnderstandAdapter` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` |
+| `nemotron-3.5-super-vl` | `understand` | `Nemotron35SuperVLUnderstandAdapter` | `nvidia/nemotron-3.5-super-vl-120b-a12b` |
 | `cosmos3-reasoner` | `understand` | `Cosmos3ReasonerAdapter` | `nvidia/cosmos3-nano-reasoner` |
 | `cosmos3` | `video-generate` | `Cosmos3VideoAdapter` | Cosmos 3 Generator nano (`POST` infer, `b64_video`) |
 | `trellis` | `generate-3d` | `TrellisMeshAdapter` | Microsoft TRELLIS (`POST` genai infer → GLB/STL) |
@@ -21,6 +22,7 @@ Nemotron is **understanding / agents**, not T2I or VTON. Cosmos 3 Generator is *
 Official docs:
 
 - [Nemotron 3 Nano Omni](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning)
+- [Nemotron 3.5 Super VL](https://build.nvidia.com/nvidia/nemotron-3.5-super-vl-120b-a12b/modelcard)
 - [Cosmos 3 Reasoner](https://build.nvidia.com/nvidia/cosmos3-nano-reasoner)
 - [Cosmos 3 Generator API](https://docs.nvidia.com/nim/cosmos/latest/api-reference.html)
 - [Cosmos 3 nano model card](https://build.nvidia.com/nvidia/cosmos3-nano/modelcard)
@@ -56,6 +58,23 @@ opentryon understand --model nemotron-omni \
 ```
 
 MCP tool: `understand_nemotron_omni`.
+
+## Understand — Nemotron 3.5 Super VL
+
+Same OpenAI-compatible chat surface. **Image + video + text** (no audio — use Nemotron Omni for audio). Reasoning via `enable_thinking` (on by default). 120B total / 12B active MoE; up to 1M context on NIM.
+
+```bash
+opentryon understand --model nemotron-3.5-super-vl \
+  --image lookbook.jpg \
+  --prompt "List each garment type and dominant colors."
+
+opentryon understand --model nemotron-3.5-super-vl \
+  --video runway.mp4 \
+  --prompt "Describe outfit changes shot by shot." \
+  --no-thinking
+```
+
+MCP tool: `understand_nemotron_3_5_super_vl`.
 
 ## Understand — Cosmos 3 Reasoner
 
@@ -93,6 +112,7 @@ MCP tool: `video_generate_cosmos3`.
 ```python
 from tryon.api.nvidia import (
     NemotronOmniUnderstandAdapter,
+    Nemotron35SuperVLUnderstandAdapter,
     Cosmos3ReasonerAdapter,
     Cosmos3VideoAdapter,
 )
@@ -112,7 +132,7 @@ The open `nvidia/Cosmos3-Nano` weights run through Diffusers as `--model cosmos3
 
 ## Planner
 
-Named-model pins: `nemotron-omni`, `cosmos3-reasoner`, `cosmos3`, `cosmos3-local` (and longer phrases such as `cosmos 3 reasoner`). Defaults: `kimi-k2.6` / `veo`.
+Named-model pins: `nemotron-3.5-super-vl`, `nemotron-omni`, `cosmos3-reasoner`, `cosmos3`, `cosmos3-local` (and longer phrases such as `nemotron 3.5 super vl`). Defaults: `kimi-k2.6` / `veo`.
 
 ## Generate 3D — TRELLIS
 

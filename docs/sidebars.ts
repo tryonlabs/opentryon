@@ -168,6 +168,7 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       items: [
         'advanced/model-integration-guidelines',
+        'advanced/new-services-backlog',
         'advanced/new-model-checklist',
         'advanced/custom-models',
         'advanced/training-guide',

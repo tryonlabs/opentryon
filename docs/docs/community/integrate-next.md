@@ -38,6 +38,7 @@ Highest leverage: one NIM provider key unlocks understand + video. Nemotron is *
 | Candidate | Category | Path | Suggested id | Why | Status |
 |---|---|---|---|---|---|
 | **Nemotron 3 Nano Omni 30B-A3B Reasoning** | Understand (image + video + audio + text) | A NIM | `nemotron-omni` | Hosted NIM chat. Path B local weights later. | shipped |
+| **Nemotron 3.5 Super VL 120B-A12B** | Understand (image + video + text, agentic reasoning) | A NIM | `nemotron-3.5-super-vl` | GA Oct 2026 on build.nvidia.com; no audio (use Omni). | shipped |
 | **Cosmos 3 Generator (nano, 8B)** | Text-to-video, image-to-video | A NIM (`POST` infer) | `cosmos3` | T2V if prompt only; I2V if `image` set. Optional `COSMOS3_INFER_URL`. | shipped |
 | **Cosmos 3 Reasoner (nano)** | Understand (physical / video) | A NIM | `cosmos3-reasoner` | World-model VLM. | shipped |
 | **Cosmos 3 Nano local weights** | T2V / I2V | B Diffusers | `cosmos3-local` | `nvidia/Cosmos3-Nano`, `Cosmos3OmniPipeline`, BF16/CUDA. Shipped Oct 2026. | shipped |
@@ -244,7 +245,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 
 | Candidate | What it is | Notes | Status |
 |---|---|---|---|
-| **`segment` — garment / human parsing** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | Inherits the NVIDIA SegFormer licence (terms not confirmed — possibly non-commercial); `segformer_b2_clothes` is also "other". Find a commercial-clean parser first. Needs a mask output type. | `watch` |
+| **`segment` — garment / human parsing** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | Inherits the NVIDIA SegFormer licence (terms not confirmed — possibly non-commercial); `segformer_b2_clothes` is also "other". Find a commercial-clean parser first. Needs a mask output type. | `watch` — queue: [new-services-backlog](../advanced/new-services-backlog.md) |
 | **`measure` — body measurements / sizing** | `datar-psa/clad-body` (Apache-2.0, 25 ISO 8559-1 measurements, tagged per garment type). | Library consumes Anny/MHR meshes, not photos; photo input goes through Clad's hosted API ("free for now"). Small (31 stars). | `watch` |
 | **`detect` — e-commerce detection** | Trendyol YOLOv9 (84 product classes) and a DINOv2 256-d embedder. | CC BY-SA 4.0 share-alike; paper in review. | `watch` |
 | **3D garments / sewing patterns** | `pygarment` / GarmentCode (MIT); DressWild and GarmentCrafter (2026). | Code / weights for the 2026 papers unverified. Large scope. | `watch` |
