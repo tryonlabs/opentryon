@@ -506,6 +506,13 @@ def check_nvidia_nim_dry_runs():
             "'enable_thinking': True",
         ),
         (
+            ["understand", "--model", "nemotron-3.5-super-vl",
+             "--image", "data/model-1.jpg", "--prompt", "Describe the outfit"],
+            "Nemotron35SuperVLUnderstandAdapter",
+            "understand",
+            "'enable_thinking': True",
+        ),
+        (
             ["understand", "--model", "cosmos3-reasoner",
              "--image", "data/model-1.jpg", "--prompt", "What is happening?"],
             "Cosmos3ReasonerAdapter",

@@ -125,6 +125,11 @@ async def check_dry_run_calls() -> None:
         ),
         ("measure_clad_body_local", {"params": "params.json", "preset": "core", "dry_run": True}, True),
         ("understand_nemotron_omni", {"image": "i.jpg", "dry_run": True}, False),
+        (
+            "understand_nemotron_3_5_super_vl",
+            {"image": "i.jpg", "prompt": "Describe", "dry_run": True},
+            False,
+        ),
         ("understand_cosmos3_reasoner", {"video": "clip.mp4", "prompt": "what happens?", "dry_run": True}, False),
         ("generate_qwen_image", {"prompt": "editorial still", "dry_run": True}, False),
         ("generate_muse_image", {"prompt": "editorial still", "dry_run": True}, False),

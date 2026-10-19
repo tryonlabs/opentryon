@@ -347,7 +347,7 @@ CLI: `opentryon understand --model ternary-bonsai-2-27b`. See [Ternary Bonsai 2 
 1. Create a key at [build.nvidia.com](https://build.nvidia.com)
 2. Add to `.env`: `NVIDIA_API_KEY=your_key`
 
-   Same key covers `understand --model nemotron-omni`, `understand --model cosmos3-reasoner`, and `video-generate --model cosmos3`. Optional `COSMOS3_INFER_URL` points a self-hosted Generator NIM at `http://127.0.0.1:8000/v1/infer`. See [NVIDIA NIM](../api-reference/nvidia-nim.md).
+   Same key covers `understand --model nemotron-omni`, `understand --model nemotron-3.5-super-vl`, `understand --model cosmos3-reasoner`, and `video-generate --model cosmos3`. Optional `COSMOS3_INFER_URL` points a self-hosted Generator NIM at `http://127.0.0.1:8000/v1/infer`. See [NVIDIA NIM](../api-reference/nvidia-nim.md).
 
 ### Meta Model API (Muse Image)
 

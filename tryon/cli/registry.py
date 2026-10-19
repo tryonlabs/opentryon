@@ -2324,6 +2324,31 @@ _UNDERSTAND = {
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
         ],
     ),
+    "nemotron-3.5-super-vl": ModelSpec(
+        id="nemotron-3.5-super-vl",
+        label="NVIDIA Nemotron 3.5 Super VL (NIM, 120B MoE VLM)",
+        import_path="tryon.api.nvidia",
+        class_name="Nemotron35SuperVLUnderstandAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="NVIDIA_API_KEY",
+        notes=(
+            "Hosted NIM chat on integrate.api.nvidia.com. Image + video + text; "
+            "1M context; agentic reasoning via enable_thinking (default on). "
+            "No native audio input (use nemotron-omni for audio). "
+            "Model id nvidia/nemotron-3.5-super-vl-120b-a12b (GA Oct 2026)."
+        ),
+        args=[
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
+                help="Disable reasoning (chat_template_kwargs.enable_thinking=false)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+            Arg(("--top-p",), "top_p", type=float, help="Nucleus sampling top_p"),
+        ],
+    ),
     "cosmos3-reasoner": ModelSpec(
         id="cosmos3-reasoner",
         label="NVIDIA Cosmos 3 Reasoner (NIM physical-world VLM)",

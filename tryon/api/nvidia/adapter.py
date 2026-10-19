@@ -41,12 +41,19 @@ except ImportError:
 DEFAULT_BASE_URL = "https://integrate.api.nvidia.com/v1"
 
 NEMOTRON_OMNI_MODEL = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+NEMOTRON_35_SUPER_VL_MODEL = "nvidia/nemotron-3.5-super-vl-120b-a12b"
 COSMOS3_REASONER_MODEL = "nvidia/cosmos3-nano-reasoner"
 
 NEMOTRON_ALIASES = {
     "nemotron-omni": NEMOTRON_OMNI_MODEL,
     "nemotron-3-nano-omni": NEMOTRON_OMNI_MODEL,
     NEMOTRON_OMNI_MODEL: NEMOTRON_OMNI_MODEL,
+}
+NEMOTRON_35_SUPER_VL_ALIASES = {
+    "nemotron-3.5-super-vl": NEMOTRON_35_SUPER_VL_MODEL,
+    "nemotron-3-5-super-vl": NEMOTRON_35_SUPER_VL_MODEL,
+    "nemotron-super-vl": NEMOTRON_35_SUPER_VL_MODEL,
+    NEMOTRON_35_SUPER_VL_MODEL: NEMOTRON_35_SUPER_VL_MODEL,
 }
 REASONER_ALIASES = {
     "cosmos3-reasoner": COSMOS3_REASONER_MODEL,
@@ -133,6 +140,7 @@ class _NvidiaChatUnderstandAdapter:
     default_model: str = NEMOTRON_OMNI_MODEL
     aliases: Dict[str, str] = NEMOTRON_ALIASES
     supports_audio: bool = False
+    thinking_in_extra_body: bool = False
 
     def __init__(
         self,
@@ -243,7 +251,7 @@ class _NvidiaChatUnderstandAdapter:
                 needed = "`image`, `video`, or `audio`"
             raise ValueError(f"Provide at least one of {needed}.")
 
-        if enable_thinking is None and self.supports_audio:
+        if enable_thinking is None and (self.supports_audio or self.thinking_in_extra_body):
             enable_thinking = True
 
         content: List[Dict[str, Any]] = []
@@ -281,18 +289,24 @@ class _NvidiaChatUnderstandAdapter:
                 }
             )
         text = prompt
-        if enable_thinking and not self.supports_audio:
+        if (
+            enable_thinking
+            and not self.supports_audio
+            and not self.thinking_in_extra_body
+        ):
             # Cosmos Reasoner: hosted UI documents a prompt-side reasoning hint.
             if REASONER_THINKING_PREFIX not in (prompt or ""):
                 text = REASONER_THINKING_PREFIX + (prompt or DEFAULT_UNDERSTAND_PROMPT)
         content.append({"type": "text", "text": text})
 
-        think_kw = enable_thinking if self.supports_audio else None
+        use_template_thinking = self.supports_audio or self.thinking_in_extra_body
+        think_kw = enable_thinking if use_template_thinking else None
+        budget_kw = reasoning_budget if self.supports_audio else None
         return self._chat(
             content,
             model=model,
             enable_thinking=think_kw,
-            reasoning_budget=reasoning_budget if self.supports_audio else None,
+            reasoning_budget=budget_kw,
             max_tokens=max_tokens,
             temperature=temperature,
             top_p=top_p,
@@ -305,6 +319,16 @@ class NemotronOmniUnderstandAdapter(_NvidiaChatUnderstandAdapter):
     default_model = NEMOTRON_OMNI_MODEL
     aliases = NEMOTRON_ALIASES
     supports_audio = True
+    thinking_in_extra_body = True
+
+
+class Nemotron35SuperVLUnderstandAdapter(_NvidiaChatUnderstandAdapter):
+    """Nemotron 3.5 Super VL — image / video / document-style understand via NIM."""
+
+    default_model = NEMOTRON_35_SUPER_VL_MODEL
+    aliases = NEMOTRON_35_SUPER_VL_ALIASES
+    supports_audio = False
+    thinking_in_extra_body = True
 
 
 class Cosmos3ReasonerAdapter(_NvidiaChatUnderstandAdapter):

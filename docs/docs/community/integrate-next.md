@@ -38,6 +38,7 @@ Highest leverage: one NIM provider key unlocks understand + video. Nemotron is *
 | Candidate | Category | Path | Suggested id | Why | Status |
 |---|---|---|---|---|---|
 | **Nemotron 3 Nano Omni 30B-A3B Reasoning** | Understand (image + video + audio + text) | A NIM | `nemotron-omni` | Hosted NIM chat. Path B local weights later. | shipped |
+| **Nemotron 3.5 Super VL 120B-A12B** | Understand (image + video + text, agentic reasoning) | A NIM | `nemotron-3.5-super-vl` | GA Oct 2026 on build.nvidia.com; no audio (use Omni). | shipped |
 | **Cosmos 3 Generator (nano, 8B)** | Text-to-video, image-to-video | A NIM (`POST` infer) | `cosmos3` | T2V if prompt only; I2V if `image` set. Optional `COSMOS3_INFER_URL`. | shipped |
 | **Cosmos 3 Reasoner (nano)** | Understand (physical / video) | A NIM | `cosmos3-reasoner` | World-model VLM. | shipped |
 | **Cosmos 3 Nano local weights** | T2V / I2V | B Diffusers | `cosmos3-local` | `nvidia/Cosmos3-Nano`, `Cosmos3OmniPipeline`, BF16/CUDA. Shipped Oct 2026. | shipped |
@@ -266,7 +267,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 
 | Candidate | What it is | Notes | Status |
 |---|---|---|---|
-| **`segment` — garment / human parsing** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | Inherits the NVIDIA SegFormer licence (terms not confirmed — possibly non-commercial); `segformer_b2_clothes` is also "other". Find a commercial-clean parser first. Needs a mask output type. | `watch` |
+| **`segment` — garment / human parsing** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | Inherits the NVIDIA SegFormer licence (terms not confirmed — possibly non-commercial); `segformer_b2_clothes` is also "other". Find a commercial-clean parser first. Needs a mask output type. | `watch` — queue: [new-services-backlog](../advanced/new-services-backlog.md) |
 | **`measure` — body measurements / sizing** | Clad API (`clad-body-photo`, `clad-body-questionnaire`) + local `clad-body-local` on `datar-psa/clad-body`. | New `measure` service; ISO 8559-1 keys in JSON. `CLAD_API_KEY` at clad.you/developers. | **shipped** (Oct 2026) |
 | **`detect` — e-commerce detection** | Trendyol YOLOv9 (84 product classes) and a DINOv2 256-d embedder. | CC BY-SA 4.0 share-alike; paper in review. | `watch` |
 | **3D garments / sewing patterns** | `pygarment` / GarmentCode (MIT); DressWild and GarmentCrafter (2026). | Code / weights for the 2026 papers unverified. Large scope. | `watch` |
@@ -320,7 +321,8 @@ Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (
 21. ~~FASHN catalogue endpoints~~ **shipped** (Path A, 13 Oct 2026): `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video`, `fashn-bg-remove` via `tryon.api.fashn.FashnAdapter`.
 22. ~~Fashion embeddings~~ **shipped** (Path B, 13 Oct 2026): `marqo-fashionsiglip`, `moda-fashion-distilled`, `moda-pro-lite`, `zooclaw-fashionsiglip2` in the `embed` service. 
 23. ~~`fashion-florence` / `qie-2511-extract-outfit`~~ **shipped** (Path B local, `understand` / `edit`, 13 Oct 2026). 
-24. ~~`klein-4b-tryon` / `tryon-safety-classifier`~~ **shipped** (Path B local, `vton` / new `classify` service, 13 Oct 2026). The remaining survey rows are new-service ideas (`segment`, `measure`, `detect`, 3D garments) and licence-blocked models.
+24. ~~`klein-4b-tryon` / `tryon-safety-classifier`~~ **shipped** (Path B local, `vton` / new `classify` service, 13 Oct 2026).
+25. ~~`measure` (Clad body photo / questionnaire / local)~~ **shipped** (new `measure` service, Oct 2026). Remaining new-service ideas: `segment`, `detect`, 3D garments; plus licence-blocked models.
 
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 
