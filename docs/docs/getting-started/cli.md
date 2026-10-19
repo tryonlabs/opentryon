@@ -12,7 +12,7 @@ keywords:
 # Unified CLI (`opentryon`)
 
 Once OpenTryOn is installed (`pip install -U opentryon` or `pip install -e .`;
-**v0.0.7+** recommended), every adapter in the repo is available through a
+**v0.0.8+** recommended), every adapter in the repo is available through a
 single `opentryon` command with three levels of control: **service** &rarr;
 **model** &rarr; **parameters**.
 

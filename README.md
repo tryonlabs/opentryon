@@ -16,7 +16,7 @@ Open-source AI toolkit for fashion technology: virtual try-on, image/video gener
 
 </div>
 
-**Current release: [v0.0.7](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.7)** — FASHN catalogue endpoints (product-to-model, model swap, reframe, image-to-video), fashion retrieval embeddings, Fashion Florence, Extract-Outfit, a commercially clean klein-4B try-on, and a try-on safety classifier (new `classify` service); 148 models, 10 services.
+**Current release: [v0.0.8](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.8)** — Clad body measurement (`measure`), FLUX 3 Image Klein and FLUX 3 Video, NVIDIA LipSync and TRELLIS (`audio-to-video`, `generate-3d`), Nemotron 3.5 Super VL, VideoJev, and Gemini Embedding 2; 163 models, 13 services.
 
 📚 **Full documentation:** [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)  
 API tutorials, configuration, examples, and agent guides live there — not in this README.
@@ -102,12 +102,15 @@ opentryon understand --model kimi-k3 --help    # list that model's flags
 | `generate` | Text-to-image | `nano-banana-pro`, `flux2-pro`, `gpt-image-2.5`, … |
 | `edit` | Image editing | `nano-banana-2`, `flux2-flex`, `gpt-image-2.5-sunburst`, … |
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k3`, `kimi-vl`, … |
-| `video-generate` | Text/image-to-video | `veo`, `sora`, `gemini-omni`, … |
+| `video-generate` | Text/image-to-video | `veo`, `sora`, `flux3-video`, … |
+| `audio-to-video` | Lip-sync / dubbing | `nvidia-lipsync` |
+| `generate-3d` | Image or text to a mesh | `trellis` |
 | `bg-remove` | Background removal | `ben2` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo` |
 | `decide` | Calibrated yes/no, choice, score decisions | `jev`, `d1-3b`, `d1-omni-600m` |
 | `classify` | Try-on safety gating (fixed-label classifier) | `tryon-safety-classifier` |
-| `embed` | Multimodal embeddings (`.npz`) | `embeddinggemma-2`, `pplx-embed-v2-late-0.6b`, … |
+| `embed` | Multimodal embeddings (`.npz`) | `gemini-embedding-2`, `embeddinggemma-2`, … |
+| `measure` | ISO 8559-1 body measurements | `clad-body-photo`, `clad-body-questionnaire`, `clad-body-local` |
 
 Models marked local need `pip install opentryon[local]`. Full table and flags: [Unified CLI](https://tryonlabs.github.io/opentryon/docs/getting-started/cli).
 

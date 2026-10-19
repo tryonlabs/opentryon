@@ -2,7 +2,7 @@
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that exposes every model in the [`opentryon`](../README.md) toolkit -- virtual try-on, image/video generation & editing, multimodal image & video understanding, and background removal -- as tools an LLM agent (Claude, Cursor, ChatGPT, or any MCP client) can call directly.
 
-Requires **OpenTryOn v0.0.7+** (`pip install -U opentryon`).
+Requires **OpenTryOn v0.0.8+** (`pip install -U opentryon`).
 
 **Documentation:**
 
@@ -160,6 +160,9 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_nano_banana_2_1` | Nano Banana 2.1 (`gemini-nano-banana-2.1`; adds 1:4/4:1/1:8/8:1) | `GEMINI_API_KEY` |
 | `generate_fashn_model_create` | FASHN Model Create (fashion model from a prompt) | `FASHN_API_KEY` |
 | `generate_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
+| `generate_flux3_image_klein` | FLUX 3 Image Klein (distilled) | `BFL_API_KEY` |
+| `generate_flux3_image_klein_local` | FLUX 3 Image Klein (local Diffusers) | local/GPU |
+| `generate_sana_sprint` | SANA-Sprint (local, 1–4 steps) | local/GPU |
 | `generate_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `generate_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `generate_flux2_turbo` | FLUX.2-dev Turbo (local, 8-step) | local/GPU |
@@ -191,6 +194,8 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_fashn_edit` | FASHN Edit (prompt edit with optional mask/context) | `FASHN_API_KEY` |
 | `edit_qie_2511_extract_outfit` | QIE-2511 Extract-Outfit (worn photo → flat mockup, local) | local/GPU |
 | `edit_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
+| `edit_flux3_image_klein` | FLUX 3 Image Klein (distilled) | `BFL_API_KEY` |
+| `edit_flux3_image_klein_local` | FLUX 3 Image Klein (local Diffusers) | local/GPU |
 | `edit_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
 | `edit_flux2_flex` | FLUX.2 [flex] | `BFL_API_KEY` |
 | `edit_flux2_turbo` | FLUX.2-dev Turbo (local, image-to-image) | local/GPU |
@@ -231,6 +236,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |
+| `understand_nemotron_3_5_super_vl` | Nemotron 3.5 Super VL (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + text; no audio |
 | `understand_cosmos3_reasoner` | Cosmos 3 Reasoner (NVIDIA NIM) | `NVIDIA_API_KEY` | Physical-world image/video QA |
 
 **Qwen3.8 via MCP:** both tools call the shared `understand` entry point (`image`
@@ -259,6 +265,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | Tool | Model | Requires |
 |---|---|---|
 | `video_generate_veo` | Google Veo 3.1 (Generate / Fast / Lite) | `GEMINI_API_KEY` |
+| `video_generate_flux3_video` | FLUX 3 Video (text, keyframes, video-to-video) | `BFL_API_KEY` |
 | `video_generate_sora` | OpenAI Sora (**deprecated — API removed 2026-09-24**) | `OPENAI_API_KEY` |
 | `video_generate_luma_video` | Luma Dream Machine (Ray 2) | `LUMA_AI_API_KEY` |
 | `video_generate_luma_ray_3_2` | Luma Ray 3.2 (Agents API) | `LUMA_AGENTS_API_KEY` / `LUMA_AI_API_KEY` |
@@ -319,6 +326,28 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 | `decide_jev` | Typesafe AI Jev (text/JSON only; early access) | `TYPESAFE_API_KEY` |
 | `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
 | `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
+| `decide_videojev_4b` | VideoJev 4B (local video grounding / MCQ) | local/GPU |
+| `decide_videojev_35b_a3b` | VideoJev 35B-A3B (local video grounding / MCQ) | local/GPU |
+
+### audio-to-video -- Lip-sync
+
+| Tool | Model | Requires |
+|---|---|---|
+| `audio_to_video_nvidia_lipsync` | NVIDIA Maxine LipSync NIM (self-hosted gRPC) | `LIPSYNC_GRPC_TARGET` |
+
+### generate-3d -- Mesh
+
+| Tool | Model | Requires |
+|---|---|---|
+| `generate_3d_trellis` | Microsoft TRELLIS (image or text → GLB/STL) | `NVIDIA_API_KEY` |
+
+### measure -- Body measurements
+
+| Tool | Model | Requires |
+|---|---|---|
+| `measure_clad_body_photo` | Clad photo + height → ISO 8559-1 | `CLAD_API_KEY` |
+| `measure_clad_body_questionnaire` | Clad eight-question sizing flow | `CLAD_API_KEY` |
+| `measure_clad_body_local` | Measure Anny/MHR param JSON | local / `clad-body` |
 
 ### classify -- Fixed-label classification
 

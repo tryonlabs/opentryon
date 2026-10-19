@@ -2,7 +2,7 @@
 slug: /
 hide_table_of_contents: true
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.7 adds FASHN catalogue endpoints (product-to-model, model swap, reframe, image-to-video), fashion retrieval embeddings, Fashion Florence, Extract-Outfit, a commercially clean klein-4B try-on, and a try-on safety classifier (new classify service); 148 models, 10 services on the v0.0.6 CLI/MCP surface.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.8 adds Clad body measurement, FLUX 3 Image Klein and Video, NVIDIA LipSync, TRELLIS 3D, Nemotron 3.5 Super VL, VideoJev, and Gemini Embedding 2; 163 models, 13 services.
 keywords:
   - virtual try-on
   - fashion AI
@@ -63,7 +63,7 @@ import HomeHero from '@site/src/components/HomeHero';
 
 # Welcome to OpenTryOn
 
-OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.7](https://pypi.org/project/opentryon/0.0.7/)** on PyPI.
+OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.8](https://pypi.org/project/opentryon/0.0.8/)** on PyPI.
 
 ## 🎯 What is OpenTryOn?
 
@@ -76,7 +76,14 @@ OpenTryOn gives you four ways to run fashion AI models:
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
-## 🚀 Key Features (v0.0.7)
+## What's new in v0.0.8
+
+- **`measure`** — Clad body sizing from a photo, a questionnaire, or local Anny/MHR params
+- **FLUX 3 Image Klein** (API + local) and **FLUX 3 Video**
+- **`audio-to-video`** (`nvidia-lipsync`) and **`generate-3d`** (`trellis`)
+- **Nemotron 3.5 Super VL**, **VideoJev** (local video decisions), **Gemini Embedding 2**
+
+## 🚀 Key Features
 
 ### Developer surfaces
 - Unified **registry-driven CLI** with `--dry-run`

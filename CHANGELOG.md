@@ -7,13 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.8] - 19 October 2026
+
 ### Added
-- **New `measure` service** — Clad body sizing: **`clad-body-photo`** and **`clad-body-questionnaire`** (`tryon.api.clad.CladBodyApiAdapter`, `CLAD_API_KEY`); **`clad-body-local`** (`tryon.models.clad_body.CladBodyLocalAdapter`, Anny/MHR params via `clad-body`). MCP tools `measure_clad_body_*`; docs `api-reference/clad-body.md`, `local-models/clad-body-local.md`
-- **`nemotron-3.5-super-vl`** (`understand`, `Nemotron35SuperVLUnderstandAdapter`): NVIDIA NIM `nvidia/nemotron-3.5-super-vl-120b-a12b` — image/video/text VLM with reasoning (no audio). Same `NVIDIA_API_KEY`; MCP `understand_nemotron_3_5_super_vl`. Backlog doc for remaining `segment` / `detect` services: `docs/docs/advanced/new-services-backlog.md`
-- **`flux3-image-klein`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageKleinAdapter`): first-party `POST /v1/flux-3-image-klein` — distilled FLUX 3 Image sibling (seed/steps, safety 0–7, no grounding). Same `BFL_API_KEY` as `flux3-image`; MCP tools `generate_flux3_image_klein` and `edit_flux3_image_klein`; planner pins `flux 3 image klein`. Docs: `docs/docs/api-reference/flux3-image-klein.md`
-- **`flux3-image-klein-local`** (`generate` + `edit`, `tryon.models.flux3_image_klein.Flux3ImageKleinLocalAdapter`): Hugging Face `ModularPipeline` for `black-forest-labs/flux-3-image-klein` (and `-klein-base` via `--model-id` / `FLUX3_IMAGE_KLEIN_MODEL_ID`). MCP `generate_flux3_image_klein_local` / `edit_flux3_image_klein_local`; docs `docs/docs/local-models/flux3-image-klein.md`
-- `embed` service: **`gemini-embedding-2`** — Google's hosted multimodal embeddings (text, images, audio, video, PDF in one space; 3072-d, Matryoshka `--dim` 128–3072). New `GeminiEmbeddingAdapter` in `tryon.api.gemini`; one vector per input by default, `--aggregate` fuses inputs, text is task-prefixed (`--task`, `--role`) because the model has no `task_type`. Uses `GEMINI_API_KEY`.
-- Docs: new page `api-reference/gemini-embedding-2.md`; CLI, MCP and configuration pages updated.
+
+#### 📏 New `measure` service — Clad body sizing
+- **`clad-body-photo`** and **`clad-body-questionnaire`** (`tryon.api.clad.CladBodyApiAdapter`, `CLAD_API_KEY`): hosted Clad API — photo + height (async job) or the eight-question flow → ISO 8559-1 measurements
+- **`clad-body-local`** (`tryon.models.clad_body.CladBodyLocalAdapter`): Apache-2.0 `clad-body` on existing Anny/MHR param JSON (not photo reconstruction)
+- MCP tools `measure_clad_body_*`; planner pins; docs `api-reference/clad-body.md`, `local-models/clad-body-local.md`
+
+#### 🎬 FLUX 3 Image Klein, FLUX 3 Video, SANA-Sprint
+- **`flux3-image-klein`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageKleinAdapter`): first-party `POST /v1/flux-3-image-klein` — distilled FLUX 3 Image sibling (seed/steps, safety 0–7, no grounding). Same `BFL_API_KEY` as `flux3-image`
+- **`flux3-image-klein-local`** (`generate` + `edit`, `tryon.models.flux3_image_klein.Flux3ImageKleinLocalAdapter`): Hugging Face `ModularPipeline` for `black-forest-labs/flux-3-image-klein` (and `-klein-base` via `--model-id` / `FLUX3_IMAGE_KLEIN_MODEL_ID`)
+- **`flux3-video`** (`video-generate`, `tryon.api.flux3_video.Flux3VideoAdapter`): first-party `POST /v1/flux-3-video` — t2v, i2v keyframes, v2v, draft preview and enhance. Same `BFL_API_KEY`
+- **`sana-sprint`** (`generate`, local `SanaSprintAdapter`): NVLabs 1–4 step text-to-image via Diffusers `SanaSprintPipeline`
+
+#### 🔊 New `audio-to-video` and `generate-3d` services
+- **`nvidia-lipsync`** (`audio-to-video`, `LipSyncAdapter`): NVIDIA Maxine LipSync NIM via self-hosted gRPC (`LIPSYNC_GRPC_TARGET`, `LIPSYNC_CLIENT_SCRIPT`); no hosted REST
+- **`trellis`** (`generate-3d`, `TrellisMeshAdapter`): Microsoft TRELLIS on `ai.api.nvidia.com` (GLB/STL; optional `TRELLIS_INFER_URL`). New runner `mesh_bytes` output kind
+
+#### 🧭 Understand, decide, embed
+- **`nemotron-3.5-super-vl`** (`understand`, `Nemotron35SuperVLUnderstandAdapter`): NVIDIA NIM `nvidia/nemotron-3.5-super-vl-120b-a12b` — image/video/text VLM with reasoning (no audio). Same `NVIDIA_API_KEY`
+- **`videojev-4b`** and **`videojev-35b-a3b`** (`decide`, `tryon.models.videojev.VideoJevAdapter`): open-weight temporal grounding and multiple-choice video QA. No hosted VideoJev API
+- **`gemini-embedding-2`** (`embed`, `GeminiEmbeddingAdapter`): hosted multimodal embeddings (text, images, audio, video, PDF; 3072-d, Matryoshka `--dim` 128–3072). One vector per input by default; `--aggregate` fuses inputs. `GEMINI_API_KEY`
+
+#### Docs
+- New pages: `api-reference/clad-body.md`, `api-reference/flux3-image-klein.md`, `api-reference/flux3-video.md`, `api-reference/gemini-embedding-2.md`, `local-models/clad-body-local.md`, `local-models/flux3-image-klein.md`, `local-models/videojev.md`, `advanced/new-services-backlog.md` (`segment` / `detect` still queued)
+- Docs site restyled to the TryOn brand system (dark-theme footer contrast included)
 
 ## [0.0.7] - 13 October 2026
 
@@ -49,18 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### 🖼 FLUX 3 Image (BFL)
 - **`flux3-image`** (`generate` + `edit`, `tryon.api.flux3.Flux3ImageAdapter`): first-party `POST /v1/flux-3-image` with aspect-ratio tiers, resolution up to `4k`, optional grounding, and up to 10 reference images on edit. Same `BFL_API_KEY` as FLUX.2 / FLUX VTO; MCP tools `generate_flux3_image` and `edit_flux3_image`; planner pins `flux 3 image`. Docs: `docs/docs/api-reference/flux3-image.md`
-
-#### 🔊 Audio-to-video + 3D (integrate-next Wave)
-- **`nvidia-lipsync`** (`audio-to-video`, `LipSyncAdapter`): NVIDIA Maxine LipSync NIM via self-hosted gRPC + nim-clients script (`LIPSYNC_GRPC_TARGET`, `LIPSYNC_CLIENT_SCRIPT`); no hosted REST
-- **`trellis`** (`generate-3d`, `TrellisMeshAdapter`): Microsoft TRELLIS on `ai.api.nvidia.com/v1/genai/microsoft/trellis` (GLB/STL; optional `TRELLIS_INFER_URL`)
-- **`sana-sprint`** (`generate`, local `SanaSprintAdapter`): NVLabs 1–4 step T2I via Diffusers `SanaSprintPipeline`
-- New CLI/MCP services: `audio-to-video`, `generate-3d`; runner `mesh_bytes` output kind
-
-#### 🎬 VideoJev (local video System One)
-- **`videojev-4b`** and **`videojev-35b-a3b`** (`decide`, `tryon.models.videojev.VideoJevAdapter`): open-weight temporal grounding + multiple-choice video QA via `predict_video` (MCG-NJU / Apache-2.0). No hosted VideoJev API — Typesafe Jev and THX-01 remain text-only. MCP tools `decide_videojev_4b` and `decide_videojev_35b_a3b`; planner pins `videojev`. Docs: `docs/docs/local-models/videojev.md`
-
-#### 🎬 FLUX 3 Video (BFL)
-- **`flux3-video`** (`video-generate`, `tryon.api.flux3_video.Flux3VideoAdapter`): first-party `POST /v1/flux-3-video` — t2v, i2v keyframes (`--image` / `--end-image`), v2v (`--video`), draft preview (`--draft`) and enhance (`--draft-cache`). Same `BFL_API_KEY`; MCP tool `video_generate_flux3_video`; planner pins `flux 3 video`. Docs: `docs/docs/api-reference/flux3-video.md`
 
 #### 💎 Gemini 3.8 Flash understanding + Gemini 3.8 TTS
 - **`gemini-3.8-flash`** (`understand`, `tryon.api.gemini.GeminiUnderstandAdapter`): text + image + video + audio + PDF in, text out; 1M context, 65,536 max output; `--thinking-level low|medium|high` (`minimal` is rejected by the API). Large media goes through the Files API, YouTube links are passed through. First Gemini model in the `understand` service
@@ -453,6 +461,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive demos
 - Complete documentation
 
+[0.0.8]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.8
 [0.0.7]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.7
 [0.0.6]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.6
 [0.0.5]: https://github.com/tryonlabs/opentryon/releases/tag/v0.0.5

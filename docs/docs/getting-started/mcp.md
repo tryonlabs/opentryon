@@ -16,7 +16,7 @@ keywords:
 
 OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) server under `mcp-server/`. Every model in `tryon.cli.registry` becomes an MCP tool automatically — the same surface as the `opentryon` CLI, via `tryon.cli.runner.invoke_model()`.
 
-**Current release:** OpenTryOn **v0.0.7+** (`pip install -U opentryon`).
+**Current release:** OpenTryOn **v0.0.8+** (`pip install -U opentryon`).
 
 This page is the Docusaurus guide for the server. Keep it next to:
 
@@ -222,6 +222,7 @@ Same `NVIDIA_API_KEY` for Nemotron Omni, Cosmos 3 Reasoner, and Cosmos 3 Generat
 | MCP tool | Backend | Needs |
 |---|---|---|
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (image / video / audio) | `NVIDIA_API_KEY` |
+| `understand_nemotron_3_5_super_vl` | Nemotron 3.5 Super VL (image / video / text; no audio) | `NVIDIA_API_KEY` |
 | `understand_cosmos3_reasoner` | Cosmos 3 Reasoner (physical-world VLM) | `NVIDIA_API_KEY` |
 | `video_generate_cosmos3` | Cosmos 3 Generator nano (T2V / I2V) | `NVIDIA_API_KEY` |
 
@@ -304,6 +305,8 @@ The new `decide` service wraps "System One" models that return typed, calibrated
 | `decide_jev` | Typesafe AI Jev (text/JSON only) | `TYPESAFE_API_KEY` |
 | `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
 | `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
+| `decide_videojev_4b` | VideoJev 4B (local video grounding / MCQ) | local/GPU |
+| `decide_videojev_35b_a3b` | VideoJev 35B-A3B (local video grounding / MCQ) | local/GPU |
 
 ## FASHN catalogue tools (hosted, `FASHN_API_KEY`)
 
@@ -318,6 +321,17 @@ Same key as `vton_fashn_tryon_max`. `edit_fashn_product_to_model`, `edit_fashn_m
 | `measure_clad_body_local` | Measure Anny/MHR params JSON | local / `clad-body` |
 
 See [Clad body API](../api-reference/clad-body.md).
+
+## v0.0.8 tools (FLUX 3, lip-sync, 3D)
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `generate_flux3_image_klein` / `edit_flux3_image_klein` | FLUX 3 Image Klein (distilled, BFL) | `BFL_API_KEY` |
+| `generate_flux3_image_klein_local` / `edit_flux3_image_klein_local` | FLUX 3 Image Klein (local Diffusers) | local/GPU |
+| `video_generate_flux3_video` | FLUX 3 Video (text, keyframes, video-to-video) | `BFL_API_KEY` |
+| `generate_sana_sprint` | SANA-Sprint (1–4 step text-to-image) | local/GPU |
+| `audio_to_video_nvidia_lipsync` | NVIDIA Maxine LipSync NIM (self-hosted gRPC) | `LIPSYNC_GRPC_TARGET` |
+| `generate_3d_trellis` | Microsoft TRELLIS (image or text → GLB/STL) | `NVIDIA_API_KEY` |
 
 ## Classify tools (safety gating)
 
