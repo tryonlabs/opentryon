@@ -109,6 +109,21 @@ async def check_dry_run_calls() -> None:
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_hy4_preview", {"prompt": "describe a linen trench", "dry_run": True}, False),
         ("understand_hy4_preview_local", {"prompt": "hello", "dry_run": True}, False),
+        ("measure_clad_body_photo", {"photo": "p.jpg", "height_cm": 170, "dry_run": True}, False),
+        (
+            "measure_clad_body_questionnaire",
+            {
+                "height_cm": 168,
+                "mass_kg": 62,
+                "gender": "female",
+                "body_shape": "hourglass",
+                "belly": 2,
+                "build": 2,
+                "dry_run": True,
+            },
+            False,
+        ),
+        ("measure_clad_body_local", {"params": "params.json", "preset": "core", "dry_run": True}, True),
         ("understand_nemotron_omni", {"image": "i.jpg", "dry_run": True}, False),
         (
             "understand_nemotron_3_5_super_vl",

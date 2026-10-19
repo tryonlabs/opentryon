@@ -88,6 +88,9 @@ FAL_KEY=your_fal_key
 # NVIDIA NIM (Nemotron Omni understand, Cosmos 3 Reasoner, Cosmos 3 Generator)
 NVIDIA_API_KEY=your_nvidia_api_key
 
+# Clad body measurements (measure clad-body-photo / clad-body-questionnaire)
+CLAD_API_KEY=your_clad_api_key
+
 # Meta Model API (Muse Image generate/edit/vton)
 MODEL_API_KEY=your_meta_model_api_key
 

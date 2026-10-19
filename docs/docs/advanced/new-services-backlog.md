@@ -1,14 +1,26 @@
 ---
 sidebar_position: 8
-title: New services backlog (segment, detect, measure)
-description: Integration queue for parsing, e-commerce detection, and body measurement — design before adapters.
+title: New services backlog (segment, detect)
+description: Measure (Clad) is shipped. Remaining queue is garment parsing and e-commerce detection — design before adapters.
 ---
 
 # New services backlog
 
 These capabilities need a **new CLI service** (and usually a new `output_kind`) before model adapters land. Integrate **one category at a time**; start with platform plumbing (`segmentation` output), then the first model in that category.
 
-Status key: **next** = ready to implement after design sign-off · **watch** = licence, API maturity, or scope blocker · **skip** = defer.
+Status key: **next** = ready to implement after design sign-off · **watch** = licence, API maturity, or scope blocker · **skip** = defer · **shipped** = in the registry.
+
+---
+
+## `measure` — shipped
+
+| Id | Path | Notes |
+|---|---|---|
+| `clad-body-photo` | A | Clad API photo + height |
+| `clad-body-questionnaire` | A | Clad eight-question flow |
+| `clad-body-local` | B | `clad-body` on Anny/MHR params |
+
+Docs: [Clad API](../api-reference/clad-body.md), [local](../local-models/clad-body-local.md).
 
 ---
 
@@ -27,8 +39,8 @@ Status key: **next** = ready to implement after design sign-off · **watch** = l
 
 | Priority | Registry id (draft) | Path | Vendor / weights | Licence / notes | Status |
 |---:|---|---|---|---|---|
-| 1 | `fashn-human-parser` | B | [fashn-ai/fashn-human-parser](https://github.com/fashn-AI/fashn-human-parser) (SegFormer-B4, 18 classes) | SegFormer / FASHN terms — **confirm commercial use** before default | **next** (after licence pick) |
-| 2 | `aitryon-parsing-v1` | A | Alibaba DashScope **OutfitAnyone parsing** companion | Same `DASHSCOPE_API_KEY` as `outfitanyone-plus`; Beijing region | **next** (API) |
+| 1 | `fashn-human-parser` | B | [fashn-ai/fashn-human-parser](https://github.com/fashn-AI/fashn-human-parser) (SegFormer-B4, 18 classes) | SegFormer / FASHN terms — **confirm commercial use** before default | **watch** (licence) |
+| 2 | `aitryon-parsing-v1` | A | Alibaba DashScope **OutfitAnyone parsing** companion | Same `DASHSCOPE_API_KEY` as `outfitanyone-plus`; Beijing region | **next** after `segmentation` output_kind |
 | 3 | `segformer-b2-clothes` | B | HF `mattmdjaga/segformer_b2_clothes` | Research / “other” licence | **watch** |
 | 4 | `alibaba-aitryon-parsing` | A | Documented with `aitryon-plus` flows | Already referenced in [OutfitAnyone-Plus](../api-reference/outfitanyone-plus.md) | **watch** (alias of #2) |
 | — | Leffa ONNX parsing | — | Internal to `leffa` adapter only | Not a registry id unless unified | **skip** (for now) |
@@ -36,6 +48,12 @@ Status key: **next** = ready to implement after design sign-off · **watch** = l
 **Downstream:** `klein-4b-tryon` (`--mask-image`), inpainting edits, catalogue QA.
 
 **Blocker:** Product/legal must pick a **commercial-clean default parser** (survey note in [integrate-next](../community/integrate-next.md)).
+
+---
+
+## Frontier MoE / long-context (`understand`)
+
+See [integrate-next — Frontier long-context MoE survey](../community/integrate-next.md#frontier-long-context-moe-survey--oct-2026): Kimi-K3, Muse Spark Open, Ling-3.1-flash, Beam, Nemotron 3.5 Super VL.
 
 ---
 
@@ -61,33 +79,10 @@ Status key: **next** = ready to implement after design sign-off · **watch** = l
 
 ---
 
-## 3. `measure` — body measurements / sizing
-
-**Service contract (target v1)**
-
-| Field | Choice |
-|---|---|
-| CLI | `opentryon measure --model <id> …` |
-| Method | `measure` |
-| `output_kind` | **`text`** (JSON): ISO 8559-1-style measurements + garment-type tags |
-
-**Integration queue**
-
-| Priority | Registry id (draft) | Path | Input | Vendor | Status |
-|---:|---|---|---|---|---|
-| 1 | `clad-body-api` | A | Photo(s) per Clad hosted API | [Clad](https://github.com/datar-psa/clad-body) hosted (“free for now”) | **watch** (API schema + auth) |
-| 2 | `clad-body-local` | B | `--mesh` (Anny / MHR) | `datar-psa/clad-body` library (Apache-2.0) | **watch** (mesh pipeline UX) |
-| 3 | — | — | Photo → mesh → measure | Multi-step planner flow, not one adapter | **next** (design only) |
-
-**Blocker:** Clad API stability; whether OpenTryOn v1 is **photo-only** (API) or **mesh-only** (local).
-
----
-
 ## Suggested category order
 
 1. **`segment`** — highest leverage for VTON preprocess (after licence + `segmentation` output_kind).
 2. **`detect`** — catalogue / agent automation.
-3. **`measure`** — sizing niche; depends on Clad API clarity.
 
 ---
 
