@@ -12,6 +12,24 @@ keywords:
 
 # Gemini 4 Argon (Understanding)
 
+## Gemini 4 and generative media
+
+Google’s public **Gemini 4** catalog on [ai.google.dev](https://ai.google.dev/gemini-api/docs/models) lists **one** stable understanding model: **`gemini-4-argon`**. It does **not** generate images or video (output is text only).
+
+For the usual “Gemini stack” users mean alongside Gemini 4:
+
+| Task | OpenTryOn registry id | Google endpoint |
+| --- | --- | --- |
+| Multimodal **understanding** (reasoning) | `gemini-4-argon` | `gemini-4-argon` |
+| **Image** generation / edit | `nano-banana-2.1` (also `nano-banana-2`, `nano-banana-2-lite`) | `gemini-nano-banana-2.1`, etc. |
+| **Video** generation / edit | `gemini-omni` | `gemini-omni-1.1-flash` |
+
+Video-to-image (poster / thumbnail from a clip) uses **`generate --video`** on Nano Banana 2, 2.1, or 2 Lite via the Interactions API. See [Nano Banana](nano-banana.md).
+
+Fairwind-approved defensive cyber workloads may use **`gemini-4-argon-cyber-permissive`** on `understand` (allowlist; default thinking HIGH).
+
+---
+
 **Gemini 4 Argon** (`gemini-4-argon`) is Google’s flagship **reasoning** multimodal model on the
 Gemini API (stable since Oct 2026). OpenTryOn exposes it on **`understand`** via the same
 `GeminiUnderstandAdapter` as [Gemini 3.8 Flash](gemini-3-8.md), with Argon-specific flags.

@@ -1369,6 +1369,10 @@ def check_nano_banana_21_and_fashn_vton_local():
     cases = [
         (["generate", "--model", "nano-banana-2.1", "--prompt", "banner", "--aspect-ratio", "8:1", "--resolution", "4K"],
          "NanoBanana21Adapter", "generate_text_to_image", ["'aspect_ratio': '8:1'", "'resolution': '4K'"]),
+        (["generate", "--model", "nano-banana-2.1", "--video", "clip.mp4", "--prompt", "poster",
+          "--aspect-ratio", "16:9", "--resolution", "2K"],
+         "NanoBanana21Adapter", "generate_video_to_image",
+         ["'video': 'clip.mp4'", "'aspect_ratio': '16:9'", "'resolution': '2K'"]),
         (["edit", "--model", "nano-banana-2.1", "--image", "a.jpg", "--prompt", "make it blue", "--aspect-ratio", "1:4"],
          "NanoBanana21Adapter", "generate_image_edit", ["'aspect_ratio': '1:4'"]),
         (["vton", "--model", "fashn-vton-1.5", "--person-image", "p.jpg", "--garment-image", "g.png",

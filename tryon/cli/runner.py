@@ -92,6 +92,20 @@ def parse_service_args(service: str, argv: List[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def _resolve_method(spec: ModelSpec, values: Mapping[str, Any]) -> tuple[str, bool]:
+    """Pick adapter method and whether an alt path (image or video input) is active."""
+    using_alt_video = bool(
+        getattr(spec, "alt_method_on_video", None) and values.get(getattr(spec, "alt_video_dest", "video"))
+    )
+    using_alt_image = bool(spec.alt_method_on_image and values.get(spec.alt_image_dest))
+    using_alt = using_alt_video or using_alt_image
+    if using_alt_video:
+        return spec.alt_method_on_video, True
+    if using_alt_image:
+        return spec.alt_method_on_image, True
+    return spec.method, False
+
+
 def _split_kwargs(spec: ModelSpec, values: Mapping[str, Any], using_alt: bool):
     """Split a flat mapping of ``dest -> value`` (an argparse ``Namespace``
     via ``vars()``, or a plain kwargs dict from a non-CLI caller like the MCP
@@ -313,8 +327,7 @@ def run_service(service: str, argv: List[str]) -> int:
     spec = get_service(service)[args.model]
 
     values = vars(args)
-    using_alt = bool(spec.alt_method_on_image and values.get(spec.alt_image_dest))
-    method = spec.alt_method_on_image if using_alt else spec.method
+    method, using_alt = _resolve_method(spec, values)
     init_kwargs, call_kwargs = _split_kwargs(spec, values, using_alt)
 
     if args.dry_run:
@@ -396,8 +409,7 @@ def invoke_model(
     except KeyError as e:
         return {"success": False, "error": e.args[0] if e.args else str(e)}
 
-    using_alt = bool(spec.alt_method_on_image and kwargs.get(spec.alt_image_dest))
-    method = spec.alt_method_on_image if using_alt else spec.method
+    method, using_alt = _resolve_method(spec, kwargs)
     init_kwargs, call_kwargs = _split_kwargs(spec, kwargs, using_alt)
 
     if dry_run:

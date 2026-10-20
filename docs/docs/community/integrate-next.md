@@ -314,7 +314,8 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 18. ~~`fashn-vton-1.5`~~ **shipped** (Path B local VTON, 8 Oct 2026). Apache-2.0 code + weights; first commercial-friendly local try-on. VRAM not published by FASHN — measure on first GPU run.
 
 19. ~~`gemini-3.8-flash`~~ **shipped** (Path A, `understand`) and 20. ~~`gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`~~ **shipped** (Path A, second `tts` vendor), 8 Oct 2026. Voices endpoint / voice design / replication not wired yet.
-19b. ~~`gemini-4-argon`~~ **shipped** (Path A, `understand`, Oct 2026): multimodal parity with 3.8 Flash, `--video-processing agentic`, long decode (`max_tokens` > 64K + SDK continuation), `--background` Interactions for text-only jobs.
+19b. ~~`gemini-4-argon`~~ **shipped** (Path A, `understand`, Oct 2026): multimodal parity with 3.8 Flash, `--video-processing agentic`, long decode (`max_tokens` > 64K + SDK continuation), `--background` Interactions for text-only jobs. Image/video **generation** stay on existing `nano-banana-*` / `gemini-omni`; video-to-image on Nano Banana 2 / 2.1 / 2 Lite via `generate --video`.
+19c. ~~`gemini-4-argon-cyber-permissive`~~ **shipped** (Path A, `understand`, allowlist): Fairwind defensive-cyber twin of Argon.
 
 Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
 

@@ -4,6 +4,7 @@ Gemini multimodal understanding (Gemini API ``generate_content`` + optional Inte
 Models:
 - ``gemini-3.8-flash`` — Flash multimodal (image, video, audio, PDF → text).
 - ``gemini-4-argon`` — flagship reasoning; unified 1M context, long decode, agentic video.
+- ``gemini-4-argon-cyber-permissive`` — Fairwind allowlist defensive-cyber variant (default thinking HIGH).
 
 Env:
   GEMINI_API_KEY (required) — same key as Nano Banana / Veo / Omni / TTS / embeddings.
@@ -38,8 +39,10 @@ except ImportError:
     genai = None
     types = None
 
-VALID_MODELS = {"gemini-3.8-flash", "gemini-4-argon"}
+VALID_MODELS = {"gemini-3.8-flash", "gemini-4-argon", "gemini-4-argon-cyber-permissive"}
 ARGON_MODEL = "gemini-4-argon"
+CYBER_ARGON_MODEL = "gemini-4-argon-cyber-permissive"
+ARGON_FAMILY = frozenset({ARGON_MODEL, CYBER_ARGON_MODEL})
 FLASH_MAX_OUTPUT = 65_536
 ARGON_MAX_OUTPUT = 1_048_576
 ARGON_HTTP_TIMEOUT_MS = 20 * 60 * 1000  # 20 minutes per Google migration guidance
@@ -57,7 +60,7 @@ def _is_url(value: Any) -> bool:
 
 
 def _is_argon(model: str) -> bool:
-    return model == ARGON_MODEL
+    return model in ARGON_FAMILY
 
 
 class GeminiUnderstandAdapter:
@@ -175,8 +178,10 @@ class GeminiUnderstandAdapter:
 
     def _thinking_config(self, thinking_level: Optional[str], model: str) -> Optional[types.ThinkingConfig]:
         level = thinking_level
-        if level is None and _is_argon(model):
+        if level is None and model == ARGON_MODEL:
             level = "medium"
+        if level is None and model == CYBER_ARGON_MODEL:
+            level = "high"
         if level is None:
             return None
         if level not in VALID_THINKING_LEVELS:
@@ -216,7 +221,14 @@ class GeminiUnderstandAdapter:
                 "(or omit --background and use generateContent with automatic continuation)."
             )
         gen_cfg: Dict[str, Any] = {"max_output_tokens": out_limit}
-        level = thinking_level or ("medium" if _is_argon(self.model) else None)
+        if thinking_level:
+            level = thinking_level
+        elif self.model == ARGON_MODEL:
+            level = "medium"
+        elif self.model == CYBER_ARGON_MODEL:
+            level = "high"
+        else:
+            level = None
         if level:
             gen_cfg["thinking_level"] = level
         body: Dict[str, Any] = {
@@ -273,8 +285,11 @@ class GeminiUnderstandAdapter:
             raise ValueError("Provide a prompt and/or at least one image, video, audio or pdf input.")
 
         if background:
-            if not _is_argon(self.model):
-                raise ValueError("--background long decode is only supported for gemini-4-argon.")
+            if self.model not in ARGON_FAMILY:
+                raise ValueError(
+                    "--background long decode is only supported for gemini-4-argon "
+                    "and gemini-4-argon-cyber-permissive."
+                )
             if has_media:
                 raise ValueError(
                     "Interactions background mode is text-only today. Omit --background for multimodal inputs "
@@ -288,8 +303,11 @@ class GeminiUnderstandAdapter:
                 poll_interval=poll_interval,
             )
 
-        if video_processing != "static" and not _is_argon(self.model):
-            raise ValueError("--video-processing agentic is only supported for gemini-4-argon.")
+        if video_processing != "static" and self.model not in ARGON_FAMILY:
+            raise ValueError(
+                "--video-processing agentic is only supported for gemini-4-argon "
+                "and gemini-4-argon-cyber-permissive."
+            )
 
         parts = (
             [self._part(m, "image") for m in listify(image)]
