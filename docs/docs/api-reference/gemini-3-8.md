@@ -31,7 +31,9 @@ export GEMINI_API_KEY="your_api_key"
 
 ## Understanding — `gemini-3.8-flash`
 
-Google's most capable Flash model (stable since 2 Sep 2026): 1,048,576-token context, 65,536 max output tokens. Before this, the `understand` service had no Gemini model at all.
+Google's most capable Flash model (stable since 2 Sep 2026): 1,048,576-token context, 65,536 max output tokens.
+For flagship reasoning, long decode, and agentic video on long clips, use
+[Gemini 4 Argon](gemini-4-argon.md) (`gemini-4-argon`).
 
 Fashion uses: attribute extraction from look photos, lookbook and runway video review, reading care labels and size charts from PDFs, voice-note briefs.
 

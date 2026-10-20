@@ -2146,7 +2146,8 @@ _UNDERSTAND = {
         notes="Google's most capable Flash model (stable since 2026-09-02). Text + image + video + audio + "
         "PDF in, text out; 1M-token context, 65,536 max output. --thinking-level low|medium|high "
         "('minimal' is rejected by the API). Media over ~18MB goes through the Files API; YouTube URLs are "
-        "passed to Gemini directly. Same GEMINI_API_KEY as Nano Banana / Veo / Omni.",
+        "passed to Gemini directly. Same GEMINI_API_KEY as Nano Banana / Veo / Omni. "
+        "For flagship reasoning / long decode use --model gemini-4-argon.",
         args=[
             Arg(("--gemini-model",), "gemini_model", target="init", call_name="model",
                 default="gemini-3.8-flash", choices=["gemini-3.8-flash"], help="Gemini model id"),
@@ -2159,6 +2160,41 @@ _UNDERSTAND = {
             Arg(("--thinking-level",), "thinking_level", choices=["low", "medium", "high"],
                 help="Reasoning depth (API default if omitted)"),
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (<= 65536)"),
+        ],
+    ),
+    "gemini-4-argon": ModelSpec(
+        id="gemini-4-argon",
+        label="Gemini 4 Argon (Google flagship reasoning, long decode, agentic video)",
+        import_path="tryon.api.gemini", class_name="GeminiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="GEMINI_API_KEY",
+        notes=(
+            "Gemini 4 Argon (stable gemini-4-argon): multimodal text + image + video + audio + PDF → text. "
+            "Unified 1M token budget (input + thinking + output). Default thinking medium; paid tier only. "
+            "Long decode: set --max-tokens above 65536 (generateContent automatic continuation) or "
+            "--background with text-only input and --max-tokens > 65536 (Interactions API, polls up to 24h). "
+            "--video-processing agentic for long-form video QA. Requires google-genai>=2.30.1. "
+            "Fast/cheap multimodal: --model gemini-3.8-flash."
+        ),
+        args=[
+            Arg(("--gemini-model",), "gemini_model", target="init", call_name="model",
+                default="gemini-4-argon", choices=["gemini-4-argon"], help="Gemini model id"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to understand (path or URL)"),
+            Arg(("--video",), "video", nargs="+", help="Video(s) (path, URL, or YouTube link)"),
+            Arg(("--video-processing",), "video_processing", default="static",
+                choices=["static", "agentic"],
+                help="Video timeline mode (agentic: dynamic navigation; Argon only)"),
+            Arg(("--audio",), "audio", nargs="+", help="Audio clip(s) (path or URL)"),
+            Arg(("--pdf",), "pdf", nargs="+", help="PDF document(s) (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--system",), "system", help="Optional system instruction"),
+            Arg(("--thinking-level",), "thinking_level", choices=["low", "medium", "high"],
+                help="Reasoning depth (Argon default medium if omitted)"),
+            Arg(("--max-tokens",), "max_tokens", type=int,
+                help="Max thinking+output tokens (up to 1048576; >65536 enables long decode)"),
+            Arg(("--background",), "background", action="store_true",
+                help="Text-only long decode via Interactions API (requires --max-tokens > 65536)"),
+            Arg(("--poll-interval",), "poll_interval", type=float, default=5.0,
+                help="Seconds between interaction status polls when --background"),
         ],
     ),
     "qwen3.8-max": ModelSpec(

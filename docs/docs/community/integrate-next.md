@@ -200,6 +200,7 @@ The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candi
 
 | Candidate | Path | Notes | Status |
 |---|---|---|---|
+| **Gemini 4 Argon** (`gemini-4-argon`) | A — `GEMINI_API_KEY`, `understand` | Flagship reasoning, agentic video, long decode + background Interactions. Plan: [gemini-4-argon-integration-plan](../advanced/gemini-4-argon-integration-plan.md). | shipped |
 | **Nemotron 3 Nano Omni** | A | Wave 1 shipped. Native audio (unlike current Kimi/Qwen understand tools). | shipped |
 | Cosmos 3 Reasoner / Reason2 8B | A | Reasoner shipped (`cosmos3-reasoner`). Reason2 remains watch. | shipped / `watch` |
 | Muse Glimmer 30B (on NIM) | A | Meta multimodal on NVIDIA’s catalog; we already have first-party Muse Image. Glimmer is understand, not gen. | `watch` |
@@ -313,6 +314,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 18. ~~`fashn-vton-1.5`~~ **shipped** (Path B local VTON, 8 Oct 2026). Apache-2.0 code + weights; first commercial-friendly local try-on. VRAM not published by FASHN — measure on first GPU run.
 
 19. ~~`gemini-3.8-flash`~~ **shipped** (Path A, `understand`) and 20. ~~`gemini-3.8-flash-tts` / `gemini-3.8-flash-lite-tts`~~ **shipped** (Path A, second `tts` vendor), 8 Oct 2026. Voices endpoint / voice design / replication not wired yet.
+19b. ~~`gemini-4-argon`~~ **shipped** (Path A, `understand`, Oct 2026): multimodal parity with 3.8 Flash, `--video-processing agentic`, long decode (`max_tokens` > 64K + SDK continuation), `--background` Interactions for text-only jobs.
 
 Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
 

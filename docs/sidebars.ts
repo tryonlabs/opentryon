@@ -101,6 +101,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/vllm-sr-d3',
         'api-reference/dream-1',
         'api-reference/gemini-3-8',
+        'api-reference/gemini-4-argon',
         'api-reference/gemini-embedding-2',
         'api-reference/hy4',
         'api-reference/mercury-3',
@@ -176,6 +177,7 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       items: [
         'advanced/model-integration-guidelines',
+        'advanced/gemini-4-argon-integration-plan',
         'advanced/new-services-backlog',
         'advanced/new-model-checklist',
         'advanced/custom-models',

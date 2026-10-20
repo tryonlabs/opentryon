@@ -75,7 +75,8 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://aistudio.google.com/app/apikey",
         ("GEMINI_API_KEY",),
         "Also used by Studio chat when OPENTRYON_AGENT_LLM_PROVIDER=google. "
-        "Does not unlock Vertex Virtual Try-On (google-vton).",
+        "Unlocks understand gemini-3.8-flash and gemini-4-argon (long decode / agentic video), "
+        "TTS, embeddings, Nano Banana, Veo, Omni. Does not unlock Vertex Virtual Try-On (google-vton).",
     ),
     (
         "photoroom",
