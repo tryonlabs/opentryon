@@ -176,6 +176,7 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       items: [
         'advanced/model-integration-guidelines',
+        'advanced/gemini-4-argon-integration-plan',
         'advanced/new-services-backlog',
         'advanced/new-model-checklist',
         'advanced/custom-models',
