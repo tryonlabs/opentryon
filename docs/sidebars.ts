@@ -99,6 +99,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/claude',
         'api-reference/typesafe-jev',
         'api-reference/vllm-sr-d3',
+        'api-reference/dream-1',
         'api-reference/gemini-3-8',
         'api-reference/gemini-embedding-2',
         'api-reference/hy4',

@@ -4256,6 +4256,63 @@ _CLASSIFY = {
     ),
 }
 
+_DREAM1_FRAMES_HELP = (
+    "Camera frames JSON (path or inline): map each video.* window key to one base64 JPEG "
+    "(no data: prefix), e.g. video.overhead, video.wrist_l, video.wrist_r."
+)
+_DREAM1_OBS_HELP = (
+    "Robot observation JSON (path or inline): state.* float arrays, prompt, etc. "
+    "See dreamlabs-client docs and docs/docs/api-reference/dream-1.md."
+)
+
+
+def _dream1_robot_act_args(*, checkpoint: str) -> List[Arg]:
+    return [
+        Arg(("--frames",), "frames", required=True, help=_DREAM1_FRAMES_HELP),
+        Arg(("--observation",), "observation", required=True, help=_DREAM1_OBS_HELP),
+        Arg(
+            ("--policy-config",),
+            "policy_config",
+            help="Optional JSON (path or inline) merged into policy(): ik, embodiment, strict, timeout_ms, …",
+        ),
+        Arg(
+            ("--checkpoint",),
+            "checkpoint",
+            target="init",
+            default=checkpoint,
+            help="Dream checkpoint id (from DreamClient.get_models())",
+        ),
+    ]
+
+
+_ROBOT_ACT = {
+    "dream-1": ModelSpec(
+        id="dream-1",
+        label="Dream Labs Dream-1 (World Action Model)",
+        import_path="tryon.api.dream_labs",
+        class_name="Dream1Adapter",
+        method="get_action",
+        output_kind="text",
+        env_hint="DREAM_API_KEY",
+        notes=(
+            "Hosted bimanual robot policy API (~1.6s action chunks; $3/hr). Requires pip install "
+            "dreamlabs-client. No open weights for this policy — API only. Faster tier: dream-1-flash."
+        ),
+        args=_dream1_robot_act_args(checkpoint="dreamlabs/dream-1"),
+    ),
+    "dream-1-flash": ModelSpec(
+        id="dream-1-flash",
+        label="Dream Labs Dream-1-flash (World Action Model)",
+        import_path="tryon.api.dream_labs",
+        class_name="Dream1Adapter",
+        method="get_action",
+        output_kind="text",
+        env_hint="DREAM_API_KEY",
+        notes="Lighter/faster Dream-1 tier ($2/hr on Dream Labs pricing). Same API contract as dream-1.",
+        args=_dream1_robot_act_args(checkpoint="dreamlabs/dream-1-flash"),
+    ),
+}
+
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "vton": _VTON,
     "generate": _GENERATE,
@@ -4270,6 +4327,7 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "embed": _EMBED,
     "classify": _CLASSIFY,
     "measure": _MEASURE,
+    "robot-act": _ROBOT_ACT,
 }
 
 SERVICE_HELP = {
@@ -4286,6 +4344,7 @@ SERVICE_HELP = {
     "embed": "Multimodal embeddings (dense or multi-vector) saved to .npz",
     "classify": "Fixed-label image classification (try-on safety gating, garment attributes) with calibrated probabilities",
     "measure": "Body measurements (ISO 8559-1) from photo, questionnaire, or parametric mesh",
+    "robot-act": "Robot policy actions from camera frames + proprioception (Dream Labs World Action Models)",
 }
 
 

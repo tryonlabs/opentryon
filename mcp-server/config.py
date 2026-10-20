@@ -209,6 +209,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Open weights: decide thx-01-local (pip install thx01).",
     ),
     (
+        "dreamlabs",
+        "Dream Labs (Dream-1 robot policy)",
+        "https://dreamlabs.ai/research/dream-1/",
+        ("DREAM_API_KEY",),
+        "Unlocks robot-act dream-1 and dream-1-flash (World Action Model via dreamlabs-client). "
+        "Optional DREAM_GATEWAY_URL / DREAM_API_URL / DREAM_DATA_URL or ~/.dreamlabs/credentials.",
+    ),
+    (
         "vllm-sr",
         "vLLM Semantic Router (Decision 3.0)",
         "https://decision.vllm-sr.ai/",

@@ -841,6 +841,21 @@ out = D3ApiAdapter(model_id="vllm-sr/d3-turbo").decide(
 
 Registry: `d3-turbo` … `d3-edge` (API, `DECISION_API_KEY`); `d3-*-local` (Path B). See [Decision 3.0 hosted](vllm-sr-d3) and [local d3](../local-models/d3.md).
 
+### `Dream1Adapter`
+
+Hosted **Dream-1** / **Dream-1-flash** World Action Models on the `robot-act` service (`dreamlabs-client`, `DREAM_API_KEY`). Returns JSON action chunks from camera frames + robot state — not fashion media generation.
+
+```python
+from tryon.api.dream_labs import Dream1Adapter
+
+out = Dream1Adapter(checkpoint="dreamlabs/dream-1").get_action(
+    frames="frames.json",
+    observation="obs.json",
+)
+```
+
+See [Dream-1](dream-1.md). No local policy weights.
+
 ### `DeepSeekUnderstandAdapter`
 
 Adapter for DeepSeek's **deepseek-flash** — general-purpose, natively
