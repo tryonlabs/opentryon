@@ -324,6 +324,8 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 
 | Tool | Model | Requires |
 |---|---|---|
+| `robot_act_dream_1` | Dream Labs Dream-1 (robot policy API) | `DREAM_API_KEY` |
+| `robot_act_dream_1_flash` | Dream Labs Dream-1-flash | `DREAM_API_KEY` |
 | `decide_d3_turbo` | vLLM-SR d3-turbo (multimodal Decision 3.0 API) | `DECISION_API_KEY` |
 | `decide_d3_turbo_local` | vLLM-SR d3-turbo (local weights) | local/GPU |
 | `decide_jev` | Typesafe AI Jev (text/JSON only; early access) | `TYPESAFE_API_KEY` |

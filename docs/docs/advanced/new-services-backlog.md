@@ -51,6 +51,17 @@ Docs: [Clad API](../api-reference/clad-body.md), [local](../local-models/clad-bo
 
 ---
 
+## `robot-act` — shipped (Dream-1)
+
+| Id | Path | Notes |
+|---|---|---|
+| `dream-1` | A | Dream Labs WAM via `dreamlabs-client` |
+| `dream-1-flash` | A | Faster tier |
+
+Docs: [Dream-1](../api-reference/dream-1.md). **No local Dream-1 policy weights** (hosted API only).
+
+---
+
 ## Frontier MoE / long-context (`understand`)
 
 See [integrate-next — Frontier long-context MoE survey](../community/integrate-next.md#frontier-long-context-moe-survey--oct-2026): Kimi-K3, Muse Spark Open, Ling-3.1-flash, Beam, Nemotron 3.5 Super VL.

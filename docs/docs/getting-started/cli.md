@@ -20,7 +20,7 @@ single `opentryon` command with three levels of control: **service** &rarr;
 opentryon <service> --model <model> [params...]
 ```
 
-- **service**: what kind of task -- `vton`, `generate`, `edit`, `understand`, `video-generate`, `audio-to-video`, `generate-3d`, `bg-remove`, `tts`, `decide`, `embed`, `classify`, `measure`
+- **service**: what kind of task -- `vton`, `generate`, `edit`, `understand`, `video-generate`, `audio-to-video`, `generate-3d`, `bg-remove`, `tts`, `decide`, `embed`, `classify`, `measure`, `robot-act`
 - **model**: which adapter/provider to use for that service, e.g. `--model flux-vto`
 - **parameters**: model-specific flags (image inputs, prompts, sampling knobs, etc.)
 
@@ -40,6 +40,7 @@ opentryon <service> --model <model> [params...]
 | `decide` | Calibrated yes/no, choice, score, box, and track decisions ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `d3-turbo` … `d3-edge`, `d3-*-local` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
 | `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
 | `measure` | Body measurements (ISO 8559-1 sizing) | `clad-body-photo`, `clad-body-questionnaire` (Clad API), `clad-body-local` (local Anny/MHR params) |
+| `robot-act` | Robot policy actions (World Action Models) | `dream-1`, `dream-1-flash` (`DREAM_API_KEY`, install `dreamlabs-client`) |
 | `embed` | Multimodal embeddings saved to `.npz` | `gemini-embedding-2`, `embeddinggemma-2` (local), `pplx-embed-v2-late-0.6b` (local), `pplx-embed-v2-late-9b` (local), `marqo-fashionsiglip` (local), `moda-fashion-distilled` (local), `moda-pro-lite` (local), `zooclaw-fashionsiglip2` (local) |
 
 Models marked "local" run on your own GPU and require
