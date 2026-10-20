@@ -65,6 +65,7 @@ _LAZY_ATTRS = {
     "QwenImageAdapter": ".qwen",
     "GLMUnderstandAdapter": ".zai",
     "DeepSeekUnderstandAdapter": ".deepseek",
+    "InceptionUnderstandAdapter": ".inception",
     "ClaudeUnderstandAdapter": ".claude",
     "ElevenLabsAdapter": ".elevenlabs",
     "GeminiUnderstandAdapter": ".gemini",

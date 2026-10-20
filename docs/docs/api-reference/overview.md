@@ -947,6 +947,26 @@ See [Hy4 TokenHub](hy4) and [Hy4 local](../local-models/hy4.md).
 
 ---
 
+### `InceptionUnderstandAdapter`
+
+Inception Labs **Mercury 3** diffusion LLM via OpenAI-compatible
+`v1/chat/completions` (`mercury-3`). Text-only on the chat endpoint (1M context).
+
+```python
+from tryon.api.inception import InceptionUnderstandAdapter
+
+adapter = InceptionUnderstandAdapter()  # INCEPTION_API_KEY
+result = adapter.understand(
+    prompt="Write a concise fit guide for wide-leg denim.",
+    reasoning_effort="medium",
+)
+print(result["text"])
+```
+
+See [Mercury 3](mercury-3).
+
+---
+
 ### `NemotronOmniUnderstandAdapter` / `Cosmos3ReasonerAdapter` / `Cosmos3VideoAdapter`
 
 NVIDIA NIM Path A (`NVIDIA_API_KEY`). Omni and Reasoner are OpenAI-compatible

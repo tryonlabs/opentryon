@@ -2405,6 +2405,38 @@ _UNDERSTAND = {
         ),
         args=_hy4_understand_args(endpoint="local"),
     ),
+    "mercury-3": ModelSpec(
+        id="mercury-3",
+        label="Mercury 3 (Inception diffusion LLM, 1M context)",
+        import_path="tryon.api.inception",
+        class_name="InceptionUnderstandAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="INCEPTION_API_KEY",
+        notes=(
+            "Inception Labs diffusion LLM on v1/chat/completions (OpenAI-compatible). "
+            "Text in / text out; 1M context, up to 131K output tokens. "
+            "reasoning_effort instant|low|medium|high; temperature 0.5–1.0. "
+            "Tool calling and structured outputs supported upstream — not exposed on CLI yet. "
+            "Image classification: Mercury Decide (v1/decisions) is a separate product. "
+            "See https://www.inceptionlabs.ai/blog/introducing-mercury-3"
+        ),
+        args=[
+            Arg(("--inception-model",), "inception_model", target="init", call_name="model",
+                default="mercury-3",
+                choices=["mercury-3", "mercury-2.5", "mercury-2", "mercury-voice"],
+                help="Inception chat model id"),
+            Arg(("--prompt", "-p"), "prompt", help="Question or instruction (required)"),
+            Arg(("--system",), "system", help="Optional system prompt"),
+            Arg(("--reasoning-effort",), "reasoning_effort",
+                choices=["instant", "low", "medium", "high"],
+                help="Reasoning depth (API default medium if omitted)"),
+            Arg(("--max-tokens",), "max_tokens", type=int,
+                help="Max output tokens (maps to max_completion_tokens)"),
+            Arg(("--temperature",), "temperature", type=float,
+                help="Sampling temperature (0.5–1.0 per Inception docs)"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
