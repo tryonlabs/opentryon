@@ -48,7 +48,7 @@ Highest leverage: one NIM provider key unlocks understand + video. Nemotron is *
 | Nemotron 3 Nano / Super / Ultra (text) | Text-only agents | A NIM | — | Coding/planning MoE. No image/video I/O. Planner already uses other LLMs. | `skip` |
 | Nemotron OCR / Parse / page-table | Document OCR | A NIM | — | Useful later for PDP/catalog agents, not invoke-layer media. | `watch` |
 | Nemotron 3.5 Content Safety | Safety classifier | A NIM | — | Guardrail, not a generation/understand tool. | `watch` |
-| **Nemotron 3.5 Super VL 120B-A12B** | Understand (image + video + text, agentic reasoning) | A NIM | `nemotron-3.5-super-vl` | Hybrid Mamba–Transformer MoE; 1M context; GA on [build.nvidia.com](https://build.nvidia.com/nvidia/nemotron-3.5-super-vl-120b-a12b). HF weights for self-host. | `next` |
+| **Nemotron 3.5 Super VL 120B-A12B** | Understand (image + video + text, agentic reasoning) | A NIM | `nemotron-3.5-super-vl` | Hybrid Mamba–Transformer MoE; 1M context; GA on [build.nvidia.com](https://build.nvidia.com/nvidia/nemotron-3.5-super-vl-120b-a12b). HF weights for self-host. | shipped |
 
 **Nemotron 3 family (context, Aug 2026)**
 
@@ -214,8 +214,8 @@ The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candi
 | **Kimi-K3 (2.8T MoE)** | A — Moonshot | 2.8T total / 104B active MoE, Kimi Delta Attention, 1M context, native multimodal. **`kimi-k3` is shipped** — re-verify Moonshot API model id and caps match this generation; if a distinct endpoint appears, add e.g. `kimi-k3-moe`. | `watch` |
 | **Muse Spark Open** | Understand / agents (coding + perception) | Meta — 816B MoE / 42B active; agent- and coding-oriented; 1M context; native audio/video perception; open weights (distinct from **`muse-image`** gen). | `watch` |
 | **Ling-3.1-flash** | Understand / reasoning | InclusionAI — 560B / 25B active hybrid-linear MoE; 1M context. Needs first-party API or open-weight hosting path. | `watch` |
-| **Beam** | Understand / agents | Reflection — 501B / 23B active frontier MoE; 1M context; **Apache-2.0** open weights. Path B (vLLM/SGLang) or Reflection API if offered. | `next` |
-| **Nemotron 3.5 Super VL** | Understand | See Wave 1 row — `nemotron-3.5-super-vl` on NIM (`NVIDIA_API_KEY`). | `next` |
+| **Beam** | Understand / agents | Reflection — 501B / 23B active frontier MoE; 1M context; **Apache-2.0** open weights. Path A hosted chat shipped (`beam`). Local serve needs four B300s — not registered. | shipped |
+| **Nemotron 3.5 Super VL** | Understand | See Wave 1 row — `nemotron-3.5-super-vl` on NIM (`NVIDIA_API_KEY`). | shipped |
 
 ### 3D model generation
 
@@ -244,10 +244,10 @@ Public frontier models with **~1M token context** and large MoE footprints (indu
 | **Kimi-K3** | Moonshot AI | 2.8T / 104B (896 experts, 16 active) | Kimi Delta Attention; native multimodal | A | `kimi-k3` (shipped — confirm spec) | `watch` |
 | **Muse Spark Open** | Meta | 816B / 42B | Coding + agents; Blackwell Ultra training; audio/video in | A or B | `muse-spark-open` | `watch` |
 | **Ling-3.1-flash** | InclusionAI | 560B / 25B | Hybrid-linear MoE reasoning | A (or B if weights land) | `ling-3.1-flash` | `watch` |
-| **Beam** | Reflection | 501B / 23B | Open frontier MoE; Apache-2.0 | B (+ API if any) | `beam` | `next` |
-| **Nemotron 3.5 Super VL** | NVIDIA | 120B / 12B | Multimodal VLM; Mamba–Transformer hybrid; HF + NIM | A NIM | `nemotron-3.5-super-vl` | `next` |
+| **Beam** | Reflection | 501B / 23B | Open frontier MoE; Apache-2.0 | A (hosted). Local weights need four B300s | `beam` | shipped |
+| **Nemotron 3.5 Super VL** | NVIDIA | 120B / 12B | Multimodal VLM; Mamba–Transformer hybrid; HF + NIM | A NIM | `nemotron-3.5-super-vl` | shipped |
 
-Suggested integrate order within this survey: **`nemotron-3.5-super-vl`** (same key as Omni) → **`beam`** (Apache-2.0 local) → **`muse-spark-open`** / **`ling-3.1-flash`** when API or weights are documented → re-check **`kimi-k3`** against Moonshot's latest model card.
+Suggested integrate order within this survey: ~~**`beam`**~~ **shipped** (Path A, `understand`, Oct 2026). Remaining: **`muse-spark-open`** / **`ling-3.1-flash`** when API or weights are documented → re-check **`kimi-k3`** against Moonshot's latest model card. `nemotron-3.5-super-vl` is already in the registry.
 
 ---
 
@@ -321,7 +321,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 
 Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
 
-25. **Frontier MoE survey (Oct 2026)** — `next`: **`nemotron-3.5-super-vl`**, **`beam`** (Apache-2.0). `watch`: **Muse Spark Open**, **Ling-3.1-flash**, **Kimi-K3 2.8T** (vs shipped `kimi-k3`). See [Frontier long-context MoE survey](#frontier-long-context-moe-survey--oct-2026).
+25. ~~**`beam`**~~ **shipped** (Path A, `understand`, Oct 2026): Reflection `Beam-1.0-501B-A23B`, text chat, `REFLECTION_API_KEY`. Local four-B300 serve not registered. `watch`: **Muse Spark Open**, **Ling-3.1-flash**, **Kimi-K3 2.8T** (vs shipped `kimi-k3`). See [Frontier long-context MoE survey](#frontier-long-context-moe-survey--oct-2026).
 
 21. ~~FASHN catalogue endpoints~~ **shipped** (Path A, 13 Oct 2026): `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video`, `fashn-bg-remove` via `tryon.api.fashn.FashnAdapter`.
 22. ~~Fashion embeddings~~ **shipped** (Path B, 13 Oct 2026): `marqo-fashionsiglip`, `moda-fashion-distilled`, `moda-pro-lite`, `zooclaw-fashionsiglip2` in the `embed` service. 
@@ -335,7 +335,7 @@ Follow-ups for the new services: Studio capability screens for `decide` (questio
 
 ## Shipped (do not re-add)
 
-Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), **FLUX 3 Image** (`flux3-image`), **FLUX 3 Image Klein** (`flux3-image-klein`, `flux3-image-klein-local`), Nano Banana family, GPT Image (1.5 + ChatGPT Images 2.5 Flare/Sunburst), Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo 3.1, Sora (deprecated — API removed 2026-09-24), LTX-2.5, Hailuo 2.3, MiniMax H3 / H3 Max, **Fal H3 Max** (+ **Fal H3 Max Lip Sync**, `fal-h3-max-lipsync`), Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator** (+ **Cosmos 3 Nano local**, `cosmos3-local`), Kimi K2.6/K2.7/K3, Qwen3.8 (+ **Qwen3.8-Omni-Flash**, `qwen3.8-omni-flash`), **Hy4 preview** (`hy4-preview` TokenHub + `hy4-preview-local` vLLM/SGLang), **GLM-5.3-FlashX** (`glm-5.3-flashx`, Zhipu/Z.ai — new `tryon.api.zai`), **Ternary Bonsai 2 27B** (`ternary-bonsai-2-27b`, PrismML local server — new `tryon.models.ternary_bonsai`), **P-Video-2-Pro** (`p-video-2-pro`, Pruna MiniMax H3-based), **DeepSeek-V4.1-Flash** (`deepseek-flash`, new `tryon.api.deepseek`), **DeepSeek-VL2** (`deepseek-vl2`, local — new `tryon.models.deepseek_vl2`), **DeepSeek-OCR** (`deepseek-ocr`, local — new `tryon.models.deepseek_ocr`), **ElevenLabs Eleven v4 / Eleven v4 Turbo** (`eleven-v4` / `eleven-v4-turbo`, new `tts` service + `tryon.api.elevenlabs`), **Claude Haiku 5.5** (`claude-haiku-5-5`, new `tryon.api.claude`), **H3 Max Relight** (`fal-h3-max-relight`), **Typesafe Jev** / **Liquid d1-3B / d1-omni-600M** (new `decide` service), **EmbeddingGemma 2** / **pplx-embed-v2-late** (new `embed` service), **Limite 1B - Violetto** (`limite-1b-violetto`, Paradigma Inc, local — new `tryon.models.limite`, out-of-scope exception, see above), BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
+Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), **FLUX 3 Image** (`flux3-image`), **FLUX 3 Image Klein** (`flux3-image-klein`, `flux3-image-klein-local`), Nano Banana family, GPT Image (1.5 + ChatGPT Images 2.5 Flare/Sunburst), Muse Image, Ideogram 4.0, P-Image-Ideogram, Qwen-Image API+local, Veo 3.1, Sora (deprecated — API removed 2026-09-24), LTX-2.5, Hailuo 2.3, MiniMax H3 / H3 Max, **Fal H3 Max** (+ **Fal H3 Max Lip Sync**, `fal-h3-max-lipsync`), Wan, Runway Gen-4.5, **Nemotron Omni**, **Cosmos 3 Reasoner**, **Cosmos 3 Generator** (+ **Cosmos 3 Nano local**, `cosmos3-local`), Kimi K2.6/K2.7/K3, Qwen3.8 (+ **Qwen3.8-Omni-Flash**, `qwen3.8-omni-flash`), **Hy4 preview** (`hy4-preview` TokenHub + `hy4-preview-local` vLLM/SGLang), **Reflection Beam** (`beam`, text chat), **GLM-5.3-FlashX** (`glm-5.3-flashx`, Zhipu/Z.ai — new `tryon.api.zai`), **Ternary Bonsai 2 27B** (`ternary-bonsai-2-27b`, PrismML local server — new `tryon.models.ternary_bonsai`), **P-Video-2-Pro** (`p-video-2-pro`, Pruna MiniMax H3-based), **DeepSeek-V4.1-Flash** (`deepseek-flash`, new `tryon.api.deepseek`), **DeepSeek-VL2** (`deepseek-vl2`, local — new `tryon.models.deepseek_vl2`), **DeepSeek-OCR** (`deepseek-ocr`, local — new `tryon.models.deepseek_ocr`), **ElevenLabs Eleven v4 / Eleven v4 Turbo** (`eleven-v4` / `eleven-v4-turbo`, new `tts` service + `tryon.api.elevenlabs`), **Claude Haiku 5.5** (`claude-haiku-5-5`, new `tryon.api.claude`), **H3 Max Relight** (`fal-h3-max-relight`), **Typesafe Jev** / **Liquid d1-3B / d1-omni-600M** (new `decide` service), **EmbeddingGemma 2** / **pplx-embed-v2-late** (new `embed` service), **Limite 1B - Violetto** (`limite-1b-violetto`, Paradigma Inc, local — new `tryon.models.limite`, out-of-scope exception, see above), BEN2, dedicated cloud VTON (`flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, FASHN, `p-image-tryon`, Segmind) plus composition try-on (`nano-banana-2-lite`, `qwen-image`, `muse-image`) and **local dedicated VTON** (`leffa`, `catvton`). Full table: CLI `--help` / registry.
 
 ---
 

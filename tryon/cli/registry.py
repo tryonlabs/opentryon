@@ -1588,6 +1588,30 @@ _GENERATE = {
             *_fashn_common_args(),
         ],
     ),
+    "cosmos3-nano-t2i": ModelSpec(
+        id="cosmos3-nano-t2i",
+        label="Cosmos 3 Nano text-to-image (certified NIM)",
+        import_path="tryon.api.nvidia.cosmos_nano",
+        class_name="Cosmos3NanoNimAdapter",
+        method="generate_text_to_image",
+        output_kind="image_bytes",
+        notes=(
+            "Self-hosted Cosmos3 certified NIM with NIM_MODEL_VARIANT=nano, model_mode=text2image. "
+            "The hosted build.nvidia.com cosmos3 endpoint does not serve stills. "
+            "Set COSMOS3_NIM_URL (default http://127.0.0.1:8010/v1/infer). "
+            "Existing video ids remain cosmos3 (hosted) and cosmos3-local (Diffusers)."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--resolution",), "resolution", default="720_1_1",
+                help="NIM resolution key (default 720_1_1)"),
+            Arg(("--num-inference-steps",), "num_inference_steps", type=int),
+            Arg(("--guidance-scale",), "guidance_scale", type=float),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--infer-url",), "infer_url", target="init",
+                help="Override COSMOS3_NIM_URL"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
@@ -2006,6 +2030,128 @@ _EDIT = {
 # --------------------------------------------------------------------------
 # understand (image understanding / captioning)
 # --------------------------------------------------------------------------
+
+def _moondream_understand_args(*, model_id: str, local: bool) -> List[Arg]:
+    args = [
+        Arg(("--image", "-i"), "image", required=True, help="Image (path, http URL, or data URL)"),
+        Arg(("--prompt", "-p"), "prompt", help="Question. Required for --skill query"),
+        Arg(("--skill",), "skill", default="query", choices=["query", "caption"],
+            help="query = visual question; caption = a description"),
+        Arg(("--length",), "length", default="normal", choices=["short", "normal", "long"],
+            help="Caption density (caption skill only)"),
+        Arg(("--temperature",), "temperature", type=float, help="Optional sampling temperature"),
+        Arg(("--max-tokens",), "max_tokens", type=int, help="Optional max output tokens"),
+        Arg(("--moondream-model",), "moondream_model", target="init", call_name="model",
+            default=model_id, help="Upstream Moondream model id"),
+    ]
+    if not local:
+        args.append(Arg(("--base-url",), "base_url", target="init", help="Override MOONDREAM_BASE_URL"))
+    return args
+
+
+def _moondream_detect_args(*, model_id: str, local: bool) -> List[Arg]:
+    args = [
+        Arg(("--image", "-i"), "image", required=True, help="Image (path, http URL, or data URL)"),
+        Arg(("--object",), "object", required=True, help="What to find, in plain language (dress, button, logo)"),
+        Arg(("--skill",), "skill", default="detect", choices=["detect", "point", "segment"],
+            help="detect = boxes; point = centroids; segment = SVG path"),
+        Arg(("--threshold",), "threshold", type=float, help="Detect confidence cut (default 0.30 upstream)"),
+        Arg(("--max-points",), "max_points", type=int, help="Point skill cap (default 64 upstream)"),
+        Arg(("--moondream-model",), "moondream_model", target="init", call_name="model",
+            default=model_id, help="Upstream Moondream model id"),
+    ]
+    if not local:
+        args.append(Arg(("--base-url",), "base_url", target="init", help="Override MOONDREAM_BASE_URL"))
+    return args
+
+
+def _moondream_understand_specs() -> Dict[str, ModelSpec]:
+    cloud = "tryon.api.moondream"
+    return {
+        "moondream-3.1": ModelSpec(
+            id="moondream-3.1",
+            label="Moondream 3.1 (query / caption)",
+            import_path=cloud,
+            class_name="MoondreamAdapter",
+            method="understand",
+            output_kind="text",
+            env_hint="MOONDREAM_API_KEY",
+            notes=(
+                "Hosted moondream3.1-9B-A2B. --skill query asks a question; --skill caption "
+                "describes the image. Boxes, points, and SVG masks: detect --model moondream-3.1. "
+                "Local twin: moondream-3.1-local (pip install moondream)."
+            ),
+            args=_moondream_understand_args(model_id="moondream3.1-9B-A2B", local=False),
+        ),
+        "moondream-3-preview": ModelSpec(
+            id="moondream-3-preview",
+            label="Moondream 3 Preview (query / caption)",
+            import_path=cloud,
+            class_name="MoondreamAdapter",
+            method="understand",
+            output_kind="text",
+            env_hint="MOONDREAM_API_KEY",
+            notes="Hosted moondream3-preview. Same skills as moondream-3.1. No Photon twin.",
+            args=_moondream_understand_args(model_id="moondream3-preview", local=False),
+        ),
+        "moondream-3.1-local": ModelSpec(
+            id="moondream-3.1-local",
+            label="Moondream 3.1 local (Photon)",
+            import_path="tryon.models.moondream",
+            class_name="MoondreamLocalAdapter",
+            method="understand",
+            output_kind="text",
+            notes=(
+                "Photon runtime, model moondream3.1-9B-A2B. pip install moondream. "
+                "NVIDIA Ampere+ or Apple Silicon. Base weights do not need MOONDREAM_API_KEY."
+            ),
+            args=_moondream_understand_args(model_id="moondream3.1-9B-A2B", local=True),
+        ),
+    }
+
+
+def _moondream_detect_specs() -> Dict[str, ModelSpec]:
+    cloud = "tryon.api.moondream"
+    note = (
+        "Open-vocabulary grounding. Coordinates are normalized 0–1 from the top-left. "
+        "--skill detect returns boxes, point returns centroids, segment returns an SVG path. "
+        "This is not the garment-parser segment service."
+    )
+    return {
+        "moondream-3.1": ModelSpec(
+            id="moondream-3.1",
+            label="Moondream 3.1 (detect / point / segment)",
+            import_path=cloud,
+            class_name="MoondreamAdapter",
+            method="detect",
+            output_kind="text",
+            env_hint="MOONDREAM_API_KEY",
+            notes=note + " Hosted moondream3.1-9B-A2B.",
+            args=_moondream_detect_args(model_id="moondream3.1-9B-A2B", local=False),
+        ),
+        "moondream-3-preview": ModelSpec(
+            id="moondream-3-preview",
+            label="Moondream 3 Preview (detect / point / segment)",
+            import_path=cloud,
+            class_name="MoondreamAdapter",
+            method="detect",
+            output_kind="text",
+            env_hint="MOONDREAM_API_KEY",
+            notes=note + " Hosted moondream3-preview.",
+            args=_moondream_detect_args(model_id="moondream3-preview", local=False),
+        ),
+        "moondream-3.1-local": ModelSpec(
+            id="moondream-3.1-local",
+            label="Moondream 3.1 local (detect / point / segment)",
+            import_path="tryon.models.moondream",
+            class_name="MoondreamLocalAdapter",
+            method="detect",
+            output_kind="text",
+            notes=note + " Photon. pip install moondream.",
+            args=_moondream_detect_args(model_id="moondream3.1-9B-A2B", local=True),
+        ),
+    }
+
 
 _UNDERSTAND = {
     "llava-next": ModelSpec(
@@ -2496,6 +2642,39 @@ _UNDERSTAND = {
         ),
         args=_hy4_understand_args(endpoint="local"),
     ),
+    "beam": ModelSpec(
+        id="beam",
+        label="Reflection Beam 1.0 (501B MoE, text chat)",
+        import_path="tryon.api.reflection",
+        class_name="BeamAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="REFLECTION_API_KEY",
+        notes=(
+            "First-party Reflection chat (model Beam-1.0-501B-A23B). Text only — "
+            "no image or video. 1M context; reasoning is always on "
+            "(low|medium|high|xhigh|max; omit to use the org default). "
+            "Apache-2.0 weights exist but the serve guide needs four B300s, so "
+            "there is no local registry id. Named-model-only; not the understand default. "
+            "See https://developers.reflection.ai/models"
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True,
+                help="Question or instruction"),
+            Arg(("--system",), "system", help="Optional system prompt"),
+            Arg(("--reasoning-effort",), "reasoning_effort",
+                choices=["low", "medium", "high", "xhigh", "max"],
+                help="Reasoning depth (omit to use the Reflection org default)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+            Arg(("--beam-model",), "beam_model", target="init", call_name="model",
+                default="Beam-1.0-501B-A23B",
+                choices=["Beam-1.0-501B-A23B"],
+                help="Reflection model id"),
+            Arg(("--base-url",), "base_url", target="init",
+                help="Override REFLECTION_BASE_URL (default https://api.reflection.ai/openai/v1)"),
+        ],
+    ),
     "mercury-3": ModelSpec(
         id="mercury-3",
         label="Mercury 3 (Inception diffusion LLM, 1M context)",
@@ -2528,6 +2707,7 @@ _UNDERSTAND = {
                 help="Sampling temperature (0.5–1.0 per Inception docs)"),
         ],
     ),
+    **_moondream_understand_specs(),
 }
 
 # --------------------------------------------------------------------------
@@ -3613,6 +3793,27 @@ _VIDEO_GENERATE = {
             Arg(("--end-image",), "end_image", help="Optional final frame"),
         ],
     ),
+    "cosmos3-nano-v2v": ModelSpec(
+        id="cosmos3-nano-v2v",
+        label="Cosmos 3 Nano video-to-video (certified NIM)",
+        import_path="tryon.api.nvidia.cosmos_nano",
+        class_name="Cosmos3NanoNimAdapter",
+        method="generate_video_to_video",
+        output_kind="video_bytes",
+        notes=(
+            "Self-hosted Cosmos3 certified NIM, NIM_MODEL_VARIANT=nano, model_mode=video2video. "
+            "Hosted cosmos3 remains T2V/I2V only. COSMOS3_NIM_URL default http://127.0.0.1:8010/v1/infer."
+        ),
+        args=[
+            Arg(("--video",), "video", required=True, help="Conditioning video (path or data URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Optional edit instruction"),
+            Arg(("--resolution",), "resolution", help="NIM resolution key"),
+            Arg(("--num-inference-steps",), "num_inference_steps", type=int),
+            Arg(("--guidance-scale",), "guidance_scale", type=float),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--infer-url",), "infer_url", target="init", help="Override COSMOS3_NIM_URL"),
+        ],
+    ),
 }
 
 # --------------------------------------------------------------------------
@@ -4459,7 +4660,32 @@ _ROBOT_ACT = {
         notes="Lighter/faster Dream-1 tier ($2/hr on Dream Labs pricing). Same API contract as dream-1.",
         args=_dream1_robot_act_args(checkpoint="dreamlabs/dream-1-flash"),
     ),
+    "cosmos3-nano-droid": ModelSpec(
+        id="cosmos3-nano-droid",
+        label="Cosmos 3 Nano-DROID policy (certified NIM)",
+        import_path="tryon.api.nvidia.cosmos_nano",
+        class_name="Cosmos3NanoNimAdapter",
+        method="get_action",
+        output_kind="text",
+        notes=(
+            "Self-hosted Cosmos3 NIM with NIM_MODEL_VARIANT=nano-droid, model_mode=policy. "
+            "Action-only response (32x8). Image is a 640x540 composed DROID observation. "
+            "COSMOS3_NIM_URL default http://127.0.0.1:8010/v1/infer. Not the hosted cosmos3 video API."
+        ),
+        args=[
+            Arg(("--image", "-i"), "image", required=True, help="Composed DROID observation image"),
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Task instruction"),
+            Arg(("--observation",), "observation", required=True,
+                help="JSON with observation/joint_position (7) and observation/gripper_position"),
+            Arg(("--action-chunk-size",), "action_chunk_size", type=int, default=32,
+                help="Positive multiple of 4 (Nano-DROID default 32)"),
+            Arg(("--seed",), "seed", type=int),
+            Arg(("--infer-url",), "infer_url", target="init", help="Override COSMOS3_NIM_URL"),
+        ],
+    ),
 }
+
+_DETECT = _moondream_detect_specs()
 
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "vton": _VTON,
@@ -4476,6 +4702,7 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "classify": _CLASSIFY,
     "measure": _MEASURE,
     "robot-act": _ROBOT_ACT,
+    "detect": _DETECT,
 }
 
 SERVICE_HELP = {
@@ -4493,6 +4720,7 @@ SERVICE_HELP = {
     "classify": "Fixed-label image classification (try-on safety gating, garment attributes) with calibrated probabilities",
     "measure": "Body measurements (ISO 8559-1) from photo, questionnaire, or parametric mesh",
     "robot-act": "Robot policy actions from camera frames + proprioception (Dream Labs World Action Models)",
+    "detect": "Open-vocabulary detection, pointing, and SVG segmentation",
 }
 
 

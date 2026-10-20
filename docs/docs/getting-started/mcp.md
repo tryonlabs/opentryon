@@ -25,7 +25,7 @@ This page is the Docusaurus guide for the server. Keep it next to:
 
 ## Why it matters
 
-- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, bg-remove, and tts, decide, and embed tools directly.
+- Agents in **Cursor**, **Claude Desktop**, or **TryOn Studio** call try-on, generate, edit, video, understand, detect, bg-remove, tts, decide, and embed tools directly.
 - Studio **chat** goes through `planner_agent`: it classifies intent, then runs a **filtered slice** of those same registry tools via `invoke_model`. Capability screens skip the planner and call the model tools themselves.
 - New registry models appear as tools with **zero hand-written MCP wrappers**.
 - CLI and MCP cannot drift — one runner, one registry.
@@ -157,6 +157,7 @@ named-model-only (not a capability default):
 | `understand_deepseek_ocr` | Local `deepseek-ai/DeepSeek-OCR` (document/label OCR, no first-party hosted API) | `pip install opentryon[local]` + GPU + `flash-attn` |
 | `understand_ternary_bonsai_2_27b` | PrismML Ternary Bonsai 2 27B (self-hosted llama.cpp/MLX server) | `BONSAI_BASE_URL` (default localhost:8080) |
 | `understand_limite_1b_violetto` | Paradigma Limite 1B - Violetto (text-only math reasoning; out of fashion/media scope) | `pip install opentryon[local]` + GPU |
+| `understand_beam` | Reflection Beam 1.0 (text chat, 501B MoE) | `REFLECTION_API_KEY` |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
 | `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |
 
@@ -227,6 +228,24 @@ Same `NVIDIA_API_KEY` for Nemotron Omni, Cosmos 3 Reasoner, and Cosmos 3 Generat
 | `video_generate_cosmos3` | Cosmos 3 Generator nano (T2V / I2V) | `NVIDIA_API_KEY` |
 
 See [NVIDIA NIM](../api-reference/nvidia-nim.md).
+
+## Moondream and Cosmos 3 Nano NIM
+
+Moondream Cloud uses `MOONDREAM_API_KEY`. Photon local needs `pip install moondream` and no key. The certified Cosmos 3 NIM is a separate localhost server (`COSMOS3_NIM_URL`, default `http://127.0.0.1:8010/v1/infer`).
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `understand_moondream_3_1` | Query or caption (`--skill caption`) | `MOONDREAM_API_KEY` |
+| `understand_moondream_3_preview` | Same skills, preview checkpoint | `MOONDREAM_API_KEY` |
+| `understand_moondream_3_1_local` | Photon 3.1 | `pip install moondream` |
+| `detect_moondream_3_1` | Boxes, points, or SVG (`--skill point\|segment`) | `MOONDREAM_API_KEY` |
+| `detect_moondream_3_preview` | Same skills, preview checkpoint | `MOONDREAM_API_KEY` |
+| `detect_moondream_3_1_local` | Photon 3.1 detect | `pip install moondream` |
+| `generate_cosmos3_nano_t2i` | Certified NIM `text2image` | local NIM |
+| `video_generate_cosmos3_nano_v2v` | Certified NIM `video2video` | local NIM |
+| `robot_act_cosmos3_nano_droid` | Nano-DROID policy actions | local NIM |
+
+See [Moondream](../api-reference/moondream.md) and [Cosmos 3 Nano NIM](../api-reference/cosmos3-nano.md).
 
 ## Google Virtual Try-On (Vertex)
 

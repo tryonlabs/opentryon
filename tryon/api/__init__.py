@@ -85,6 +85,9 @@ _LAZY_ATTRS = {
     "WanVideoAdapter": ".wan",
     "RunwayVideoAdapter": ".runway",
     "Thx01Adapter": ".hal_x",
+    "MoondreamAdapter": ".moondream",
+    "BeamAdapter": ".reflection",
+    "Cosmos3NanoNimAdapter": ".nvidia.cosmos_nano",
 }
 
 __all__ = sorted(_LAZY_ATTRS)

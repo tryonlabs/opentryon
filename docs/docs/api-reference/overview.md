@@ -951,6 +951,22 @@ See [Hy4 TokenHub](hy4) and [Hy4 local](../local-models/hy4.md).
 
 ---
 
+### `BeamAdapter`
+
+Reflection **Beam 1.0** (`REFLECTION_API_KEY`) on `understand`. Text chat only. Upstream id `Beam-1.0-501B-A23B`. Reasoning is always on.
+
+See [Beam](beam).
+
+---
+
+### `MoondreamAdapter`
+
+Moondream Cloud (`MOONDREAM_API_KEY`) for `moondream-3.1` and `moondream-3-preview`. `understand` is query or caption. `detect` is boxes, points, or an SVG path. Photon local twin: `moondream-3.1-local`.
+
+See [Moondream](moondream).
+
+---
+
 ### `InceptionUnderstandAdapter`
 
 Inception Labs **Mercury 3** diffusion LLM via OpenAI-compatible

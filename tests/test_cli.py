@@ -454,6 +454,46 @@ def check_qwen_dry_runs():
     print("\u2713 understand qwen3.8-max / qwen3.8 --dry-run resolve the expected calls")
 
 
+def check_beam_dry_run_and_requires_prompt():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "beam",
+            "--prompt", "Write a lookbook caption for a linen trench.",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "BeamAdapter" in printed and "'model': 'Beam-1.0-501B-A23B'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["understand", "--model", "beam", "--dry-run"])
+    assert code != 0, "expected beam to require --prompt"
+
+    from tryon.api.reflection import BeamAdapter
+
+    adapter = BeamAdapter(api_key="fake-key-for-validation-test")
+    try:
+        adapter.understand()
+    except ValueError as e:
+        assert "prompt" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Beam has no prompt")
+    try:
+        adapter.understand(prompt="hi", image="look.jpg")
+    except ValueError as e:
+        assert "text-only" in str(e).lower() or "image" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Beam is given an image")
+    try:
+        adapter.understand(prompt="hi", reasoning_effort="none")
+    except ValueError as e:
+        assert "reasoning_effort" in str(e)
+    else:
+        raise AssertionError("expected ValueError for reasoning_effort none")
+    print("\u2713 understand beam --dry-run resolves and rejects missing prompt, images, and none")
+
+
 def check_hy4_dry_runs():
     for model_id, expect_endpoint in [
         ("hy4-preview", "'endpoint': 'tokenhub'"),
@@ -473,6 +513,49 @@ def check_hy4_dry_runs():
         assert "'enable_thinking': True" in printed, printed
         assert "'reasoning_effort': 'high'" in printed, printed
     print("\u2713 understand hy4-preview / hy4-preview-local --dry-run resolve the expected calls")
+
+
+def check_moondream_and_cosmos_nano_dry_runs():
+    cases = [
+        (["understand", "--model", "moondream-3.1", "--image", "look.jpg",
+          "--prompt", "What fabric is the jacket?", "--dry-run"],
+         "MoondreamAdapter", "understand"),
+        (["understand", "--model", "moondream-3-preview", "--image", "look.jpg",
+          "--skill", "caption", "--length", "short", "--dry-run"],
+         "MoondreamAdapter", "understand"),
+        (["understand", "--model", "moondream-3.1-local", "--image", "look.jpg",
+          "--prompt", "Count the buttons", "--dry-run"],
+         "MoondreamLocalAdapter", "understand"),
+        (["detect", "--model", "moondream-3.1", "--image", "look.jpg",
+          "--object", "dress", "--skill", "detect", "--dry-run"],
+         "MoondreamAdapter", "detect"),
+        (["detect", "--model", "moondream-3.1-local", "--image", "look.jpg",
+          "--object", "collar", "--skill", "point", "--dry-run"],
+         "MoondreamLocalAdapter", "detect"),
+        (["generate", "--model", "cosmos3-nano-t2i", "--prompt", "linen shirt, studio", "--dry-run"],
+         "Cosmos3NanoNimAdapter", "generate_text_to_image"),
+        (["video-generate", "--model", "cosmos3-nano-v2v", "--video", "clip.mp4",
+          "--prompt", "slower turn", "--dry-run"],
+         "Cosmos3NanoNimAdapter", "generate_video_to_video"),
+        (["robot-act", "--model", "cosmos3-nano-droid", "--image", "obs.jpg",
+          "--prompt", "pick up the cup", "--observation", "obs.json", "--dry-run"],
+         "Cosmos3NanoNimAdapter", "get_action"),
+    ]
+    for argv, class_name, method in cases:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main(argv)
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert class_name in printed and f".{method}(" in printed, printed
+    from tryon.api.moondream import MoondreamAdapter
+    try:
+        MoondreamAdapter(api_key="test").understand(image="look.jpg")
+    except ValueError as exc:
+        assert "prompt" in str(exc).lower()
+    else:
+        raise AssertionError("query without prompt should fail")
+    print("\u2713 moondream and cosmos3-nano variant --dry-run resolve")
 
 
 def check_mercury3_dry_run():
@@ -2534,7 +2617,9 @@ if __name__ == "__main__":
     check_new_media_models_dry_runs()
     check_kimi_dry_runs()
     check_qwen_dry_runs()
+    check_beam_dry_run_and_requires_prompt()
     check_hy4_dry_runs()
+    check_moondream_and_cosmos_nano_dry_runs()
     check_mercury3_dry_run()
     check_nvidia_nim_dry_runs()
     check_qwen_image_dry_runs()
