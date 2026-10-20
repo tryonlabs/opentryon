@@ -185,6 +185,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Unlocks understand deepseek-flash (text/image, no video). Cheapest frontier-class VLM available.",
     ),
     (
+        "inception",
+        "Inception Labs (Mercury)",
+        "https://docs.inceptionlabs.ai/get-started/models",
+        ("INCEPTION_API_KEY",),
+        "Unlocks understand mercury-3 (diffusion LLM, text-only chat; 1M context). "
+        "Optional INCEPTION_BASE_URL (default https://api.inceptionlabs.ai/v1).",
+    ),
+    (
         "elevenlabs",
         "ElevenLabs",
         "https://elevenlabs.io/app/settings/api-keys",

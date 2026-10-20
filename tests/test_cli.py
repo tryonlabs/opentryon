@@ -475,6 +475,33 @@ def check_hy4_dry_runs():
     print("\u2713 understand hy4-preview / hy4-preview-local --dry-run resolve the expected calls")
 
 
+def check_mercury3_dry_run():
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "understand", "--model", "mercury-3",
+            "--prompt", "Caption a wool blazer for e-commerce.",
+            "--reasoning-effort", "medium",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0, printed
+    assert "InceptionUnderstandAdapter" in printed and ".understand(" in printed, printed
+    assert "'reasoning_effort': 'medium'" in printed, printed
+    print("\u2713 understand mercury-3 --dry-run resolves InceptionUnderstandAdapter.understand")
+
+
+def check_mercury3_requires_prompt():
+    from tryon.api.inception import InceptionUnderstandAdapter
+
+    try:
+        InceptionUnderstandAdapter(api_key="fake-key-for-validation-test").understand()
+    except ValueError as e:
+        assert "prompt" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when prompt is missing")
+
+
 def check_hy4_requires_prompt_or_image():
     from tryon.api.hy import Hy4Adapter
 
@@ -2449,6 +2476,7 @@ if __name__ == "__main__":
     check_kimi_dry_runs()
     check_qwen_dry_runs()
     check_hy4_dry_runs()
+    check_mercury3_dry_run()
     check_nvidia_nim_dry_runs()
     check_qwen_image_dry_runs()
     check_qwen_image_21_and_thx01_dry_runs()
@@ -2457,6 +2485,7 @@ if __name__ == "__main__":
     check_kimi_understand_requires_image_or_video()
     check_qwen_understand_requires_image_or_video()
     check_hy4_requires_prompt_or_image()
+    check_mercury3_requires_prompt()
     check_nvidia_understand_requires_media()
     check_qwen_image_requires_prompt_and_tryon_inputs()
     check_minimax_h3_requires_prompt()
