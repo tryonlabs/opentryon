@@ -125,7 +125,7 @@ class InceptionUnderstandAdapter:
         if kwargs.get("image") is not None:
             raise ValueError(
                 "mercury-3 is text-only on v1/chat/completions. "
-                "For image classification see Mercury Decide (v1/decisions) — not wired here."
+                "For image classification use decide --model mercury-decide (v1/decisions)."
             )
         text = (prompt or "").strip()
         if not text:

@@ -189,7 +189,8 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Inception Labs (Mercury)",
         "https://docs.inceptionlabs.ai/get-started/models",
         ("INCEPTION_API_KEY",),
-        "Unlocks understand mercury-3 (diffusion LLM, text-only chat; 1M context). "
+        "Unlocks understand mercury-3 (diffusion LLM chat) and decide mercury-decide "
+        "(POST /v1/decisions; text/JSON + base64 images). "
         "Optional INCEPTION_BASE_URL (default https://api.inceptionlabs.ai/v1).",
     ),
     (

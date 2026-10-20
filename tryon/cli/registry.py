@@ -2418,7 +2418,7 @@ _UNDERSTAND = {
             "Text in / text out; 1M context, up to 131K output tokens. "
             "reasoning_effort instant|low|medium|high; temperature 0.5–1.0. "
             "Tool calling and structured outputs supported upstream — not exposed on CLI yet. "
-            "Image classification: Mercury Decide (v1/decisions) is a separate product. "
+            "Image classification / routing: decide --model mercury-decide (v1/decisions). "
             "See https://www.inceptionlabs.ai/blog/introducing-mercury-3"
         ),
         args=[
@@ -3726,6 +3726,31 @@ _DECIDE = {
             Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
             Arg(("--jev-model",), "jev_model", target="init", call_name="model", default="jev-latest",
                 choices=["jev-latest", "jev-preview", "jev-1.13.0"], help="Jev model id/alias"),
+        ],
+    ),
+    "mercury-decide": ModelSpec(
+        id="mercury-decide",
+        label="Mercury Decide (Inception classification / scoring, text + images)",
+        import_path="tryon.api.inception",
+        class_name="MercuryDecideAdapter",
+        method="decide",
+        output_kind="text",
+        env_hint="INCEPTION_API_KEY",
+        notes=(
+            "Inception Labs POST /v1/decisions (model mercury-decide). Typed noul/choice/score "
+            "answers with calibrated probabilities; text/JSON state and optional images as base64 "
+            "content parts (local paths converted; remote image URLs rejected). Input tokens billed; "
+            "output tokens reported but free. No streaming or chat completions. Same INCEPTION_API_KEY "
+            "as understand mercury-3. See https://docs.inceptionlabs.ai/capabilities/decisions"
+        ),
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state",
+                help="Text or JSON (or path to a file) to judge; optional when --image is set"),
+            Arg(("--image", "-i"), "image", nargs="+",
+                help="Image(s) as OpenAI-style parts in state (path → base64 data URL; no remote URLs)"),
+            Arg(("--inception-model",), "inception_model", target="init", call_name="model",
+                default="mercury-decide", choices=["mercury-decide"], help="Mercury Decide model id"),
         ],
     ),
     "thx-01": ModelSpec(

@@ -66,6 +66,7 @@ _LAZY_ATTRS = {
     "GLMUnderstandAdapter": ".zai",
     "DeepSeekUnderstandAdapter": ".deepseek",
     "InceptionUnderstandAdapter": ".inception",
+    "MercuryDecideAdapter": ".inception",
     "ClaudeUnderstandAdapter": ".claude",
     "ElevenLabsAdapter": ".elevenlabs",
     "GeminiUnderstandAdapter": ".gemini",
