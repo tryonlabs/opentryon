@@ -3725,6 +3725,87 @@ _DECIDE = {
     ),
 }
 
+_D3_QUESTIONS_HELP = (
+    _DECIDE_QUESTIONS_HELP.rstrip(".")
+    + '; Decision 3.0 (d3) also supports "box" and "track" types — see docs/docs/api-reference/vllm-sr-d3.md.'
+)
+
+_D3_CATALOG = [
+    ("turbo", "vllm-sr/d3-turbo", "27B", "Read-once multimodal tier; box + track"),
+    ("flash", "vllm-sr/d3-flash", "9B", "Per-question read; strong vision scores"),
+    ("mini", "vllm-sr/d3-mini", "4B", "Mid-size open weights"),
+    ("nano", "vllm-sr/d3-nano", "2B", "Small multimodal decision model"),
+    ("lite", "vllm-sr/d3-lite", "0.8B", "Edge-friendly"),
+    ("edge", "vllm-sr/d3-edge", "0.6B", "Smallest d3 variant"),
+]
+
+
+def _d3_decide_args(*, local: bool, hf_id: str, variant: str) -> List[Arg]:
+    args: List[Arg] = [
+        Arg(("--questions", "-q"), "questions", required=True, help=_D3_QUESTIONS_HELP),
+        Arg(("--state", "-s"), "state", help="Text or JSON (or path) describing the situation"),
+        Arg(("--image", "-i"), "image", nargs="+", help="Image(s) in the input (path or URL)"),
+        Arg(("--video",), "video", help="Video clip (path or URL; one clip on hosted API)"),
+        Arg(
+            ("--assets",),
+            "assets",
+            help="JSON map of placeholder -> image specs for images inside questions/options",
+        ),
+        Arg(
+            ("--long-context",),
+            "long_context",
+            action="store_true",
+            help="Allow up to 131072 tokens per question (local + API when supported)",
+        ),
+        Arg(("--model-id",), "model_id", target="init", default=hf_id, help="HF repo id override"),
+    ]
+    if local:
+        args.append(
+            Arg(
+                ("--variant",),
+                "variant",
+                target="init",
+                default=variant,
+                choices=[slug for slug, *_ in _D3_CATALOG],
+                help="d3 size tier (selects default HF repo when --model-id omitted)",
+            )
+        )
+        args.append(
+            Arg(("--device",), "device", target="init", choices=["cuda", "cpu"], help="Device (CUDA strongly recommended)")
+        )
+    return args
+
+
+for _slug, _hf_id, _size, _blurb in _D3_CATALOG:
+    _DECIDE[f"d3-{_slug}"] = ModelSpec(
+        id=f"d3-{_slug}",
+        label=f"vLLM-SR d3-{_slug} ({_size}, hosted Decision 3.0)",
+        import_path="tryon.api.vllm_sr",
+        class_name="D3ApiAdapter",
+        method="decide",
+        output_kind="text",
+        env_hint="DECISION_API_KEY",
+        notes=(
+            f"First-party Decision 3.0 API ({_blurb}). POST https://decision.vllm-sr.ai/v1/systemone "
+            f"with model {_hf_id}. Free key on the site. Local twin: d3-{_slug}-local."
+        ),
+        args=_d3_decide_args(local=False, hf_id=_hf_id, variant=_slug),
+    )
+    _DECIDE[f"d3-{_slug}-local"] = ModelSpec(
+        id=f"d3-{_slug}-local",
+        label=f"vLLM-SR d3-{_slug} ({_size}, local Decision 3.0)",
+        import_path="tryon.models.d3",
+        class_name="D3LocalAdapter",
+        method="decide",
+        output_kind="text",
+        extra="local",
+        notes=(
+            f"Apache-2.0 weights {_hf_id} via transformers>=5.17 trust_remote_code. "
+            f"Multimodal System One (box/track). Hosted twin: d3-{_slug} (DECISION_API_KEY)."
+        ),
+        args=_d3_decide_args(local=True, hf_id=_hf_id, variant=_slug),
+    )
+
 _VIDEOJEV_QUESTIONS_HELP = (
     "JSON array (or path): [{\"id\": \"...\", \"task\": \"grounding|choice\", "
     "\"query\": \"...\", \"options\": [\"A.\", \"B.\"] (choice only)}]. "
@@ -4201,7 +4282,7 @@ SERVICE_HELP = {
     "generate-3d": "Text/image-to-3D mesh generation",
     "bg-remove": "Background removal",
     "tts": "Text-to-speech",
-    "decide": "Typed, calibrated decisions (yes/no, choice, score) about text/images via System One models",
+    "decide": "Typed, calibrated decisions (yes/no, choice, score, box, track) via System One models",
     "embed": "Multimodal embeddings (dense or multi-vector) saved to .npz",
     "classify": "Fixed-label image classification (try-on safety gating, garment attributes) with calibrated probabilities",
     "measure": "Body measurements (ISO 8559-1) from photo, questionnaire, or parametric mesh",

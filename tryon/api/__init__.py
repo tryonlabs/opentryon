@@ -41,6 +41,7 @@ _LAZY_ATTRS = {
     "Flux2FlexAdapter": ".flux2",
     "Flux3ImageAdapter": ".flux3",
     "CladBodyApiAdapter": ".clad",
+    "D3ApiAdapter": ".vllm_sr",
     "Flux3ImageKleinAdapter": ".flux3",
     "Flux3VideoAdapter": ".flux3_video",
     "Flux3MaxVideoAdapter": ".flux3_video",
