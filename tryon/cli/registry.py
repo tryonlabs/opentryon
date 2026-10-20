@@ -1172,6 +1172,13 @@ def _flux3_video_args() -> List[Arg]:
             default=True,
             help="Disable synchronized audio",
         ),
+        Arg(
+            ("--version",),
+            "version",
+            default="latest",
+            choices=["latest", "max"],
+            help="BFL harness version pin (flux3-video default latest; flux3-max pins max)",
+        ),
     ]
 
 
@@ -2510,10 +2517,28 @@ _VIDEO_GENERATE = {
         notes=(
             "BFL unified video endpoint (t2v / i2v / v2v / draft_enhance). "
             "Use --video to continue a clip, --draft for a fast preview, then "
-            "--draft-cache for full quality. Conversational video edit is a separate "
+            "--draft-cache for full quality. For the Max speed/quality tier see "
+            "flux3-max (version=max). Conversational video edit is a separate "
             "BFL tool (/v1/flux-tools/video-edit-v1), not this adapter."
         ),
         args=_flux3_video_args(),
+    ),
+    "flux3-max": ModelSpec(
+        id="flux3-max",
+        label="FLUX 3 Max",
+        import_path="tryon.api.flux3_video",
+        class_name="Flux3MaxVideoAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="BFL_API_KEY",
+        notes=(
+            "BFL FLUX 3 Max video tier on POST /v1/flux-3-video with version=max "
+            "(fastest render path per BFL). Same modes as flux3-video. Override pin "
+            "with BFL_FLUX3_MAX_VERSION if BFL renames the tag."
+        ),
+        args=[a for a in _flux3_video_args() if a.dest != "version"],
     ),
     "seedance": ModelSpec(
         id="seedance",

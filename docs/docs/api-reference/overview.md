@@ -584,6 +584,24 @@ video_bytes = adapter.generate_text_to_video(
 
 Registry id: `flux3-video` on `video-generate`. See [FLUX 3 Video](flux3-video).
 
+### `Flux3MaxVideoAdapter`
+
+Adapter for [FLUX 3 Max](https://bfl.ai/models/flux-3-video#flux-3-max) — same `POST /v1/flux-3-video` contract with `version=max` (fastest FLUX 3 video tier).
+
+```python
+from tryon.api import Flux3MaxVideoAdapter
+
+adapter = Flux3MaxVideoAdapter()
+mp4 = adapter.generate_text_to_video(
+    prompt="Runway walk under soft key light",
+    aspect_ratio="9:16",
+    duration=10,
+    resolution="fhd",
+)
+```
+
+Registry id: `flux3-max` on `video-generate`. See [FLUX 3 Max](flux3-max).
+
 ---
 
 ### `Flux2FlexAdapter`
