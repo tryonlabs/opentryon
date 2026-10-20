@@ -198,6 +198,8 @@ The `tts` service now exists (shipped 21 Sep 2026 with ElevenLabs) — new candi
 
 ### Image & video understanding / multimodal
 
+| **Gemini 4 Argon** (`gemini-4-argon`) | A — `GEMINI_API_KEY`, `understand` | Flagship reasoning multimodal (text/image/video/audio/PDF → text); agentic video + long decode. **Plan:** [Gemini 4 Argon integration plan](../advanced/gemini-4-argon-integration-plan.md). Keep shipped `gemini-3.8-flash` for fast Flash work. | `next` |
+
 | Candidate | Path | Notes | Status |
 |---|---|---|---|
 | **Nemotron 3 Nano Omni** | A | Wave 1 shipped. Native audio (unlike current Kimi/Qwen understand tools). | shipped |
