@@ -24,6 +24,8 @@ from PIL import Image
 class Flux3VideoAdapter:
     BASE_URL = "https://api.bfl.ai"
     ENDPOINT = "/v1/flux-3-video"
+    API_PRODUCT = "FLUX 3 Video"
+    DEFAULT_VERSION = "latest"
 
     _IN_PROGRESS_STATUSES = frozenset(
         {
@@ -172,7 +174,7 @@ class Flux3VideoAdapter:
             return result["sample"]
         if "sample" in response_data:
             return response_data["sample"]
-        raise ValueError(f"No result sample in FLUX 3 Video response: {response_data}")
+        raise ValueError(f"No result sample in {self.API_PRODUCT} response: {response_data}")
 
     def _download_sample(self, sample: str) -> bytes:
         if sample.startswith(("http://", "https://")):
@@ -199,10 +201,10 @@ class Flux3VideoAdapter:
             except Exception:
                 error_msg = e.response.text or str(e)
             raise ValueError(
-                f"BFL FLUX 3 Video API HTTP error ({e.response.status_code}): {error_msg}"
+                f"BFL {self.API_PRODUCT} API HTTP error ({e.response.status_code}): {error_msg}"
             )
         except requests.exceptions.RequestException as e:
-            raise ValueError(f"Failed to connect to BFL FLUX 3 Video API: {str(e)}")
+            raise ValueError(f"Failed to connect to BFL {self.API_PRODUCT} API: {str(e)}")
 
         if "polling_url" in response_data:
             task_id = response_data.get("id", "unknown")
@@ -223,7 +225,7 @@ class Flux3VideoAdapter:
         generate_audio: bool,
         safety_tolerance: int,
         draft: bool,
-        version: str,
+        version: Optional[str],
     ) -> dict:
         if aspect_ratio not in self._ASPECT_RATIOS:
             raise ValueError(f"aspect_ratio must be one of {sorted(self._ASPECT_RATIOS)}")
@@ -231,6 +233,7 @@ class Flux3VideoAdapter:
             raise ValueError(f"resolution must be one of {sorted(self._RESOLUTIONS)}")
         if safety_tolerance < 0 or safety_tolerance > 7:
             raise ValueError("safety_tolerance must be between 0 and 7")
+        resolved_version = version if version is not None else self.DEFAULT_VERSION
         return {
             "aspect_ratio": aspect_ratio,
             "duration": self._normalize_duration(duration),
@@ -238,7 +241,7 @@ class Flux3VideoAdapter:
             "generate_audio": generate_audio,
             "safety_tolerance": safety_tolerance,
             "draft": draft,
-            "version": version,
+            "version": resolved_version,
         }
 
     def generate_text_to_video(
@@ -250,7 +253,7 @@ class Flux3VideoAdapter:
         generate_audio: bool = True,
         safety_tolerance: int = 2,
         draft: bool = False,
-        version: str = "latest",
+        version: Optional[str] = None,
         video: Optional[str] = None,
         draft_cache: Optional[str] = None,
         **kwargs,
@@ -311,7 +314,7 @@ class Flux3VideoAdapter:
         generate_audio: bool = True,
         safety_tolerance: int = 2,
         draft: bool = False,
-        version: str = "latest",
+        version: Optional[str] = None,
         **kwargs,
     ) -> bytes:
         if not prompt:
@@ -357,3 +360,17 @@ class Flux3VideoAdapter:
         }
         payload.update(kwargs)
         return self._run_and_download(payload)
+
+
+class Flux3MaxVideoAdapter(Flux3VideoAdapter):
+    """
+    FLUX 3 Max — BFL's fastest, highest-quality FLUX 3 video tier.
+
+    Uses the same ``POST /v1/flux-3-video`` contract as :class:`Flux3VideoAdapter`,
+    with ``version`` pinned to ``max`` (override via env ``BFL_FLUX3_MAX_VERSION``).
+
+    Reference: https://bfl.ai/models/flux-3-video#flux-3-max
+    """
+
+    API_PRODUCT = "FLUX 3 Max"
+    DEFAULT_VERSION = os.getenv("BFL_FLUX3_MAX_VERSION", "max")

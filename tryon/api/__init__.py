@@ -43,6 +43,7 @@ _LAZY_ATTRS = {
     "CladBodyApiAdapter": ".clad",
     "Flux3ImageKleinAdapter": ".flux3",
     "Flux3VideoAdapter": ".flux3_video",
+    "Flux3MaxVideoAdapter": ".flux3_video",
     "TrellisMeshAdapter": ".nvidia.trellis_adapter",
     "LipSyncAdapter": ".nvidia.lipsync_adapter",
     "LumaAIVideoAdapter": ".lumaAI.luma_video_adapter",

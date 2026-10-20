@@ -266,6 +266,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 |---|---|---|
 | `video_generate_veo` | Google Veo 3.1 (Generate / Fast / Lite) | `GEMINI_API_KEY` |
 | `video_generate_flux3_video` | FLUX 3 Video (text, keyframes, video-to-video) | `BFL_API_KEY` |
+| `video_generate_flux3_max` | FLUX 3 Max (fastest tier, version=max) | `BFL_API_KEY` |
 | `video_generate_sora` | OpenAI Sora (**deprecated — API removed 2026-09-24**) | `OPENAI_API_KEY` |
 | `video_generate_luma_video` | Luma Dream Machine (Ray 2) | `LUMA_AI_API_KEY` |
 | `video_generate_luma_ray_3_2` | Luma Ray 3.2 (Agents API) | `LUMA_AGENTS_API_KEY` / `LUMA_AI_API_KEY` |

@@ -70,6 +70,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/flux3-image',
         'api-reference/flux3-image-klein',
         'api-reference/flux3-video',
+        'api-reference/flux3-max',
         'api-reference/nano-banana',
         'api-reference/gpt-image',
         'api-reference/veo',

@@ -12,7 +12,7 @@ keywords:
 
 # FLUX 3 Video
 
-[FLUX 3 Video](https://docs.bfl.ml/flux_3/flux3_video) is Black Forest Labs' unified async video endpoint: text-to-video, image keyframes, continuation from an existing clip, and a draft → enhance workflow. OpenTryOn exposes it as **`flux3-video`** on `video-generate` (same `BFL_API_KEY` as FLUX 3 Image and FLUX.2).
+[FLUX 3 Video](https://docs.bfl.ml/flux_3/flux3_video) is Black Forest Labs' unified async video endpoint: text-to-video, image keyframes, continuation from an existing clip, and a draft → enhance workflow. OpenTryOn exposes it as **`flux3-video`** on `video-generate` (same `BFL_API_KEY` as FLUX 3 Image and FLUX.2). For the **Max** speed/quality tier (`version=max`), see **[FLUX 3 Max](flux3-max)** (`flux3-max`).
 
 ## Prerequisites
 
@@ -60,6 +60,7 @@ opentryon video-generate --model flux3-video --prompt "test" --dry-run
 | `--no-audio` | audio on | Silent clip |
 | `--video` | — | v2v continuation from local path or URL |
 | `--draft-cache` | — | `draft_enhance` from a prior draft bundle |
+| `--version` | `latest` | `latest` or `max` (Max is also available as `--model flux3-max`) |
 
 **Out of scope here:** [FLUX Video Edit](https://docs.bfl.ml/) at `POST /v1/flux-tools/video-edit-v1` (separate BFL tool; not wired in OpenTryOn yet).
 

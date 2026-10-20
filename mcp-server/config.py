@@ -145,7 +145,7 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://docs.bfl.ai/",
         ("BFL_API_KEY",),
         "FLUX.2, FLUX 3 Image (flux3-image), FLUX 3 Image Klein (flux3-image-klein), "
-        "FLUX 3 Video (flux3-video), and FLUX VTO.",
+        "FLUX 3 Video (flux3-video), FLUX 3 Max (flux3-max), and FLUX VTO.",
     ),
     (
         "clad",
