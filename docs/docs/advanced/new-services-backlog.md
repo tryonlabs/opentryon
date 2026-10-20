@@ -82,6 +82,7 @@ See [integrate-next — Frontier long-context MoE survey](../community/integrate
 
 | Priority | Registry id (draft) | Path | Vendor / weights | Licence / notes | Status |
 |---:|---|---|---|---|---|
+| — | `moondream-3.1`, `moondream-3-preview`, `moondream-3.1-local` | A / Photon | Moondream skills `detect` / `point` / `segment` | Moondream License. Open-vocab, not a fixed class list. SVG path, not a label PNG | **shipped** |
 | 1 | `trendyol-yolov9` | B | Trendyol YOLOv9 (84 product classes, survey Oct 2026) | **CC BY-SA 4.0** — share-alike for derivatives | **watch** (paper/weights GA) |
 | 2 | `trendyol-dinov2-embed` | B | DINOv2 256-d embedder (same survey) | CC BY-SA — consider **`embed`** service instead if boxes not needed | **watch** |
 | 3 | — | A | No first-party “fashion detect” API in Wave 2 table | Use `understand` VLMs for prose only | **skip** |

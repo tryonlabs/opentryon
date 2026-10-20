@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Reflection Beam 1.0** (`tryon.api.reflection.BeamAdapter`, `REFLECTION_API_KEY`): `understand` model `beam` — text chat for `Beam-1.0-501B-A23B`. Named-model-only. No local id (serve guide is four B300s)
+- **Moondream 3.1 and Moondream 3 Preview** (`tryon.api.moondream`, `MOONDREAM_API_KEY`): `understand` query/caption and a new `detect` service for boxes, points, and SVG masks. Local Photon twin `moondream-3.1-local` (`pip install moondream`)
+- **Cosmos 3 Nano certified-NIM variants** (`tryon.api.nvidia.cosmos_nano`, `COSMOS3_NIM_URL`): `cosmos3-nano-t2i`, `cosmos3-nano-v2v`, and `cosmos3-nano-droid`. Hosted `cosmos3` / `cosmos3-reasoner` and local `cosmos3-local` are unchanged
+
 ## [0.0.8] - 19 October 2026
 
 ### Added

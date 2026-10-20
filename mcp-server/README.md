@@ -161,6 +161,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_fashn_model_create` | FASHN Model Create (fashion model from a prompt) | `FASHN_API_KEY` |
 | `generate_flux3_image` | FLUX 3 Image | `BFL_API_KEY` |
 | `generate_flux3_image_klein` | FLUX 3 Image Klein (distilled) | `BFL_API_KEY` |
+| `generate_cosmos3_nano_t2i` | Cosmos 3 Nano text-to-image (self-hosted certified NIM) | `COSMOS3_NIM_URL` |
 | `generate_flux3_image_klein_local` | FLUX 3 Image Klein (local Diffusers) | local/GPU |
 | `generate_sana_sprint` | SANA-Sprint (local, 1–4 steps) | local/GPU |
 | `generate_flux2_pro` | FLUX.2 [pro] | `BFL_API_KEY` |
@@ -233,10 +234,12 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_deepseek_ocr` | DeepSeek-OCR (open-weight, local) | local/GPU + `flash-attn` | No first-party hosted API exists. Document/label OCR -> markdown or free text; care labels, size tags, SKU sheets |
 | `understand_ternary_bonsai_2_27b` | Ternary Bonsai 2 27B (PrismML) | local server | OpenAI-compatible client for a self-hosted llama.cpp/MLX server (`BONSAI_BASE_URL`); not in-process GPU |
 | `understand_limite_1b_violetto` | Limite 1B - Violetto (Paradigma Inc, open-weight, local) | local/GPU | No first-party hosted API exists. Text-only 1B math reasoning, no image/video — out of fashion/media scope; named-model-only, not a capability default |
+| `understand_beam` | Reflection Beam 1.0 | `REFLECTION_API_KEY` | Text chat only (`Beam-1.0-501B-A23B`); reasoning always on |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |
 | `understand_nemotron_3_5_super_vl` | Nemotron 3.5 Super VL (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + text; no audio |
+| `understand_moondream_3_1` | Moondream 3.1 query / caption | `MOONDREAM_API_KEY` | `--skill query` or `caption`; preview and Photon local twins exist |
 | `understand_cosmos3_reasoner` | Cosmos 3 Reasoner (NVIDIA NIM) | `NVIDIA_API_KEY` | Physical-world image/video QA |
 
 **Qwen3.8 via MCP:** both tools call the shared `understand` entry point (`image`
@@ -266,6 +269,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 |---|---|---|
 | `video_generate_veo` | Google Veo 3.1 (Generate / Fast / Lite) | `GEMINI_API_KEY` |
 | `video_generate_flux3_video` | FLUX 3 Video (text, keyframes, video-to-video) | `BFL_API_KEY` |
+| `video_generate_cosmos3_nano_v2v` | Cosmos 3 Nano video-to-video (self-hosted certified NIM) | `COSMOS3_NIM_URL` |
 | `video_generate_flux3_max` | FLUX 3 Max (fastest tier, version=max) | `BFL_API_KEY` |
 | `video_generate_sora` | OpenAI Sora (**deprecated — API removed 2026-09-24**) | `OPENAI_API_KEY` |
 | `video_generate_luma_video` | Luma Dream Machine (Ray 2) | `LUMA_AI_API_KEY` |
@@ -353,6 +357,16 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 | `measure_clad_body_photo` | Clad photo + height → ISO 8559-1 | `CLAD_API_KEY` |
 | `measure_clad_body_questionnaire` | Clad eight-question sizing flow | `CLAD_API_KEY` |
 | `measure_clad_body_local` | Measure Anny/MHR param JSON | local / `clad-body` |
+
+### detect -- Open-vocabulary grounding
+
+| Tool | Model | Requires |
+|---|---|---|
+| `detect_moondream_3_1` | Moondream 3.1 boxes, points, or SVG mask | `MOONDREAM_API_KEY` |
+| `detect_moondream_3_preview` | Moondream 3 Preview | `MOONDREAM_API_KEY` |
+| `detect_moondream_3_1_local` | Moondream 3.1 Photon | `pip install moondream` |
+
+`--skill detect` (boxes), `point` (centroids), or `segment` (SVG path). Coordinates are normalized 0–1.
 
 ### classify -- Fixed-label classification
 

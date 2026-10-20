@@ -107,6 +107,8 @@ opentryon video-generate --model cosmos3 \
 
 MCP tool: `video_generate_cosmos3`.
 
+Text-to-image, video-to-video, and Nano-DROID actions are on the certified NIM, not this hosted catalog. See [Cosmos 3 Nano NIM](cosmos3-nano).
+
 ## Python
 
 ```python

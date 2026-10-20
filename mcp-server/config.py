@@ -124,6 +124,15 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "MINIMAX_API_KEY. FAL_API_KEY is an alias.",
     ),
     (
+        "moondream",
+        "Moondream",
+        "https://moondream.ai",
+        ("MOONDREAM_API_KEY",),
+        "Unlocks understand and detect for moondream-3.1 and moondream-3-preview "
+        "(query, caption, boxes, points, SVG segment). Optional MOONDREAM_BASE_URL. "
+        "moondream-3.1-local uses Photon (pip install moondream) and does not need this key.",
+    ),
+    (
         "moonshot",
         "Moonshot (Kimi)",
         "https://platform.kimi.ai/console/api-keys",
@@ -178,6 +187,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://docs.z.ai/api-reference/introduction",
         ("ZAI_API_KEY",),
         "Unlocks understand glm-5.3-flashx (text/image/video, 200 tok/s serving tier).",
+    ),
+    (
+        "reflection",
+        "Reflection (Beam)",
+        "https://developers.reflection.ai/models",
+        ("REFLECTION_API_KEY",),
+        "Unlocks understand beam (Beam-1.0-501B-A23B). Text chat only; reasoning always on. "
+        "Optional REFLECTION_BASE_URL (default https://api.reflection.ai/openai/v1).",
     ),
     (
         "deepseek",

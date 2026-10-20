@@ -133,7 +133,13 @@ def check_named_model_nvidia_nim_dry_run():
     assert local2 is not None and local2.model == "cosmos3-local"
     hosted = match_named_model("make a clip with cosmos3", fashion)
     assert hosted is not None and hosted.model == "cosmos3"
-    print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni / cosmos3-local")
+    nano_still = match_named_model("use cosmos3-nano-t2i for a still", fashion)
+    assert nano_still is not None and nano_still.model == "cosmos3-nano-t2i" and nano_still.service == "generate"
+    moon_q = match_named_model("caption this with moondream", fashion)
+    assert moon_q is not None and moon_q.model == "moondream-3.1" and moon_q.service == "understand"
+    moon_box = match_named_model("moondream detect the dress", fashion)
+    assert moon_box is not None and moon_box.service == "detect" and moon_box.model == "moondream-3.1"
+    print("\u2713 named-model chat dry-runs cosmos3 and pins cosmos3-reasoner / nemotron-omni / cosmos3-local / moondream")
 
 
 def check_named_model_pins_for_wave3_models():
@@ -458,6 +464,22 @@ def check_named_model_limite_dry_run():
     default_hit = match_named_model("describe this photo", understand)
     assert default_hit is None or default_hit.model != "limite-1b-violetto"
     print("\u2713 named-model chat dry-runs limite-1b-violetto without changing the understand default")
+
+    beam_agent = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"], model="beam")
+    )
+    beam = beam_agent.run(
+        "use beam to write a lookbook caption for a linen trench",
+        image="garment.jpg",
+        dry_run=True,
+    )
+    assert beam["success"] is True and beam["model"] == "beam"
+    assert "BeamAdapter" in (beam.get("call") or "")
+    named = match_named_model("use reflection beam for the caption", understand)
+    assert named is not None and named.model == "beam"
+    photo = match_named_model("describe this photo", understand)
+    assert photo is None or photo.model != "beam"
+    print("\u2713 named-model chat dry-runs beam without changing the understand default")
 
 
 def check_named_model_question_is_help():

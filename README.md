@@ -111,6 +111,7 @@ opentryon understand --model kimi-k3 --help    # list that model's flags
 | `classify` | Try-on safety gating (fixed-label classifier) | `tryon-safety-classifier` |
 | `embed` | Multimodal embeddings (`.npz`) | `gemini-embedding-2`, `embeddinggemma-2`, … |
 | `measure` | ISO 8559-1 body measurements | `clad-body-photo`, `clad-body-questionnaire`, `clad-body-local` |
+| `detect` | Open-vocabulary boxes, points, SVG masks | `moondream-3.1`, `moondream-3-preview` |
 
 Models marked local need `pip install opentryon[local]`. Full table and flags: [Unified CLI](https://tryonlabs.github.io/opentryon/docs/getting-started/cli).
 

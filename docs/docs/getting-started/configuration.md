@@ -50,6 +50,10 @@ BFL_API_KEY=your_bfl_api_key
 # Moonshot AI (Kimi K2.6 / K2.7 Code multimodal understanding)
 MOONSHOT_API_KEY=your_moonshot_api_key
 
+# Reflection Beam (understand beam — text chat, Beam-1.0-501B-A23B)
+REFLECTION_API_KEY=your_reflection_api_key
+# REFLECTION_BASE_URL=https://api.reflection.ai/openai/v1
+
 # Tencent TokenHub (Hy4 preview LLM) — not Moonshot / DashScope
 TOKENHUB_API_KEY=your_tokenhub_api_key
 # TOKENHUB_BASE_URL=https://tokenhub-intl.tencentcloudmaas.com/v1
@@ -87,6 +91,11 @@ FAL_KEY=your_fal_key
 
 # NVIDIA NIM (Nemotron Omni understand, Cosmos 3 Reasoner, Cosmos 3 Generator)
 NVIDIA_API_KEY=your_nvidia_api_key
+# Self-hosted Cosmos 3 certified NIM (cosmos3-nano-t2i, cosmos3-nano-v2v, cosmos3-nano-droid)
+# COSMOS3_NIM_URL=http://127.0.0.1:8010/v1/infer
+
+# Moondream Cloud (understand + detect: moondream-3.1, moondream-3-preview)
+MOONDREAM_API_KEY=your_moondream_api_key
 
 # Clad body measurements (measure clad-body-photo / clad-body-questionnaire)
 CLAD_API_KEY=your_clad_api_key
