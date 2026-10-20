@@ -47,7 +47,7 @@ class Arg:
     nargs: Optional[str] = None
     action: Optional[str] = None
     target: str = "call"  # "call" (method kwarg) or "init" (constructor kwarg)
-    alt_only: bool = False  # only passed when a model's alt_method_on_image is used
+    alt_only: bool = False  # only passed when an alt method (image or video) is active
     call_name: Optional[str] = None  # adapter kwarg name, if different from dest
 
 
@@ -62,6 +62,8 @@ class ModelSpec:
     args: List[Arg] = field(default_factory=list)
     alt_method_on_image: Optional[str] = None
     alt_image_dest: str = "image"
+    alt_method_on_video: Optional[str] = None
+    alt_video_dest: str = "video"
     extra: str = "core"  # "core" | "local" (needs `pip install opentryon[local]`)
     env_hint: Optional[str] = None
     notes: Optional[str] = None
@@ -945,11 +947,26 @@ _FASHN_NOTE = ("FASHN catalogue endpoint over the universal /v1/run API (same FA
                "fashn-tryon-max). ")
 
 
-def _nano_banana_generate_args(with_resolution: bool, with_grounding: bool, wide: bool = False) -> List[Arg]:
+def _nano_banana_generate_args(
+    with_resolution: bool,
+    with_grounding: bool,
+    wide: bool = False,
+    *,
+    with_video_to_image: bool = False,
+) -> List[Arg]:
     args = [
         Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
         _gemini_aspect_ratio(wide),
     ]
+    if with_video_to_image:
+        args.insert(
+            0,
+            Arg(
+                ("--video",),
+                "video",
+                help="Video-to-image: local path, URL, or YouTube link (Interactions API; Nano Banana 2 / 2.1 / 2 Lite only)",
+            ),
+        )
     if with_resolution:
         args.append(Arg(("--resolution",), "resolution", default="2K", choices=["1K", "2K", "4K"]))
     if with_grounding:
@@ -1214,7 +1231,8 @@ _GENERATE = {
         id="nano-banana-2", label="Nano Banana 2 (Gemini 3.1 Flash Image)",
         import_path="tryon.api.nano_banana", class_name="NanoBanana2Adapter",
         method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
-        args=_nano_banana_generate_args(with_resolution=True, with_grounding=True),
+        alt_method_on_video="generate_video_to_image",
+        args=_nano_banana_generate_args(with_resolution=True, with_grounding=True, with_video_to_image=True),
     ),
     "nano-banana-2.1": ModelSpec(
         id="nano-banana-2.1", label="Nano Banana 2.1 (gemini-nano-banana-2.1)",
@@ -1222,15 +1240,20 @@ _GENERATE = {
         method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
         notes="GA 2026-10-06; successor to nano-banana-2 (gemini-3.1-flash-image is deprecated, no shutdown "
         "date yet). Better quality, text rendering and multi-turn character consistency at Flash speed/cost; "
-        "1K/2K/4K plus wide ratios 1:4, 4:1, 1:8, 8:1. Same GEMINI_API_KEY.",
-        args=_nano_banana_generate_args(with_resolution=True, with_grounding=True, wide=True),
+        "1K/2K/4K plus wide ratios 1:4, 4:1, 1:8, 8:1. Pass --video for video-to-image (poster/thumbnail). "
+        "Same GEMINI_API_KEY.",
+        alt_method_on_video="generate_video_to_image",
+        args=_nano_banana_generate_args(
+            with_resolution=True, with_grounding=True, wide=True, with_video_to_image=True
+        ),
     ),
     "nano-banana-2-lite": ModelSpec(
         id="nano-banana-2-lite", label="Nano Banana 2 Lite (Gemini 3.1 Flash-Lite Image)",
         import_path="tryon.api.nano_banana", class_name="NanoBanana2LiteAdapter",
         method="generate_text_to_image", output_kind="images", env_hint="GEMINI_API_KEY",
-        notes="Fastest/cheapest Nano Banana tier; 1K resolution only.",
-        args=_nano_banana_generate_args(with_resolution=False, with_grounding=False),
+        notes="Fastest/cheapest Nano Banana tier; 1K resolution only. Pass --video for video-to-image.",
+        alt_method_on_video="generate_video_to_image",
+        args=_nano_banana_generate_args(with_resolution=False, with_grounding=False, with_video_to_image=True),
     ),
     "flux3-image": ModelSpec(
         id="flux3-image",
@@ -2146,7 +2169,8 @@ _UNDERSTAND = {
         notes="Google's most capable Flash model (stable since 2026-09-02). Text + image + video + audio + "
         "PDF in, text out; 1M-token context, 65,536 max output. --thinking-level low|medium|high "
         "('minimal' is rejected by the API). Media over ~18MB goes through the Files API; YouTube URLs are "
-        "passed to Gemini directly. Same GEMINI_API_KEY as Nano Banana / Veo / Omni.",
+        "passed to Gemini directly. Same GEMINI_API_KEY as Nano Banana / Veo / Omni. "
+        "For flagship reasoning / long decode use --model gemini-4-argon.",
         args=[
             Arg(("--gemini-model",), "gemini_model", target="init", call_name="model",
                 default="gemini-3.8-flash", choices=["gemini-3.8-flash"], help="Gemini model id"),
@@ -2159,6 +2183,73 @@ _UNDERSTAND = {
             Arg(("--thinking-level",), "thinking_level", choices=["low", "medium", "high"],
                 help="Reasoning depth (API default if omitted)"),
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (<= 65536)"),
+        ],
+    ),
+    "gemini-4-argon": ModelSpec(
+        id="gemini-4-argon",
+        label="Gemini 4 Argon (Google flagship reasoning, long decode, agentic video)",
+        import_path="tryon.api.gemini", class_name="GeminiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="GEMINI_API_KEY",
+        notes=(
+            "Gemini 4 Argon (stable gemini-4-argon): multimodal text + image + video + audio + PDF → text. "
+            "Unified 1M token budget (input + thinking + output). Default thinking medium; paid tier only. "
+            "Long decode: set --max-tokens above 65536 (generateContent automatic continuation) or "
+            "--background with text-only input and --max-tokens > 65536 (Interactions API, polls up to 24h). "
+            "--video-processing agentic for long-form video QA. Requires google-genai>=2.30.1. "
+            "Fast/cheap multimodal: --model gemini-3.8-flash."
+        ),
+        args=[
+            Arg(("--gemini-model",), "gemini_model", target="init", call_name="model",
+                default="gemini-4-argon", choices=["gemini-4-argon"], help="Gemini model id"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to understand (path or URL)"),
+            Arg(("--video",), "video", nargs="+", help="Video(s) (path, URL, or YouTube link)"),
+            Arg(("--video-processing",), "video_processing", default="static",
+                choices=["static", "agentic"],
+                help="Video timeline mode (agentic: dynamic navigation; Argon only)"),
+            Arg(("--audio",), "audio", nargs="+", help="Audio clip(s) (path or URL)"),
+            Arg(("--pdf",), "pdf", nargs="+", help="PDF document(s) (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--system",), "system", help="Optional system instruction"),
+            Arg(("--thinking-level",), "thinking_level", choices=["low", "medium", "high"],
+                help="Reasoning depth (Argon default medium if omitted)"),
+            Arg(("--max-tokens",), "max_tokens", type=int,
+                help="Max thinking+output tokens (up to 1048576; >65536 enables long decode)"),
+            Arg(("--background",), "background", action="store_true",
+                help="Text-only long decode via Interactions API (requires --max-tokens > 65536)"),
+            Arg(("--poll-interval",), "poll_interval", type=float, default=5.0,
+                help="Seconds between interaction status polls when --background"),
+        ],
+    ),
+    "gemini-4-argon-cyber-permissive": ModelSpec(
+        id="gemini-4-argon-cyber-permissive",
+        label="Gemini 4 Argon Cyber Permissive (allowlist, defensive cyber)",
+        import_path="tryon.api.gemini", class_name="GeminiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="GEMINI_API_KEY",
+        notes=(
+            "Fairwind Program allowlist only (`gemini-4-argon-cyber-permissive`). Same multimodal "
+            "understand surface as gemini-4-argon; default thinking HIGH; computer use not supported. "
+            "Public Gemini API consumers without allowlist access should use gemini-4-argon."
+        ),
+        args=[
+            Arg(("--gemini-model",), "gemini_model", target="init", call_name="model",
+                default="gemini-4-argon-cyber-permissive",
+                choices=["gemini-4-argon-cyber-permissive"], help="Gemini model id"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s) to understand (path or URL)"),
+            Arg(("--video",), "video", nargs="+", help="Video(s) (path, URL, or YouTube link)"),
+            Arg(("--video-processing",), "video_processing", default="static",
+                choices=["static", "agentic"], help="Video timeline mode (agentic on long clips)"),
+            Arg(("--audio",), "audio", nargs="+", help="Audio clip(s) (path or URL)"),
+            Arg(("--pdf",), "pdf", nargs="+", help="PDF document(s) (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--system",), "system", help="Optional system instruction"),
+            Arg(("--thinking-level",), "thinking_level", choices=["low", "medium", "high"],
+                help="Reasoning depth (Cyber Permissive default high if omitted)"),
+            Arg(("--max-tokens",), "max_tokens", type=int,
+                help="Max thinking+output tokens (up to 1048576; >65536 enables long decode)"),
+            Arg(("--background",), "background", action="store_true",
+                help="Text-only long decode via Interactions API (requires --max-tokens > 65536)"),
+            Arg(("--poll-interval",), "poll_interval", type=float, default=5.0,
+                help="Seconds between interaction status polls when --background"),
         ],
     ),
     "qwen3.8-max": ModelSpec(

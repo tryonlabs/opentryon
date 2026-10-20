@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Gemini 4 Argon — integration plan
-description: Pre-integration plan for Google Gemini 4 Argon in OpenTryOn (capabilities, phases, registry design, risks). Not yet implemented.
+description: Integration plan and phase notes for Google Gemini 4 Argon in OpenTryOn (shipped on understand).
 keywords:
   - Gemini 4 Argon
   - gemini-4-argon
@@ -12,7 +12,7 @@ keywords:
 
 # Gemini 4 Argon — integration plan
 
-**Status:** Planning only (no registry entry yet).  
+**Status:** Shipped — registry id `gemini-4-argon` on `understand` (P1–P3: multimodal, agentic video, long decode + background Interactions).  
 **Last reviewed against Google docs:** 2026-10-20 (UTC).  
 **Owner workflow:** [Model integration guidelines](./model-integration-guidelines.md) → [New model checklist](./new-model-checklist.md) → `/integrate-model`.
 

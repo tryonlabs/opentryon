@@ -777,16 +777,20 @@ See [GLM-5.3-FlashX Documentation](glm) for complete details.
 
 ### `GeminiUnderstandAdapter` / `GeminiTTSAdapter`
 
-Gemini 3.8 Flash multimodal understanding (image, video, audio, PDF → text) and Gemini 3.8 Flash / Flash-Lite text-to-speech (WAV audio, 30 voices, two-speaker dialogue). Both use `GEMINI_API_KEY`.
+Gemini multimodal understanding (image, video, audio, PDF → text) and Gemini 3.8 Flash / Flash-Lite text-to-speech (WAV audio, 30 voices, two-speaker dialogue). Both use `GEMINI_API_KEY`.
+
+Registry: `gemini-3.8-flash` (Flash) and `gemini-4-argon` (flagship reasoning, long decode, agentic video).
 
 ```python
 from tryon.api.gemini import GeminiUnderstandAdapter, GeminiTTSAdapter
 
-text = GeminiUnderstandAdapter().understand(video="runway.mp4", prompt="Summarise the looks.")["text"]
+text = GeminiUnderstandAdapter(model="gemini-4-argon").understand(
+    video="runway.mp4", prompt="Summarise the looks.", video_processing="agentic", max_tokens=131072,
+)["text"]
 wav = GeminiTTSAdapter().generate_speech("Welcome to the spring collection.", voice="Kore", style="warm")
 ```
 
-See [Gemini 3.8 Flash](gemini-3-8) for details.
+See [Gemini 3.8 Flash](gemini-3-8) and [Gemini 4 Argon](gemini-4-argon).
 
 ### Gemini Embedding 2 (multimodal embeddings)
 

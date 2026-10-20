@@ -520,6 +520,31 @@ refined_image = images[0]
 refined_image.save("refined.png")
 ```
 
+### Video-to-image (Nano Banana 2, 2.1, 2 Lite)
+
+Generate a still from a video plus prompt (posters, thumbnails, summary art). Uses the **Interactions API**; supports YouTube links and local files (uploaded via the Files API when needed).
+
+```bash
+opentryon generate --model nano-banana-2.1 \
+  --video "https://www.youtube.com/watch?v=EXAMPLE" \
+  --prompt "Cinematic poster capturing the key themes of this video." \
+  --aspect-ratio 16:9 --resolution 2K
+```
+
+```python
+from tryon.api.nano_banana import NanoBanana21Adapter
+
+images = NanoBanana21Adapter().generate_video_to_image(
+    video="clip.mp4",
+    prompt="Generate a poster image that captures the key themes of this video.",
+    aspect_ratio="16:9",
+    resolution="2K",
+)
+images[0].save("poster.png")
+```
+
+Not available on Gemini 4 Argon (`gemini-4-argon` is text-out only). For **video generation**, use [`gemini-omni`](gemini-omni.md).
+
 ## Reference
 
 - [Gemini Image Generation Documentation](https://ai.google.dev/gemini-api/docs/image-generation)

@@ -1369,6 +1369,10 @@ def check_nano_banana_21_and_fashn_vton_local():
     cases = [
         (["generate", "--model", "nano-banana-2.1", "--prompt", "banner", "--aspect-ratio", "8:1", "--resolution", "4K"],
          "NanoBanana21Adapter", "generate_text_to_image", ["'aspect_ratio': '8:1'", "'resolution': '4K'"]),
+        (["generate", "--model", "nano-banana-2.1", "--video", "clip.mp4", "--prompt", "poster",
+          "--aspect-ratio", "16:9", "--resolution", "2K"],
+         "NanoBanana21Adapter", "generate_video_to_image",
+         ["'video': 'clip.mp4'", "'aspect_ratio': '16:9'", "'resolution': '2K'"]),
         (["edit", "--model", "nano-banana-2.1", "--image", "a.jpg", "--prompt", "make it blue", "--aspect-ratio", "1:4"],
          "NanoBanana21Adapter", "generate_image_edit", ["'aspect_ratio': '1:4'"]),
         (["vton", "--model", "fashn-vton-1.5", "--person-image", "p.jpg", "--garment-image", "g.png",
@@ -1462,6 +1466,14 @@ def check_gemini_38_understand_and_tts():
           "--max-tokens", "2000"],
          "GeminiUnderstandAdapter", "understand",
          ["'image': ['a.jpg', 'b.jpg']", "'video': ['v.mp4']", "'pdf': ['sheet.pdf']", "'thinking_level': 'medium'", "'model': 'gemini-3.8-flash'"]),
+        (["understand", "--model", "gemini-4-argon", "--video", "runway.mp4", "--prompt", "summarise",
+          "--video-processing", "agentic", "--thinking-level", "high", "--max-tokens", "131072"],
+         "GeminiUnderstandAdapter", "understand",
+         ["'model': 'gemini-4-argon'", "'video_processing': 'agentic'", "'max_tokens': 131072"]),
+        (["understand", "--model", "gemini-4-argon", "--prompt", "long spec", "--background",
+          "--max-tokens", "262144"],
+         "GeminiUnderstandAdapter", "understand",
+         ["'background': True", "'max_tokens': 262144"]),
         (["tts", "--model", "gemini-3.8-flash-tts", "--text", "Welcome", "--voice", "Puck", "--style", "warm",
           "--audio-format", "audio/l16", "--sample-rate", "16000"],
          "GeminiTTSAdapter", "generate_speech", ["'voice': 'Puck'", "'mime_type': 'audio/l16'", "'sample_rate': 16000", "'model': 'gemini-3.8-flash-tts'"]),
@@ -1559,7 +1571,50 @@ def check_gemini_38_understand_and_tts():
             pass
         else:
             raise AssertionError(bad)
-    print("\u2713 gemini-3.8-flash understand + gemini-3.8-flash(-lite)-tts: CLI, request shapes, validation")
+
+    argon = GeminiUnderstandAdapter(api_key="test", model="gemini-4-argon")
+    with tempfile.TemporaryDirectory() as tmp2:
+        vid = Path(tmp2) / "clip.mp4"
+        vid.write_bytes(b"\x00\x00\x00\x18ftypmp42")
+        with mock.patch.object(argon.client.models, "generate_content", return_value=response) as gen:
+            argon.understand(video=str(vid), prompt="find the logo", video_processing="agentic", max_tokens=131072)
+    cfg = gen.call_args.kwargs["config"]
+    assert cfg.automatic_continuation is True and cfg.max_output_tokens == 131072
+    assert gen.call_args.kwargs["model"] == "gemini-4-argon"
+    video_part = gen.call_args.kwargs["contents"][0].parts[0]
+    assert str(video_part.media_processing).endswith("AGENTIC")
+
+    interaction = mock.Mock(status="completed", id="int-1", usage=None, steps=[
+        mock.Mock(type="model_output", content=[mock.Mock(type="text", text="done")]),
+    ])
+    with mock.patch.object(argon.client.interactions, "create", return_value=interaction):
+        out = argon.understand(prompt="proof", background=True, max_tokens=262144)
+    assert out["text"] == "done" and out["interaction_id"] == "int-1"
+
+    for bad in ({"max_tokens": 70000}, {"video_processing": "agentic"}):
+        try:
+            adapter.understand(prompt="x", **bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    for bad in (
+        {"prompt": "x", "background": True, "max_tokens": 65536},
+        {"prompt": "x", "background": True, "image": "x.jpg", "max_tokens": 262144},
+    ):
+        try:
+            argon.understand(**bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    try:
+        argon.understand(max_tokens=2_000_000)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("argon max_tokens cap")
+    print("\u2713 gemini-3.8-flash / gemini-4-argon understand + gemini-3.8-flash(-lite)-tts: CLI, shapes, validation")
 
 
 def check_gemini_embedding_2():

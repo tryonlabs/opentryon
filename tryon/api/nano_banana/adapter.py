@@ -47,6 +47,10 @@ Example:
 import os
 import base64
 import io
+import mimetypes
+import tempfile
+import time
+from pathlib import Path
 from typing import Optional, Union, List, Dict, Any
 from PIL import Image
 
@@ -73,6 +77,131 @@ def _part_to_pil_image(part: "types.Part") -> Image.Image:
     image bytes, so decode that directly instead.
     """
     return Image.open(io.BytesIO(part.inline_data.data))
+
+
+YOUTUBE_HOSTS = ("youtube.com/", "youtu.be/")
+INLINE_VIDEO_LIMIT_BYTES = 18 * 1024 * 1024
+
+
+def _interaction_output_images(interaction: Any) -> List[Image.Image]:
+    """Decode image blocks from a Nano Banana Interactions API response."""
+    images: List[Image.Image] = []
+    for step in getattr(interaction, "steps", None) or []:
+        step_type = step.get("type") if isinstance(step, dict) else getattr(step, "type", None)
+        if step_type != "model_output":
+            continue
+        content = step.get("content") if isinstance(step, dict) else getattr(step, "content", None)
+        if not content:
+            continue
+        for block in content:
+            block_type = block.get("type") if isinstance(block, dict) else getattr(block, "type", None)
+            if block_type != "image":
+                continue
+            raw = block.get("data") if isinstance(block, dict) else getattr(block, "data", None)
+            if not raw:
+                continue
+            if isinstance(raw, (bytes, bytearray)):
+                payload = bytes(raw)
+            else:
+                payload = base64.b64decode(raw)
+            images.append(Image.open(io.BytesIO(payload)))
+    if not images:
+        raise ValueError("No images generated in Interactions response")
+    return images
+
+
+def _upload_video_file(client: Any, path: Path) -> str:
+    """Upload a local video via the Files API and return its ``file_uri``."""
+    mime = mimetypes.guess_type(str(path))[0] or "video/mp4"
+    uploaded = client.files.upload(file=str(path), config={"mime_type": mime})
+    deadline = time.time() + 600
+    while str(getattr(getattr(uploaded, "state", None), "name", getattr(uploaded, "state", ""))).endswith(
+        "PROCESSING"
+    ):
+        if time.time() > deadline:
+            raise TimeoutError("Timed out waiting for uploaded video to become ACTIVE.")
+        time.sleep(2)
+        uploaded = client.files.get(name=uploaded.name)
+    uri = getattr(uploaded, "uri", None)
+    if not uri:
+        raise ValueError("Uploaded video did not return a file URI.")
+    return uri
+
+
+def _video_interaction_content(client: Any, video: Union[str, io.BytesIO, bytes, Path]) -> Dict[str, str]:
+    """Build an Interactions API video content dict from a path, URL, or bytes."""
+    if isinstance(video, Path):
+        video = str(video)
+    if isinstance(video, str):
+        if any(host in video for host in YOUTUBE_HOSTS):
+            return {"type": "video", "uri": video, "mime_type": "video/mp4"}
+        if video.startswith(("http://", "https://", "gs://")):
+            return {"type": "video", "uri": video, "mime_type": "video/mp4"}
+        path = Path(video)
+        if not path.exists():
+            raise FileNotFoundError(f"Video not found: {video}")
+        return {"type": "video", "uri": _upload_video_file(client, path), "mime_type": "video/mp4"}
+    data: bytes
+    if isinstance(video, (bytes, bytearray)):
+        data = bytes(video)
+    elif hasattr(video, "read"):
+        video.seek(0)
+        data = video.read()
+    else:
+        raise ValueError("video must be a file path, URL, YouTube link, bytes, or file-like object")
+    if len(data) <= INLINE_VIDEO_LIMIT_BYTES:
+        return {
+            "type": "video",
+            "data": base64.b64encode(data).decode("utf-8"),
+            "mime_type": "video/mp4",
+        }
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+        tmp.write(data)
+        tmp_path = Path(tmp.name)
+    try:
+        uri = _upload_video_file(client, tmp_path)
+    finally:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+    return {"type": "video", "uri": uri, "mime_type": "video/mp4"}
+
+
+def _generate_video_to_image_interaction(
+    client: Any,
+    *,
+    model: str,
+    video: Union[str, io.BytesIO, bytes, Path],
+    prompt: str,
+    aspect_ratio: Optional[str],
+    resolution: Optional[str],
+    aspect_ratios: Dict[str, Any],
+) -> List[Image.Image]:
+    """Video-to-image via Interactions API (Nano Banana 2 / 2.1 / 2 Lite)."""
+    if aspect_ratio and aspect_ratio not in aspect_ratios:
+        raise ValueError(
+            f"Invalid aspect ratio '{aspect_ratio}'. Valid options: {list(aspect_ratios.keys())}"
+        )
+    if resolution is not None and resolution not in ("1K", "2K", "4K"):
+        raise ValueError(f"Invalid resolution '{resolution}'. Must be '1K', '2K', or '4K'")
+    response_format: Dict[str, Any] = {"type": "image"}
+    if aspect_ratio:
+        response_format["aspect_ratio"] = aspect_ratio
+    if resolution:
+        response_format["image_size"] = resolution
+    interaction = client.interactions.create(
+        model=model,
+        input=[
+            _video_interaction_content(client, video),
+            {"type": "text", "text": prompt},
+        ],
+        response_format=response_format,
+    )
+    status = getattr(interaction, "status", None)
+    if status and status not in ("completed", "complete", None):
+        raise ValueError(f"Nano Banana video-to-image interaction ended with status {status!r}.")
+    return _interaction_output_images(interaction)
 
 
 # Supported aspect ratios for Gemini 2.5 Flash Image
@@ -1170,6 +1299,32 @@ class NanoBanana2Adapter:
             )
         return results
 
+    def generate_video_to_image(
+        self,
+        video: Union[str, io.BytesIO, bytes, Path],
+        prompt: str,
+        resolution: str = "2K",
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """
+        Generate an image from a video reference + text prompt (video-to-image).
+
+        Uses the Interactions API. Supports YouTube URLs, HTTP URLs, and local
+        files (via the Files API when needed). See Google's image-generation docs.
+        """
+        if kwargs:
+            raise TypeError(f"Unexpected keyword arguments: {sorted(kwargs)}")
+        return _generate_video_to_image_interaction(
+            self.client,
+            model=self.MODEL_NAME,
+            video=video,
+            prompt=prompt,
+            aspect_ratio=aspect_ratio,
+            resolution=resolution,
+            aspect_ratios=self.ASPECT_RATIOS,
+        )
+
 
 class NanoBanana21Adapter(NanoBanana2Adapter):
     """
@@ -1423,6 +1578,26 @@ class NanoBanana2LiteAdapter:
         if not result:
             raise ValueError("No images generated in response")
         return result
+
+    def generate_video_to_image(
+        self,
+        video: Union[str, io.BytesIO, bytes, Path],
+        prompt: str,
+        aspect_ratio: Optional[str] = None,
+        **kwargs,
+    ) -> List[Image.Image]:
+        """Video-to-image at 1K (Interactions API)."""
+        if kwargs:
+            raise TypeError(f"Unexpected keyword arguments: {sorted(kwargs)}")
+        return _generate_video_to_image_interaction(
+            self.client,
+            model=self.MODEL_NAME,
+            video=video,
+            prompt=prompt,
+            aspect_ratio=aspect_ratio,
+            resolution="1K",
+            aspect_ratios=GEMINI_3_PRO_ASPECT_RATIOS,
+        )
 
     def generate_batch(
         self,
