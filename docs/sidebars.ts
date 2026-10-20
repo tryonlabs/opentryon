@@ -104,6 +104,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/gemini-embedding-2',
         'api-reference/hy4',
         'api-reference/mercury-3',
+        'api-reference/mercury-decide',
         'api-reference/qwen-image',
         'api-reference/hal-x-thx01',
         'api-reference/elevenlabs',

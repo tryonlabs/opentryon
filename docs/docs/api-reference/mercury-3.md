@@ -27,8 +27,8 @@ agents, and voice-adjacent workloads (1M-token context, up to 131K output tokens
 | **Upstream model id** | `mercury-3` (also `--inception-model mercury-2.5`, `mercury-2`, `mercury-voice`) |
 
 Mercury 3 on `v1/chat/completions` is **text-only** (no `--image`). For
-high-volume classification with optional image input, Inception ships
-**Mercury Decide** on `v1/decisions` — not wired in OpenTryOn yet.
+classification and scoring with optional images, use
+**[Mercury Decide](mercury-decide.md)** on `decide --model mercury-decide`.
 
 ## CLI
 
