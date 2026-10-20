@@ -825,6 +825,22 @@ out = JevAdapter().decide(state="Red satin gown", questions={"formal": {"type": 
 
 See [Typesafe Jev](typesafe-jev) for details. Open-weight, image-capable twins: [Liquid d1](../local-models/liquid-d1.md).
 
+### `D3ApiAdapter` / `D3LocalAdapter`
+
+Adapters for **vLLM Semantic Router Decision 3.0** (`decide` service): multimodal System One with **`box`** and **`track`** question types (hosted + local).
+
+```python
+from tryon.api.vllm_sr import D3ApiAdapter
+
+out = D3ApiAdapter(model_id="vllm-sr/d3-turbo").decide(
+    state="Packshot",
+    image="dress.jpg",
+    questions={"logo": {"type": "box", "instructions": "Brand logo patch"}},
+)
+```
+
+Registry: `d3-turbo` … `d3-edge` (API, `DECISION_API_KEY`); `d3-*-local` (Path B). See [Decision 3.0 hosted](vllm-sr-d3) and [local d3](../local-models/d3.md).
+
 ### `DeepSeekUnderstandAdapter`
 
 Adapter for DeepSeek's **deepseek-flash** — general-purpose, natively

@@ -209,6 +209,15 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Open weights: decide thx-01-local (pip install thx01).",
     ),
     (
+        "vllm-sr",
+        "vLLM Semantic Router (Decision 3.0)",
+        "https://decision.vllm-sr.ai/",
+        ("DECISION_API_KEY",),
+        "Unlocks decide d3-turbo / d3-flash / d3-mini / d3-nano / d3-lite / d3-edge on the free "
+        "hosted API (multimodal System One: text, images, video, box, track). Optional "
+        "DECISION_BASE_URL (default https://decision.vllm-sr.ai). Local twins: d3-*-local.",
+    ),
+    (
         "aws",
         "Amazon Bedrock",
         "https://console.aws.amazon.com/bedrock/",

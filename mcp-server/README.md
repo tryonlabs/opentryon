@@ -324,6 +324,8 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 
 | Tool | Model | Requires |
 |---|---|---|
+| `decide_d3_turbo` | vLLM-SR d3-turbo (multimodal Decision 3.0 API) | `DECISION_API_KEY` |
+| `decide_d3_turbo_local` | vLLM-SR d3-turbo (local weights) | local/GPU |
 | `decide_jev` | Typesafe AI Jev (text/JSON only; early access) | `TYPESAFE_API_KEY` |
 | `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
 | `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |

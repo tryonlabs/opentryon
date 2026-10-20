@@ -86,6 +86,7 @@ from .fashion_embed import FashionOpenCLIPAdapter, ZooClawFashionSigLIP2Adapter
 from .fashion_florence import FashionFlorenceAdapter
 from .extract_outfit import ExtractOutfitAdapter
 from .cosmos3 import Cosmos3LocalAdapter
+from .d3 import D3LocalAdapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
 from .qwen38 import Qwen38Adapter
 from .qwen_image import QwenImageLocalAdapter
@@ -113,6 +114,7 @@ __all__ = [
     "FashionFlorenceAdapter",
     "ExtractOutfitAdapter",
     "Cosmos3LocalAdapter",
+    "D3LocalAdapter",
     "MiniMaxH3LocalAdapter",
     "Qwen38Adapter",
     "QwenImageLocalAdapter",

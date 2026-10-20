@@ -37,7 +37,7 @@ opentryon <service> --model <model> [params...]
 | `generate-3d` | Text/image to 3D mesh | `trellis` (NVIDIA NIM) |
 | `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
-| `decide` | Calibrated yes/no, choice and score decisions about text/images/video ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
+| `decide` | Calibrated yes/no, choice, score, box, and track decisions ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `d3-turbo` … `d3-edge`, `d3-*-local` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
 | `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
 | `measure` | Body measurements (ISO 8559-1 sizing) | `clad-body-photo`, `clad-body-questionnaire` (Clad API), `clad-body-local` (local Anny/MHR params) |
 | `embed` | Multimodal embeddings saved to `.npz` | `gemini-embedding-2`, `embeddinggemma-2` (local), `pplx-embed-v2-late-0.6b` (local), `pplx-embed-v2-late-9b` (local), `marqo-fashionsiglip` (local), `moda-fashion-distilled` (local), `moda-pro-lite` (local), `zooclaw-fashionsiglip2` (local) |
