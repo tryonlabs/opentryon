@@ -36,6 +36,11 @@ _EXTRA_ENV_NAMES = (
     "META_MODEL_API_KEY",
     "MUSE_API_KEY",
     "FAL_API_KEY",
+    "OPENROUTER_API_KEY",
+    "FLINT_BASE_URL",
+    "SAGE_A15_BASE_URL",
+    "NEMOTRON_EMBED_BASE_URL",
+    "NEMOTRON_PARSE_BASE_URL",
 )
 
 # Registry env_hint name -> names that also count as configured (adapter aliases).
@@ -124,6 +129,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "MINIMAX_API_KEY. FAL_API_KEY is an alias.",
     ),
     (
+        "openrouter",
+        "OpenRouter",
+        "https://openrouter.ai/keys",
+        ("OPENROUTER_API_KEY",),
+        "Optional hosted path for Recursive Flint (understand flint-openrouter). "
+        "Not used for fashion media generation.",
+    ),
+    (
         "moondream",
         "Moondream",
         "https://moondream.ai",
@@ -144,8 +157,10 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "NVIDIA NIM (Nemotron / Cosmos)",
         "https://build.nvidia.com",
         ("NVIDIA_API_KEY",),
-        "One key for Nemotron Omni / Nemotron 3.5 Super VL understand, Cosmos 3 Reasoner understand, "
-        "Cosmos 3 Generator video, and TRELLIS generate-3d (hosted infer). Optional "
+        "One key for Nemotron Omni / Nemotron 3.5 Super VL understand, Nemotron 3.5 Embed, "
+        "Nemotron Parse, Cosmos 3 Reasoner understand, Cosmos 3 Generator video, and TRELLIS "
+        "generate-3d (hosted infer). Optional NEMOTRON_EMBED_BASE_URL / NEMOTRON_PARSE_BASE_URL "
+        "for local NIM twins. Optional "
         "COSMOS3_INFER_URL / TRELLIS_INFER_URL for self-hosted NIMs. LipSync "
         "(audio-to-video nvidia-lipsync) is self-hosted gRPC — set LIPSYNC_GRPC_TARGET "
         "and LIPSYNC_CLIENT_SCRIPT; key is for NGC when pulling the NIM image.",

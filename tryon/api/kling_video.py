@@ -36,9 +36,17 @@ KLING_VIDEO_MODELS = {
     "kling-3.0-omni": "kling-v3-omni",
     "kling-v2-5-turbo": "kling-v2-5-turbo",
     "kling-2.5-turbo": "kling-v2-5-turbo",
+    "kling-v4": "kling-v4",
+    "kling-4.0": "kling-v4",
+    "kling-4": "kling-v4",
 }
 
-T2V_MODELS = {"kling-v3", "kling-v2-5-turbo"}
+# Open Platform REST paths (2026 API); legacy ``/v1/videos/*`` remains for older ids.
+NEW_API_PATH_SLUGS = {
+    "kling-v4": "kling-4.0",
+}
+
+T2V_MODELS = {"kling-v3", "kling-v2-5-turbo", "kling-v4"}
 OMNI_MODELS = {"kling-v3-omni"}
 
 
@@ -73,7 +81,20 @@ class KlingVideoAdapter:
         key = model.strip()
         return KLING_VIDEO_MODELS.get(key, key)
 
-    def _headers(self) -> Dict[str, str]:
+    def _uses_new_api(self, model: Optional[str] = None) -> bool:
+        resolved = self._resolve_model(model) if model else self.model
+        return resolved in NEW_API_PATH_SLUGS
+
+    def _new_api_slug(self, model: Optional[str] = None) -> str:
+        resolved = self._resolve_model(model) if model else self.model
+        return NEW_API_PATH_SLUGS.get(resolved, resolved)
+
+    def _headers(self, *, new_api: bool = False) -> Dict[str, str]:
+        if new_api:
+            return {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            }
         return {
             "Authorization": f"Bearer {generate_api_token(self.api_key, self.secret_key)}",
             "Content-Type": "application/json",
@@ -102,6 +123,58 @@ class KlingVideoAdapter:
             image.seek(0)
             return base64.b64encode(image.read()).decode("ascii")
         raise ValueError("Unsupported image input for Kling video.")
+
+    def _post_new(self, path: str, payload: Dict[str, Any]) -> str:
+        url = f"{self.base_url}{path}"
+        resp = requests.post(url, headers=self._headers(new_api=True), json=payload, timeout=60)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Kling create failed ({resp.status_code}): {resp.text}")
+        data = resp.json()
+        if data.get("code") not in (0, None, "0"):
+            raise RuntimeError(f"Kling create error: {data}")
+        task = data.get("data") or data
+        task_id = task.get("id") or task.get("task_id")
+        if not task_id:
+            raise RuntimeError(f"Kling create missing task id: {data}")
+        return str(task_id)
+
+    def _poll_new(self, task_id: str) -> Dict[str, Any]:
+        url = f"{self.base_url}/tasks"
+        deadline = time.time() + self.timeout
+        while time.time() < deadline:
+            resp = requests.get(
+                url,
+                headers=self._headers(new_api=True),
+                params={"task_ids": task_id},
+                timeout=60,
+            )
+            if resp.status_code >= 400:
+                raise RuntimeError(f"Kling poll failed ({resp.status_code}): {resp.text}")
+            data = resp.json()
+            rows = (data.get("data") or []) if isinstance(data.get("data"), list) else [data.get("data")]
+            if not rows:
+                time.sleep(self.poll_interval)
+                continue
+            body = rows[0] or {}
+            status = (body.get("status") or "").lower()
+            if status in {"succeeded", "success", "completed"}:
+                return body
+            if status in {"failed", "error"}:
+                raise RuntimeError(f"Kling task failed: {body.get('message') or body}")
+            time.sleep(self.poll_interval)
+        raise TimeoutError(f"Kling task {task_id} timed out after {self.timeout}s")
+
+    @staticmethod
+    def _extract_video_bytes_new(body: Dict[str, Any]) -> bytes:
+        for item in body.get("outputs") or []:
+            if (item.get("type") or "").lower() != "video":
+                continue
+            video_url = item.get("url") or item.get("video_url")
+            if video_url:
+                resp = requests.get(video_url, stream=True, timeout=120)
+                resp.raise_for_status()
+                return resp.content
+        raise RuntimeError(f"Kling response missing video output: {body}")
 
     def _post(self, path: str, payload: Dict[str, Any]) -> str:
         url = f"{self.base_url}{path}"
@@ -166,10 +239,27 @@ class KlingVideoAdapter:
         negative_prompt: Optional[str] = None,
         sound: str = "off",
         cfg_scale: Optional[float] = None,
+        resolution: Optional[str] = None,
     ) -> bytes:
         if not prompt:
             raise ValueError("prompt is required.")
         resolved = self._resolve_model(model) if model else self.model
+        if self._uses_new_api(resolved):
+            slug = self._new_api_slug(resolved)
+            dur = int(str(duration).rstrip("s"))
+            res = (resolution or mode or "1080p").lower()
+            if res in {"std", "pro"}:
+                res = "720p" if res == "std" else "1080p"
+            settings: Dict[str, Any] = {
+                "duration": dur,
+                "resolution": res,
+                "aspect_ratio": aspect_ratio,
+            }
+            payload_new = {"prompt": prompt, "settings": settings}
+            task_id = self._post_new(f"/text-to-video/{slug}", payload_new)
+            body = self._poll_new(task_id)
+            return self._extract_video_bytes_new(body)
+
         payload: Dict[str, Any] = {
             "model_name": resolved,
             "prompt": prompt,
@@ -203,9 +293,32 @@ class KlingVideoAdapter:
         sound: str = "off",
         end_image: Optional[Union[str, io.BytesIO, Image.Image, bytes]] = None,
         cfg_scale: Optional[float] = None,
+        resolution: Optional[str] = None,
     ) -> bytes:
         resolved = self._resolve_model(model) if model else self.model
         image_payload = self._prepare_image(image)
+
+        if self._uses_new_api(resolved):
+            slug = self._new_api_slug(resolved)
+            dur = int(str(duration).rstrip("s"))
+            res = (resolution or mode or "1080p").lower()
+            if res in {"std", "pro"}:
+                res = "720p" if res == "std" else "1080p"
+            settings = {
+                "duration": dur,
+                "resolution": res,
+                "aspect_ratio": aspect_ratio,
+            }
+            payload_new: Dict[str, Any] = {
+                "prompt": prompt or "",
+                "image": image_payload,
+                "settings": settings,
+            }
+            if end_image is not None:
+                payload_new["end_image"] = self._prepare_image(end_image)
+            task_id = self._post_new(f"/image-to-video/{slug}", payload_new)
+            body = self._poll_new(task_id)
+            return self._extract_video_bytes_new(body)
 
         if resolved in OMNI_MODELS:
             payload: Dict[str, Any] = {

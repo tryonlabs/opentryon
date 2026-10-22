@@ -12,6 +12,8 @@ One key, `NVIDIA_API_KEY` from [build.nvidia.com](https://build.nvidia.com), unl
 |---|---|---|---|
 | `nemotron-omni` | `understand` | `NemotronOmniUnderstandAdapter` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` |
 | `nemotron-3.5-super-vl` | `understand` | `Nemotron35SuperVLUnderstandAdapter` | `nvidia/nemotron-3.5-super-vl-120b-a12b` |
+| `nemotron-3.5-embed-1b` | `embed` | `Nemotron35EmbedAdapter` | `nvidia/nemotron-3.5-embed-1b` |
+| `nemotron-parse` | `parse` | `NemotronParseAdapter` | `nvidia/nemotron-parse` |
 | `cosmos3-reasoner` | `understand` | `Cosmos3ReasonerAdapter` | `nvidia/cosmos3-nano-reasoner` |
 | `cosmos3` | `video-generate` | `Cosmos3VideoAdapter` | Cosmos 3 Generator nano (`POST` infer, `b64_video`) |
 | `trellis` | `generate-3d` | `TrellisMeshAdapter` | Microsoft TRELLIS (`POST` genai infer → GLB/STL) |

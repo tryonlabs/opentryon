@@ -1,7 +1,7 @@
 ---
 sidebar_position: 17
-title: Kling Video (3.0 / Omni / Turbo)
-description: Kling AI Open Platform video generation — Kling 3.0, 3.0 Omni, and 2.5 Turbo.
+title: Kling Video (4.0 / 3.0 / Omni / Turbo)
+description: Kling AI Open Platform video generation — Kling 4.0, 3.0, 3.0 Omni, and 2.5 Turbo.
 keywords:
   - Kling 3.0
   - Kling Omni
@@ -10,12 +10,13 @@ keywords:
   - Kuaishou
 ---
 
-# Kling Video (3.0 / Omni / Turbo)
+# Kling Video (4.0 / 3.0 / Omni / Turbo)
 
-Official [Kling AI Open Platform](https://kling.ai/document-api/guides/get-started/overview) video models (JWT auth, same keys as Kolors VTON).
+Official [Kling AI Open Platform](https://kling.ai/document-api/guides/get-started/overview) video models. Kling **3.x** uses legacy JWT (`KLING_AI_API_KEY` + `KLING_AI_SECRET_KEY`). **Kling 4.0** uses the 2026 REST API with **API-key Bearer** auth on the same `KLING_AI_API_KEY`.
 
-| CLI model | API `model_name` | Best for |
+| CLI model | API id / path | Best for |
 |---|---|---|
+| `kling-v4` | `kling-4.0` → `/text-to-video/kling-4.0` | 3–30s, 4K, multi-keyframes, omni reference |
 | `kling-v3` | `kling-v3` | High-quality T2V / I2V, 3–15s, audio |
 | `kling-v3-omni` | `kling-v3-omni` | Multimodal refs, elements, Omni workflows |
 | `kling-v2-5-turbo` | `kling-v2-5-turbo` | Fast previews |
@@ -31,6 +32,10 @@ export KLING_AI_SECRET_KEY=...
 ## CLI
 
 ```bash
+opentryon video-generate --model kling-v4 \
+  --prompt "Multi-shot: shot 1, 5s, model enters; shot 2, 5s, detail on fabric." \
+  --duration 10 --resolution 1080p --aspect-ratio 16:9
+
 opentryon video-generate --model kling-v3 \
   --prompt "Slow pan across a couture atelier" \
   --duration 5 --mode pro --aspect-ratio 16:9 --sound on
