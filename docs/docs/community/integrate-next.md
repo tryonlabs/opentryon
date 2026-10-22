@@ -319,7 +319,9 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 19b. ~~`gemini-4-argon`~~ **shipped** (Path A, `understand`, Oct 2026): multimodal parity with 3.8 Flash, `--video-processing agentic`, long decode (`max_tokens` > 64K + SDK continuation), `--background` Interactions for text-only jobs. Image/video **generation** stay on existing `nano-banana-*` / `gemini-omni`; video-to-image on Nano Banana 2 / 2.1 / 2 Lite via `generate --video`.
 19c. ~~`gemini-4-argon-cyber-permissive`~~ **shipped** (Path A, `understand`, allowlist): Fairwind defensive-cyber twin of Argon.
 
-Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), Kling 4.0 (when its API lands), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
+Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
+
+Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nemotron-3.5-embed-1b`~~ + ~~`nemotron-parse`~~ **shipped** (NIM hosted + local NIM twins). ~~`flint-local`~~ / ~~`flint-openrouter`~~ and ~~`sage-a1.5-local`~~ **shipped** (text `understand`, local SGLang/vLLM or OpenRouter). **Laplace 3B** — `watch` only ([laplace-3b-watch](../advanced/laplace-3b-watch.md); no public weights/API).
 
 25. ~~**`beam`**~~ **shipped** (Path A, `understand`, Oct 2026): Reflection `Beam-1.0-501B-A23B`, text chat, `REFLECTION_API_KEY`. Local four-B300 serve not registered. `watch`: **Muse Spark Open**, **Ling-3.1-flash**, **Kimi-K3 2.8T** (vs shipped `kimi-k3`). See [Frontier long-context MoE survey](#frontier-long-context-moe-survey--oct-2026).
 

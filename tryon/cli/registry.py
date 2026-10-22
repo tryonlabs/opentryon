@@ -2642,6 +2642,65 @@ _UNDERSTAND = {
         ),
         args=_hy4_understand_args(endpoint="local"),
     ),
+    "flint-local": ModelSpec(
+        id="flint-local",
+        label="Recursive Flint (local SGLang coding agent)",
+        import_path="tryon.api.recursive",
+        class_name="FlintAdapter",
+        method="understand",
+        output_kind="text",
+        notes=(
+            "Serve RecursiveSI/flint with the bundled SGLang kit (default FLINT_BASE_URL="
+            "http://127.0.0.1:30000/v1, model id flint). Text-only; ~80GB BF16 weights. "
+            "Hosted alternative: --model flint-openrouter (OPENROUTER_API_KEY)."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Instruction for Flint"),
+            Arg(("--system",), "system", help="Optional system message"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--endpoint",), "endpoint", target="init", default="local",
+                choices=["local"], help="Local SGLang server"),
+            Arg(("--base-url",), "base_url", target="init", help="Override FLINT_BASE_URL"),
+        ],
+    ),
+    "flint-openrouter": ModelSpec(
+        id="flint-openrouter",
+        label="Recursive Flint (OpenRouter free tier)",
+        import_path="tryon.api.recursive",
+        class_name="FlintAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="OPENROUTER_API_KEY",
+        notes="Third-party hosted Flint via OpenRouter (recursive/flint-v1.0:free). Text-only agent chat.",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Instruction for Flint"),
+            Arg(("--system",), "system", help="Optional system message"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--endpoint",), "endpoint", target="init", default="openrouter",
+                choices=["openrouter"], help="OpenRouter API"),
+        ],
+    ),
+    "sage-a1.5-local": ModelSpec(
+        id="sage-a1.5-local",
+        label="Sage-A1.5 (local SGLang/vLLM agent)",
+        import_path="tryon.api.sage",
+        class_name="SageA15Adapter",
+        method="understand",
+        output_kind="text",
+        notes=(
+            "InternScience/Sage-A1.5 — 35B MoE agentic model; serve with SGLang or vLLM "
+            "(default SAGE_A15_BASE_URL=http://127.0.0.1:8000/v1). No first-party hosted API. "
+            "Use --verification with a non-empty --system for verification mode."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="User message"),
+            Arg(("--system",), "system", help="System message (required when --verification)"),
+            Arg(("--verification",), "verification", action="store_true",
+                help="Enable Sage-A1.5 verification protocol (needs --system)"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--base-url",), "base_url", target="init", help="Override SAGE_A15_BASE_URL"),
+        ],
+    ),
     "beam": ModelSpec(
         id="beam",
         label="Reflection Beam 1.0 (501B MoE, text chat)",
@@ -2988,6 +3047,34 @@ _VIDEO_GENERATE = {
             Arg(("--cfg-scale",), "cfg_scale", type=float),
             Arg(("--model-version",), "model_version", target="init", call_name="model",
                 default="kling-v2-5-turbo", choices=["kling-v2-5-turbo"]),
+        ],
+    ),
+    "kling-v4": ModelSpec(
+        id="kling-v4",
+        label="Kling 4.0 video",
+        import_path="tryon.api.kling_video",
+        class_name="KlingVideoAdapter",
+        method="generate_text_to_video",
+        output_kind="video_bytes",
+        alt_method_on_image="generate_image_to_video",
+        alt_image_dest="image",
+        env_hint="KLING_AI_API_KEY / KLING_AI_SECRET_KEY",
+        notes=(
+            "Kling 4.0 on the 2026 Open Platform REST API (/text-to-video/kling-4.0, "
+            "/image-to-video/kling-4.0, /tasks poll). Uses API-key Bearer auth. "
+            "Native 3–30s, 720p/1080p/4K, multi-shot prompts. Legacy JWT still used for Kling 3.x ids."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", help="Text prompt (required for T2V)"),
+            Arg(("--image",), "image", help="Start image (switches to I2V)", alt_only=True),
+            Arg(("--end-image",), "end_image", help="Optional end frame (I2V)", alt_only=True),
+            Arg(("--duration",), "duration", default="10", help="3–30 seconds"),
+            Arg(("--resolution",), "resolution", default="1080p", choices=["720p", "1080p", "4k"]),
+            Arg(("--aspect-ratio",), "aspect_ratio", default="16:9",
+                choices=["21:9", "16:9", "1:1", "9:16", "auto"]),
+            Arg(("--negative-prompt",), "negative_prompt"),
+            Arg(("--model-version",), "model_version", target="init", call_name="model",
+                default="kling-v4", choices=["kling-v4"]),
         ],
     ),
     "grok-imagine-video": ModelSpec(
@@ -4298,6 +4385,58 @@ _EMBED = {
         "Benchmarks are in the paper (the card lists none). Plain transformers (AutoModel/AutoProcessor).",
         args=list(_FASHION_EMBED_COMMON),
     ),
+    "nemotron-3.5-embed-1b": ModelSpec(
+        id="nemotron-3.5-embed-1b",
+        label="Nemotron 3.5 Embed 1B (NVIDIA NIM, text + document image)",
+        import_path="tryon.api.nvidia",
+        class_name="Nemotron35EmbedAdapter",
+        method="embed",
+        output_kind="embeddings",
+        env_hint="NVIDIA_API_KEY",
+        notes=(
+            "Hosted NIM nvidia/nemotron-3.5-embed-1b (integrate.api.nvidia.com). "
+            "Text and/or image inputs; --input-type query|passage. Local NIM twin: "
+            "nemotron-3.5-embed-1b-local (NEMOTRON_EMBED_BASE_URL)."
+        ),
+        args=[
+            Arg(("--text", "-t"), "text", nargs="+", help="Text passage(s) to embed"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Document/page image(s)"),
+            Arg(("--query", "-q"), "query", help="Text query for cosine scores"),
+            Arg(("--query-image",), "query_image", help="Image query for cosine scores"),
+            Arg(("--input-type",), "input_type", default="passage", choices=["query", "passage"]),
+            Arg(("--modality",), "modality", choices=["text", "image", "text_image"],
+                help="Force modality when mixing text and images"),
+            Arg(("--dim",), "dimensions", type=int, help="Optional dynamic embedding size"),
+            Arg(("--longest-edge",), "longest_edge", type=int,
+                help="Image longest edge 256–1540 (default 1120)"),
+            Arg(("--endpoint",), "endpoint", target="init", default="nim", choices=["nim"]),
+        ],
+    ),
+    "nemotron-3.5-embed-1b-local": ModelSpec(
+        id="nemotron-3.5-embed-1b-local",
+        label="Nemotron 3.5 Embed 1B (local NeMo Retriever / vLLM NIM)",
+        import_path="tryon.api.nvidia",
+        class_name="Nemotron35EmbedAdapter",
+        method="embed",
+        output_kind="embeddings",
+        notes=(
+            "Self-hosted OpenAI /v1/embeddings server (NeMo Retriever Embedding NIM or vLLM). "
+            "Default NEMOTRON_EMBED_BASE_URL=http://127.0.0.1:8000/v1. "
+            "Hosted twin: nemotron-3.5-embed-1b (NVIDIA_API_KEY)."
+        ),
+        args=[
+            Arg(("--text", "-t"), "text", nargs="+", help="Text passage(s) to embed"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Document/page image(s)"),
+            Arg(("--query", "-q"), "query", help="Text query for cosine scores"),
+            Arg(("--query-image",), "query_image", help="Image query for cosine scores"),
+            Arg(("--input-type",), "input_type", default="passage", choices=["query", "passage"]),
+            Arg(("--modality",), "modality", choices=["text", "image", "text_image"]),
+            Arg(("--dim",), "dimensions", type=int, help="Optional dynamic embedding size"),
+            Arg(("--longest-edge",), "longest_edge", type=int, help="Image resize longest edge"),
+            Arg(("--endpoint",), "endpoint", target="init", default="local", choices=["local"]),
+            Arg(("--base-url",), "base_url", target="init", help="Override NEMOTRON_EMBED_BASE_URL"),
+        ],
+    ),
     "gemini-embedding-2": ModelSpec(
         id="gemini-embedding-2",
         label="Gemini Embedding 2 (Google hosted multimodal embeddings, 3072-d)",
@@ -4687,6 +4826,50 @@ _ROBOT_ACT = {
 
 _DETECT = _moondream_detect_specs()
 
+_PARSE = {
+    "nemotron-parse": ModelSpec(
+        id="nemotron-parse",
+        label="Nemotron Parse (NVIDIA NIM document OCR)",
+        import_path="tryon.api.nvidia",
+        class_name="NemotronParseAdapter",
+        method="parse_document",
+        output_kind="text",
+        env_hint="NVIDIA_API_KEY",
+        notes=(
+            "Document/page images → markdown (+ bounding boxes with --tool markdown_bbox). "
+            "Model nvidia/nemotron-parse on integrate.api.nvidia.com. "
+            "Local NIM: nemotron-parse-local."
+        ),
+        args=[
+            Arg(("--image", "-i"), "image", required=True, help="Document page image (path or URL)"),
+            Arg(("--tool",), "tool", default="markdown_bbox",
+                choices=["markdown_bbox", "markdown_no_bbox", "detection_only"]),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--endpoint",), "endpoint", target="init", default="nim", choices=["nim"]),
+        ],
+    ),
+    "nemotron-parse-local": ModelSpec(
+        id="nemotron-parse-local",
+        label="Nemotron Parse (local NIM Docker)",
+        import_path="tryon.api.nvidia",
+        class_name="NemotronParseAdapter",
+        method="parse_document",
+        output_kind="text",
+        notes=(
+            "Nemotron Parse NIM container (default NEMOTRON_PARSE_BASE_URL=http://127.0.0.1:8000/v1). "
+            "Hosted twin: nemotron-parse (NVIDIA_API_KEY)."
+        ),
+        args=[
+            Arg(("--image", "-i"), "image", required=True, help="Document page image (path or URL)"),
+            Arg(("--tool",), "tool", default="markdown_bbox",
+                choices=["markdown_bbox", "markdown_no_bbox", "detection_only"]),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+            Arg(("--endpoint",), "endpoint", target="init", default="local", choices=["local"]),
+            Arg(("--base-url",), "base_url", target="init", help="Override NEMOTRON_PARSE_BASE_URL"),
+        ],
+    ),
+}
+
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "vton": _VTON,
     "generate": _GENERATE,
@@ -4703,6 +4886,7 @@ SERVICES: Dict[str, Dict[str, ModelSpec]] = {
     "measure": _MEASURE,
     "robot-act": _ROBOT_ACT,
     "detect": _DETECT,
+    "parse": _PARSE,
 }
 
 SERVICE_HELP = {
@@ -4721,6 +4905,7 @@ SERVICE_HELP = {
     "measure": "Body measurements (ISO 8559-1) from photo, questionnaire, or parametric mesh",
     "robot-act": "Robot policy actions from camera frames + proprioception (Dream Labs World Action Models)",
     "detect": "Open-vocabulary detection, pointing, and SVG segmentation",
+    "parse": "Document and page image parsing (markdown, layout boxes)",
 }
 
 
