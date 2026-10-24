@@ -1,7 +1,7 @@
 """
 Kimi (Moonshot AI) Vision API Adapter
 
-Adapter for Moonshot AI's Kimi K2.6, K2.7 Code, and K3 models via the Kimi
+Adapter for Moonshot AI's Kimi K2.6, K2.7 Code, K3, and K3.1 Pro models via the Kimi
 Platform API, which is fully compatible with the OpenAI SDK/API format.
 These models are natively multimodal (text + image + video) and are
 general-purpose -- not limited to the fashion domain -- so this adapter can
@@ -13,6 +13,7 @@ https://platform.kimi.ai/docs/overview
 https://platform.kimi.ai/docs/guide/kimi-k2-6-quickstart
 https://platform.kimi.ai/docs/guide/kimi-k2-7-code-quickstart
 https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
+https://platform.kimi.ai/docs/guide/kimi-k3-1-pro-quickstart
 https://platform.kimi.ai/docs/guide/use-kimi-vision-model
 
 Models:
@@ -24,6 +25,10 @@ Models:
   token throughput.
 - kimi-k3: Flagship multimodal reasoning model with a 1M-token context.
   Thinking mode is always enabled and reasoning effort is configurable.
+- kimi-k3.1-pro: Post-trained successor to K3 (1M context, same K3-style API:
+  always-on thinking, `reasoning_effort`, `max_completion_tokens`). Open weights
+  announced for early November 2026.
+- kimi-k3.1-pro-highspeed: Same model served roughly 2-3x faster.
 
 Notes on sampling parameters:
     K2.5/K2.6/K2.7-code fix `temperature`, `top_p`, `n`, `presence_penalty`,
@@ -73,10 +78,13 @@ VALID_MODELS = {
     "kimi-k2.7-code",
     "kimi-k2.7-code-highspeed",
     "kimi-k3",
+    "kimi-k3.1-pro",
+    "kimi-k3.1-pro-highspeed",
 }
+# K3-family models: always-on thinking, `reasoning_effort`, `max_completion_tokens`.
+K3_MODELS = {"kimi-k3", "kimi-k3.1-pro", "kimi-k3.1-pro-highspeed"}
 # These models reject requests that try to disable "thinking" mode.
-THINKING_LOCKED_MODELS = {"kimi-k2.7-code", "kimi-k2.7-code-highspeed", "kimi-k3"}
-K3_MODELS = {"kimi-k3"}
+THINKING_LOCKED_MODELS = {"kimi-k2.7-code", "kimi-k2.7-code-highspeed"} | K3_MODELS
 VALID_REASONING_EFFORTS = {"low", "high", "max"}
 
 # Kimi's video_url data URIs use these subtype names (mostly the file
@@ -92,7 +100,7 @@ VideoInput = Union[str, Path, io.BytesIO, bytes]
 
 class KimiUnderstandAdapter:
     """
-    Adapter for Moonshot AI's Kimi vision models (K2.6 / K2.7 Code / K3) via the
+    Adapter for Moonshot AI's Kimi vision models (K2.6 / K2.7 Code / K3 / K3.1 Pro) via the
     OpenAI-compatible Kimi Platform API.
 
     Args:
@@ -224,7 +232,7 @@ class KimiUnderstandAdapter:
 
         if reasoning_effort is not None:
             if model not in K3_MODELS:
-                raise ValueError("reasoning_effort is only supported by kimi-k3.")
+                raise ValueError(f"reasoning_effort is only supported by {sorted(K3_MODELS)}.")
             if reasoning_effort not in VALID_REASONING_EFFORTS:
                 raise ValueError(
                     f"Invalid reasoning_effort: {reasoning_effort!r}. "
@@ -410,7 +418,7 @@ class KimiUnderstandAdapter:
                 kwargs["extra_body"] = {"thinking": {"type": "enabled" if thinking else "disabled"}}
         if reasoning_effort is not None:
             if model not in K3_MODELS:
-                raise ValueError("reasoning_effort is only supported by kimi-k3.")
+                raise ValueError(f"reasoning_effort is only supported by {sorted(K3_MODELS)}.")
             if reasoning_effort not in VALID_REASONING_EFFORTS:
                 raise ValueError(
                     f"Invalid reasoning_effort: {reasoning_effort!r}. "

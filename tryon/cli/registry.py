@@ -2208,6 +2208,25 @@ _UNDERSTAND = {
             Arg(("--max-tokens",), "max_tokens", type=int, help="Max completion tokens (server default: 131072)"),
         ],
     ),
+    "kimi-k3.1-pro": ModelSpec(
+        id="kimi-k3.1-pro", label="Kimi K3.1 Pro (Moonshot AI flagship multimodal reasoning model)",
+        import_path="tryon.api.kimi", class_name="KimiUnderstandAdapter",
+        method="understand", output_kind="text", env_hint="MOONSHOT_API_KEY",
+        notes="Official Moonshot API (released 24 Oct 2026): post-trained successor to kimi-k3, 1M context, "
+        "image + video input, thinking always on (--reasoning-effort low/high/max, default max). "
+        "--kimi-model kimi-k3.1-pro-highspeed selects the ~2-3x faster variant. Flagship tier: needs a >= $1 "
+        "Moonshot top-up. Open weights announced for early Nov 2026 (local adapter not added yet).",
+        args=[
+            Arg(("--kimi-model",), "kimi_model", target="init", call_name="model", default="kimi-k3.1-pro",
+                choices=["kimi-k3.1-pro", "kimi-k3.1-pro-highspeed"], help="Kimi K3.1 Pro variant"),
+            Arg(("--image", "-i"), "image", help="Image to understand (path or URL)"),
+            Arg(("--video",), "video", help="Video to understand (path or URL)"),
+            Arg(("--prompt", "-p"), "prompt", help="Question/instruction for the model"),
+            Arg(("--reasoning-effort",), "reasoning_effort", default="max",
+                choices=["low", "high", "max"], help="Reasoning effort level"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max completion tokens (server default: 131072)"),
+        ],
+    ),
     "kimi-vl": ModelSpec(
         id="kimi-vl", label="Kimi-VL (open-weight, local)",
         import_path="tryon.models.kimi_vl", class_name="KimiVLAdapter",

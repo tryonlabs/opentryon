@@ -1,12 +1,13 @@
 ---
 sidebar_position: 12
-title: Kimi K2.6 / K2.7 Code / K3 Understanding
-description: Multimodal text, image, and video understanding using Moonshot AI's Kimi K2.6, K2.7 Code, and K3 models via the opentryon KimiUnderstandAdapter.
+title: Kimi K2.6 / K2.7 Code / K3 / K3.1 Pro Understanding
+description: Multimodal text, image, and video understanding using Moonshot AI's Kimi K2.6, K2.7 Code, K3, and K3.1 Pro models via the opentryon KimiUnderstandAdapter.
 keywords:
   - Kimi
   - Kimi K2.6
   - Kimi K2.7 Code
   - Kimi K3
+  - Kimi K3.1 Pro
   - Moonshot AI
   - multimodal understanding
   - image understanding
@@ -14,7 +15,7 @@ keywords:
   - vision language model
 ---
 
-# Kimi K2.6 / K2.7 Code / K3 Understanding
+# Kimi K2.6 / K2.7 Code / K3 / K3.1 Pro Understanding
 
 [Kimi](https://platform.kimi.ai/docs/overview) is Moonshot AI's family of
 natively multimodal models. OpenTryOn integrates two variants via a single
@@ -29,6 +30,13 @@ adapter, `KimiUnderstandAdapter`, for **image and video understanding**:
 - **Kimi K3** (`kimi-k3`): Flagship multimodal reasoning model with a 1M-token
   context window. Thinking mode is always on and `reasoning_effort` can be set
   to `low`, `high`, or `max`.
+- **Kimi K3.1 Pro** (`kimi-k3.1-pro` / `kimi-k3.1-pro-highspeed`): Post-trained
+  successor to K3 (released 24 Oct 2026, 1M context, image + video input), with
+  the same K3-style API: thinking always on, `reasoning_effort`, and
+  `max_completion_tokens`. Highspeed serves the same model roughly 2-3x faster.
+  Moonshot has announced open weights for early November 2026; this entry is the
+  hosted API only. It is a flagship-tier model, so the Moonshot account needs a
+  top-up of at least $1.
 
 Unlike most other adapters in this repo, Kimi's understanding capability is
 **general-purpose** -- useful for describing garments, outfits, and
@@ -100,7 +108,7 @@ print(result["text"])
 
 **Parameters:**
 - `api_key` (str, optional): Moonshot API key. Defaults to `MOONSHOT_API_KEY` environment variable.
-- `model` (str, optional): Default model for calls that don't override it. One of `kimi-k2.5`, `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k2.7-code-highspeed`, `kimi-k3`. Default: `"kimi-k2.6"`.
+- `model` (str, optional): Default model for calls that don't override it. One of `kimi-k2.5`, `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k2.7-code-highspeed`, `kimi-k3`, `kimi-k3.1-pro`, `kimi-k3.1-pro-highspeed`. Default: `"kimi-k2.6"`.
 - `base_url` (str, optional): Defaults to `KIMI_BASE_URL` env var or `https://api.moonshot.ai/v1`.
 
 **Raises:**
@@ -154,9 +162,9 @@ values raise an API error, so this adapter doesn't expose those knobs. Only
 
 | Field | Behavior |
 |---|---|
-| `thinking` | Default enabled. `kimi-k2.7-code*` and `kimi-k3` cannot disable it. |
-| `reasoning_effort` | K3-only. `low`, `high`, `max` (default `max`). |
-| `max_tokens` | K2.x default 32768. K3 default 131072. |
+| `thinking` | Default enabled. `kimi-k2.7-code*` and the K3 family (`kimi-k3`, `kimi-k3.1-pro*`) cannot disable it. |
+| `reasoning_effort` | K3 family only (`kimi-k3`, `kimi-k3.1-pro*`). `low`, `high`, `max` (default `max`). |
+| `max_tokens` | K2.x default 32768. K3 family default 131072 (sent as `max_completion_tokens`). |
 | `temperature` / `top_p` / `n` / `presence_penalty` / `frequency_penalty` | Fixed by the API; not exposed. |
 
 ## Using the `opentryon` CLI
@@ -181,6 +189,11 @@ opentryon understand --model kimi-k2.7-code --kimi-model kimi-k2.7-code-highspee
 opentryon understand --model kimi-k3 --image garment.jpg \
   --prompt "Describe this outfit for a product listing." \
   --reasoning-effort high
+
+# Kimi K3.1 Pro -- post-trained K3 successor (and the ~2-3x faster Highspeed variant)
+opentryon understand --model kimi-k3.1-pro --image garment.jpg \
+  --prompt "Describe this outfit for a product listing." --reasoning-effort high
+opentryon understand --model kimi-k3.1-pro --kimi-model kimi-k3.1-pro-highspeed --image garment.jpg
 ```
 
 Results are printed to stdout and saved as JSON under `outputs/`.
@@ -192,7 +205,7 @@ The adapter raises `ValueError` for:
 - Neither `image` nor `video` provided to `understand()`
 - Invalid `model`
 - Attempting to disable `thinking` on `kimi-k2.7-code*`
-- Invalid `reasoning_effort` or using it with non-K3 models
+- Invalid `reasoning_effort` or using it with non-K3-family models
 
 ## References
 
@@ -200,4 +213,5 @@ The adapter raises `ValueError` for:
 - [Kimi K2.6 Quickstart](https://platform.kimi.ai/docs/guide/kimi-k2-6-quickstart)
 - [Kimi K2.7 Code Quickstart](https://platform.kimi.ai/docs/guide/kimi-k2-7-code-quickstart)
 - [Kimi K3 Quickstart](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)
+- [Kimi K3.1 Pro Quickstart](https://platform.kimi.ai/docs/guide/kimi-k3-1-pro-quickstart)
 - [Using the Kimi Vision Model](https://platform.kimi.ai/docs/guide/use-kimi-vision-model)

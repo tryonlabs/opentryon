@@ -9,6 +9,8 @@ This module provides an adapter for Moonshot AI's Kimi vision models:
   capabilities, tuned for long-horizon agentic coding and tool use.
 - Kimi K3 (kimi-k3): Flagship multimodal model with 1M context and
   configurable reasoning effort (thinking mode is always enabled).
+- Kimi K3.1 Pro (kimi-k3.1-pro / kimi-k3.1-pro-highspeed): Post-trained K3 successor
+  (1M context, same K3-style API); Highspeed is ~2-3x faster.
 
 Unlike most other adapters in this repo, Kimi's understanding capabilities
 are general-purpose -- useful for the fashion domain (describing garments,

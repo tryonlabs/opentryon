@@ -35,6 +35,7 @@ keywords:
   - Kimi K2.6
   - Kimi K2.7 Code
   - Kimi K3
+  - Kimi K3.1 Pro
   - Moonshot AI
   - MiniMax H3
   - MiniMax H3 Max

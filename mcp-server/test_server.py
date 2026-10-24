@@ -106,6 +106,7 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k2_6", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_kimi_k3_1_pro", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_beam", {"prompt": "describe a linen trench", "dry_run": True}, False),
         ("understand_hy4_preview", {"prompt": "describe a linen trench", "dry_run": True}, False),
@@ -288,6 +289,7 @@ async def check_list_opentryon_tools() -> None:
     data = result.structured_content
     assert "kimi-k2.6" in data["services"]["understand"]["models"]
     assert "kimi-k3" in data["services"]["understand"]["models"]
+    assert "kimi-k3.1-pro" in data["services"]["understand"]["models"]
     assert "kimi-vl" in data["services"]["understand"]["models"]
     assert "qwen3.8-max" in data["services"]["understand"]["models"]
 
