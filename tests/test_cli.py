@@ -421,6 +421,7 @@ def check_kimi_dry_runs():
         ("kimi-k2.6", "'thinking': True"),
         ("kimi-k2.7-code", "'model': 'kimi-k2.7-code'"),
         ("kimi-k3", "'reasoning_effort': 'max'"),
+        ("kimi-k3.1-pro", "'model': 'kimi-k3.1-pro'"),
         ("kimi-vl", "'num_frames': 8"),
     ]:
         buf = io.StringIO()
@@ -433,7 +434,7 @@ def check_kimi_dry_runs():
             ])
         printed = buf.getvalue()
         assert code == 0 and expect_kwarg in printed, printed
-    print("\u2713 understand kimi-k2.6 / kimi-k2.7-code / kimi-k3 / kimi-vl --dry-run resolve the expected calls")
+    print("\u2713 understand kimi-k2.6 / kimi-k2.7-code / kimi-k3 / kimi-k3.1-pro / kimi-vl --dry-run resolve the expected calls")
 
 
 def check_qwen_dry_runs():
@@ -685,6 +686,46 @@ def check_kimi_understand_requires_image_or_video():
         print("\u2713 KimiUnderstandAdapter.understand() rejects missing image/video")
     else:
         raise AssertionError("expected ValueError when neither image nor video is given")
+
+
+def check_kimi_k3_1_pro_request_shape():
+    from unittest import mock
+
+    from PIL import Image
+
+    from tryon.api.kimi import KimiUnderstandAdapter
+
+    img = Image.new("RGB", (4, 4))
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["understand", "--model", "kimi-k3.1-pro", "--kimi-model", "kimi-k3.1-pro-highspeed",
+                      "--image", "a.jpg", "--reasoning-effort", "low", "--max-tokens", "500", "--dry-run"])
+    printed = buf.getvalue()
+    assert code == 0 and "'model': 'kimi-k3.1-pro-highspeed'" in printed and "'reasoning_effort': 'low'" in printed, printed
+
+    for model in ("kimi-k3.1-pro", "kimi-k3.1-pro-highspeed"):
+        adapter = KimiUnderstandAdapter(api_key="test", model=model)
+        message = mock.Mock(content="ok", reasoning_content=None)
+        completion = mock.Mock(choices=[mock.Mock(message=message, finish_reason="stop")], usage=None, model=model)
+        with mock.patch.object(adapter.client.chat.completions, "create", return_value=completion) as create:
+            adapter.understand(image=img, prompt="hi", reasoning_effort="high", max_tokens=321)
+        kwargs = create.call_args.kwargs
+        assert kwargs["model"] == model and kwargs["reasoning_effort"] == "high", kwargs
+        assert kwargs["max_completion_tokens"] == 321 and "max_tokens" not in kwargs, kwargs
+        assert "extra_body" not in kwargs, "K3-family models take no thinking toggle"
+        try:
+            adapter.understand(image=img, thinking=False)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("thinking cannot be disabled on K3.1 Pro")
+    try:
+        KimiUnderstandAdapter(api_key="test", model="kimi-k2.6").understand(image=img, reasoning_effort="low")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("reasoning_effort stays K3-family only")
+    print("\u2713 kimi-k3.1-pro(/-highspeed): CLI variant, request shape, thinking lock, reasoning_effort gating")
 
 
 def check_qwen_understand_requires_image_or_video():
@@ -2638,6 +2679,7 @@ if __name__ == "__main__":
     check_qwen_image_local_helpers()
     check_qwen_image_local_dry_runs()
     check_kimi_understand_requires_image_or_video()
+    check_kimi_k3_1_pro_request_shape()
     check_qwen_understand_requires_image_or_video()
     check_hy4_requires_prompt_or_image()
     check_mercury3_requires_prompt()

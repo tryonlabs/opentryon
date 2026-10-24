@@ -241,7 +241,7 @@ Public frontier models with **~1M token context** and large MoE footprints (indu
 
 | Candidate | Vendor | Scale (total / active) | Highlights | Path | Suggested id | Status |
 |---|---|---|---|---|---|---|
-| **Kimi-K3** | Moonshot AI | 2.8T / 104B (896 experts, 16 active) | Kimi Delta Attention; native multimodal | A | `kimi-k3` (shipped — confirm spec) | `watch` |
+| **Kimi-K3** | Moonshot AI | 2.8T / 104B (896 experts, 16 active) | Kimi Delta Attention; native multimodal | A | `kimi-k3` (shipped) and **`kimi-k3.1-pro`** (+ `-highspeed`, shipped 24 Oct 2026). Open weights promised by 4 Nov 2026 — add a Path B local entry when they land. | `watch` |
 | **Muse Spark Open** | Meta | 816B / 42B | Coding + agents; Blackwell Ultra training; audio/video in | A or B | `muse-spark-open` | `watch` |
 | **Ling-3.1-flash** | InclusionAI | 560B / 25B | Hybrid-linear MoE reasoning | A (or B if weights land) | `ling-3.1-flash` | `watch` |
 | **Beam** | Reflection | 501B / 23B | Open frontier MoE; Apache-2.0 | A (hosted). Local weights need four B300s | `beam` | shipped |

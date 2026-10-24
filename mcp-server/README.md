@@ -224,6 +224,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI) | `MOONSHOT_API_KEY` | Image + video; optional thinking |
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
 | `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |
+| `understand_kimi_k3_1_pro` | Kimi K3.1 Pro (+ Highspeed via `kimi_model`) | `MOONSHOT_API_KEY` | Post-trained K3 successor; `reasoning_effort` |
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
 | `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
 | `understand_qwen3_8_omni_flash` | Qwen3.8-Omni-Flash (DashScope) | `DASHSCOPE_API_KEY` | Native omni-modal; adds `audio`; text/image/audio/video in, text out; 1M context |

@@ -727,7 +727,7 @@ print(result["text"])
 
 **Parameters:**
 - `api_key` (str, optional): Moonshot API key. Defaults to `MOONSHOT_API_KEY` environment variable
-- `model` (str, optional): `"kimi-k2.6"` (default), `"kimi-k2.7-code"`, `"kimi-k2.7-code-highspeed"`, `"kimi-k3"`, or `"kimi-k2.5"`
+- `model` (str, optional): `"kimi-k2.6"` (default), `"kimi-k2.7-code"`, `"kimi-k2.7-code-highspeed"`, `"kimi-k3"`, `"kimi-k3.1-pro"`, `"kimi-k3.1-pro-highspeed"`, or `"kimi-k2.5"`
 
 **Methods:**
 - `understand_image(image, prompt, ...)` - Understand one or more images
