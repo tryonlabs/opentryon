@@ -1,6 +1,6 @@
 # OpenTryOn Roadmap
 
-> **Last Updated**: 19 October 2026 · **Current release**: [v0.0.8](https://pypi.org/project/opentryon/0.0.8/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
+> **Last Updated**: 11 November 2026 · **Current release**: [v0.0.9](https://pypi.org/project/opentryon/0.0.9/) · **Next milestone**: **v0.1.0 — Fashion ML Toolkit Core**  
 > **Horizon**: Aug 2026 – early 2027 · Fashion-first; other domains later
 
 This roadmap tracks what shipped and what comes next. Product strategy: [`VISION.md`](VISION.md).
@@ -15,7 +15,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ SHIPPED — v0.0.3 – v0.0.8 (Aug–Oct 2026)  ·  Phase 0: invoke layer     │
+│ SHIPPED — v0.0.3 – v0.0.9 (Aug–Nov 2026)  ·  Phase 0: invoke layer     │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ ✓ Unified `opentryon` CLI + FastMCP (same registry / invoke_model)      │
 │ ✓ Broad cloud adapters: VTON / generate / edit / video / understand     │
@@ -28,6 +28,8 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 │   Extract-Outfit, klein-4B try-on, try-on safety (classify service)     │
 │ ✓ v0.0.8: Clad measure, FLUX 3 Klein + Video, LipSync, TRELLIS,         │
 │   SANA-Sprint, Nemotron 3.5 Super VL, VideoJev, Gemini Embedding 2      │
+│ ✓ v0.0.9: decision models (Decider, Clef, Kev, JEV, D3, Mercury),       │
+│   robot-act / detect / parse, Gemini 4 Argon, Omni 1.2, Kimi K3.1 Pro   │
 │ ✓ OpenAPI + Postman snapshots · docs · Gradio · tryon-studio via MCP    │
 │ ✓ Local extras: FLUX.2 Turbo, Kimi-VL, LLaVA, BEN2, LTX, Wan, Qwen3.8,  │
 │   Qwen-Image, Leffa, CatVTON, MiniMax H3                                │
@@ -56,7 +58,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 
 ---
 
-## Completed (through v0.0.8) — Phase 0
+## Completed (through v0.0.9) — Phase 0
 
 ### Developer surfaces
 - [x] **`opentryon` CLI** — `vton`, `generate`, `edit`, `understand`, `video-generate`, `bg-remove`
@@ -65,7 +67,7 @@ This roadmap tracks what shipped and what comes next. Product strategy: [`VISION
 - [x] **Registry** — `tryon/cli/registry.py` as source of truth
 - [x] **OpenAPI / Swagger** — `openapi/opentryon-media.openapi.yaml`
 - [x] **Postman** — `postman/opentryon-media.postman_collection.json`
-- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.8`
+- [x] **Docs** — Docusaurus site; PyPI `opentryon==0.0.9`
 - [x] **tryon-studio** — separate UI repo over MCP
 - [x] **Model integration guidelines** — Path A API vs Path B local
 
@@ -130,7 +132,7 @@ CLI/MCP remain the distribution spine; new capabilities register the same way.
 | 4 | E | Agent on top of tools + evals |
 | 5 | F | Numbers for the path we actually ship |
 
-Intermediate tags: **v0.0.4** – **v0.0.8** shipped; **v0.1.0** when A–E are usable end-to-end.
+Intermediate tags: **v0.0.4** – **v0.0.9** shipped; **v0.1.0** when A–E are usable end-to-end.
 
 ### Conceptual package layout (target)
 ```
@@ -194,4 +196,4 @@ See [Contributing](CONTRIBUTING.md), [new-model checklist](docs/docs/advanced/ne
 
 ---
 
-**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.8](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.8) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)
+**Links:** [PyPI](https://pypi.org/project/opentryon/) · [Release v0.0.9](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.9) · [Docs](https://tryonlabs.github.io/opentryon/) · [Discord](https://discord.gg/T5mPpZHxkY)

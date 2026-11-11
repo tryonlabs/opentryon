@@ -33,7 +33,7 @@ LOCAL_INFERENCE_DEPS = [
 
 setup(
     name="opentryon",
-    version="0.0.8",
+    version="0.0.9",
     description="Open-source AI toolkit for fashion tech and virtual try-on",
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -55,7 +55,7 @@ setup(
         "boto3==1.40.64",
         "requests>=2.31.0",
         "PyJWT>=2.10.1",
-        "google-genai>=1.52.0",
+        "google-genai>=2.30.1",
         "openai>=2.9.0",
         "anthropic>=0.75.0",  # Claude Haiku 5.5 understand adapter
         "fastapi==0.124.0",

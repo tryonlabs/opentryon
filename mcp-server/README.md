@@ -2,7 +2,7 @@
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that exposes every model in the [`opentryon`](../README.md) toolkit -- virtual try-on, image/video generation & editing, multimodal image & video understanding, and background removal -- as tools an LLM agent (Claude, Cursor, ChatGPT, or any MCP client) can call directly.
 
-Requires **OpenTryOn v0.0.8+** (`pip install -U opentryon`).
+Requires **OpenTryOn v0.0.9+** (`pip install -U opentryon`).
 
 **Documentation:**
 
@@ -225,6 +225,10 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
 | `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |
 | `understand_ripple_65b_openrouter` / `understand_ripple_65b_local` | Ricursive Ripple-65B Preview (text-only coding LLM) | `OPENROUTER_API_KEY` / local server | Named-model-only |
+| `understand_gemini_4_argon` / `understand_gemini_4_argon_cyber_permissive` | Gemini 4 Argon (reasoning, agentic video, long decode) | `GEMINI_API_KEY` | v0.0.9 |
+| `understand_mercury_3` | Inception Mercury 3 (text-only diffusion LLM) | `INCEPTION_API_KEY` | v0.0.9 |
+| `understand_flint_local` / `understand_flint_openrouter` | Recursive Flint (text-only coding agent) | local server / `OPENROUTER_API_KEY` | Named-model-only |
+| `understand_sage_a1_5_local` | Sage-A1.5 (text-only agent) | local server | Named-model-only |
 | `understand_kimi_k3_1_pro` | Kimi K3.1 Pro (+ Highspeed via `kimi_model`) | `MOONSHOT_API_KEY` | Post-trained K3 successor; `reasoning_effort` |
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
 | `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
@@ -273,6 +277,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_flux3_video` | FLUX 3 Video (text, keyframes, video-to-video) | `BFL_API_KEY` |
 | `video_generate_cosmos3_nano_v2v` | Cosmos 3 Nano video-to-video (self-hosted certified NIM) | `COSMOS3_NIM_URL` |
 | `video_generate_flux3_max` | FLUX 3 Max (fastest tier, version=max) | `BFL_API_KEY` |
+| `video_generate_kling_v4` | Kling 4.0 | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `video_generate_sora` | OpenAI Sora (**deprecated — API removed 2026-09-24**) | `OPENAI_API_KEY` |
 | `video_generate_luma_video` | Luma Dream Machine (Ray 2) | `LUMA_AI_API_KEY` |
 | `video_generate_luma_ray_3_2` | Luma Ray 3.2 (Agents API) | `LUMA_AGENTS_API_KEY` / `LUMA_AI_API_KEY` |
@@ -334,6 +339,7 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 | `robot_act_dream_1_flash` | Dream Labs Dream-1-flash | `DREAM_API_KEY` |
 | `decide_d3_turbo` | vLLM-SR d3-turbo (multimodal Decision 3.0 API) | `DECISION_API_KEY` |
 | `decide_d3_turbo_local` | vLLM-SR d3-turbo (local weights) | local/GPU |
+| `decide_mercury_decide` | Inception Mercury Decide (text + images) | `INCEPTION_API_KEY` |
 | `decide_jev` | Typesafe AI Jev (text/JSON only; early access) | `TYPESAFE_API_KEY` |
 | `decide_pplx_decider` | Perplexity Decider v1.2 / Flash (text + images, web grounding) | `PERPLEXITY_API_KEY` |
 | `decide_pplx_decider_local` | Perplexity Decider on your SGLang server | local server |
@@ -377,6 +383,13 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 
 `--skill detect` (boxes), `point` (centroids), or `segment` (SVG path). Coordinates are normalized 0–1.
 
+### parse -- Document parsing
+
+| Tool | Model | Requires |
+|---|---|---|
+| `parse_nemotron_parse` | NVIDIA Nemotron Parse (document OCR, NIM) | `NVIDIA_API_KEY` |
+| `parse_nemotron_parse_local` | Nemotron Parse (local NIM Docker) | local NIM |
+
 ### classify -- Fixed-label classification
 
 | Tool | Model | Requires |
@@ -392,6 +405,7 @@ Vectors are saved to an `.npz` file; the tool returns the path, shapes, labels a
 | Tool | Model | Requires |
 |---|---|---|
 | `embed_gemini_embedding_2` | Google Gemini Embedding 2 (3072-d Matryoshka; text/image/audio/video/PDF) | `GEMINI_API_KEY` |
+| `embed_nemotron_3_5_embed_1b` / `embed_nemotron_3_5_embed_1b_local` | NVIDIA Nemotron 3.5 Embed 1B (text + document images) | `NVIDIA_API_KEY` / local NIM |
 | `embed_embeddinggemma_2` | Google EmbeddingGemma 2 (768-d; text/code/image/video/audio) | local/GPU |
 | `embed_pplx_embed_v2_late_0_6b` | Perplexity pplx-embed-v2-late 0.6B (multi-vector, MaxSim) | local/GPU |
 | `embed_pplx_embed_v2_late_9b` | Perplexity pplx-embed-v2-late 9B (multi-vector, MaxSim) | local/GPU |

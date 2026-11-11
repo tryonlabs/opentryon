@@ -16,7 +16,7 @@ keywords:
 
 OpenTryOn ships a [Model Context Protocol](https://modelcontextprotocol.io) server under `mcp-server/`. Every model in `tryon.cli.registry` becomes an MCP tool automatically — the same surface as the `opentryon` CLI, via `tryon.cli.runner.invoke_model()`.
 
-**Current release:** OpenTryOn **v0.0.8+** (`pip install -U opentryon`).
+**Current release:** OpenTryOn **v0.0.9+** (`pip install -U opentryon`).
 
 This page is the Docusaurus guide for the server. Keep it next to:
 
@@ -347,6 +347,26 @@ Same key as `vton_fashn_tryon_max`. `edit_fashn_product_to_model`, `edit_fashn_m
 | `measure_clad_body_local` | Measure Anny/MHR params JSON | local / `clad-body` |
 
 See [Clad body API](../api-reference/clad-body.md).
+
+## v0.0.9 tools (understand, video, decide, robot-act, parse, embed)
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `understand_gemini_4_argon` / `understand_gemini_4_argon_cyber_permissive` | Gemini 4 Argon (reasoning, agentic video, long decode) | `GEMINI_API_KEY` |
+| `understand_mercury_3` | Inception Mercury 3 (text-only diffusion LLM) | `INCEPTION_API_KEY` |
+| `understand_flint_local` / `understand_flint_openrouter` | Recursive Flint (text-only coding agent) | local server / `OPENROUTER_API_KEY` |
+| `understand_sage_a1_5_local` | Sage-A1.5 (text-only agent) | local server |
+| `understand_ripple_65b_openrouter` / `understand_ripple_65b_local` | Ricursive Ripple-65B Preview (text-only coding LLM) | `OPENROUTER_API_KEY` / local server |
+| `video_generate_flux3_max` | FLUX 3 Max | `BFL_API_KEY` |
+| `video_generate_kling_v4` | Kling 4.0 | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
+| `decide_d3_turbo` … `decide_d3_edge` (+ `_local`) | vLLM Semantic Router Decision 3.0 | `DECISION_API_KEY` / local/GPU |
+| `decide_mercury_decide` | Inception Mercury Decide (text + images) | `INCEPTION_API_KEY` |
+| `robot_act_dream_1` / `robot_act_dream_1_flash` | Dream Labs World Action Model | `DREAM_API_KEY` |
+| `robot_act_cosmos3_nano_droid` | Cosmos 3 Nano-DROID policy (certified NIM) | local NIM |
+| `parse_nemotron_parse` / `parse_nemotron_parse_local` | NVIDIA Nemotron Parse (document OCR) | `NVIDIA_API_KEY` / local NIM |
+| `embed_nemotron_3_5_embed_1b` / `embed_nemotron_3_5_embed_1b_local` | NVIDIA Nemotron 3.5 Embed 1B (text + document images) | `NVIDIA_API_KEY` / local NIM |
+
+The Decider, Clef, Kev and AutoTrust JEV tools are listed under [Decide tools](#decide-tools-decision-models). See [Decision models](../api-reference/decision-models.md).
 
 ## v0.0.8 tools (FLUX 3, lip-sync, 3D)
 
