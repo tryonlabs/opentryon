@@ -2,7 +2,7 @@
 slug: /
 hide_table_of_contents: true
 title: OpenTryOn
-description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.8 adds Clad body measurement, FLUX 3 Image Klein and Video, NVIDIA LipSync, TRELLIS 3D, Nemotron 3.5 Super VL, VideoJev, and Gemini Embedding 2; 163 models, 13 services.
+description: OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. v0.0.9 adds 20 decision models, robot-act, detect and parse services, Gemini 4 Argon, Gemini Omni 1.2 and Kimi K3.1 Pro.
 keywords:
   - virtual try-on
   - fashion AI
@@ -64,7 +64,7 @@ import HomeHero from '@site/src/components/HomeHero';
 
 # Welcome to OpenTryOn
 
-OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.8](https://pypi.org/project/opentryon/0.0.8/)** on PyPI.
+OpenTryOn is an open-source AI toolkit for fashion technology and virtual try-on. **Current release: [v0.0.9](https://pypi.org/project/opentryon/0.0.9/)** on PyPI.
 
 ## 🎯 What is OpenTryOn?
 
@@ -77,7 +77,14 @@ OpenTryOn gives you four ways to run fashion AI models:
 
 Plus preprocessing, datasets, Gradio demos, and TryOnDiffusion research code.
 
-## What's new in v0.0.8
+## What's new in v0.0.9
+
+- **Decision models**: Perplexity Decider, Cloudflare Clef, Kev, AutoTrust JEV, vLLM-SR D3 and Mercury Decide on one `decide` question schema ([guide](api-reference/decision-models))
+- **New services**: `robot-act` (Dream-1, Cosmos 3 Nano-DROID), `detect` (Moondream boxes, points, masks) and `parse` (Nemotron Parse)
+- **Gemini 4 Argon**, **Kimi K3.1 Pro**, **Moondream 3.1** and **Mercury 3** on `understand`
+- **Gemini Omni 1.2** (now the default, up to 15s), **FLUX 3 Max**, **Kling 4.0**, **Seedream 5.0 Flash**, and Nano Banana video-to-image
+
+## What was new in v0.0.8
 
 - **`measure`** — Clad body sizing from a photo, a questionnaire, or local Anny/MHR params
 - **FLUX 3 Image Klein** (API + local) and **FLUX 3 Video**

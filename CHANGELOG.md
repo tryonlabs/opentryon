@@ -7,26 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.9] - 11 November 2026
+
+**210 models** across **16 services** (up from 163 across 13), **215 MCP tools**. Three new services: `robot-act`, `detect` and `parse`.
+
 ### Added
 
-- `generate` / `edit` `seedream`: **Seedream 5.0 Flash** via `--model-version seedream-5-0-flash` (`dola-seedream-5-0-flash-260915`), BytePlus's faster, cheaper 5.0 tier.
-- `decide`: four more open decision-model families on the shared noul / choice / score schema (docs: `api-reference/decision-models.md`):
-  - **`pplx-decider`** — Perplexity Decider v1.2 / Flash v1.2 through the first-party Decisions API (`PERPLEXITY_API_KEY`; images, `--web-grounding`), and **`pplx-decider-local`** for the open weights on SGLang.
-  - **`clef`** — Cloudflare Clef / Clef-flash on Workers AI (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`; up to 64 questions, 4 images), and **`clef-local`** on SGLang.
-  - **`kev-openrouter`** — Jared Palmer's Kev 4B via OpenRouter's System One endpoint (third-party; Kev has no first-party API), and **`kev-local`** for the Kev repo's own server.
-  - **`autotrust-jev-local`** — AutoTrust JEV on the self-hosted vLLM `/v1/decide` server (no hosted API exists); one request per question, mapped onto the shared answer shape.
-  - New generic `tryon.api.systemone.SystemOneAdapter` for any `/v1/systemone` server, plus `PerplexityDeciderAdapter`, `ClefAdapter` and `AutoTrustJevAdapter`.
-- `video-generate`: **`gemini-omni-1.2-flash`** is now the `gemini-omni` default (GA 5 Nov 2026): clips up to 15s with native audio, new `--duration` (3-15s; 1.1 and extension turns cap at 10s) and `--omni-model` to keep `gemini-omni-1.1-flash` (Google routes 1.1 to 1.2 from 3 Dec 2026).
-- `understand`: **`ripple-65b-openrouter`** / **`ripple-65b-local`** — Ricursive Ripple-65B Preview (Apache-2.0, 65B dense, 1M context, text-only coding LLM) via new `tryon.api.ricursive.RippleAdapter`. No first-party API exists: hosted path is OpenRouter (`OPENROUTER_API_KEY`), local path is a client for your own vLLM/SGLang server (`RIPPLE_BASE_URL`, `RIPPLE_MODEL`). Named-model-only, outside the fashion/media scope.
-- Docs: new `api-reference/ripple.md`; Gemini Omni page updated for 1.2. Backlog: Inkling 2 Small, Hima ASR and VFlash recorded in `integrate-next.md`.
-- `understand`: **`kimi-k3.1-pro`** — Moonshot's post-trained K3 successor (1M context, image + video, always-on thinking, `--reasoning-effort`), with `--kimi-model kimi-k3.1-pro-highspeed` for the ~2-3x faster variant. Reuses `KimiUnderstandAdapter` (K3-family handling extended; no new adapter) and `MOONSHOT_API_KEY`. Open weights announced for early November 2026 are not integrated yet.
-- **Reflection Beam 1.0** (`tryon.api.reflection.BeamAdapter`, `REFLECTION_API_KEY`): `understand` model `beam` — text chat for `Beam-1.0-501B-A23B`. Named-model-only. No local id (serve guide is four B300s)
-- **Moondream 3.1 and Moondream 3 Preview** (`tryon.api.moondream`, `MOONDREAM_API_KEY`): `understand` query/caption and a new `detect` service for boxes, points, and SVG masks. Local Photon twin `moondream-3.1-local` (`pip install moondream`)
-- **Cosmos 3 Nano certified-NIM variants** (`tryon.api.nvidia.cosmos_nano`, `COSMOS3_NIM_URL`): `cosmos3-nano-t2i`, `cosmos3-nano-v2v`, and `cosmos3-nano-droid`. Hosted `cosmos3` / `cosmos3-reasoner` and local `cosmos3-local` are unchanged
+#### ⚖️ Decision models (`decide`)
+- **vLLM Semantic Router Decision 3.0**: `d3-turbo`, `d3-flash`, `d3-mini`, `d3-nano`, `d3-lite`, `d3-edge` (hosted, `DECISION_API_KEY`) and a `-local` twin for each (`tryon.api.vllm_sr`, `tryon.models.d3`); adds `box` and `track` question types
+- **`mercury-decide`** (`tryon.api.inception.MercuryDecideAdapter`, `INCEPTION_API_KEY`): Inception Labs `POST /v1/decisions`, text/JSON state plus base64 image parts
+- **`pplx-decider`** — Perplexity Decider v1.2 / Flash v1.2 through the first-party Decisions API (`PERPLEXITY_API_KEY`; images, `--web-grounding`), and **`pplx-decider-local`** for the open weights on SGLang
+- **`clef`** — Cloudflare Clef / Clef-flash on Workers AI (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`; up to 64 questions, 4 images), and **`clef-local`** on SGLang
+- **`kev-openrouter`** — Jared Palmer's Kev 4B via OpenRouter's System One endpoint (third-party; Kev has no first-party API), and **`kev-local`** for the Kev repo's own server
+- **`autotrust-jev-local`** — AutoTrust JEV on the self-hosted vLLM `/v1/decide` server (no hosted API exists); one request per question, mapped onto the shared answer shape
+- New generic `tryon.api.systemone.SystemOneAdapter` for any `/v1/systemone` server, plus `PerplexityDeciderAdapter`, `ClefAdapter` and `AutoTrustJevAdapter`. Docs: `api-reference/decision-models.md`
+
+#### 🧭 Understand
+- **`gemini-4-argon`** (`GEMINI_API_KEY`): Google's flagship reasoning model — agentic video processing, long decode via automatic continuation, text-only background jobs; plus allowlisted **`gemini-4-argon-cyber-permissive`** for defensive cyber work
+- **`kimi-k3.1-pro`** — Moonshot's post-trained K3 successor (1M context, image + video, always-on thinking, `--reasoning-effort`), with `--kimi-model kimi-k3.1-pro-highspeed`. Reuses `KimiUnderstandAdapter`
+- **`moondream-3.1`** / **`moondream-3-preview`** (`tryon.api.moondream`, `MOONDREAM_API_KEY`) query and caption, with local Photon twin **`moondream-3.1-local`**
+- **`mercury-3`** (`INCEPTION_API_KEY`): Inception's text-only diffusion LLM, 1M context
+- Text-only agent and coding models, named-model-only in the planner: **`beam`** (Reflection, `REFLECTION_API_KEY`), **`flint-local`** / **`flint-openrouter`** (Recursive Flint), **`sage-a1.5-local`**, **`ripple-65b-openrouter`** / **`ripple-65b-local`** (Ricursive Ripple-65B Preview, new `tryon.api.ricursive.RippleAdapter`)
+
+#### 🎬 Image and video
+- **`flux3-max`** (`video-generate`, `BFL_API_KEY`): FLUX 3 Max on BFL's `/v1/flux-3-video`; `flux3-video` gains `--version latest|max`
+- **`kling-v4`** (`video-generate`): Kling 4.0 on the 2026 REST API
+- **Seedream 5.0 Flash** via `generate` / `edit` `seedream --model-version seedream-5-0-flash` (`dola-seedream-5-0-flash-260915`)
+- **Nano Banana video-to-image**: `generate --video` on `nano-banana-2`, `nano-banana-2.1` and `nano-banana-2-lite` (poster or thumbnail from a clip, Interactions API)
+- **Cosmos 3 Nano certified NIM** (`tryon.api.nvidia.cosmos_nano`, `COSMOS3_NIM_URL`): `cosmos3-nano-t2i` (`generate`), `cosmos3-nano-v2v` (`video-generate`) and `cosmos3-nano-droid` (`robot-act`)
+
+#### 🆕 New services
+- **`robot-act`**: **`dream-1`** / **`dream-1-flash`** (Dream Labs World Action Model, `DREAM_API_KEY`) and `cosmos3-nano-droid`
+- **`detect`**: Moondream 3.1 / 3 Preview / 3.1 local — boxes, points and SVG segmentation masks
+- **`parse`**: **`nemotron-parse`** (NVIDIA NIM document OCR, `NVIDIA_API_KEY`) and **`nemotron-parse-local`**
+
+#### 🔎 Embed
+- **`nemotron-3.5-embed-1b`** (`NVIDIA_API_KEY`, text + document images) and **`nemotron-3.5-embed-1b-local`**
+
+#### Docs
+- New pages: `api-reference/decision-models.md`, `api-reference/ripple.md`, Gemini 4 Argon, Moondream, Mercury 3 / Mercury Decide, Nemotron embed / parse, Flint, Sage-A1.5, Dream-1, D3; Gemini Omni page updated for 1.2; Seedream table shows ModelArk ids
+- Backlog (`integrate-next.md`): Inkling 2 Small, Hima ASR, VFlash and Seedream 5.5 recorded as pending, with reasons
+
+### Changed
+- **`gemini-omni` now defaults to `gemini-omni-1.2-flash`** (GA 5 Nov 2026): clips up to 15s with native audio, new `--duration` (3–15s; 1.1 and extension turns cap at 10s). `--omni-model gemini-omni-1.1-flash` keeps 1.1; Google routes 1.1 to 1.2 from 3 Dec 2026
+- **`google-genai>=2.30.1`** in `setup.py` (was `>=1.52.0`), matching `requirements.txt`. The Interactions API used by Gemini Omni, Gemini 4 Argon background jobs and Nano Banana video-to-image is not in the 1.x SDK
 
 ### Fixed
-
-- `seedream` now sends BytePlus ModelArk's published model ids: 5.0 Pro is `dola-seedream-5-0-pro-260628` (was `seedream-5-0-pro-260628`, which BytePlus does not list), 5.0 Lite is `seedream-5-0-lite-260128` and 4.5 is `seedream-4-5-251128`. Short names (`seedream-5-0-pro`, etc.) are unchanged.
+- `seedream` now sends BytePlus ModelArk's published model ids: 5.0 Pro is `dola-seedream-5-0-pro-260628` (was `seedream-5-0-pro-260628`, which BytePlus does not list), 5.0 Lite is `seedream-5-0-lite-260128` and 4.5 is `seedream-4-5-251128`. Short names are unchanged
+- MCP `set_api_keys` accepts `RIPPLE_BASE_URL` and `RIPPLE_MODEL`
 
 ## [0.0.8] - 19 October 2026
 

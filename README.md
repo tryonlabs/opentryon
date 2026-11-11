@@ -16,7 +16,7 @@ Open-source AI toolkit for fashion technology: virtual try-on, image/video gener
 
 </div>
 
-**Current release: [v0.0.8](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.8)** — Clad body measurement (`measure`), FLUX 3 Image Klein and FLUX 3 Video, NVIDIA LipSync and TRELLIS (`audio-to-video`, `generate-3d`), Nemotron 3.5 Super VL, VideoJev, and Gemini Embedding 2; 163 models, 13 services.
+**Current release: [v0.0.9](https://github.com/tryonlabs/opentryon/releases/tag/v0.0.9)** — 20 new decision models (Perplexity Decider, Cloudflare Clef, Kev, AutoTrust JEV, D3, Mercury Decide), new `robot-act`, `detect` and `parse` services, Gemini 4 Argon, Gemini Omni 1.2, Kimi K3.1 Pro, FLUX 3 Max and Kling 4.0; 210 models, 16 services.
 
 📚 **Full documentation:** [https://tryonlabs.github.io/opentryon/](https://tryonlabs.github.io/opentryon/)  
 API tutorials, configuration, examples, and agent guides live there — not in this README.
