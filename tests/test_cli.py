@@ -9,6 +9,7 @@ environment.
 Run:
     python3.10 tests/test_cli.py
 """
+import base64
 import contextlib
 import io
 import json
@@ -414,6 +415,49 @@ def check_veo_seedance_validation():
     else:
         raise AssertionError("old Omni preview id must be rejected")
     print("\u2713 Veo 3.1 / Seedance reference / Omni model-id validation")
+
+
+def check_seedream_model_ids():
+    from unittest import mock
+
+    from tryon.api.byteplus import SEEDREAM_MODELS, SeedreamAdapter
+
+    expected = {
+        "seedream-5-0-pro": "dola-seedream-5-0-pro-260628",
+        "seedream-5-0-flash": "dola-seedream-5-0-flash-260915",
+        "seedream-5-0-lite": "seedream-5-0-lite-260128",
+        "seedream-4-5": "seedream-4-5-251128",
+        "seedream-4-0": "seedream-4-0-250828",
+    }
+    for short, full in expected.items():
+        assert SEEDREAM_MODELS[short] == full, (short, SEEDREAM_MODELS[short])
+        assert SeedreamAdapter(api_key="k", model=short).model == full
+    assert SeedreamAdapter(api_key="k").model == "dola-seedream-5-0-pro-260628"
+    for service, extra in (("generate", []), ("edit", ["--images", "a.jpg"])):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([service, "--model", "seedream", "--prompt", "linen shirt flatlay", *extra,
+                             "--model-version", "seedream-5-0-flash", "--size", "1.5K", "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0 and "'model': 'seedream-5-0-flash'" in printed and "'size': '1.5K'" in printed, printed
+
+    adapter = SeedreamAdapter(api_key="k", model="seedream-5-0-flash")
+    resp = mock.Mock(status_code=200)
+    resp.json.return_value = {"data": [{"b64_json": base64.b64encode(_tiny_png()).decode()}]}
+    with mock.patch("tryon.api.byteplus.seedream.requests.post", return_value=resp) as post:
+        images = adapter.generate_text_to_image("linen shirt flatlay", size="1.5K")
+    body = post.call_args.kwargs["json"]
+    assert post.call_args.args[0].endswith("/images/generations") and body["model"] == "dola-seedream-5-0-flash-260915"
+    assert body["size"] == "1.5K" and len(images) == 1
+    print("\u2713 seedream: ModelArk ids (5.0 Pro/Flash dola-, Lite, 4.x) and 5.0 Flash request")
+
+
+def _tiny_png() -> bytes:
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (2, 2), "white").save(buf, format="PNG")
+    return buf.getvalue()
 
 
 def check_decision_models_wave():
@@ -2927,6 +2971,7 @@ if __name__ == "__main__":
     check_photoroom_dry_runs()
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
+    check_seedream_model_ids()
     check_decision_models_wave()
     check_omni_12_and_ripple()
     check_kimi_dry_runs()

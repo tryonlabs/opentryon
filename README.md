@@ -26,7 +26,7 @@ API tutorials, configuration, examples, and agent guides live there — not in t
 | Category | Highlights |
 |---|---|
 | **Virtual try-on** | FLUX VTO, **Google Vertex VTO**, **OutfitAnyone-Plus**, **Photoroom** (try-on + virtual model), Nova Canvas, Kling AI, Segmind, Pruna P-Image-Try-On, FASHN, Nano Banana 2 Lite, **Qwen-Image** (API + local), **Leffa** / **CatVTON** (local weights), **Muse Image** (composition) |
-| **Generate / edit** | Nano Banana family, FLUX.2, GPT Image (1.5 + **2.5** Flare/Sunburst), Luma Photon, Seedream 5.0 Pro, Ideogram 4.0, Grok Imagine Image, Pruna P-Image / **P-Image-Ideogram** / Edit / Upscale, **Qwen-Image** (API + local), **Muse Image**; local FLUX.2-dev Turbo |
+| **Generate / edit** | Nano Banana family, FLUX.2, GPT Image (1.5 + **2.5** Flare/Sunburst), Luma Photon, Seedream 5.0 Pro / Flash, Ideogram 4.0, Grok Imagine Image, Pruna P-Image / **P-Image-Ideogram** / Edit / Upscale, **Qwen-Image** (API + local), **Muse Image**; local FLUX.2-dev Turbo |
 | **Understand** | **Claude Haiku 5.5**, Kimi K2.6 / K2.7 Code / K3 (API), Kimi-VL & LLaVA-NeXT (local), **Qwen3.8-Max** (API) + **Qwen3.8-27B** (local), **NVIDIA Nemotron Omni / Cosmos 3 Reasoner**, **Hy4 preview** (TokenHub + local vLLM) |
 | **Video** | Veo 3.1, Sora (deprecated), Luma Ray 2 + Ray 3.2, Seedance 2.5, Kling 3.0 / Omni / Turbo, Grok Imagine Video 1.5, Gemini Omni 1.2 Flash, Pruna P-Video / Replace / Avatar / Animate, **LTX-2.5** (API + local), **Hailuo 2.3**, **MiniMax H3 / H3 Max** (API + local H3 + **Fal H3 Max** + **Relight**), **Wan** (API + **3.0** + local 2.2), **Runway Gen-4.5**, **NVIDIA Cosmos 3** (API + local) |
 | **Other** | BEN2 background removal, garment/human preprocessing, fashion datasets, planner agent (registry `invoke_model`) |

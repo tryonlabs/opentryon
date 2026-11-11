@@ -43,11 +43,14 @@ export ARK_API_KEY=...
 
 ### Seedream (image)
 
-| `--model-version` | Notes |
-|---|---|
-| `seedream-5-0-pro` | Precision T2I / edit / multi-ref (default) |
-| `seedream-5-0-lite` | Faster / cheaper 5.0 tier |
-| `seedream-4-5` / `seedream-4-0` | Prior generation |
+| `--model-version` | ModelArk model id | Notes |
+|---|---|---|
+| `seedream-5-0-pro` (default) | `dola-seedream-5-0-pro-260628` | Precision T2I / edit / multi-ref; 1K, 1.5K or 2K |
+| `seedream-5-0-flash` | `dola-seedream-5-0-flash-260915` | Faster, cheaper 5.0 tier with the same capabilities; 1K, 1.5K or 2K |
+| `seedream-5-0-lite` | `seedream-5-0-lite-260128` | Earlier 5.0 tier |
+| `seedream-4-5` / `seedream-4-0` | `seedream-4-5-251128` / `seedream-4-0-250828` | Prior generation |
+
+Seedream 5.5 launched on 9 Nov 2026 in ByteDance's apps, but BytePlus ModelArk has not published an API model id for it yet. It will be added once one is listed.
 
 ## CLI
 

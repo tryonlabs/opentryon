@@ -1417,19 +1417,21 @@ _GENERATE = {
         ],
     ),
     "seedream": ModelSpec(
-        id="seedream", label="ByteDance Seedream 5.0 Pro (BytePlus ModelArk)",
+        id="seedream", label="ByteDance Seedream 5.0 Pro / Flash (BytePlus ModelArk)",
         import_path="tryon.api.byteplus", class_name="SeedreamAdapter",
         method="generate_text_to_image", output_kind="images", env_hint="ARK_API_KEY",
-        notes="Also supports Seedream 5.0 Lite / 4.x via --model-version.",
+        notes="Default dola-seedream-5-0-pro-260628; --model-version seedream-5-0-flash (dola-seedream-5-0-flash-260915), "
+        "5.0 Lite or 4.x. 5.0 Pro/Flash output 1K, 1.5K or 2K. Seedream 5.5 has no ModelArk API id yet.",
         args=[
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
-            Arg(("--size",), "size", default="2K", help="1K, 2K, or WxH"),
+            Arg(("--size",), "size", default="2K", help="1K, 1.5K or 2K (5.0 Pro/Flash); WxH on older models"),
             Arg(("--output-format",), "output_format", default="png", choices=["png", "jpeg"]),
             Arg(("--watermark",), "watermark", action="store_true", help="Include AI watermark"),
             Arg(("--seed",), "seed", type=int),
             Arg(("--model-version",), "model_version", target="init", call_name="model",
                 default="seedream-5-0-pro",
-                choices=["seedream-5-0-pro", "seedream-5-0-lite", "seedream-4-5", "seedream-4-0"]),
+                choices=["seedream-5-0-pro", "seedream-5-0-flash", "seedream-5-0-lite", "seedream-4-5", "seedream-4-0"],
+                help="Seedream version (5.0 Pro default; 5.0 Flash is faster and cheaper)"),
         ],
     ),
     "qwen-image": ModelSpec(
@@ -1810,10 +1812,11 @@ _EDIT = {
         ],
     ),
     "seedream": ModelSpec(
-        id="seedream", label="ByteDance Seedream 5.0 Pro (edit / multi-ref)",
+        id="seedream", label="ByteDance Seedream 5.0 Pro / Flash (edit / multi-ref)",
         import_path="tryon.api.byteplus", class_name="SeedreamAdapter",
         method="generate_image_edit", output_kind="images", env_hint="ARK_API_KEY",
-        notes="Pass one image for edit, or multiple refs (2-10) for fusion.",
+        notes="Pass one image for edit, or multiple refs (2-10) for fusion. Default dola-seedream-5-0-pro-260628; "
+        "--model-version seedream-5-0-flash for the faster tier.",
         args=[
             Arg(("--images",), "image", nargs="+", required=True, help="One or more reference images"),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / fusion instruction"),
@@ -1822,7 +1825,8 @@ _EDIT = {
             Arg(("--seed",), "seed", type=int),
             Arg(("--model-version",), "model_version", target="init", call_name="model",
                 default="seedream-5-0-pro",
-                choices=["seedream-5-0-pro", "seedream-5-0-lite", "seedream-4-5", "seedream-4-0"]),
+                choices=["seedream-5-0-pro", "seedream-5-0-flash", "seedream-5-0-lite", "seedream-4-5", "seedream-4-0"],
+                help="Seedream version (5.0 Pro default; 5.0 Flash is faster and cheaper)"),
         ],
     ),
     "qwen-image": ModelSpec(
