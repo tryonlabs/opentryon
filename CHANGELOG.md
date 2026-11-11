@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `decide`: four more open decision-model families on the shared noul / choice / score schema (docs: `api-reference/decision-models.md`):
+  - **`pplx-decider`** — Perplexity Decider v1.2 / Flash v1.2 through the first-party Decisions API (`PERPLEXITY_API_KEY`; images, `--web-grounding`), and **`pplx-decider-local`** for the open weights on SGLang.
+  - **`clef`** — Cloudflare Clef / Clef-flash on Workers AI (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`; up to 64 questions, 4 images), and **`clef-local`** on SGLang.
+  - **`kev-openrouter`** — Jared Palmer's Kev 4B via OpenRouter's System One endpoint (third-party; Kev has no first-party API), and **`kev-local`** for the Kev repo's own server.
+  - **`autotrust-jev-local`** — AutoTrust JEV on the self-hosted vLLM `/v1/decide` server (no hosted API exists); one request per question, mapped onto the shared answer shape.
+  - New generic `tryon.api.systemone.SystemOneAdapter` for any `/v1/systemone` server, plus `PerplexityDeciderAdapter`, `ClefAdapter` and `AutoTrustJevAdapter`.
 - `video-generate`: **`gemini-omni-1.2-flash`** is now the `gemini-omni` default (GA 5 Nov 2026): clips up to 15s with native audio, new `--duration` (3-15s; 1.1 and extension turns cap at 10s) and `--omni-model` to keep `gemini-omni-1.1-flash` (Google routes 1.1 to 1.2 from 3 Dec 2026).
 - `understand`: **`ripple-65b-openrouter`** / **`ripple-65b-local`** — Ricursive Ripple-65B Preview (Apache-2.0, 65B dense, 1M context, text-only coding LLM) via new `tryon.api.ricursive.RippleAdapter`. No first-party API exists: hosted path is OpenRouter (`OPENROUTER_API_KEY`), local path is a client for your own vLLM/SGLang server (`RIPPLE_BASE_URL`, `RIPPLE_MODEL`). Named-model-only, outside the fashion/media scope.
 - Docs: new `api-reference/ripple.md`; Gemini Omni page updated for 1.2. Backlog: Inkling 2 Small, Hima ASR and VFlash recorded in `integrate-next.md`.

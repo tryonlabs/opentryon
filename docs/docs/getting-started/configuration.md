@@ -316,6 +316,20 @@ Uses the same `GEMINI_API_KEY` as Nano Banana, Veo and Gemini Omni (optional `GE
 
    Covers `decide --model jev`. See [Typesafe Jev](../api-reference/typesafe-jev.md).
 
+### Perplexity (pplx-decider)
+
+1. Create a key at [perplexity.ai/account/api/keys](https://www.perplexity.ai/account/api/keys)
+2. Add to `.env`: `PERPLEXITY_API_KEY=your_key`
+
+   Covers `decide --model pplx-decider`. See [Open decision models](../api-reference/decision-models.md).
+
+### Cloudflare Workers AI (clef)
+
+1. Create a Workers AI API token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) and copy your account id
+2. Add to `.env`: `CLOUDFLARE_API_TOKEN=your_token` and `CLOUDFLARE_ACCOUNT_ID=your_account_id`
+
+   Covers `decide --model clef` (Clef and Clef-flash). Kev via OpenRouter (`decide --model kev-openrouter`) uses `OPENROUTER_API_KEY`. Self-hosted servers take `KEV_BASE_URL`, `CLEF_BASE_URL`, `PPLX_DECIDER_BASE_URL` and `AUTOTRUST_JEV_BASE_URL`. See [Open decision models](../api-reference/decision-models.md).
+
 ### FASHN catalogue endpoints (hosted)
 
 Uses the same `FASHN_API_KEY` as `vton --model fashn-tryon-max`. Covers `fashn-product-to-model`, `fashn-model-create`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `fashn-image-to-video` and `fashn-bg-remove`. See [FASHN](../api-reference/fashn.md).

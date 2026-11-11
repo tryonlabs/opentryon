@@ -4178,6 +4178,135 @@ _DECIDE = {
                 choices=["jev-latest", "jev-preview", "jev-1.13.0"], help="Jev model id/alias"),
         ],
     ),
+    "pplx-decider": ModelSpec(
+        id="pplx-decider",
+        label="Perplexity Decider (hosted decision model, text + images)",
+        import_path="tryon.api.perplexity", class_name="PerplexityDeciderAdapter",
+        method="decide", output_kind="text", env_hint="PERPLEXITY_API_KEY",
+        notes="First-party Perplexity Decisions API (POST /v1/decisions). Qwen3.8-27B with a 255-way answer "
+        "readout instead of a language head: calibrated noul/choice/score answers, up to 255 options. "
+        "--decider-model pplx-decider-v1.2 (27B, default) or pplx-decider-flash-v1.2 (4B). Images are sent as "
+        "data-URL parts in state (PNG/JPEG/WebP, max 8; remote URLs are inlined). --web-grounding lets it "
+        "search the web first (billed per search). Open weights: --model pplx-decider-local.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge; optional with --image"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s): path, URL or data URL (max 8)"),
+            Arg(("--decider-model",), "decider_model", target="init", call_name="model", default="pplx-decider-v1.2",
+                choices=["pplx-decider-v1.2", "pplx-decider-flash-v1.2", "pplx-decider-latest", "pplx-decider-flash-latest"],
+                help="Decider model id"),
+            Arg(("--web-grounding",), "web_grounding", action="store_true", help="Search the web before answering"),
+            Arg(("--max-staleness",), "max_staleness", type=int, help="With --web-grounding: oldest cached result, seconds"),
+        ],
+    ),
+    "pplx-decider-local": ModelSpec(
+        id="pplx-decider-local",
+        label="Perplexity Decider (open weights on your SGLang server)",
+        import_path="tryon.api.systemone", class_name="SystemOneAdapter",
+        method="decide", output_kind="text",
+        notes="Client for a /v1/systemone server YOU run: SGLang (nightly) serving perplexity-ai/pplx-decider-v1.1-27b "
+        "(Apache-2.0, ~52 GB BF16; one 80 GB-class GPU). Default PPLX_DECIDER_BASE_URL=http://127.0.0.1:30000. "
+        "Text + images (max 8). Hosted: --model pplx-decider.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge; optional with --image"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s): path, URL or data URL (max 8)"),
+            Arg(("--preset",), "preset", target="init", default="pplx-decider-local", choices=["pplx-decider-local"],
+                help="Server preset"),
+            Arg(("--base-url",), "base_url", target="init", help="Server root (overrides PPLX_DECIDER_BASE_URL)"),
+            Arg(("--served-model",), "served_model", target="init", call_name="model",
+                help="Model name the server expects (default perplexity-ai/pplx-decider-v1.1-27b)"),
+        ],
+    ),
+    "clef": ModelSpec(
+        id="clef",
+        label="Cloudflare Clef / Clef-flash (hosted decision model on Workers AI, text + images)",
+        import_path="tryon.api.cloudflare", class_name="ClefAdapter",
+        method="decide", output_kind="text", env_hint="CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID",
+        notes="First-party Cloudflare Workers AI (@cf/cloudflare/clef, @cf/cloudflare/clef-flash). A joint schema "
+        "head scores the state, questions and options together: calibrated noul/choice/score answers, up to 64 "
+        "questions and 255 options. --clef-model clef (27B, 65K context, $0.24/M input) or clef-flash (9B, 24K "
+        "context, $0.038/M input); output tokens free, zero data retention. Up to 4 images (PNG/JPEG/WebP, 4 MiB). "
+        "Open weights: --model clef-local.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge; optional with --image"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s): path, URL or data URL (max 4)"),
+            Arg(("--clef-model",), "clef_model", target="init", call_name="model", default="clef",
+                choices=["clef", "clef-flash"], help="Clef (27B) or Clef-flash (9B)"),
+        ],
+    ),
+    "clef-local": ModelSpec(
+        id="clef-local",
+        label="Cloudflare Clef (open weights on your SGLang server)",
+        import_path="tryon.api.systemone", class_name="SystemOneAdapter",
+        method="decide", output_kind="text",
+        notes="Client for a /v1/systemone server YOU run: SGLang (lmsysorg/sglang:dev-clef image) serving "
+        "Cloudflare/clef (Apache-2.0, 27B; tested on one H200). Default CLEF_BASE_URL=http://127.0.0.1:30000. "
+        "Text + up to 4 images. Hosted: --model clef.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge; optional with --image"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s): path, URL or data URL (max 4)"),
+            Arg(("--preset",), "preset", target="init", default="clef-local", choices=["clef-local"], help="Server preset"),
+            Arg(("--base-url",), "base_url", target="init", help="Server root (overrides CLEF_BASE_URL)"),
+            Arg(("--served-model",), "served_model", target="init", call_name="model",
+                help="Model name the server expects (default Cloudflare/clef)"),
+        ],
+    ),
+    "kev-openrouter": ModelSpec(
+        id="kev-openrouter",
+        label="Jared Palmer Kev 4B (open decision model via OpenRouter, text)",
+        import_path="tryon.api.systemone", class_name="SystemOneAdapter",
+        method="decide", output_kind="text", env_hint="OPENROUTER_API_KEY",
+        notes="Kev has no first-party API; this uses OpenRouter's System One endpoint (third-party, "
+        "POST https://openrouter.ai/api/v1/systemone, model jaredpalmer/kev-4b). LoRA + pointer head on "
+        "Qwen3.5-4B-Base, Apache-2.0: calibrated noul/choice/score answers, up to 255 options. Text/JSON state "
+        "only, 8K context on OpenRouter. Self-host any Kev size: --model kev-local.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
+            Arg(("--preset",), "preset", target="init", default="kev-openrouter", choices=["kev-openrouter"],
+                help="Server preset"),
+            Arg(("--kev-model",), "kev_model", target="init", call_name="model", default="jaredpalmer/kev-4b",
+                choices=["jaredpalmer/kev-4b"], help="OpenRouter model id"),
+        ],
+    ),
+    "kev-local": ModelSpec(
+        id="kev-local",
+        label="Jared Palmer Kev (open decision model on your kev.serve server, text)",
+        import_path="tryon.api.systemone", class_name="SystemOneAdapter",
+        method="decide", output_kind="text",
+        notes="Client for the Kev repo's own server (python -m kev.serve --run jaredpalmer/kev-4b --port 8008), "
+        "which implements TypeSafe's /v1/systemone. Sizes: kev-0.8b (4 GB GPU), kev-4b, kev-9b (24 GB), "
+        "kev-27b (80 GB). Apple Silicon uses MLX. Default KEV_BASE_URL=http://127.0.0.1:8008; KEV_API_KEY only "
+        "if you set one on the server. Text/JSON state only. Hosted: --model kev-openrouter.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", required=True, help="Text or JSON (or path to a file) to judge"),
+            Arg(("--preset",), "preset", target="init", default="kev-local", choices=["kev-local"], help="Server preset"),
+            Arg(("--base-url",), "base_url", target="init", help="Server root (overrides KEV_BASE_URL)"),
+            Arg(("--served-model",), "served_model", target="init", call_name="model",
+                help="Model name the server expects (default kev-latest)"),
+        ],
+    ),
+    "autotrust-jev-local": ModelSpec(
+        id="autotrust-jev-local",
+        label="AutoTrust AI JEV (open decision model on your vLLM /v1/decide server, text + images)",
+        import_path="tryon.api.autotrust", class_name="AutoTrustJevAdapter",
+        method="decide", output_kind="text",
+        notes="AutoTrust runs no hosted API and no third-party host serves JEV, so this is a client for the server "
+        "you start with the repo's serve.sh (vLLM + POST /v1/decide, default AUTOTRUST_JEV_BASE_URL="
+        "http://127.0.0.1:8000). Checkpoints: autotrust/JEV-35B (80 GB GPU), JEV-35B-NVFP4 (32 GB), JEV-27B-VL. "
+        "Apache-2.0; not TypeSafe's Jev (--model jev). One request per question; score levels are asked as a "
+        "choice over the levels because JEV's native score is a fixed 0-5 scale.",
+        args=[
+            Arg(("--questions", "-q"), "questions", required=True, help=_DECIDE_QUESTIONS_HELP),
+            Arg(("--state", "-s"), "state", help="Text or JSON (or path to a file) to judge; optional with --image"),
+            Arg(("--image", "-i"), "image", nargs="+", help="Image(s): path, URL or data URL (max 8)"),
+            Arg(("--base-url",), "base_url", target="init", help="Server root (overrides AUTOTRUST_JEV_BASE_URL)"),
+        ],
+    ),
     "mercury-decide": ModelSpec(
         id="mercury-decide",
         label="Mercury Decide (Inception classification / scoring, text + images)",

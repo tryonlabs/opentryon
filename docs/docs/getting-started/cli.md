@@ -39,7 +39,7 @@ opentryon <service> --model <model> [params...]
 | `generate-3d` | Text/image to 3D mesh | `trellis` (NVIDIA NIM) |
 | `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
-| `decide` | Calibrated yes/no, choice, score, box, and track decisions ("System One" models, no text output) | `jev`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `d3-turbo` … `d3-edge`, `d3-*-local` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
+| `decide` | Calibrated yes/no, choice, score, box, and track decisions ("System One" models, no text output) | `jev`, `pplx-decider`, `pplx-decider-local`, `clef`, `clef-local`, `kev-openrouter`, `kev-local`, `autotrust-jev-local`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `d3-turbo` … `d3-edge`, `d3-*-local` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
 | `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
 | `measure` | Body measurements (ISO 8559-1 sizing) | `clad-body-photo`, `clad-body-questionnaire` (Clad API), `clad-body-local` (local Anny/MHR params) |
 | `detect` | Open-vocabulary boxes, points, or an SVG mask | `moondream-3.1`, `moondream-3-preview`, `moondream-3.1-local` |
@@ -250,6 +250,9 @@ opentryon video-generate --model fal-h3-max-relight --video runway.mp4 --referen
 # Decisions: typed, calibrated answers (questions.json: see the Jev docs page for the schema)
 opentryon decide --model jev --questions questions.json --state "Red satin evening gown"        # TYPESAFE_API_KEY
 opentryon decide --model d1-3b --questions questions.json --image dress.jpg                     # local GPU
+opentryon decide --model pplx-decider --questions questions.json --image dress.jpg              # PERPLEXITY_API_KEY
+opentryon decide --model clef --clef-model clef-flash --questions questions.json --state "..."  # CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
+opentryon decide --model kev-openrouter --questions questions.json --state "..."               # OPENROUTER_API_KEY
 opentryon decide --model videojev-4b --video clip.mp4 --questions videojev_tasks.json           # local GPU (VideoJev schema)
 
 # FASHN catalogue endpoints (same FASHN_API_KEY as fashn-tryon-max)
@@ -338,7 +341,7 @@ stack trace:
 - [Ternary Bonsai 2 27B (local server)](../local-models/ternary-bonsai.md)
 - [Limite 1B - Violetto (local, out of fashion/media scope)](../local-models/limite.md)
 - [ElevenLabs Eleven v4 / v4 Turbo (text-to-speech)](../api-reference/elevenlabs.md)
-- [Gemini 3.8 Flash (understanding + TTS)](../api-reference/gemini-3-8.md) · [Claude Haiku 5.5](../api-reference/claude.md) · [Typesafe Jev](../api-reference/typesafe-jev.md)
+- [Gemini 3.8 Flash (understanding + TTS)](../api-reference/gemini-3-8.md) · [Claude Haiku 5.5](../api-reference/claude.md) · [Typesafe Jev](../api-reference/typesafe-jev.md) · [Decider, Clef, Kev, JEV](../api-reference/decision-models.md)
 - [Gemini Embedding 2](../api-reference/gemini-embedding-2.md) · [Liquid d1](../local-models/liquid-d1.md) · [EmbeddingGemma 2](../local-models/embeddinggemma.md) · [pplx-embed-v2-late](../local-models/pplx-embed.md)
 - [Hy4 preview TokenHub](../api-reference/hy4.md)
 - [Hy4 local vLLM/SGLang](../local-models/hy4.md)

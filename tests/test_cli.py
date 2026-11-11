@@ -416,6 +416,171 @@ def check_veo_seedance_validation():
     print("\u2713 Veo 3.1 / Seedance reference / Omni model-id validation")
 
 
+def check_decision_models_wave():
+    from unittest import mock
+
+    from PIL import Image
+
+    from tryon.api.autotrust import AutoTrustJevAdapter
+    from tryon.api.cloudflare import ClefAdapter
+    from tryon.api.perplexity import PerplexityDeciderAdapter
+    from tryon.api.systemone import SystemOneAdapter
+
+    questions = {
+        "formal": {"type": "noul", "instructions": "Is this formal wear?"},
+        "category": {"type": "choice", "instructions": "Garment category?",
+                     "criteria": {"dress": "one-piece", "top": "shirts"}},
+        "fit": {"type": "score", "instructions": "How fitted?", "criteria": ["loose", "regular", "slim"]},
+    }
+    answers = {"formal": {"type": "noul", "noul": 0.9}}
+    img = Image.new("RGB", (8, 8), "red")
+
+    def ok(body):
+        resp = mock.Mock(status_code=200)
+        resp.json.return_value = body
+        return resp
+
+    # --- CLI wiring for all seven ids ---
+    for argv, cls in (
+        (["pplx-decider", "--questions", "q.json", "--state", "x", "--web-grounding"], "PerplexityDeciderAdapter"),
+        (["pplx-decider-local", "--questions", "q.json", "--state", "x"], "SystemOneAdapter"),
+        (["clef", "--questions", "q.json", "--state", "x", "--clef-model", "clef-flash"], "ClefAdapter"),
+        (["clef-local", "--questions", "q.json", "--state", "x"], "SystemOneAdapter"),
+        (["kev-openrouter", "--questions", "q.json", "--state", "x"], "SystemOneAdapter"),
+        (["kev-local", "--questions", "q.json", "--state", "x"], "SystemOneAdapter"),
+        (["autotrust-jev-local", "--questions", "q.json", "--state", "x"], "AutoTrustJevAdapter"),
+    ):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main(["decide", "--model", *argv, "--dry-run"])
+        assert code == 0 and cls in buf.getvalue() and ".decide(" in buf.getvalue(), buf.getvalue()
+
+    # --- Generic System One client: presets, payload, limits ---
+    with mock.patch.dict(os.environ, {"OPENROUTER_API_KEY": "or-key"}):
+        kev = SystemOneAdapter(preset="kev-openrouter")
+    assert kev.base_url == "https://openrouter.ai/api" and kev.model == "jaredpalmer/kev-4b"
+    with mock.patch("tryon.api.systemone.requests.post", return_value=ok({"model": "jaredpalmer/kev-4b", "answers": answers})) as post:
+        out = kev.decide(questions, state="red satin gown")
+    url, kwargs = post.call_args.args[0], post.call_args.kwargs
+    assert url == "https://openrouter.ai/api/v1/systemone" and kwargs["headers"]["Authorization"] == "Bearer or-key"
+    assert kwargs["json"]["model"] == "jaredpalmer/kev-4b" and kwargs["json"]["questions"] == questions
+    assert out["answers"] == answers
+    try:
+        kev.decide(questions, state="x", image=[img])
+    except ValueError as exc:
+        assert "text-only" in str(exc)
+    else:
+        raise AssertionError("Kev is text-only")
+    with mock.patch.dict(os.environ, {"OPENROUTER_API_KEY": ""}):
+        try:
+            SystemOneAdapter(preset="kev-openrouter")
+        except ValueError as exc:
+            assert "OPENROUTER_API_KEY" in str(exc)
+        else:
+            raise AssertionError("OpenRouter preset needs a key")
+    local = SystemOneAdapter(preset="kev-local")
+    with mock.patch("tryon.api.systemone.requests.post", return_value=ok({"answers": answers})) as post:
+        local.decide(questions, state="x")
+    assert post.call_args.args[0] == "http://127.0.0.1:8008/v1/systemone"
+    assert "Authorization" not in post.call_args.kwargs["headers"]
+    clef_local = SystemOneAdapter(preset="clef-local")
+    with mock.patch("tryon.api.systemone.requests.post", return_value=ok({"answers": answers})) as post:
+        clef_local.decide(questions, image=[img])
+    body = post.call_args.kwargs["json"]
+    assert body["model"] == "Cloudflare/clef" and body["images"][0].startswith("data:image/jpeg;base64,")
+    try:
+        clef_local.decide(questions, state="x", image=[img] * 5)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("clef-local takes at most 4 images")
+    many = {"pick": {"type": "choice", "instructions": "?", "criteria": {f"o{i}": "" for i in range(256)}}}
+    try:
+        local.decide(many, state="x")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("more than 255 options must be rejected")
+    try:
+        SystemOneAdapter(preset="nope")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown preset must be rejected")
+
+    # --- Perplexity Decider (first-party /v1/decisions) ---
+    pplx = PerplexityDeciderAdapter(api_key="pk", model="pplx-decider-flash-v1.2")
+    with mock.patch("tryon.api.systemone.requests.post",
+                    return_value=ok({"model": "pplx-decider-flash-v1.2", "answers": answers, "search_results": [1]})) as post:
+        out = pplx.decide(questions, state={"title": "gown"}, image=[img], web_grounding=True, max_staleness=60)
+    url, body = post.call_args.args[0], post.call_args.kwargs["json"]
+    assert url == "https://api.perplexity.ai/v1/decisions" and body["mode"] == "web_grounding" and body["max_staleness"] == 60
+    assert body["state"][0] == {"type": "text", "text": '{"title": "gown"}'} and body["state"][1]["type"] == "image_url"
+    assert out["search_results"] == [1]
+    for bad in (lambda: PerplexityDeciderAdapter(api_key="pk", model="pplx-decider-v9"),
+                lambda: pplx.decide(questions, state="x", max_staleness=5),
+                lambda: pplx.decide(questions, state="x", image=[img] * 9)):
+        try:
+            bad()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid Perplexity input must be rejected")
+
+    # --- Cloudflare Clef (Workers AI) ---
+    with mock.patch.dict(os.environ, {"CLOUDFLARE_API_TOKEN": "cf", "CLOUDFLARE_ACCOUNT_ID": "acct"}):
+        clef = ClefAdapter(model="clef-flash")
+    with mock.patch("tryon.api.systemone.requests.post",
+                    return_value=ok({"result": {"model": "clef-flash", "answers": answers}, "success": True})) as post:
+        out = clef.decide(questions, state="x", image=[img])
+    url, body = post.call_args.args[0], post.call_args.kwargs["json"]
+    assert url == "https://api.cloudflare.com/client/v4/accounts/acct/ai/run/@cf/cloudflare/clef-flash", url
+    assert body["model"] == "clef-flash" and len(body["images"]) == 1 and out["answers"] == answers
+    with mock.patch.dict(os.environ, {"CLOUDFLARE_API_TOKEN": "", "CLOUDFLARE_ACCOUNT_ID": ""}):
+        try:
+            ClefAdapter()
+        except ValueError as exc:
+            assert "CLOUDFLARE_API_TOKEN" in str(exc) and "CLOUDFLARE_ACCOUNT_ID" in str(exc)
+        else:
+            raise AssertionError("Clef needs a token and account id")
+    too_many = {f"q{i}": {"type": "noul", "instructions": "?"} for i in range(65)}
+    try:
+        clef.decide(too_many, state="x")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Clef takes at most 64 questions")
+
+    # --- AutoTrust JEV (/v1/decide, one question per request, mapped answers) ---
+    jev = AutoTrustJevAdapter()
+    replies = {
+        "noul": {"options": ["false", "true"], "probabilities": [0.2, 0.8], "model": "autotrust/JEV-35B",
+                 "usage": {"prompt_tokens": 10}},
+        "choice": {"options": ["dress", "top"], "probabilities": [0.7, 0.3], "choice": "dress",
+                   "model": "autotrust/JEV-35B", "usage": {"prompt_tokens": 12}},
+        "score": {"options": ["loose", "regular", "slim"], "probabilities": [0.1, 0.2, 0.7],
+                  "model": "autotrust/JEV-35B", "usage": {"prompt_tokens": 14}},
+    }
+
+    def route(url, headers, json, timeout):
+        assert url == "http://127.0.0.1:8000/v1/decide"
+        key = "score" if json.get("options") == ["loose", "regular", "slim"] else json["kind"]
+        return ok(replies[key])
+
+    with mock.patch("tryon.api.systemone.requests.post", side_effect=route) as post:
+        out = jev.decide(questions, state="red satin gown", image=[img])
+    sent = [c.kwargs["json"] for c in post.call_args_list]
+    assert [s["kind"] for s in sent] == ["noul", "choice", "choice"], sent
+    assert sent[0]["state"][0] == "red satin gown" and "image" in sent[0]["state"][1]
+    assert "dress: one-piece" in sent[1]["question"] and sent[1]["options"] == ["dress", "top"]
+    a = out["answers"]
+    assert a["formal"] == {"type": "noul", "noul": 0.8}
+    assert a["category"]["choice"] == "dress" and a["category"]["probabilities"] == {"dress": 0.7, "top": 0.3}
+    assert a["fit"]["type"] == "score" and abs(a["fit"]["score"] - (0.2 + 1.4)) < 1e-9 and a["fit"]["legend"]["2"] == "slim"
+    assert out["usage"] == {"input_tokens": 36, "output_tokens": 0, "requests": 3}
+    print("✓ decide: pplx-decider(+local), clef(+local), kev-openrouter/local, autotrust-jev-local")
+
+
 def check_omni_12_and_ripple():
     from unittest import mock
 
@@ -2762,6 +2927,7 @@ if __name__ == "__main__":
     check_photoroom_dry_runs()
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
+    check_decision_models_wave()
     check_omni_12_and_ripple()
     check_kimi_dry_runs()
     check_qwen_dry_runs()

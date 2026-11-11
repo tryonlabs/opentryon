@@ -93,3 +93,5 @@ print(out["answers"]["season"]["choice"])
 - The `decide` service is named-model-only in the planner: no chat intent routes to it and no defaults change.
 
 See also: [Liquid d1 (local)](../local-models/liquid-d1.md).
+
+Not to be confused with AutoTrust AI's open **JEV** models (`decide --model autotrust-jev-local`). Other decision models on the same question schema: [Perplexity Decider, Cloudflare Clef, Kev and AutoTrust JEV](decision-models).

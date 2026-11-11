@@ -41,6 +41,15 @@ _EXTRA_ENV_NAMES = (
     "SAGE_A15_BASE_URL",
     "NEMOTRON_EMBED_BASE_URL",
     "NEMOTRON_PARSE_BASE_URL",
+    "RIPPLE_BASE_URL",
+    "RIPPLE_MODEL",
+    "PERPLEXITY_BASE_URL",
+    "KEV_BASE_URL",
+    "KEV_API_KEY",
+    "CLEF_BASE_URL",
+    "PPLX_DECIDER_BASE_URL",
+    "AUTOTRUST_JEV_BASE_URL",
+    "AUTOTRUST_JEV_API_KEY",
 )
 
 # Registry env_hint name -> names that also count as configured (adapter aliases).
@@ -133,8 +142,8 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "OpenRouter",
         "https://openrouter.ai/keys",
         ("OPENROUTER_API_KEY",),
-        "Optional hosted path for Recursive Flint and Ricursive Ripple-65B "
-        "(understand flint-openrouter / ripple-65b-openrouter). "
+        "Optional hosted path for Recursive Flint, Ricursive Ripple-65B and Jared Palmer's Kev "
+        "(understand flint-openrouter / ripple-65b-openrouter, decide kev-openrouter). "
         "Not used for fashion media generation.",
     ),
     (
@@ -243,6 +252,22 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "Unlocks decide jev (hosted System One decision model, text/JSON). Early access -- new "
         "sign-ups were paused on 2026-09-22. Optional TYPESAFE_BASE_URL for an OpenRouter/Vercel/"
         "DigitalOcean-compatible gateway.",
+    ),
+    (
+        "perplexity",
+        "Perplexity (Decider)",
+        "https://www.perplexity.ai/account/api/keys",
+        ("PERPLEXITY_API_KEY",),
+        "Unlocks decide pplx-decider (hosted Perplexity Decisions API: pplx-decider-v1.2 / "
+        "pplx-decider-flash-v1.2, text + images, optional web grounding).",
+    ),
+    (
+        "cloudflare",
+        "Cloudflare Workers AI (Clef)",
+        "https://dash.cloudflare.com/profile/api-tokens",
+        ("CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"),
+        "Unlocks decide clef (Clef / Clef-flash decision models on Workers AI, text + images). Needs a "
+        "Workers AI API token and your account id.",
     ),
     (
         "halx",
