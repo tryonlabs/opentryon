@@ -416,6 +416,101 @@ def check_veo_seedance_validation():
     print("\u2713 Veo 3.1 / Seedance reference / Omni model-id validation")
 
 
+def check_omni_12_and_ripple():
+    from unittest import mock
+
+    from tryon.api.omni import GeminiOmniAdapter
+    from tryon.api.ricursive import RippleAdapter
+
+    # --- Omni 1.2: default model, duration plumbing, per-model limits ---
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["video-generate", "--model", "gemini-omni", "--prompt", "runway walk",
+                         "--duration", "12", "--resolution", "1080p", "--dry-run"])
+    printed = buf.getvalue()
+    assert code == 0 and "'model': 'gemini-omni-1.2-flash'" in printed and "'duration': '12'" in printed, printed
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["video-generate", "--model", "gemini-omni", "--prompt", "x",
+                         "--omni-model", "gemini-omni-1.1-flash", "--dry-run"])
+    assert code == 0 and "'model': 'gemini-omni-1.1-flash'" in buf.getvalue()
+
+    adapter = GeminiOmniAdapter(api_key="test")
+    assert adapter.model == "gemini-omni-1.2-flash"
+    interaction = mock.Mock(id="v1_x", status="completed", output_video=mock.Mock(data=b"MP4"))
+    adapter.client = mock.Mock()  # older google-genai builds have no `client.interactions`
+    adapter.client.interactions.create.return_value = interaction
+    create = adapter.client.interactions.create
+    assert adapter.generate_text_to_video("walk", duration="12s", resolution="1080p") == b"MP4"
+    kwargs = create.call_args.kwargs
+    assert kwargs["model"] == "gemini-omni-1.2-flash", kwargs
+    assert kwargs["response_format"] == {"type": "video", "aspect_ratio": "16:9", "resolution": "1080p", "duration": "12s"}, kwargs
+    for bad in (2, 16, "abc", "7.5"):
+        try:
+            adapter.generate_text_to_video("walk", duration=bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"duration {bad!r} must be rejected")
+    legacy = GeminiOmniAdapter(api_key="test", model="gemini-omni-1.1-flash")
+    legacy.client = adapter.client
+    try:
+        legacy.generate_text_to_video("walk", duration=12)
+    except ValueError as exc:
+        assert "10" in str(exc)
+    else:
+        raise AssertionError("1.1 caps duration at 10s")
+    with mock.patch.object(adapter, "_video_to_part", return_value={"type": "video", "uri": "files/x"}):
+        try:
+            adapter.extend_video("clip.mp4", "continue", duration=12)
+        except ValueError as exc:
+            assert "extension" in str(exc)
+        else:
+            raise AssertionError("extension turns cap at 10s")
+
+    # --- Ripple-65B Preview: both endpoints, request shape ---
+    for model_id, expect in (("ripple-65b-openrouter", "'endpoint': 'openrouter'"), ("ripple-65b-local", "'endpoint': 'local'")):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main(["understand", "--model", model_id, "--prompt", "refactor", "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0 and "RippleAdapter" in printed and expect in printed, printed
+
+    local = RippleAdapter(endpoint="local")
+    assert local.base_url == "http://127.0.0.1:8000/v1" and local.model == "ricursiveAI/Ripple-65B-Preview"
+    with mock.patch.dict(os.environ, {"OPENROUTER_API_KEY": ""}):
+        try:
+            RippleAdapter(endpoint="openrouter")
+        except ValueError as exc:
+            assert "OPENROUTER_API_KEY" in str(exc)
+        else:
+            raise AssertionError("openrouter endpoint needs a key")
+    hosted = RippleAdapter(api_key="k", endpoint="openrouter")
+    assert hosted.model == "ricursiveai/ripple-65b-preview" and hosted.base_url == "https://openrouter.ai/api/v1"
+    message = mock.Mock(content="done", reasoning_content=None)
+    completion = mock.Mock(choices=[mock.Mock(message=message)], usage=None)
+    with mock.patch.object(hosted.client.chat.completions, "create", return_value=completion) as create:
+        out = hosted.understand("fix the bug", system="be terse", max_tokens=64, temperature=0.2)
+    kwargs = create.call_args.kwargs
+    assert out["text"] == "done" and out["endpoint"] == "openrouter"
+    assert kwargs["model"] == "ricursiveai/ripple-65b-preview" and kwargs["max_tokens"] == 64 and kwargs["temperature"] == 0.2
+    assert [m["role"] for m in kwargs["messages"]] == ["system", "user"]
+    for bad in ("", "   "):
+        try:
+            hosted.understand(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("empty prompt must be rejected")
+    try:
+        RippleAdapter(endpoint="cloud")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unknown endpoint must be rejected")
+    print("\u2713 gemini-omni 1.2 (default, duration limits) + ripple-65b (openrouter/local, request shape)")
+
+
 def check_kimi_dry_runs():
     for model_id, expect_kwarg in [
         ("kimi-k2.6", "'thinking': True"),
@@ -2667,6 +2762,7 @@ if __name__ == "__main__":
     check_photoroom_dry_runs()
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
+    check_omni_12_and_ripple()
     check_kimi_dry_runs()
     check_qwen_dry_runs()
     check_beam_dry_run_and_requires_prompt()

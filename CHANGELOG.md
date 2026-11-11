@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `video-generate`: **`gemini-omni-1.2-flash`** is now the `gemini-omni` default (GA 5 Nov 2026): clips up to 15s with native audio, new `--duration` (3-15s; 1.1 and extension turns cap at 10s) and `--omni-model` to keep `gemini-omni-1.1-flash` (Google routes 1.1 to 1.2 from 3 Dec 2026).
+- `understand`: **`ripple-65b-openrouter`** / **`ripple-65b-local`** — Ricursive Ripple-65B Preview (Apache-2.0, 65B dense, 1M context, text-only coding LLM) via new `tryon.api.ricursive.RippleAdapter`. No first-party API exists: hosted path is OpenRouter (`OPENROUTER_API_KEY`), local path is a client for your own vLLM/SGLang server (`RIPPLE_BASE_URL`, `RIPPLE_MODEL`). Named-model-only, outside the fashion/media scope.
+- Docs: new `api-reference/ripple.md`; Gemini Omni page updated for 1.2. Backlog: Inkling 2 Small, Hima ASR and VFlash recorded in `integrate-next.md`.
 - `understand`: **`kimi-k3.1-pro`** — Moonshot's post-trained K3 successor (1M context, image + video, always-on thinking, `--reasoning-effort`), with `--kimi-model kimi-k3.1-pro-highspeed` for the ~2-3x faster variant. Reuses `KimiUnderstandAdapter` (K3-family handling extended; no new adapter) and `MOONSHOT_API_KEY`. Open weights announced for early November 2026 are not integrated yet.
 - **Reflection Beam 1.0** (`tryon.api.reflection.BeamAdapter`, `REFLECTION_API_KEY`): `understand` model `beam` — text chat for `Beam-1.0-501B-A23B`. Named-model-only. No local id (serve guide is four B300s)
 - **Moondream 3.1 and Moondream 3 Preview** (`tryon.api.moondream`, `MOONDREAM_API_KEY`): `understand` query/caption and a new `detect` service for boxes, points, and SVG masks. Local Photon twin `moondream-3.1-local` (`pip install moondream`)

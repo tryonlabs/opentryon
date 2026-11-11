@@ -106,6 +106,8 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k2_6", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k2_7_code", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_kimi_k3", {"image": "i.jpg", "dry_run": True}, False),
+        ("understand_ripple_65b_openrouter", {"prompt": "refactor", "dry_run": True}, False),
+        ("understand_ripple_65b_local", {"prompt": "refactor", "dry_run": True}, False),
         ("understand_kimi_k3_1_pro", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_beam", {"prompt": "describe a linen trench", "dry_run": True}, False),

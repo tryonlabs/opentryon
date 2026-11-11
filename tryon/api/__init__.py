@@ -62,6 +62,7 @@ _LAZY_ATTRS = {
     "Nemotron35EmbedAdapter": ".nvidia",
     "NemotronParseAdapter": ".nvidia",
     "FlintAdapter": ".recursive",
+    "RippleAdapter": ".ricursive",
     "SageA15Adapter": ".sage",
     "Cosmos3ReasonerAdapter": ".nvidia",
     "Cosmos3VideoAdapter": ".nvidia",

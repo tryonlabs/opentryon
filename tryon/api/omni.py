@@ -1,20 +1,24 @@
 """
-Google Gemini Omni 1.1 Flash Video Generation API Adapter
+Google Gemini Omni Flash Video Generation API Adapter
 
-Adapter for Gemini Omni 1.1 Flash (``gemini-omni-1.1-flash``, GA 27 Aug 2026)
--- Google's fast multimodal video generation / conversational editing model.
+Adapter for Gemini Omni 1.2 Flash (``gemini-omni-1.2-flash``, GA 5 Nov 2026)
+-- Google's fast multimodal video generation / conversational editing model --
+and the previous ``gemini-omni-1.1-flash`` (GA 27 Aug 2026, which Google routes
+to 1.2 automatically from 3 Dec 2026).
 Uses the Interactions API via the ``google-genai`` SDK (not
 ``generate_videos`` / Veo). The earlier ``gemini-omni-flash-preview``
 endpoint was deprecated on 30 Sep 2026 and is no longer accepted here.
 
 Capabilities:
-1) Text-to-video -- generate a short clip (3-10s, 24 FPS) from a prompt
+1) Text-to-video -- generate a short clip (3-15s with 1.2, 3-10s with 1.1; 24 FPS,
+   native audio) from a prompt
 2) Image-to-video -- animate a still (or multiple reference subjects) with a prompt
 3) Conversational editing -- refine a prior generation via
    ``previous_interaction_id`` without re-uploading the video
 4) Video extension -- append 3-10s to the end of an existing clip
-   (input clip <= 10s) via the ``extend`` task
+   (1.1: input clip <= 10s; 1.2 allows editing inputs up to 15s) via the ``extend`` task
 5) Resolution control -- ``360p`` / ``720p`` (default) / ``1080p`` / ``4k``
+6) Duration control -- ``duration`` of ``3s``-``15s`` (1.2; default 10s)
 
 Reference:
     https://ai.google.dev/gemini-api/docs/omni
@@ -61,13 +65,30 @@ except ImportError:
 ASPECT_RATIOS = {"16:9", "9:16"}
 RESOLUTIONS = {"360p", "720p", "1080p", "4k"}
 VIDEO_TASKS = {"text_to_video", "image_to_video", "reference_to_video", "edit", "extend"}
-VALID_MODELS = {"gemini-omni-1.1-flash"}
-DEFAULT_MODEL = "gemini-omni-1.1-flash"
+VALID_MODELS = {"gemini-omni-1.2-flash", "gemini-omni-1.1-flash"}
+DEFAULT_MODEL = "gemini-omni-1.2-flash"
+MIN_DURATION_S, MAX_DURATION_S = 3, 15
+MAX_DURATION_BY_MODEL = {"gemini-omni-1.2-flash": 15, "gemini-omni-1.1-flash": 10}
+MAX_EXTEND_S = 10
+
+
+def _parse_duration(value: Union[int, float, str]) -> int:
+    """Accept ``8``, ``"8"`` or ``"8s"`` and return whole seconds."""
+    text = str(value).strip().lower()
+    if text.endswith("s"):
+        text = text[:-1]
+    try:
+        seconds = float(text)
+    except ValueError:
+        raise ValueError(f"Invalid duration {value!r}; use whole seconds such as 8 or '8s'.")
+    if seconds != int(seconds):
+        raise ValueError(f"duration must be whole seconds (got {value!r}).")
+    return int(seconds)
 
 
 class GeminiOmniAdapter:
     """
-    Adapter for Gemini Omni 1.1 Flash (``gemini-omni-1.1-flash``) video generation.
+    Adapter for Gemini Omni Flash (``gemini-omni-1.2-flash`` default, or ``gemini-omni-1.1-flash``).
 
     Uses ``client.interactions.create(...)`` and returns raw MP4 bytes.
     After each successful call, ``last_interaction_id`` is set so you can
@@ -76,12 +97,13 @@ class GeminiOmniAdapter:
 
     def __init__(self, api_key: Optional[str] = None, model: str = DEFAULT_MODEL):
         """
-        Initialize the Gemini Omni 1.1 Flash adapter.
+        Initialize the Gemini Omni Flash adapter.
 
         Args:
             api_key: Google Gemini API key. Defaults to ``GEMINI_API_KEY``.
-            model: Omni model id. Only ``gemini-omni-1.1-flash`` is valid
-                (the ``-preview`` endpoint was deprecated 30 Sep 2026).
+            model: ``gemini-omni-1.2-flash`` (default) or ``gemini-omni-1.1-flash``
+                (routed to 1.2 by Google from 3 Dec 2026). The ``-preview``
+                endpoint was shut down after 30 Sep 2026.
         """
         if model not in VALID_MODELS:
             raise ValueError(
@@ -201,6 +223,7 @@ class GeminiOmniAdapter:
         resolution: Optional[str] = None,
         task: Optional[str] = None,
         previous_interaction_id: Optional[str] = None,
+        duration: Optional[Union[int, str]] = None,
         **kwargs,
     ) -> bytes:
         if aspect_ratio is not None and aspect_ratio not in ASPECT_RATIOS:
@@ -213,6 +236,15 @@ class GeminiOmniAdapter:
             )
         if task is not None and task not in VIDEO_TASKS:
             raise ValueError(f"Invalid task '{task}'. Valid options: {sorted(VIDEO_TASKS)}")
+        duration_s: Optional[int] = None
+        if duration is not None:
+            duration_s = _parse_duration(duration)
+            limit = MAX_EXTEND_S if task == "extend" else MAX_DURATION_BY_MODEL[self.model]
+            if not MIN_DURATION_S <= duration_s <= limit:
+                raise ValueError(
+                    f"duration must be {MIN_DURATION_S}-{limit}s for "
+                    f"{'extension' if task == 'extend' else self.model} (got {duration_s}s)."
+                )
 
         create_kwargs: Dict[str, Any] = {
             "model": self.model,
@@ -226,6 +258,8 @@ class GeminiOmniAdapter:
             response_format["aspect_ratio"] = aspect_ratio
         if resolution:
             response_format["resolution"] = resolution
+        if duration_s is not None:
+            response_format["duration"] = f"{duration_s}s"
         create_kwargs["response_format"] = response_format
 
         if task:
@@ -253,6 +287,7 @@ class GeminiOmniAdapter:
         resolution: Optional[str] = None,
         previous_interaction_id: Optional[str] = None,
         video: Optional[str] = None,
+        duration: Optional[Union[int, str]] = None,
         **kwargs,
     ) -> bytes:
         """
@@ -268,7 +303,9 @@ class GeminiOmniAdapter:
             resolution: ``360p``, ``720p`` (API default), ``1080p`` or ``4k``.
             previous_interaction_id: Optional prior interaction id for editing.
             video: Optional existing clip (local path or Gemini Files / http(s)
-                URI, <= 10s) to extend by 3-10s.
+                URI) to extend by 3-10s.
+            duration: Optional clip length, ``3``-``15`` seconds (``"8s"`` also
+                accepted; 1.1 caps at 10; extension turns cap at 10).
             **kwargs: Extra kwargs forwarded to ``interactions.create``.
 
         Returns:
@@ -280,7 +317,8 @@ class GeminiOmniAdapter:
             raise ValueError("Pass either video (extend) or previous_interaction_id (edit), not both.")
         if video:
             return self.extend_video(
-                video, prompt, aspect_ratio=aspect_ratio, resolution=resolution, **kwargs
+                video, prompt, aspect_ratio=aspect_ratio, resolution=resolution,
+                duration=duration, **kwargs
             )
 
         task = "edit" if previous_interaction_id else "text_to_video"
@@ -290,6 +328,7 @@ class GeminiOmniAdapter:
             resolution=resolution,
             task=task,
             previous_interaction_id=previous_interaction_id,
+            duration=duration,
             **kwargs,
         )
 
@@ -321,6 +360,7 @@ class GeminiOmniAdapter:
         prompt: str,
         aspect_ratio: Optional[str] = None,
         resolution: Optional[str] = None,
+        duration: Optional[Union[int, str]] = None,
         **kwargs,
     ) -> bytes:
         """
@@ -349,6 +389,7 @@ class GeminiOmniAdapter:
             aspect_ratio=aspect_ratio,
             resolution=resolution,
             task="extend",
+            duration=duration,
             **kwargs,
         )
 
@@ -360,6 +401,7 @@ class GeminiOmniAdapter:
         reference_images: Optional[List[Union[str, io.BytesIO, Image.Image]]] = None,
         previous_interaction_id: Optional[str] = None,
         resolution: Optional[str] = None,
+        duration: Optional[Union[int, str]] = None,
         **kwargs,
     ) -> bytes:
         """
@@ -371,6 +413,7 @@ class GeminiOmniAdapter:
             aspect_ratio: ``16:9`` or ``9:16``.
             reference_images: Optional additional subject/style reference images.
             previous_interaction_id: Optional prior interaction id for editing.
+            duration: Optional clip length, ``3``-``15`` seconds (1.1 caps at 10).
             **kwargs: Extra kwargs forwarded to ``interactions.create``.
 
         Returns:
@@ -396,6 +439,7 @@ class GeminiOmniAdapter:
             resolution=resolution,
             task=task,
             previous_interaction_id=previous_interaction_id,
+            duration=duration,
             **kwargs,
         )
 

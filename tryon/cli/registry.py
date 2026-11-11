@@ -2699,6 +2699,54 @@ _UNDERSTAND = {
                 choices=["openrouter"], help="OpenRouter API"),
         ],
     ),
+    "ripple-65b-local": ModelSpec(
+        id="ripple-65b-local",
+        label="Ricursive Ripple-65B Preview (local OpenAI-compatible server, text-only coding LLM)",
+        import_path="tryon.api.ricursive",
+        class_name="RippleAdapter",
+        method="understand",
+        output_kind="text",
+        notes=(
+            "Apache-2.0 65B dense coding/agent LLM (1M context, text only; Terminal-Bench 2.1 80.5, vendor-reported). "
+            "Client for a server YOU run (vLLM/SGLang) serving ricursiveAI/Ripple-65B-Preview (or the -NVFP4 "
+            "checkpoint): default RIPPLE_BASE_URL=http://127.0.0.1:8000/v1, model id from RIPPLE_MODEL. The model "
+            "card gives no serve command. Outside the fashion/media scope, named-model-only. "
+            "Hosted alternative: --model ripple-65b-openrouter."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Instruction for Ripple"),
+            Arg(("--system",), "system", help="Optional system message"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (default 8192)"),
+            Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+            Arg(("--endpoint",), "endpoint", target="init", default="local",
+                choices=["local"], help="Local OpenAI-compatible server"),
+            Arg(("--base-url",), "base_url", target="init", help="Override RIPPLE_BASE_URL"),
+            Arg(("--served-model",), "served_model", target="init", call_name="model",
+                help="Model name your server exposes (default ricursiveAI/Ripple-65B-Preview)"),
+        ],
+    ),
+    "ripple-65b-openrouter": ModelSpec(
+        id="ripple-65b-openrouter",
+        label="Ricursive Ripple-65B Preview (OpenRouter, text-only coding LLM)",
+        import_path="tryon.api.ricursive",
+        class_name="RippleAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="OPENROUTER_API_KEY",
+        notes=(
+            "Third-party hosted Ripple-65B Preview via OpenRouter (ricursiveai/ripple-65b-preview); Ricursive has "
+            "no first-party API (Together AI, GMI Cloud and Fireworks also host it). Text-only, 1M context, "
+            "outside the fashion/media scope, named-model-only."
+        ),
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Instruction for Ripple"),
+            Arg(("--system",), "system", help="Optional system message"),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens (default 8192)"),
+            Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+            Arg(("--endpoint",), "endpoint", target="init", default="openrouter",
+                choices=["openrouter"], help="OpenRouter API"),
+        ],
+    ),
     "sage-a1.5-local": ModelSpec(
         id="sage-a1.5-local",
         label="Sage-A1.5 (local SGLang/vLLM agent)",
@@ -2857,7 +2905,7 @@ _VIDEO_GENERATE = {
     ),
     "gemini-omni": ModelSpec(
         id="gemini-omni",
-        label="Gemini Omni 1.1 Flash (video generation / editing / extension)",
+        label="Gemini Omni 1.2 Flash (video generation / editing / extension, native audio)",
         import_path="tryon.api.omni",
         class_name="GeminiOmniAdapter",
         method="generate_text_to_video",
@@ -2866,13 +2914,17 @@ _VIDEO_GENERATE = {
         alt_image_dest="image",
         env_hint="GEMINI_API_KEY",
         notes=(
-            "Uses gemini-omni-1.1-flash via the Interactions API; the "
-            "gemini-omni-flash-preview endpoint was deprecated 30 Sep 2026. "
+            "Defaults to gemini-omni-1.2-flash (GA 5 Nov 2026) via the Interactions API: 3-15s clips with "
+            "native audio, --duration 3-15. --omni-model gemini-omni-1.1-flash stays selectable (Google routes it "
+            "to 1.2 from 3 Dec 2026; max 10s). The gemini-omni-flash-preview endpoint is shut down. "
             "--previous-interaction-id conversationally edits a prior clip; --video extends an "
-            "existing clip (<=10s) by 3-10s. Cloud-only: no open weights exist."
+            "existing clip by 3-10s. Cloud-only: no open weights exist."
         ),
         args=[
+            Arg(("--omni-model",), "omni_model", target="init", call_name="model", default="gemini-omni-1.2-flash",
+                choices=["gemini-omni-1.2-flash", "gemini-omni-1.1-flash"], help="Omni model id"),
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt, edit instruction, or how to continue --video"),
+            Arg(("--duration",), "duration", help="Clip length in seconds, 3-15 (e.g. 8 or 8s; 1.1 max 10, extension max 10)"),
             Arg(("--image",), "image", help="Optional still image to animate (switches to image-to-video)", alt_only=True),
             Arg(("--reference-image",), "reference_images", nargs="+",
                 help="Optional extra subject/style reference images (image-to-video only)", alt_only=True),

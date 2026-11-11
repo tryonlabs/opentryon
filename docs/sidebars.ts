@@ -81,6 +81,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/nemotron-3-5-embed',
         'api-reference/nemotron-parse',
         'api-reference/flint',
+        'api-reference/ripple',
         'api-reference/luma-ray',
         'api-reference/grok-imagine',
         'api-reference/ideogram',

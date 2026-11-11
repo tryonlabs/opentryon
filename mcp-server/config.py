@@ -133,7 +133,8 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "OpenRouter",
         "https://openrouter.ai/keys",
         ("OPENROUTER_API_KEY",),
-        "Optional hosted path for Recursive Flint (understand flint-openrouter). "
+        "Optional hosted path for Recursive Flint and Ricursive Ripple-65B "
+        "(understand flint-openrouter / ripple-65b-openrouter). "
         "Not used for fashion media generation.",
     ),
     (
