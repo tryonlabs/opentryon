@@ -389,6 +389,8 @@ See [`docs/docs/api-reference/elevenlabs.md`](../docs/docs/api-reference/elevenl
 |---|---|---|
 | `parse_nemotron_parse` | NVIDIA Nemotron Parse (document OCR, NIM) | `NVIDIA_API_KEY` |
 | `parse_nemotron_parse_local` | Nemotron Parse (local NIM Docker) | local NIM |
+| `parse_lightonocr_3_local` | LightOnOCR-3 (Apache-2.0 OCR, in-process Transformers) | local/GPU |
+| `parse_lightonocr_3_vllm` | LightOnOCR-3 on your vLLM / SGLang server | local server |
 
 ### classify -- Fixed-label classification
 

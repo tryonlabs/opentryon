@@ -5072,6 +5072,47 @@ _PARSE = {
             Arg(("--base-url",), "base_url", target="init", help="Override NEMOTRON_PARSE_BASE_URL"),
         ],
     ),
+    "lightonocr-3-local": ModelSpec(
+        id="lightonocr-3-local",
+        label="LightOnOCR-3 (open-weight OCR, in-process Transformers)",
+        import_path="tryon.models.lightonocr", class_name="LightOnOCRLocalAdapter",
+        method="parse_document", output_kind="text", extra="local",
+        notes="Apache-2.0 OCR from LightOn (Oct 2026): page image or PDF -> markdown; --grounding adds a label and "
+        "0-1000 bbox per block (tables and charts as HTML). --variant 0.8b (default, ~2 GB BF16) or 4b. No hosted API. "
+        "Needs transformers>=5.2 (Qwen3.5 classes), newer than opentryon[local] -- use a separate env if loading fails; "
+        "PDFs need pypdfium2 (rendered at 2048 px longest side). Served alternative: --model lightonocr-3-vllm.",
+        args=[
+            Arg(("--image", "-i"), "image", required=True, help="Page image or PDF (path or URL)"),
+            Arg(("--grounding",), "grounding", action="store_true",
+                help="Return labelled blocks with 0-1000 bounding boxes as well as markdown"),
+            Arg(("--pages",), "pages", help='PDF pages to read, e.g. "1-3,5" (default: all)'),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max new tokens per page (default 4096)"),
+            Arg(("--variant",), "variant", target="init", default="0.8b", choices=["0.8b", "4b"],
+                help="LightOnOCR-3 size"),
+            Arg(("--model-id",), "model_id", target="init", help="HF repo id or local path override"),
+            Arg(("--device",), "device", target="init", help="Device map (default auto)"),
+        ],
+    ),
+    "lightonocr-3-vllm": ModelSpec(
+        id="lightonocr-3-vllm",
+        label="LightOnOCR-3 (open-weight OCR on your vLLM / SGLang server)",
+        import_path="tryon.api.lighton", class_name="LightOnOCRServerAdapter",
+        method="parse_document", output_kind="text",
+        notes="Client for an OpenAI-compatible server YOU run: vllm serve lightonai/LightOnOCR-3-0.8B --trust-remote-code "
+        "--default-chat-template-kwargs '{\"enable_thinking\": false}'. Default LIGHTONOCR_BASE_URL="
+        "http://127.0.0.1:8000/v1, model from LIGHTONOCR_MODEL. No torch needed client-side; PDFs need pypdfium2. "
+        "Same output as lightonocr-3-local.",
+        args=[
+            Arg(("--image", "-i"), "image", required=True, help="Page image or PDF (path or URL)"),
+            Arg(("--grounding",), "grounding", action="store_true",
+                help="Return labelled blocks with 0-1000 bounding boxes as well as markdown"),
+            Arg(("--pages",), "pages", help='PDF pages to read, e.g. "1-3,5" (default: all)'),
+            Arg(("--max-tokens",), "max_tokens", type=int, help="Max tokens per page (default 4096)"),
+            Arg(("--base-url",), "base_url", target="init", help="Server root incl. /v1 (overrides LIGHTONOCR_BASE_URL)"),
+            Arg(("--served-model",), "served_model", target="init", call_name="model",
+                help="Model name your server exposes (default lightonai/LightOnOCR-3-0.8B)"),
+        ],
+    ),
 }
 
 SERVICES: Dict[str, Dict[str, ModelSpec]] = {

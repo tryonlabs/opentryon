@@ -33,3 +33,5 @@ opentryon parse --model nemotron-parse-local --image scan.jpg --tool markdown_bb
 | `detection_only` | Layout boxes without transcription |
 
 Response JSON includes `markdown`, `blocks`, and `raw` tool payload.
+
+Open-weight alternative on the same service: [LightOnOCR-3](../local-models/lightonocr) (`lightonocr-3-local`, `lightonocr-3-vllm`; also reads PDFs).

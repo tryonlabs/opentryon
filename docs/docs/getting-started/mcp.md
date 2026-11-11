@@ -364,6 +364,7 @@ See [Clad body API](../api-reference/clad-body.md).
 | `robot_act_dream_1` / `robot_act_dream_1_flash` | Dream Labs World Action Model | `DREAM_API_KEY` |
 | `robot_act_cosmos3_nano_droid` | Cosmos 3 Nano-DROID policy (certified NIM) | local NIM |
 | `parse_nemotron_parse` / `parse_nemotron_parse_local` | NVIDIA Nemotron Parse (document OCR) | `NVIDIA_API_KEY` / local NIM |
+| `parse_lightonocr_3_local` / `parse_lightonocr_3_vllm` | LightOnOCR-3 (page images and PDFs to markdown, optional grounding) | local/GPU / your vLLM server |
 | `embed_nemotron_3_5_embed_1b` / `embed_nemotron_3_5_embed_1b_local` | NVIDIA Nemotron 3.5 Embed 1B (text + document images) | `NVIDIA_API_KEY` / local NIM |
 
 The Decider, Clef, Kev and AutoTrust JEV tools are listed under [Decide tools](#decide-tools-decision-models). See [Decision models](../api-reference/decision-models.md).

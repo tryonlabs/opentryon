@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `parse`: **`lightonocr-3-local`** and **`lightonocr-3-vllm`** — LightOn's Apache-2.0 LightOnOCR-3 (0.8B default, 4B via `--variant`). Page images and PDFs to markdown; `--grounding` adds labelled blocks with 0-1000 boxes (tables and charts as HTML); `--pages` for PDFs. In-process Transformers (`tryon.models.lightonocr`, needs `transformers>=5.2`) or a client for your own vLLM / SGLang server (`tryon.api.lighton`, `LIGHTONOCR_BASE_URL`). No hosted API exists. Shared helpers in `tryon/ocr.py`. Docs: `local-models/lightonocr.md`.
+
 ## [0.0.9] - 11 November 2026
 
 **210 models** across **16 services** (up from 163 across 13), **215 MCP tools**. Three new services: `robot-act`, `detect` and `parse`.

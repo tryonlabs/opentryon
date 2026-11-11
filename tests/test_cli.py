@@ -417,6 +417,122 @@ def check_veo_seedance_validation():
     print("\u2713 Veo 3.1 / Seedance reference / Omni model-id validation")
 
 
+def check_lightonocr():
+    from unittest import mock
+
+    from PIL import Image
+
+    from tryon.api.lighton import LightOnOCRServerAdapter
+    from tryon.models.lightonocr import LightOnOCRLocalAdapter
+    from tryon.ocr import blocks_to_markdown, load_pages, package_pages, parse_grounding, parse_page_spec
+
+    # --- CLI wiring ---
+    for argv, cls in (
+        (["parse", "--model", "lightonocr-3-local", "--image", "size_chart.pdf", "--pages", "1-2", "--grounding",
+          "--variant", "4b"], "LightOnOCRLocalAdapter"),
+        (["parse", "--model", "lightonocr-3-vllm", "--image", "page.png", "--served-model", "ocr"], "LightOnOCRServerAdapter"),
+    ):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([*argv, "--dry-run"])
+        printed = buf.getvalue()
+        assert code == 0 and cls in printed and ".parse_document(" in printed, printed
+
+    # --- Grounding parser: the model card's example output, plus a continuation block ---
+    raw = (
+        "![image](309,90,691,516) Model architecture diagram\n"
+        "![caption](400,555,591,566) Figure 1: Model architecture.\n"
+        "![title](113,608,263,623) ## 2.2 LightOnOCR-1\n"
+        "![text](112,640,882,698) The first version of LightOnOCR established\n"
+        "![text+]( 500 , 100 , 900 , 200 ) the core architecture.\n"
+        "![page_number](491,935,505,950) 3"
+    )
+    blocks = parse_grounding(raw)
+    assert [b["label"] for b in blocks] == ["image", "caption", "title", "text", "text", "page_number"]
+    assert blocks[0]["bbox"] == [309, 90, 691, 516] and blocks[2]["text"] == "## 2.2 LightOnOCR-1"
+    assert blocks[4]["continues"] and blocks[4]["bbox"] == [500, 100, 900, 200] and not blocks[3]["continues"]
+    md = blocks_to_markdown(blocks, drop=("page_number",))
+    assert "established the core architecture." in md and not md.rstrip().endswith("3")
+    assert parse_grounding("plain markdown, no markers") == [
+        {"label": None, "bbox": None, "text": "plain markdown, no markers", "continues": False}]
+    multi = "![table](80,70,920,140)\n<table><tr><td>S</td><td>36</td></tr>\n</table>\n![text](1,2,3,4) end"
+    assert parse_grounding(multi)[0]["text"].startswith("<table>") and parse_grounding(multi)[0]["text"].endswith("</table>")
+
+    # --- Page ranges ---
+    assert parse_page_spec("1-3,5", 6) == [0, 1, 2, 4] and parse_page_spec(None, 3) == [0, 1, 2]
+    assert parse_page_spec("2,2,1", 3) == [1, 0]
+    for bad in ("0", "4", "3-1", "1-9"):
+        try:
+            parse_page_spec(bad, 3)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"page spec {bad!r} must be rejected")
+
+    # --- Inputs ---
+    img = Image.new("RGB", (40, 30), "white")
+    assert len(load_pages(img)) == 1
+    try:
+        load_pages(img, pages="2")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("pages only applies to PDFs")
+    try:
+        import pypdfium2  # noqa: F401
+    except ImportError:
+        try:
+            load_pages(b"%PDF-1.4\n%fake")
+        except ImportError as exc:
+            assert "pypdfium2" in str(exc)
+        else:
+            raise AssertionError("PDF input without pypdfium2 must explain the missing dependency")
+
+    # --- Result packaging ---
+    out = package_pages("m", "server", True, [raw, "![text](0,0,10,10) page two"])
+    assert out["page_count"] == 2 and out["blocks"][-1]["page"] == 2 and "page two" in out["markdown"]
+    plain = package_pages("m", "server", False, ["# Size chart"])
+    assert plain["markdown"] == "# Size chart" and plain["blocks"] == []
+
+    # --- Server client: request shape ---
+    adapter = LightOnOCRServerAdapter(base_url="http://gpu:8000/v1")
+    assert adapter.model == "lightonai/LightOnOCR-3-0.8B" and adapter.base_url == "http://gpu:8000/v1"
+    message = mock.Mock(content=raw)
+    with mock.patch.object(adapter.client.chat.completions, "create",
+                           return_value=mock.Mock(choices=[mock.Mock(message=message)])) as create:
+        result = adapter.parse_document(img, grounding=True, max_tokens=512)
+    kwargs = create.call_args.kwargs
+    parts = kwargs["messages"][0]["content"]
+    assert parts[0]["type"] == "image_url" and parts[0]["image_url"]["url"].startswith("data:image/png;base64,")
+    assert parts[1] == {"type": "text", "text": "grounding"}
+    assert kwargs["temperature"] == 0.2 and kwargs["top_p"] == 0.9 and kwargs["max_tokens"] == 512
+    assert result["endpoint"] == "server" and len(result["blocks"]) == 6
+    with mock.patch.object(adapter.client.chat.completions, "create",
+                           return_value=mock.Mock(choices=[mock.Mock(message=mock.Mock(content="# Spec sheet"))])) as create:
+        result = adapter.parse_document(img)
+    assert create.call_args.kwargs["messages"][0]["content"][1]["text"] == "" and result["markdown"] == "# Spec sheet"
+
+    # --- Local adapter: validation and a clear error without the Qwen3.5 classes ---
+    try:
+        LightOnOCRLocalAdapter(variant="1b")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unsupported variant must be rejected")
+    local = LightOnOCRLocalAdapter(variant="4b")
+    assert local.model_id == "lightonai/LightOnOCR-3-4B"
+    try:
+        from transformers import Qwen3_5ForConditionalGeneration  # noqa: F401
+    except ImportError:
+        try:
+            local.parse_document(img)
+        except ImportError as exc:
+            assert "transformers>=5.2" in str(exc)
+        else:
+            raise AssertionError("missing Qwen3.5 classes must give a clear install hint")
+    print("✓ parse: lightonocr-3 local + vllm (grounding parser, page ranges, request shape)")
+
+
 def check_seedream_model_ids():
     from unittest import mock
 
@@ -2971,6 +3087,7 @@ if __name__ == "__main__":
     check_photoroom_dry_runs()
     check_gemini_omni_dry_runs()
     check_new_media_models_dry_runs()
+    check_lightonocr()
     check_seedream_model_ids()
     check_decision_models_wave()
     check_omni_12_and_ripple()

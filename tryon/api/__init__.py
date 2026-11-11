@@ -67,6 +67,7 @@ _LAZY_ATTRS = {
     "PerplexityDeciderAdapter": ".perplexity",
     "ClefAdapter": ".cloudflare",
     "AutoTrustJevAdapter": ".autotrust",
+    "LightOnOCRServerAdapter": ".lighton",
     "SageA15Adapter": ".sage",
     "Cosmos3ReasonerAdapter": ".nvidia",
     "Cosmos3VideoAdapter": ".nvidia",

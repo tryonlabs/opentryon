@@ -141,6 +141,7 @@ const sidebars: SidebarsConfig = {
         'local-models/fashn-vton',
         'local-models/deepseek-vl2',
         'local-models/deepseek-ocr',
+        'local-models/lightonocr',
         'local-models/ternary-bonsai',
         'local-models/limite',
         'local-models/liquid-d1',
