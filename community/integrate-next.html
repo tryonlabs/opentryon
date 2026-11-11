@@ -10,8 +10,8 @@
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io/opentryon">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&amp;family=Newsreader:wght@500&amp;display=swap"><link rel="stylesheet" href="/opentryon/assets/css/styles.5cb23e6e.css">
-<script src="/opentryon/assets/js/runtime~main.33a0b1bf.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.ae54a7ef.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.7b07fb71.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.7b123ef0.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -184,6 +184,12 @@
 </li>
 <li class="">
 <p><strong>VFlash</strong> (NVIDIA, visual planning for robots and driving) — <code>watch</code>, not integratable: the project page links no VFlash weights, code or API (its &quot;Code&quot; button points at the unrelated LocateAnything repo). Re-check for a release.</p>
+</li>
+<li class="">
+<p><del>Decision-model wave</del> <strong>shipped</strong> (11 Nov 2026, <code>decide</code>): <code>pplx-decider</code> + <code>pplx-decider-local</code> (Perplexity, first-party Decisions API), <code>clef</code> + <code>clef-local</code> (Cloudflare Workers AI), <code>kev-openrouter</code> + <code>kev-local</code> (Jared Palmer; no first-party API, so OpenRouter), <code>autotrust-jev-local</code> (AutoTrust; no hosted API anywhere). Already present: <code>jev</code>, <code>d1-*</code>, <code>d3-*</code>. <code>watch</code>: Kev 9B/27B on OpenRouter, a hosted AutoTrust endpoint, open weights for Decider v1.2.</p>
+</li>
+<li class="">
+<p><strong>Seedream 5.5</strong> (ByteDance, launched 9 Nov 2026) — <code>watch</code>, pending a first-party API id. It is live in Dreamina, CapCut, Doubao and Jimeng, but the BytePlus ModelArk model list (updated 9 Nov) and Volcano Ark list only 5.0 and older. Add it to <code>SEEDREAM_MODELS</code> and the <code>seedream</code> <code>--model-version</code> choices once ModelArk publishes the id. Meanwhile <code>seedream</code> gained 5.0 Flash and corrected 5.0 ids (11 Nov 2026).</p>
 </li>
 </ol>
 <p>Follow-ups for the new services: Studio capability screens for <code>decide</code> (question builder + probability bars) and <code>embed</code> (upload + similarity), and a vector-store hand-off for <code>embed</code> output.</p>
