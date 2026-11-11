@@ -341,6 +341,8 @@ Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nem
 
 32. **Seedream 5.5** (ByteDance, launched 9 Nov 2026) — `watch`, pending a first-party API id. It is live in Dreamina, CapCut, Doubao and Jimeng, but the BytePlus ModelArk model list (updated 9 Nov) and Volcano Ark list only 5.0 and older. Add it to `SEEDREAM_MODELS` and the `seedream` `--model-version` choices once ModelArk publishes the id. Meanwhile `seedream` gained 5.0 Flash and corrected 5.0 ids (11 Nov 2026).
 
+33. ~~`lightonocr-3-local` / `lightonocr-3-vllm`~~ **shipped** (11 Nov 2026, `parse`): LightOnOCR-3 0.8B / 4B, Apache-2.0, local only (no hosted API). The 1B sibling (LightOnOCR-2 architecture) is not wired.
+
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 
 ---

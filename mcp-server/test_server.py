@@ -234,6 +234,8 @@ async def check_dry_run_calls() -> None:
         ("understand_claude_haiku_5_5", {"image": "i.jpg", "prompt": "fabric?", "effort": "low", "dry_run": True}, False),
         ("video_generate_fal_h3_max_relight", {"video": "clip.mp4", "reference_image": "sphere.png", "dry_run": True}, False),
         ("decide_jev", {"questions": "q.json", "state": "red satin gown", "dry_run": True}, False),
+        ("parse_lightonocr_3_vllm", {"image": "page.png", "grounding": True, "dry_run": True}, False),
+        ("parse_lightonocr_3_local", {"image": "size_chart.pdf", "pages": "1", "dry_run": True}, True),
         ("decide_pplx_decider", {"questions": "q.json", "state": "x", "web_grounding": True, "dry_run": True}, False),
         ("decide_pplx_decider_local", {"questions": "q.json", "state": "x", "dry_run": True}, False),
         ("decide_clef", {"questions": "q.json", "state": "x", "image": ["a.jpg"], "dry_run": True}, False),

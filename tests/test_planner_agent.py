@@ -180,6 +180,8 @@ def check_named_model_pins_for_wave3_models():
         "use kimi-k3.1-pro-highspeed on the lookbook": "kimi-k3.1-pro",
         "use kimi k3 on the lookbook": "kimi-k3",
         "classify the ticket with perplexity decider": "pplx-decider",
+        "read this size chart with lightonocr": "lightonocr-3-local",
+        "run lightonocr-3-vllm on the spec sheet": "lightonocr-3-vllm",
         "run pplx-decider-local on these": "pplx-decider-local",
         "score it with cloudflare clef": "clef",
         "use clef-local for the gate": "clef-local",

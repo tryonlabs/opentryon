@@ -15,6 +15,8 @@ Available Models:
       the local counterpart to the hosted qwen3.8-max DashScope API
     - DeepSeekVL2Adapter: DeepSeek-VL2 open-weight multimodal understanding
       (image/video). No first-party hosted API exists for this model.
+    - LightOnOCRLocalAdapter: LightOnOCR-3 (0.8B / 4B) open-weight OCR -> markdown + grounded blocks
+      (Apache-2.0; `parse` service). No first-party hosted API exists.
     - DeepSeekOCRAdapter: DeepSeek-OCR open-weight document/image OCR
       ("Contexts Optical Compression"). No first-party hosted API exists.
     - QwenImageLocalAdapter: Qwen-Image-2512 T2I + Qwen-Image-Edit-2511
@@ -78,6 +80,7 @@ from .flux3_image_klein import Flux3ImageKleinLocalAdapter
 from .kimi_vl import KimiVLAdapter
 from .leffa import LeffaAdapter
 from .limite import LimiteAdapter
+from .lightonocr import LightOnOCRLocalAdapter
 from .ltx25 import LTX25Adapter
 from .fashn_vton import FashnVTONLocalAdapter
 from .klein_tryon import Klein4BTryOnAdapter
@@ -100,6 +103,7 @@ __all__ = [
     "CatVTONAdapter",
     "CladBodyLocalAdapter",
     "DeepSeekOCRAdapter",
+    "LightOnOCRLocalAdapter",
     "DeepSeekVL2Adapter",
     "Flux2TurboAdapter",
     "Flux3ImageKleinLocalAdapter",

@@ -34,7 +34,7 @@ opentryon <service> --model <model> [params...]
 | `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-k3.1-pro`, `ripple-65b-openrouter`, `ripple-65b-local`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `claude-haiku-5-5`, `gemini-3.8-flash`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `nemotron-3.5-super-vl`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope), `beam` (Reflection, text-only), `flint-local`, `flint-openrouter`, `sage-a1.5-local`, `fashion-florence` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `flux3-video`, `flux3-max`, `seedance`, `kling-v4`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `fal-h3-max-relight`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3`, `cosmos3-local` (local), `fashn-image-to-video` |
 | `embed` | Multimodal embeddings | … includes `nemotron-3.5-embed-1b`, `nemotron-3.5-embed-1b-local`, `gemini-embedding-2`, … |
-| `parse` | Document/page image parsing | `nemotron-parse`, `nemotron-parse-local` |
+| `parse` | Document/page image parsing | `nemotron-parse`, `nemotron-parse-local`, `lightonocr-3-local` (local), `lightonocr-3-vllm` |
 | `audio-to-video` | Lip-sync / dub video to speech audio | `nvidia-lipsync` (self-hosted NIM gRPC) |
 | `generate-3d` | Text/image to 3D mesh | `trellis` (NVIDIA NIM) |
 | `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
@@ -248,6 +248,7 @@ opentryon understand --model claude-haiku-5-5 --image garment.jpg --prompt "Fabr
 opentryon video-generate --model fal-h3-max-relight --video runway.mp4 --reference-image sphere.png
 
 # Decisions: typed, calibrated answers (questions.json: see the Jev docs page for the schema)
+opentryon parse --model lightonocr-3-local --image size_chart.pdf --pages 1-2 --grounding   # local OCR -> markdown + boxes
 opentryon decide --model jev --questions questions.json --state "Red satin evening gown"        # TYPESAFE_API_KEY
 opentryon decide --model d1-3b --questions questions.json --image dress.jpg                     # local GPU
 opentryon decide --model pplx-decider --questions questions.json --image dress.jpg              # PERPLEXITY_API_KEY
