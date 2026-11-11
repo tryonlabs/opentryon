@@ -224,6 +224,7 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_kimi_k2_6` | Kimi K2.6 (Moonshot AI) | `MOONSHOT_API_KEY` | Image + video; optional thinking |
 | `understand_kimi_k2_7_code` | Kimi K2.7 Code | `MOONSHOT_API_KEY` | Coding-focused multimodal; thinking always on |
 | `understand_kimi_k3` | Kimi K3 | `MOONSHOT_API_KEY` | Flagship reasoning; `reasoning_effort` |
+| `understand_ripple_65b_openrouter` / `understand_ripple_65b_local` | Ricursive Ripple-65B Preview (text-only coding LLM) | `OPENROUTER_API_KEY` / local server | Named-model-only |
 | `understand_kimi_k3_1_pro` | Kimi K3.1 Pro (+ Highspeed via `kimi_model`) | `MOONSHOT_API_KEY` | Post-trained K3 successor; `reasoning_effort` |
 | `understand_kimi_vl` | Kimi-VL (open-weight, local) | local/GPU | Open counterpart to Kimi APIs |
 | `understand_qwen3_8_max` | Qwen3.8-Max (DashScope) | `DASHSCOPE_API_KEY` | Native text/image/video; thinking + `reasoning_effort` (`xhigh`/`medium`/`low`); hosted Max ~1M context, long video |
@@ -280,7 +281,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 | `video_generate_kling_v3_omni` | Kling 3.0 Omni | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `video_generate_kling_v2_5_turbo` | Kling 2.5 Turbo | `KLING_AI_API_KEY` / `KLING_AI_SECRET_KEY` |
 | `video_generate_grok_imagine_video` | xAI Grok Imagine Video 1.5 | `XAI_API_KEY` |
-| `video_generate_gemini_omni` | Gemini Omni 1.1 Flash | `GEMINI_API_KEY` |
+| `video_generate_gemini_omni` | Gemini Omni 1.2 Flash (1.1 via `omni_model`) | `GEMINI_API_KEY` |
 | `video_generate_p_video` | Pruna P-Video | `PRUNA_API_KEY` |
 | `video_generate_p_video_2_pro` | Pruna P-Video-2-Pro (fast, MiniMax H3-based) | `PRUNA_API_KEY` |
 | `video_generate_p_video_replace` | Pruna P-Video-Replace | `PRUNA_API_KEY` |

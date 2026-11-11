@@ -80,6 +80,6 @@ Methods: `generate_text_to_video` (optionally `reference_images=`), `generate_im
 
 ## See also
 
-- [Gemini Omni 1.1 Flash](gemini-omni) · [Seedance](seedance-seedream) · [Official docs](https://ai.google.dev/gemini-api/docs/video)
+- [Gemini Omni 1.2 Flash](gemini-omni) · [Seedance](seedance-seedream) · [Official docs](https://ai.google.dev/gemini-api/docs/video)
 
 Veo is cloud-only; there are no open weights.

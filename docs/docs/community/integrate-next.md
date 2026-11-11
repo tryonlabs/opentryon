@@ -331,6 +331,12 @@ Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nem
 24. ~~`klein-4b-tryon` / `tryon-safety-classifier`~~ **shipped** (Path B local, `vton` / new `classify` service, 13 Oct 2026).
 25. ~~`measure` (Clad body photo / questionnaire / local)~~ **shipped** (new `measure` service, Oct 2026). Remaining new-service ideas: `segment`, `detect`, 3D garments; plus licence-blocked models.
 
+26. ~~`gemini-omni-1.2-flash`~~ **shipped** (6 Nov 2026): default for `gemini-omni`, adds `--duration` 3-15s; 1.1 stays selectable via `--omni-model` (Google routes it to 1.2 from 3 Dec 2026).
+27. ~~`ripple-65b-openrouter` / `ripple-65b-local`~~ **shipped** (6 Nov 2026, `understand`, text-only): Ricursive Ripple-65B Preview, Apache-2.0. No first-party API exists, so the hosted path is OpenRouter and the local path is a client for your own vLLM/SGLang server. Outside the fashion/media scope, named-model-only.
+28. **Inkling 2 Small** (Thinking Machines, 594B MoE / 17B active, text + image in, text out) — `watch`. Launched 5 Nov 2026 on Tinker only with closed weights; Apache-2.0 weights promised after safety testing (reports say roughly the week of 9 Nov). Tinker's OpenAI-compatible endpoint is beta and its docs show checkpoint paths as the `model` value, serverless sampling is waitlisted, and image input over that endpoint is undocumented. Integrate as Path B (local) when weights publish, and a Path A entry once the hosted endpoint is confirmed. Context length is also inconsistent (Tinker 64K/256K vs model card 1M).
+29. **Hima ASR** (`Prahaladha/hima-asr`, ~0.46B, speech-to-text for 11 Indian languages + English, plus a 17.5M "decision head") — `needs design`. OpenTryOn has no speech-to-text service; this needs a new `transcribe` service (audio in, text out) and the decision head overlaps `decide`. The PyTorch path requires `trust_remote_code`, the licence is Apache-2.0 plus the Gemma Terms of Use, and benchmarks are author-reported. Fashion relevance is limited to voice commerce and support calls.
+30. **VFlash** (NVIDIA, visual planning for robots and driving) — `watch`, not integratable: the project page links no VFlash weights, code or API (its "Code" button points at the unrelated LocateAnything repo). Re-check for a release.
+
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 
 ---

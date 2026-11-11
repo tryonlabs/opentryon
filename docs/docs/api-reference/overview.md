@@ -678,7 +678,7 @@ Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram
 
 ### `GeminiOmniAdapter`
 
-Adapter for Gemini Omni 1.1 Flash (`gemini-omni-1.1-flash`) -- multimodal
+Adapter for Gemini Omni 1.2 Flash (`gemini-omni-1.2-flash`; 1.1 selectable) -- multimodal
 video generation, conversational editing and clip extension via the Interactions API.
 
 ```python
@@ -694,15 +694,15 @@ video = adapter.generate_text_to_video(
 
 **Parameters:**
 - `api_key` (str, optional): Google Gemini API key. Defaults to `GEMINI_API_KEY`
-- `model` (str, optional): Defaults to `gemini-omni-1.1-flash`
+- `model` (str, optional): Defaults to `gemini-omni-1.2-flash`; `gemini-omni-1.1-flash` also accepted
 
 **Methods:**
-- `generate_text_to_video(prompt, aspect_ratio, resolution, previous_interaction_id, video, ...)` - Text-to-video (or edit / extend turn)
+- `generate_text_to_video(prompt, aspect_ratio, resolution, previous_interaction_id, video, duration, ...)` - Text-to-video (or edit / extend turn); `duration` 3-15s
 - `generate_image_to_video(image, prompt, aspect_ratio, reference_images, ...)` - Image-to-video
 - `edit_video(prompt, previous_interaction_id, ...)` - Conversational edit of a prior clip
 - `extend_video(video, prompt, ...)` - Extend an existing clip by 3-10s
 
-See [Gemini Omni 1.1 Flash Documentation](gemini-omni) for complete details.
+See [Gemini Omni 1.2 Flash Documentation](gemini-omni) for complete details.
 
 ---
 

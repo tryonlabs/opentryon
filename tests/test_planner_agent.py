@@ -175,6 +175,8 @@ def check_named_model_pins_for_wave3_models():
         "videojev-35b-a3b grounding": "videojev-35b-a3b",
         "embed the catalogue with gemini embedding 2": "gemini-embedding-2",
         "describe this with kimi k3.1 pro": "kimi-k3.1-pro",
+        "refactor this with ripple 65b": "ripple-65b-openrouter",
+        "use ripple-65b-local to review the diff": "ripple-65b-local",
         "use kimi-k3.1-pro-highspeed on the lookbook": "kimi-k3.1-pro",
         "use kimi k3 on the lookbook": "kimi-k3",
         "embed these with embeddinggemma 2": "embeddinggemma-2",

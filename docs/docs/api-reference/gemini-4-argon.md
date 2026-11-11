@@ -22,7 +22,7 @@ For the usual “Gemini stack” users mean alongside Gemini 4:
 | --- | --- | --- |
 | Multimodal **understanding** (reasoning) | `gemini-4-argon` | `gemini-4-argon` |
 | **Image** generation / edit | `nano-banana-2.1` (also `nano-banana-2`, `nano-banana-2-lite`) | `gemini-nano-banana-2.1`, etc. |
-| **Video** generation / edit | `gemini-omni` | `gemini-omni-1.1-flash` |
+| **Video** generation / edit | `gemini-omni` | `gemini-omni-1.2-flash` (1.1 via `--omni-model`) |
 
 Video-to-image (poster / thumbnail from a clip) uses **`generate --video`** on Nano Banana 2, 2.1, or 2 Lite via the Interactions API. See [Nano Banana](nano-banana.md).
 

@@ -16,7 +16,7 @@ long-running video generation tasks.
 
 DEPRECATION: OpenAI removed the Sora 2 / Sora 2 Pro video API on 24 Sep 2026.
 This adapter is kept for backwards compatibility and will raise API errors
-against the live service; prefer Veo 3.1, Seedance 2.5, Gemini Omni 1.1 Flash
+against the live service; prefer Veo 3.1, Seedance 2.5, Gemini Omni 1.2 Flash
 or MiniMax H3 for hosted video generation.
 
 Reference:
