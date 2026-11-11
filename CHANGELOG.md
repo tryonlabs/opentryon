@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `generate` / `edit` `seedream`: **Seedream 5.0 Flash** via `--model-version seedream-5-0-flash` (`dola-seedream-5-0-flash-260915`), BytePlus's faster, cheaper 5.0 tier.
 - `decide`: four more open decision-model families on the shared noul / choice / score schema (docs: `api-reference/decision-models.md`):
   - **`pplx-decider`** — Perplexity Decider v1.2 / Flash v1.2 through the first-party Decisions API (`PERPLEXITY_API_KEY`; images, `--web-grounding`), and **`pplx-decider-local`** for the open weights on SGLang.
   - **`clef`** — Cloudflare Clef / Clef-flash on Workers AI (`CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`; up to 64 questions, 4 images), and **`clef-local`** on SGLang.
@@ -22,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Reflection Beam 1.0** (`tryon.api.reflection.BeamAdapter`, `REFLECTION_API_KEY`): `understand` model `beam` — text chat for `Beam-1.0-501B-A23B`. Named-model-only. No local id (serve guide is four B300s)
 - **Moondream 3.1 and Moondream 3 Preview** (`tryon.api.moondream`, `MOONDREAM_API_KEY`): `understand` query/caption and a new `detect` service for boxes, points, and SVG masks. Local Photon twin `moondream-3.1-local` (`pip install moondream`)
 - **Cosmos 3 Nano certified-NIM variants** (`tryon.api.nvidia.cosmos_nano`, `COSMOS3_NIM_URL`): `cosmos3-nano-t2i`, `cosmos3-nano-v2v`, and `cosmos3-nano-droid`. Hosted `cosmos3` / `cosmos3-reasoner` and local `cosmos3-local` are unchanged
+
+### Fixed
+
+- `seedream` now sends BytePlus ModelArk's published model ids: 5.0 Pro is `dola-seedream-5-0-pro-260628` (was `seedream-5-0-pro-260628`, which BytePlus does not list), 5.0 Lite is `seedream-5-0-lite-260128` and 4.5 is `seedream-4-5-251128`. Short names (`seedream-5-0-pro`, etc.) are unchanged.
 
 ## [0.0.8] - 19 October 2026
 

@@ -2,13 +2,21 @@
 BytePlus ModelArk — Seedream image generation adapters.
 
 Seedream 5.0 Pro is ByteDance's precision image model for text-to-image,
-single-image editing, and multi-reference fusion (up to 10 refs).
+single-image editing, and multi-reference fusion (up to 10 refs). Seedream 5.0
+Flash is the faster, cheaper sibling with the same capabilities. On BytePlus
+ModelArk both carry a ``dola-`` prefix (``dola-seedream-5-0-pro-260628``,
+``dola-seedream-5-0-flash-260915``) and take 1K / 1.5K / 2K output in PNG or JPEG.
+
+Seedream 5.5 (launched 9 Nov 2026 in ByteDance's apps) has no published ModelArk
+model id yet; it will be added here once BytePlus lists one.
 
   POST {base}/images/generations
 
 Product / docs:
   https://docs.byteplus.com/en/docs/ModelArk/
   https://ai.byteplus.com/en/product/Seedream
+  https://docs.byteplus.com/en/docs/modelark/model-list
+  https://docs.byteplus.com/en/docs/modelark/seedream-5-0-pro
 
 Env:
   ARK_API_KEY or BYTEPLUS_ARK_API_KEY
@@ -27,13 +35,18 @@ from PIL import Image
 
 DEFAULT_BASE_URL = "https://ark.ap-southeast.bytepluses.com/api/v3"
 
+# Short names -> BytePlus ModelArk model ids (model list, updated 9 Nov 2026).
 SEEDREAM_MODELS = {
-    "seedream-5-0-pro": "seedream-5-0-pro-260628",
-    "seedream-5.0-pro": "seedream-5-0-pro-260628",
-    "seedream-5-0-pro-260628": "seedream-5-0-pro-260628",
-    "seedream-5-0-lite": "seedream-5-0-lite",
+    "seedream-5-0-pro": "dola-seedream-5-0-pro-260628",
+    "seedream-5.0-pro": "dola-seedream-5-0-pro-260628",
+    "seedream-5-0-pro-260628": "dola-seedream-5-0-pro-260628",
+    "seedream-5-0-flash": "dola-seedream-5-0-flash-260915",
+    "seedream-5.0-flash": "dola-seedream-5-0-flash-260915",
+    "seedream-5-0-flash-260915": "dola-seedream-5-0-flash-260915",
+    "seedream-5-0": "seedream-5-0-260128",
+    "seedream-5-0-lite": "seedream-5-0-lite-260128",
+    "seedream-4-5": "seedream-4-5-251128",
     "seedream-4-0": "seedream-4-0-250828",
-    "seedream-4-5": "seedream-4-5",
 }
 
 

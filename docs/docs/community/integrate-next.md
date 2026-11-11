@@ -339,6 +339,8 @@ Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nem
 
 31. ~~Decision-model wave~~ **shipped** (11 Nov 2026, `decide`): `pplx-decider` + `pplx-decider-local` (Perplexity, first-party Decisions API), `clef` + `clef-local` (Cloudflare Workers AI), `kev-openrouter` + `kev-local` (Jared Palmer; no first-party API, so OpenRouter), `autotrust-jev-local` (AutoTrust; no hosted API anywhere). Already present: `jev`, `d1-*`, `d3-*`. `watch`: Kev 9B/27B on OpenRouter, a hosted AutoTrust endpoint, open weights for Decider v1.2.
 
+32. **Seedream 5.5** (ByteDance, launched 9 Nov 2026) — `watch`, pending a first-party API id. It is live in Dreamina, CapCut, Doubao and Jimeng, but the BytePlus ModelArk model list (updated 9 Nov) and Volcano Ark list only 5.0 and older. Add it to `SEEDREAM_MODELS` and the `seedream` `--model-version` choices once ModelArk publishes the id. Meanwhile `seedream` gained 5.0 Flash and corrected 5.0 ids (11 Nov 2026).
+
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 
 ---
