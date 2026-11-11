@@ -10,8 +10,8 @@
 <meta name="generator" content="Docusaurus">
 <link rel="canonical" href="https://tryonlabs.github.io/opentryon">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&amp;family=Newsreader:wght@500&amp;display=swap"><link rel="stylesheet" href="/opentryon/assets/css/styles.5cb23e6e.css">
-<script src="/opentryon/assets/js/runtime~main.fe51dc8b.js" defer="defer"></script>
-<script src="/opentryon/assets/js/main.2a55ca05.js" defer="defer"></script>
+<script src="/opentryon/assets/js/runtime~main.33a0b1bf.js" defer="defer"></script>
+<script src="/opentryon/assets/js/main.ae54a7ef.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -169,6 +169,21 @@
 </li>
 <li class="">
 <p><del><code>measure</code> (Clad body photo / questionnaire / local)</del> <strong>shipped</strong> (new <code>measure</code> service, Oct 2026). Remaining new-service ideas: <code>segment</code>, <code>detect</code>, 3D garments; plus licence-blocked models.</p>
+</li>
+<li class="">
+<p><del><code>gemini-omni-1.2-flash</code></del> <strong>shipped</strong> (6 Nov 2026): default for <code>gemini-omni</code>, adds <code>--duration</code> 3-15s; 1.1 stays selectable via <code>--omni-model</code> (Google routes it to 1.2 from 3 Dec 2026).</p>
+</li>
+<li class="">
+<p><del><code>ripple-65b-openrouter</code> / <code>ripple-65b-local</code></del> <strong>shipped</strong> (6 Nov 2026, <code>understand</code>, text-only): Ricursive Ripple-65B Preview, Apache-2.0. No first-party API exists, so the hosted path is OpenRouter and the local path is a client for your own vLLM/SGLang server. Outside the fashion/media scope, named-model-only.</p>
+</li>
+<li class="">
+<p><strong>Inkling 2 Small</strong> (Thinking Machines, 594B MoE / 17B active, text + image in, text out) — <code>watch</code>. Launched 5 Nov 2026 on Tinker only with closed weights; Apache-2.0 weights promised after safety testing (reports say roughly the week of 9 Nov). Tinker&#x27;s OpenAI-compatible endpoint is beta and its docs show checkpoint paths as the <code>model</code> value, serverless sampling is waitlisted, and image input over that endpoint is undocumented. Integrate as Path B (local) when weights publish, and a Path A entry once the hosted endpoint is confirmed. Context length is also inconsistent (Tinker 64K/256K vs model card 1M).</p>
+</li>
+<li class="">
+<p><strong>Hima ASR</strong> (<code>Prahaladha/hima-asr</code>, ~0.46B, speech-to-text for 11 Indian languages + English, plus a 17.5M &quot;decision head&quot;) — <code>needs design</code>. OpenTryOn has no speech-to-text service; this needs a new <code>transcribe</code> service (audio in, text out) and the decision head overlaps <code>decide</code>. The PyTorch path requires <code>trust_remote_code</code>, the licence is Apache-2.0 plus the Gemma Terms of Use, and benchmarks are author-reported. Fashion relevance is limited to voice commerce and support calls.</p>
+</li>
+<li class="">
+<p><strong>VFlash</strong> (NVIDIA, visual planning for robots and driving) — <code>watch</code>, not integratable: the project page links no VFlash weights, code or API (its &quot;Code&quot; button points at the unrelated LocateAnything repo). Re-check for a release.</p>
 </li>
 </ol>
 <p>Follow-ups for the new services: Studio capability screens for <code>decide</code> (question builder + probability bars) and <code>embed</code> (upload + similarity), and a vector-store hand-off for <code>embed</code> output.</p>
