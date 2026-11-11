@@ -107,7 +107,7 @@ opentryon understand --model kimi-k3 --help    # list that model's flags
 | `generate-3d` | Image or text to a mesh | `trellis` |
 | `bg-remove` | Background removal | `ben2` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo` |
-| `decide` | Calibrated yes/no, choice, score decisions | `jev`, `d1-3b`, `d1-omni-600m` |
+| `decide` | Calibrated yes/no, choice, score decisions | `jev`, `pplx-decider`, `clef`, `kev-openrouter`, `d1-3b`, `d3-turbo`, … |
 | `classify` | Try-on safety gating (fixed-label classifier) | `tryon-safety-classifier` |
 | `embed` | Multimodal embeddings (`.npz`) | `gemini-embedding-2`, `embeddinggemma-2`, … |
 | `measure` | ISO 8559-1 body measurements | `clad-body-photo`, `clad-body-questionnaire`, `clad-body-local` |

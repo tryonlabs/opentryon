@@ -337,6 +337,8 @@ Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nem
 29. **Hima ASR** (`Prahaladha/hima-asr`, ~0.46B, speech-to-text for 11 Indian languages + English, plus a 17.5M "decision head") — `needs design`. OpenTryOn has no speech-to-text service; this needs a new `transcribe` service (audio in, text out) and the decision head overlaps `decide`. The PyTorch path requires `trust_remote_code`, the licence is Apache-2.0 plus the Gemma Terms of Use, and benchmarks are author-reported. Fashion relevance is limited to voice commerce and support calls.
 30. **VFlash** (NVIDIA, visual planning for robots and driving) — `watch`, not integratable: the project page links no VFlash weights, code or API (its "Code" button points at the unrelated LocateAnything repo). Re-check for a release.
 
+31. ~~Decision-model wave~~ **shipped** (11 Nov 2026, `decide`): `pplx-decider` + `pplx-decider-local` (Perplexity, first-party Decisions API), `clef` + `clef-local` (Cloudflare Workers AI), `kev-openrouter` + `kev-local` (Jared Palmer; no first-party API, so OpenRouter), `autotrust-jev-local` (AutoTrust; no hosted API anywhere). Already present: `jev`, `d1-*`, `d3-*`. `watch`: Kev 9B/27B on OpenRouter, a hosted AutoTrust endpoint, open weights for Decider v1.2.
+
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 
 ---

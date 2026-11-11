@@ -322,6 +322,13 @@ The new `decide` service wraps "System One" models that return typed, calibrated
 | MCP tool | Backend | Needs |
 |---|---|---|
 | `decide_jev` | Typesafe AI Jev (text/JSON only) | `TYPESAFE_API_KEY` |
+| `decide_pplx_decider` | Perplexity Decider v1.2 / Flash (text + images, web grounding) | `PERPLEXITY_API_KEY` |
+| `decide_pplx_decider_local` | Perplexity Decider on your SGLang server | local server |
+| `decide_clef` | Cloudflare Clef / Clef-flash on Workers AI (text + images) | `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` |
+| `decide_clef_local` | Cloudflare Clef on your SGLang server | local server |
+| `decide_kev_openrouter` | Jared Palmer's Kev 4B via OpenRouter (text) | `OPENROUTER_API_KEY` |
+| `decide_kev_local` | Kev on your `kev.serve` server (text) | local server |
+| `decide_autotrust_jev_local` | AutoTrust JEV on your vLLM `/v1/decide` server (text + images) | local server |
 | `decide_d1_3b` | Liquid AI d1-3B (text/JSON + images) | local/GPU |
 | `decide_d1_omni_600m` | Liquid AI d1-omni-600M (text/JSON + images or speech) | local/GPU |
 | `decide_videojev_4b` | VideoJev 4B (local video grounding / MCQ) | local/GPU |

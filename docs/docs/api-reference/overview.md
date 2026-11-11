@@ -827,7 +827,7 @@ from tryon.api.typesafe import JevAdapter
 out = JevAdapter().decide(state="Red satin gown", questions={"formal": {"type": "noul", "instructions": "Formal wear?"}})
 ```
 
-See [Typesafe Jev](typesafe-jev) for details. Open-weight, image-capable twins: [Liquid d1](../local-models/liquid-d1.md).
+See [Typesafe Jev](typesafe-jev) for details. Open-weight, image-capable twins: [Liquid d1](../local-models/liquid-d1.md). More decision models on the same schema (Perplexity Decider, Cloudflare Clef, Kev, AutoTrust JEV): [Open decision models](decision-models).
 
 ### `D3ApiAdapter` / `D3LocalAdapter`
 
