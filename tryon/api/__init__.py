@@ -97,6 +97,9 @@ _LAZY_ATTRS = {
     "Thx01Adapter": ".hal_x",
     "MoondreamAdapter": ".moondream",
     "BeamAdapter": ".reflection",
+    "LagunaAdapter": ".poolside",
+    "TrinityAdapter": ".arcee",
+    "RecraftAdapter": ".recraft",
     "Cosmos3NanoNimAdapter": ".nvidia.cosmos_nano",
 }
 

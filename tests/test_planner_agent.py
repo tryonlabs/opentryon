@@ -495,6 +495,28 @@ def check_named_model_limite_dry_run():
     assert photo is None or photo.model != "beam"
     print("\u2713 named-model chat dry-runs beam without changing the understand default")
 
+    laguna = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"], model="laguna-m.1")
+    ).run("use laguna m.1 to write a lookbook caption", image="garment.jpg", dry_run=True)
+    assert laguna["success"] is True and laguna["model"] == "laguna-m.1"
+    assert "LagunaAdapter" in (laguna.get("call") or "")
+    named_laguna = match_named_model("use laguna xs 2.1 for the caption", understand)
+    assert named_laguna is not None and named_laguna.model == "laguna-xs.2.1"
+    named_xs = match_named_model("use laguna-xs.2 for the caption", understand)
+    assert named_xs is not None and named_xs.model == "laguna-xs.2"
+    print("\u2713 named-model chat dry-runs laguna without changing the understand default")
+
+    trinity = PlannerAgent(
+        classifier=lambda **kwargs: Plan(intent="understand", task=kwargs["prompt"], model="trinity-large")
+    ).run("use trinity large to write a lookbook caption", image="garment.jpg", dry_run=True)
+    assert trinity["success"] is True and trinity["model"] == "trinity-large"
+    assert "TrinityAdapter" in (trinity.get("call") or "")
+    named_think = match_named_model("use trinity-large-thinking for the caption", understand)
+    assert named_think is not None and named_think.model == "trinity-large-thinking"
+    named_preview = match_named_model("use trinity large preview for the caption", understand)
+    assert named_preview is not None and named_preview.model == "trinity-large"
+    print("\u2713 named-model chat dry-runs trinity-large without changing the understand default")
+
 
 def check_named_model_question_is_help():
     from tryon.agents.planner.catalog import (
@@ -790,6 +812,12 @@ def check_bind_filters_registry_slice():
     assert pii is not None and pii.model == "p-image-ideogram" and pii.service == "generate"
     ideo = pick_model("generate", "poster with ideogram")
     assert ideo is not None and ideo.model == "ideogram"
+    recraft = pick_model("generate", "poster with recraft v3")
+    assert recraft is not None and recraft.model == "recraft-v3" and recraft.service == "generate"
+    recraft_edit = pick_model("edit", "restyle this with recraft")
+    assert recraft_edit is not None and recraft_edit.model == "recraft-v3" and recraft_edit.service == "edit"
+    recraft_bg = pick_model("bg_remove", "remove the background with recraft")
+    assert recraft_bg is not None and recraft_bg.model == "recraft-v3" and recraft_bg.service == "bg-remove"
 
     picked = pick_model("video", "runway gen 4.5 clip")
     assert picked is not None and picked.model == "runway-gen4.5"

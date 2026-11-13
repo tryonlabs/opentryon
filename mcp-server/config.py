@@ -54,6 +54,13 @@ _EXTRA_ENV_NAMES = (
     "PPLX_DECIDER_BASE_URL",
     "AUTOTRUST_JEV_BASE_URL",
     "AUTOTRUST_JEV_API_KEY",
+    "ARCEEAI_API_KEY",
+    "ARCEE_BASE_URL",
+    "POOLSIDE_BASE_URL",
+    "TRINITY_BASE_URL",
+    "TRINITY_API_KEY",
+    "RECRAFT_API_KEY",
+    "RECRAFT_BASE_URL",
 )
 
 # Registry env_hint name -> names that also count as configured (adapter aliases).
@@ -61,6 +68,8 @@ _VAR_ALIASES: Dict[str, Tuple[str, ...]] = {
     "MODEL_API_KEY": ("MODEL_API_KEY", "META_MODEL_API_KEY", "MUSE_API_KEY"),
     "TOKENHUB_API_KEY": ("TOKENHUB_API_KEY", "TENCENT_TOKENHUB_API_KEY"),
     "FAL_KEY": ("FAL_KEY", "FAL_API_KEY"),
+    "ARCEE_API_KEY": ("ARCEE_API_KEY", "ARCEEAI_API_KEY"),
+    "RECRAFT_API_TOKEN": ("RECRAFT_API_TOKEN", "RECRAFT_API_KEY"),
 }
 
 # (id, label, docs_url, env var names, optional notes). Order is the Connect rail.
@@ -224,6 +233,33 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         ("REFLECTION_API_KEY",),
         "Unlocks understand beam (Beam-1.0-501B-A23B). Text chat only; reasoning always on. "
         "Optional REFLECTION_BASE_URL (default https://api.reflection.ai/openai/v1).",
+    ),
+    (
+        "poolside",
+        "Poolside (Laguna)",
+        "https://docs.poolside.ai/",
+        ("POOLSIDE_API_KEY",),
+        "Unlocks understand laguna-xs.2, laguna-xs.2.1, and laguna-m.1. Text chat only; "
+        "thinking on by default. Optional POOLSIDE_BASE_URL "
+        "(default https://inference.poolside.ai/v1).",
+    ),
+    (
+        "arcee",
+        "Arcee (Trinity)",
+        "https://docs.arcee.ai/",
+        ("ARCEE_API_KEY",),
+        "Unlocks understand trinity-large (400B Preview), trinity-large-thinking, and "
+        "trinity-mini. trinity-nano is a local vLLM/SGLang client (TRINITY_BASE_URL), "
+        "not this key. Optional ARCEE_BASE_URL (default https://api.arcee.ai/api/v1). "
+        "ARCEEAI_API_KEY is an alias.",
+    ),
+    (
+        "recraft",
+        "Recraft",
+        "https://www.recraft.ai/docs",
+        ("RECRAFT_API_TOKEN",),
+        "Unlocks generate / edit / bg-remove recraft-v3. Optional RECRAFT_BASE_URL "
+        "(default https://external.api.recraft.ai/v1). RECRAFT_API_KEY is an alias.",
     ),
     (
         "deepseek",

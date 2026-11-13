@@ -111,6 +111,16 @@ async def check_dry_run_calls() -> None:
         ("understand_kimi_k3_1_pro", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_qwen3_8_max", {"image": "i.jpg", "dry_run": True}, False),
         ("understand_beam", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_laguna_xs_2", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_laguna_xs_2_1", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_laguna_m_1", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_trinity_large", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_trinity_large_thinking", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_trinity_mini", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("understand_trinity_nano", {"prompt": "describe a linen trench", "dry_run": True}, False),
+        ("generate_recraft_v3", {"prompt": "linen trench", "dry_run": True}, False),
+        ("edit_recraft_v3", {"image": "look.jpg", "prompt": "winter", "dry_run": True}, False),
+        ("bg_remove_recraft_v3", {"image": "look.jpg", "dry_run": True}, False),
         ("understand_hy4_preview", {"prompt": "describe a linen trench", "dry_run": True}, False),
         ("understand_hy4_preview_local", {"prompt": "hello", "dry_run": True}, False),
         ("measure_clad_body_photo", {"photo": "p.jpg", "height_cm": 170, "dry_run": True}, False),
@@ -425,6 +435,28 @@ async def check_list_and_set_api_keys() -> None:
     assert "PHOTOROOM_API_KEY" in allowed
     assert "TOKENHUB_API_KEY" in allowed
     assert "TENCENT_TOKENHUB_API_KEY" in allowed
+    assert "poolside" in by_id
+    assert by_id["poolside"]["vars"][0]["name"] == "POOLSIDE_API_KEY"
+    assert any(
+        u["service"] == "understand" and u["model"] == "laguna-m.1"
+        for u in by_id["poolside"]["unlocks"]
+    )
+    assert "arcee" in by_id
+    assert by_id["arcee"]["vars"][0]["name"] == "ARCEE_API_KEY"
+    assert any(
+        u["service"] == "understand" and u["model"] == "trinity-large"
+        for u in by_id["arcee"]["unlocks"]
+    )
+    assert "recraft" in by_id
+    assert by_id["recraft"]["vars"][0]["name"] == "RECRAFT_API_TOKEN"
+    assert any(
+        u["service"] == "generate" and u["model"] == "recraft-v3"
+        for u in by_id["recraft"]["unlocks"]
+    )
+    assert "POOLSIDE_API_KEY" in allowed
+    assert "ARCEE_API_KEY" in allowed
+    assert "ARCEEAI_API_KEY" in allowed
+    assert "RECRAFT_API_TOKEN" in allowed
     assert "META_MODEL_API_KEY" in allowed and "MUSE_API_KEY" in allowed
     gemini = next(p for p in providers if p["id"] == "gemini")
     assert gemini["vars"][0]["name"] == "GEMINI_API_KEY"

@@ -158,6 +158,9 @@ named-model-only (not a capability default):
 | `understand_ternary_bonsai_2_27b` | PrismML Ternary Bonsai 2 27B (self-hosted llama.cpp/MLX server) | `BONSAI_BASE_URL` (default localhost:8080) |
 | `understand_limite_1b_violetto` | Paradigma Limite 1B - Violetto (text-only math reasoning; out of fashion/media scope) | `pip install opentryon[local]` + GPU |
 | `understand_beam` | Reflection Beam 1.0 (text chat, 501B MoE) | `REFLECTION_API_KEY` |
+| `understand_laguna_xs_2` / `understand_laguna_xs_2_1` / `understand_laguna_m_1` | Poolside Laguna (text chat) | `POOLSIDE_API_KEY` |
+| `understand_trinity_large` / `understand_trinity_large_thinking` / `understand_trinity_mini` | Arcee Trinity (400B Large hosted) | `ARCEE_API_KEY` |
+| `understand_trinity_nano` | Trinity Nano via local vLLM/SGLang | `TRINITY_BASE_URL` (default localhost:8000) |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub LLM) | `TOKENHUB_API_KEY` |
 | `understand_hy4_preview_local` | Hy4 via local vLLM/SGLang OpenAI server | `HY4_BASE_URL` (default localhost:8000) |
 
@@ -337,6 +340,16 @@ The new `decide` service wraps "System One" models that return typed, calibrated
 ## FASHN catalogue tools (hosted, `FASHN_API_KEY`)
 
 Same key as `vton_fashn_tryon_max`. `edit_fashn_product_to_model`, `edit_fashn_model_swap`, `edit_fashn_face_to_model`, `edit_fashn_reframe`, `edit_fashn_edit`, `generate_fashn_model_create`, `video_generate_fashn_image_to_video` and `bg_remove_fashn_bg_remove`. See [FASHN catalogue endpoints](../api-reference/fashn.md#catalogue-endpoints-product-to-model-model-swap-).
+
+## Recraft V3 (`RECRAFT_API_TOKEN`)
+
+Same Recraft token for generate, edit (image-to-image), and background remove. **Not** Ideogram 4.0.
+
+| MCP tool | Backend | Needs |
+|---|---|---|
+| `generate_recraft_v3` | Recraft V3 text-to-image | `RECRAFT_API_TOKEN` |
+| `edit_recraft_v3` | Recraft V3 image-to-image | `RECRAFT_API_TOKEN` |
+| `bg_remove_recraft_v3` | Recraft V3 background remove | `RECRAFT_API_TOKEN` |
 
 ## Measure tools (Clad body sizing)
 

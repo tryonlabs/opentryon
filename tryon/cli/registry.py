@@ -96,6 +96,102 @@ def _hy4_understand_args(*, endpoint: str) -> List[Arg]:
     ]
 
 
+_LAGUNA_MODELS = [
+    "poolside/laguna-xs.2",
+    "poolside/laguna-xs.2.1",
+    "poolside/laguna-xs-2.1",
+    "poolside/laguna-m.1",
+]
+
+_LAGUNA_NOTE = (
+    "Poolside Laguna chat (POOLSIDE_API_KEY) on https://inference.poolside.ai/v1. "
+    "Text only — no image or video. Thinking is on by default; --no-thinking sends "
+    "chat_template_kwargs.enable_thinking=false. Named-model-only; not the understand "
+    "default. XS.2 is 33B-A3B; XS 2.1 is the successor; M.1 is 225B-A23B. "
+    "See https://docs.poolside.ai/get-started/supported-models"
+)
+
+_TRINITY_HOSTED_MODELS = [
+    "Trinity-Large-Preview",
+    "Trinity-Large-Thinking",
+    "trinity-mini",
+]
+_TRINITY_NANO_MODELS = [
+    "Trinity-Nano",
+    "Trinity-Nano-6B",
+    "arcee-ai/Trinity-Nano-6B",
+]
+_TRINITY_NOTE = (
+    "Arcee Trinity chat (ARCEE_API_KEY) on https://api.arcee.ai/api/v1. "
+    "Text only — no image or video. Trinity Large is 400B / 13B-active MoE. "
+    "Named-model-only; not the understand default. See https://www.arcee.ai/trinity"
+)
+
+_RECRAFT_STYLES = ["Photorealism", "Illustration", "Vector art", "Recraft V3 Raw"]
+_RECRAFT_SIZES = [
+    "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3", "4:5", "5:4",
+    "1024x1024", "1365x1024", "1024x1365", "1536x1024", "1024x1536",
+    "1820x1024", "1024x1820", "1024x1280", "1280x1024", "1024x1707", "1707x1024",
+]
+_RECRAFT_NOTE = (
+    "Recraft V3 (RECRAFT_API_TOKEN) on https://external.api.recraft.ai/v1. "
+    "Raster generate / image-to-image / background remove. Styles: Photorealism, "
+    "Illustration, Vector art, Recraft V3 Raw. See https://www.recraft.ai/docs/api-reference/models/recraft-v3"
+)
+
+
+def _laguna_understand_args(*, default_model: str) -> List[Arg]:
+    return [
+        Arg(("--prompt", "-p"), "prompt", required=True, help="Question or instruction"),
+        Arg(("--system",), "system", help="Optional system prompt"),
+        Arg(("--no-thinking",), "enable_thinking", action="store_false", default=True,
+            help="Turn off Laguna thinking (chat_template_kwargs.enable_thinking=false)"),
+        Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+        Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+        Arg(("--top-p",), "top_p", type=float, help="Nucleus sampling"),
+        Arg(("--top-k",), "top_k", type=int, help="Top-k sampling"),
+        Arg(("--min-p",), "min_p", type=float, help="Min-p sampling"),
+        Arg(("--laguna-model",), "laguna_model", target="init", call_name="model",
+            default=default_model, choices=_LAGUNA_MODELS, help="Poolside model id"),
+        Arg(("--base-url",), "base_url", target="init",
+            help="Override POOLSIDE_BASE_URL (default https://inference.poolside.ai/v1)"),
+    ]
+
+
+def _trinity_understand_args(*, default_model: str, endpoint: str) -> List[Arg]:
+    hosted = endpoint == "arcee"
+    return [
+        Arg(("--prompt", "-p"), "prompt", required=True, help="Question or instruction"),
+        Arg(("--system",), "system", help="Optional system prompt"),
+        Arg(("--max-tokens",), "max_tokens", type=int, help="Max output tokens"),
+        Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+        Arg(("--top-p",), "top_p", type=float, help="Nucleus sampling"),
+        Arg(("--trinity-model",), "trinity_model", target="init", call_name="model",
+            default=default_model,
+            choices=_TRINITY_HOSTED_MODELS if hosted else _TRINITY_NANO_MODELS,
+            help="Arcee / served model id"),
+        Arg(("--endpoint",), "endpoint", target="init", default=endpoint,
+            choices=["arcee", "local"],
+            help="arcee = Arcee Platform; local = vLLM/SGLang OpenAI server"),
+        Arg(("--base-url",), "base_url", target="init",
+            help="Override ARCEE_BASE_URL or TRINITY_BASE_URL"),
+    ]
+
+
+def _recraft_common_args(*, with_prompt: bool, with_style: bool) -> List[Arg]:
+    args: List[Arg] = []
+    if with_prompt:
+        args.append(Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"))
+    if with_style:
+        args.append(Arg(("--style",), "style", default="Recraft V3 Raw",
+                        choices=_RECRAFT_STYLES, help="Recraft V3 curated style"))
+    args.append(Arg(("--n",), "n", type=int, default=1, help="Number of images (1-6)"))
+    args.append(Arg(("--negative-prompt",), "negative_prompt", help="What the image must not contain"))
+    args.append(Arg(("--image-format",), "image_format", default="png",
+                    choices=["png", "webp"], help="Raster output format"))
+    return args
+
+
 _QWEN_IMAGE_VERSIONS = [
     "qwen-image-3.0-pro",
     "qwen-image-3.0",
@@ -1496,6 +1592,17 @@ _GENERATE = {
             *_qwen_image_local_sample_args(t2i=True),
         ],
     ),
+    "recraft-v3": ModelSpec(
+        id="recraft-v3", label="Recraft V3 (text-to-image)",
+        import_path="tryon.api.recraft", class_name="RecraftAdapter",
+        method="generate_text_to_image", output_kind="images", env_hint="RECRAFT_API_TOKEN",
+        notes=_RECRAFT_NOTE,
+        args=[
+            *_recraft_common_args(with_prompt=True, with_style=True),
+            Arg(("--size",), "size", choices=_RECRAFT_SIZES,
+                help="Aspect ratio or exact pixel size (auto from prompt if omitted)"),
+        ],
+    ),
     "ideogram": ModelSpec(
         id="ideogram", label="Ideogram 4.0",
         import_path="tryon.api.ideogram", class_name="IdeogramAdapter",
@@ -2027,6 +2134,19 @@ _EDIT = {
             Arg(("--mask",), "mask", help="Mask image, same dimensions as the source"),
             Arg(("--image-context",), "image_context", help="Visual reference for the edit"),
             *_fashn_common_args(),
+        ],
+    ),
+    "recraft-v3": ModelSpec(
+        id="recraft-v3", label="Recraft V3 (image-to-image)",
+        import_path="tryon.api.recraft", class_name="RecraftAdapter",
+        method="generate_image_edit", output_kind="images", env_hint="RECRAFT_API_TOKEN",
+        notes=_RECRAFT_NOTE + " --strength 0 (near original) to 1 (least similar).",
+        args=[
+            _img(("--image", "-i"), "image", "Source image (path, URL, or data URL)", required=True),
+            *_recraft_common_args(with_prompt=True, with_style=True),
+            Arg(("--strength",), "strength", type=float, default=0.2,
+                help="How far the result moves from the original (0-1, default 0.2)"),
+            Arg(("--seed",), "seed", type=int, help="Random seed (Recraft random_seed)"),
         ],
     ),
 }
@@ -2804,6 +2924,86 @@ _UNDERSTAND = {
             Arg(("--base-url",), "base_url", target="init",
                 help="Override REFLECTION_BASE_URL (default https://api.reflection.ai/openai/v1)"),
         ],
+    ),
+    "laguna-xs.2": ModelSpec(
+        id="laguna-xs.2",
+        label="Poolside Laguna XS.2 (33B MoE, text chat)",
+        import_path="tryon.api.poolside",
+        class_name="LagunaAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="POOLSIDE_API_KEY",
+        notes=_LAGUNA_NOTE + " Default id poolside/laguna-xs.2; pass --laguna-model poolside/laguna-xs.2.1 for the successor.",
+        args=_laguna_understand_args(default_model="poolside/laguna-xs.2"),
+    ),
+    "laguna-xs.2.1": ModelSpec(
+        id="laguna-xs.2.1",
+        label="Poolside Laguna XS 2.1 (33B MoE, text chat)",
+        import_path="tryon.api.poolside",
+        class_name="LagunaAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="POOLSIDE_API_KEY",
+        notes=_LAGUNA_NOTE + " Successor to XS.2 with native reasoning. Default id poolside/laguna-xs.2.1.",
+        args=_laguna_understand_args(default_model="poolside/laguna-xs.2.1"),
+    ),
+    "laguna-m.1": ModelSpec(
+        id="laguna-m.1",
+        label="Poolside Laguna M.1 (225B MoE, text chat)",
+        import_path="tryon.api.poolside",
+        class_name="LagunaAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="POOLSIDE_API_KEY",
+        notes=_LAGUNA_NOTE + " Flagship agentic coding model. Default id poolside/laguna-m.1.",
+        args=_laguna_understand_args(default_model="poolside/laguna-m.1"),
+    ),
+    "trinity-large": ModelSpec(
+        id="trinity-large",
+        label="Arcee Trinity Large Preview (400B MoE, text chat)",
+        import_path="tryon.api.arcee",
+        class_name="TrinityAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="ARCEE_API_KEY",
+        notes=_TRINITY_NOTE + " Default Trinity-Large-Preview (400B / 13B-active). Hosted at 128K context.",
+        args=_trinity_understand_args(default_model="Trinity-Large-Preview", endpoint="arcee"),
+    ),
+    "trinity-large-thinking": ModelSpec(
+        id="trinity-large-thinking",
+        label="Arcee Trinity Large Thinking (400B MoE, text chat)",
+        import_path="tryon.api.arcee",
+        class_name="TrinityAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="ARCEE_API_KEY",
+        notes=_TRINITY_NOTE + " Reasoning-optimised Large. Returns reasoning_content when the server parses traces.",
+        args=_trinity_understand_args(default_model="Trinity-Large-Thinking", endpoint="arcee"),
+    ),
+    "trinity-mini": ModelSpec(
+        id="trinity-mini",
+        label="Arcee Trinity Mini (26B MoE, text chat)",
+        import_path="tryon.api.arcee",
+        class_name="TrinityAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="ARCEE_API_KEY",
+        notes=_TRINITY_NOTE + " 26B / 3B-active. Fast hosted Mini.",
+        args=_trinity_understand_args(default_model="trinity-mini", endpoint="arcee"),
+    ),
+    "trinity-nano": ModelSpec(
+        id="trinity-nano",
+        label="Arcee Trinity Nano (6B MoE, local OpenAI-compatible server)",
+        import_path="tryon.api.arcee",
+        class_name="TrinityAdapter",
+        method="understand",
+        output_kind="text",
+        notes=(
+            "Trinity Nano is not hosted on the Arcee Platform. Client for a server YOU run "
+            "(vLLM/SGLang) serving Trinity-Nano (6B / 1B-active): default "
+            "TRINITY_BASE_URL=http://127.0.0.1:8000/v1. Named-model-only; not the understand default."
+        ),
+        args=_trinity_understand_args(default_model="Trinity-Nano", endpoint="local"),
     ),
     "mercury-3": ModelSpec(
         id="mercury-3",
@@ -4000,6 +4200,17 @@ _BG_REMOVE = {
         notes=_FASHN_NOTE + "Transparent-background PNG in 1-3 s (min 128x128). Local alternative: --model ben2.",
         args=[
             _img(("--image", "-i"), "image", "Input image (path or URL)", required=True),
+        ],
+    ),
+    "recraft-v3": ModelSpec(
+        id="recraft-v3", label="Recraft V3 background remove",
+        import_path="tryon.api.recraft", class_name="RecraftAdapter",
+        method="remove_background", output_kind="images", env_hint="RECRAFT_API_TOKEN",
+        notes=_RECRAFT_NOTE + " $0.01 per request. Transparent PNG/WebP.",
+        args=[
+            _img(("--image", "-i"), "image", "Input image (path, URL, or data URL)", required=True),
+            Arg(("--image-format",), "image_format", default="png",
+                choices=["png", "webp"], help="Raster output format"),
         ],
     ),
 }
