@@ -173,6 +173,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `generate_luma_image` | Luma Photon | `LUMA_AI_API_KEY` |
 | `generate_seedream` | ByteDance Seedream 5.0 Pro | `ARK_API_KEY` |
 | `generate_ideogram` | Ideogram 4.0 | `IDEOGRAM_API_KEY` |
+| `generate_recraft_v3` | Recraft V3 | `RECRAFT_API_TOKEN` |
 | `generate_grok_imagine_image` | xAI Grok Imagine Image Quality | `XAI_API_KEY` |
 | `generate_p_image` | Pruna P-Image | `PRUNA_API_KEY` |
 | `generate_p_image_ideogram` | P-Image-Ideogram (Pruna × Ideogram) | `PRUNA_API_KEY` |
@@ -209,6 +210,7 @@ Every tool returns a structured dict: `{"success": true/false, ...}` -- never ra
 | `edit_qwen_image` | Qwen-Image 3.0 (I2I, 1–3 refs) | `DASHSCOPE_API_KEY` |
 | `edit_qwen_image_local` | Qwen-Image-Edit-2511 (open-weight, local) | local/GPU |
 | `edit_muse_image` | Muse Image (Meta Model API, edit / multi-ref) | `MODEL_API_KEY` |
+| `edit_recraft_v3` | Recraft V3 (image-to-image) | `RECRAFT_API_TOKEN` |
 
 ### understand -- Image & video understanding / captioning
 
@@ -241,6 +243,9 @@ and lookbooks as well as documents, UI screenshots, product photos, and video cl
 | `understand_ternary_bonsai_2_27b` | Ternary Bonsai 2 27B (PrismML) | local server | OpenAI-compatible client for a self-hosted llama.cpp/MLX server (`BONSAI_BASE_URL`); not in-process GPU |
 | `understand_limite_1b_violetto` | Limite 1B - Violetto (Paradigma Inc, open-weight, local) | local/GPU | No first-party hosted API exists. Text-only 1B math reasoning, no image/video — out of fashion/media scope; named-model-only, not a capability default |
 | `understand_beam` | Reflection Beam 1.0 | `REFLECTION_API_KEY` | Text chat only (`Beam-1.0-501B-A23B`); reasoning always on |
+| `understand_laguna_xs_2` / `understand_laguna_xs_2_1` / `understand_laguna_m_1` | Poolside Laguna | `POOLSIDE_API_KEY` | Text chat only; thinking on by default |
+| `understand_trinity_large` / `understand_trinity_large_thinking` / `understand_trinity_mini` | Arcee Trinity (400B Large hosted) | `ARCEE_API_KEY` | Text chat only |
+| `understand_trinity_nano` | Arcee Trinity Nano | local server | Not hosted; `TRINITY_BASE_URL` |
 | `understand_hy4_preview` | Tencent Hy4 preview (TokenHub) | `TOKENHUB_API_KEY` | 770B MoE LLM; text (+ optional image); `reasoning_effort` |
 | `understand_hy4_preview_local` | Hy4 local vLLM/SGLang | local server | Same adapter; `HY4_BASE_URL` (not in-process GPU) |
 | `understand_nemotron_omni` | Nemotron 3 Nano Omni (NVIDIA NIM) | `NVIDIA_API_KEY` | Image + video + audio; thinking on by default |
@@ -315,6 +320,7 @@ Local Diffusers twin: `generate_qwen_image_local`, `edit_qwen_image_local`,
 |---|---|---|
 | `bg_remove_ben2` | BEN2 background remover (local) | local/GPU |
 | `bg_remove_fashn_bg_remove` | FASHN Background Remove (hosted, 1 credit) | `FASHN_API_KEY` |
+| `bg_remove_recraft_v3` | Recraft V3 background remove | `RECRAFT_API_TOKEN` |
 
 ### tts -- Text-to-speech
 

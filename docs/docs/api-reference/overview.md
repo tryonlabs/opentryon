@@ -674,7 +674,7 @@ Also available via the CLI/MCP registry:
 
 Local twins: `Cosmos3LocalAdapter` (`cosmos3-local`), `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
 
-Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `PImageIdeogramAdapter` (`p-image-ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video).
+Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `RecraftAdapter` (`recraft-v3` generate/edit/bg-remove), `PImageIdeogramAdapter` (`p-image-ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video). Dedicated page: [Recraft V3](recraft).
 
 ### `GeminiOmniAdapter`
 
@@ -956,6 +956,22 @@ See [Hy4 TokenHub](hy4) and [Hy4 local](../local-models/hy4.md).
 Reflection **Beam 1.0** (`REFLECTION_API_KEY`) on `understand`. Text chat only. Upstream id `Beam-1.0-501B-A23B`. Reasoning is always on.
 
 See [Beam](beam).
+
+---
+
+### `LagunaAdapter`
+
+Poolside **Laguna** (`POOLSIDE_API_KEY`) on `understand`: `laguna-xs.2`, `laguna-xs.2.1`, `laguna-m.1`. Text chat only. Thinking on by default.
+
+See [Laguna](laguna).
+
+---
+
+### `TrinityAdapter`
+
+Arcee **Trinity** (`ARCEE_API_KEY`) on `understand`: `trinity-large` (400B Preview), `trinity-large-thinking`, `trinity-mini`. `trinity-nano` is a local OpenAI-compatible client (`TRINITY_BASE_URL`). Text chat only.
+
+See [Trinity](trinity).
 
 ---
 

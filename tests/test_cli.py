@@ -915,6 +915,137 @@ def check_beam_dry_run_and_requires_prompt():
     print("\u2713 understand beam --dry-run resolves and rejects missing prompt, images, and none")
 
 
+def check_laguna_trinity_recraft_dry_runs():
+    for model_id, expect_model in [
+        ("laguna-xs.2", "poolside/laguna-xs.2"),
+        ("laguna-xs.2.1", "poolside/laguna-xs.2.1"),
+        ("laguna-m.1", "poolside/laguna-m.1"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "understand", "--model", model_id,
+                "--prompt", "Write a lookbook caption for a linen trench.",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        assert code == 0 and "LagunaAdapter" in printed, printed
+        assert f"'model': '{expect_model}'" in printed, printed
+        assert ".understand(" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main(["understand", "--model", "laguna-m.1", "--dry-run"])
+    assert code != 0, "expected laguna-m.1 to require --prompt"
+
+    from tryon.api.poolside import LagunaAdapter
+
+    laguna = LagunaAdapter(api_key="fake-key-for-validation-test")
+    try:
+        laguna.understand()
+    except ValueError as e:
+        assert "prompt" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Laguna has no prompt")
+    try:
+        laguna.understand(prompt="hi", image="look.jpg")
+    except ValueError as e:
+        assert "text-only" in str(e).lower() or "image" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Laguna is given an image")
+
+    for model_id, expect_model, expect_endpoint in [
+        ("trinity-large", "Trinity-Large-Preview", "arcee"),
+        ("trinity-large-thinking", "Trinity-Large-Thinking", "arcee"),
+        ("trinity-mini", "trinity-mini", "arcee"),
+        ("trinity-nano", "Trinity-Nano", "local"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "understand", "--model", model_id,
+                "--prompt", "Write a lookbook caption for a linen trench.",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        assert code == 0 and "TrinityAdapter" in printed, printed
+        assert f"'model': '{expect_model}'" in printed, printed
+        assert f"'endpoint': '{expect_endpoint}'" in printed, printed
+
+    from tryon.api.arcee import TrinityAdapter
+
+    trinity = TrinityAdapter(api_key="fake-key-for-validation-test")
+    try:
+        trinity.understand()
+    except ValueError as e:
+        assert "prompt" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Trinity has no prompt")
+    try:
+        trinity.understand(prompt="hi", image="look.jpg")
+    except ValueError as e:
+        assert "text-only" in str(e).lower() or "image" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Trinity is given an image")
+    try:
+        TrinityAdapter(api_key="fake", model="Trinity-Nano", endpoint="arcee")
+    except ValueError as e:
+        assert "not hosted" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Trinity Nano is used on the Arcee endpoint")
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "generate", "--model", "recraft-v3",
+            "--prompt", "linen trench on a terrace",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "RecraftAdapter" in printed and "generate_text_to_image" in printed, printed
+    assert "'style': 'Recraft V3 Raw'" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "edit", "--model", "recraft-v3",
+            "--image", "look.jpg",
+            "--prompt", "the same scene in winter",
+            "--strength", "0.4",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "generate_image_edit" in printed, printed
+    assert "'strength': 0.4" in printed, printed
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cli_main([
+            "bg-remove", "--model", "recraft-v3",
+            "--image", "look.jpg",
+            "--dry-run",
+        ])
+    printed = buf.getvalue()
+    assert code == 0 and "remove_background" in printed, printed
+
+    from tryon.api.recraft import RecraftAdapter
+
+    recraft = RecraftAdapter(api_key="fake-key-for-validation-test")
+    try:
+        recraft.generate_text_to_image(prompt="")
+    except ValueError as e:
+        assert "prompt" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError when Recraft generate has no prompt")
+    try:
+        recraft.generate_image_edit(image="look.jpg", prompt="winter", strength=1.5)
+    except ValueError as e:
+        assert "strength" in str(e).lower()
+    else:
+        raise AssertionError("expected ValueError for Recraft strength outside 0-1")
+    print("\u2713 laguna / trinity / recraft-v3 dry-runs resolve and reject invalid inputs")
+
+
 def check_hy4_dry_runs():
     for model_id, expect_endpoint in [
         ("hy4-preview", "'endpoint': 'tokenhub'"),
@@ -3094,6 +3225,7 @@ if __name__ == "__main__":
     check_kimi_dry_runs()
     check_qwen_dry_runs()
     check_beam_dry_run_and_requires_prompt()
+    check_laguna_trinity_recraft_dry_runs()
     check_hy4_dry_runs()
     check_moondream_and_cosmos_nano_dry_runs()
     check_mercury3_dry_run()

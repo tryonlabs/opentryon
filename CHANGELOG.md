@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `understand`: **`laguna-xs.2`**, **`laguna-xs.2.1`**, **`laguna-m.1`** — Poolside Laguna chat (`tryon.api.poolside.LagunaAdapter`, `POOLSIDE_API_KEY`). Text only; thinking on by default (`--no-thinking` sends `chat_template_kwargs.enable_thinking=false`). XS.2 is 33B-A3B; XS 2.1 is the successor; M.1 is 225B-A23B. Docs: `api-reference/laguna.md`.
+- `understand`: **`trinity-large`**, **`trinity-large-thinking`**, **`trinity-mini`**, **`trinity-nano`** — Arcee Trinity (`tryon.api.arcee.TrinityAdapter`). Hosted Large Preview is 400B / 13B-active (`ARCEE_API_KEY`); Nano is a local vLLM/SGLang client (`TRINITY_BASE_URL`) because Arcee does not host it. Docs: `api-reference/trinity.md`.
+- `generate` / `edit` / `bg-remove`: **`recraft-v3`** — Recraft V3 (`tryon.api.recraft.RecraftAdapter`, `RECRAFT_API_TOKEN`) for text-to-image, image-to-image (`--strength`), and background remove. Docs: `api-reference/recraft.md`.
+- Watch doc only (no adapter): Wayve **GAIA-2** latent-diffusion world model — no public API or weights. See `advanced/gaia-2-watch.md`. Ideogram 4.0 is already `--model ideogram` (`IDEOGRAM_API_KEY`); not re-added.
 - `parse`: **`lightonocr-3-local`** and **`lightonocr-3-vllm`** — LightOn's Apache-2.0 LightOnOCR-3 (0.8B default, 4B via `--variant`). Page images and PDFs to markdown; `--grounding` adds labelled blocks with 0-1000 boxes (tables and charts as HTML); `--pages` for PDFs. In-process Transformers (`tryon.models.lightonocr`, needs `transformers>=5.2`) or a client for your own vLLM / SGLang server (`tryon.api.lighton`, `LIGHTONOCR_BASE_URL`). No hosted API exists. Shared helpers in `tryon/ocr.py`. Docs: `local-models/lightonocr.md`.
 
 ## [0.0.9] - 11 November 2026

@@ -29,15 +29,15 @@ opentryon <service> --model <model> [params...]
 | Service | What it does | Models |
 |---|---|---|
 | `vton` | Virtual try-on: compose a garment onto a person image | `flux-vto`, `google-vton`, `outfitanyone-plus`, `photoroom-vton`, `photoroom-virtual-model`, `nova-canvas`, `kling-ai`, `segmind`, `p-image-tryon`, `fashn-tryon-max`, `fashn-tryon-v1.6`, `nano-banana-2-lite`, `qwen-image`, `qwen-image-local`, `leffa` (local), `catvton` (local), `fashn-vton-1.5` (local), `muse-image`, `klein-4b-tryon` (local) |
-| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux3-image-klein`, `flux3-image-klein-local` (local), `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `sana-sprint` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-model-create` |
-| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux3-image-klein`, `flux3-image-klein-local` (local), `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-product-to-model`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `qie-2511-extract-outfit` (local) |
-| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-k3.1-pro`, `ripple-65b-openrouter`, `ripple-65b-local`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `claude-haiku-5-5`, `gemini-3.8-flash`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `nemotron-3.5-super-vl`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope), `beam` (Reflection, text-only), `flint-local`, `flint-openrouter`, `sage-a1.5-local`, `fashion-florence` (local) |
+| `generate` | Text-to-image generation | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux3-image-klein`, `flux3-image-klein-local` (local), `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `sana-sprint` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `luma-image`, `seedream`, `ideogram`, `recraft-v3`, `grok-imagine-image`, `p-image`, `p-image-ideogram`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-model-create` |
+| `edit` | Image editing (image + instruction &rarr; image) | `nano-banana`, `nano-banana-pro`, `nano-banana-2`, `nano-banana-2.1`, `flux3-image`, `flux3-image-klein`, `flux3-image-klein-local` (local), `flux2-pro`, `flux2-flex`, `flux2-turbo` (local), `gpt-image`, `gpt-image-2.5`, `gpt-image-2.5-sunburst`, `seedream`, `recraft-v3`, `p-image-edit`, `p-image-upscale`, `qwen-image`, `qwen-image-2.1-pro`, `qwen-image-2.1-turbo`, `qwen-image-local` (local), `qwen-image-2.1-local`, `qwen-image-2.1-turbo-local` (local), `muse-image`, `fashn-product-to-model`, `fashn-model-swap`, `fashn-face-to-model`, `fashn-reframe`, `fashn-edit`, `qie-2511-extract-outfit` (local) |
+| `understand` | Image/video understanding | `kimi-k2.6`, `kimi-k2.7-code`, `kimi-k3`, `kimi-k3.1-pro`, `ripple-65b-openrouter`, `ripple-65b-local`, `kimi-vl` (local), `qwen3.8-max`, `qwen3.8-omni-flash`, `qwen3.8` (local), `glm-5.3-flashx`, `deepseek-flash`, `deepseek-vl2` (local), `deepseek-ocr` (local), `claude-haiku-5-5`, `gemini-3.8-flash`, `hy4-preview`, `hy4-preview-local`, `nemotron-omni`, `nemotron-3.5-super-vl`, `cosmos3-reasoner`, `llava-next` (local), `ternary-bonsai-2-27b` (local server), `limite-1b-violetto` (local, text-only math reasoning — out of fashion/media scope), `beam` (Reflection, text-only), `laguna-xs.2` / `laguna-xs.2.1` / `laguna-m.1` (Poolside, text-only), `trinity-large` / `trinity-large-thinking` / `trinity-mini` (Arcee, text-only), `trinity-nano` (local server), `flint-local`, `flint-openrouter`, `sage-a1.5-local`, `fashion-florence` (local) |
 | `video-generate` | Text/image-to-video generation | `veo`, `sora`, `luma-video`, `luma-ray-3.2`, `flux3-video`, `flux3-max`, `seedance`, `kling-v4`, `kling-v3`, `kling-v3-omni`, `kling-v2-5-turbo`, `grok-imagine-video`, `gemini-omni`, `p-video`, `p-video-2-pro`, `p-video-replace`, `p-video-avatar`, `p-video-animate`, `ltx-2.5-api`, `ltx-2.5`, `hailuo-2.3`, `minimax-h3`, `minimax-h3-max`, `fal-h3-max`, `fal-h3-max-lipsync`, `fal-h3-max-relight`, `minimax-h3-local`, `wan-api`, `wan-3.0`, `wan-2.2`, `runway-gen4.5`, `cosmos3`, `cosmos3-local` (local), `fashn-image-to-video` |
 | `embed` | Multimodal embeddings | … includes `nemotron-3.5-embed-1b`, `nemotron-3.5-embed-1b-local`, `gemini-embedding-2`, … |
 | `parse` | Document/page image parsing | `nemotron-parse`, `nemotron-parse-local`, `lightonocr-3-local` (local), `lightonocr-3-vllm` |
 | `audio-to-video` | Lip-sync / dub video to speech audio | `nvidia-lipsync` (self-hosted NIM gRPC) |
 | `generate-3d` | Text/image to 3D mesh | `trellis` (NVIDIA NIM) |
-| `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove` |
+| `bg-remove` | Background removal | `ben2` (local), `fashn-bg-remove`, `recraft-v3` |
 | `tts` | Text-to-speech | `eleven-v4`, `eleven-v4-turbo`, `gemini-3.8-flash-tts`, `gemini-3.8-flash-lite-tts` |
 | `decide` | Calibrated yes/no, choice, score, box, and track decisions ("System One" models, no text output) | `jev`, `pplx-decider`, `pplx-decider-local`, `clef`, `clef-local`, `kev-openrouter`, `kev-local`, `autotrust-jev-local`, `thx-01`, `thx-01-local` (local), `d1-3b` (local), `d1-omni-600m` (local), `d3-turbo` … `d3-edge`, `d3-*-local` (local), `videojev-4b` (local), `videojev-35b-a3b` (local) |
 | `classify` | Fixed-label image classification with calibrated probabilities (try-on safety gating) | `tryon-safety-classifier` (local) |
@@ -147,6 +147,14 @@ opentryon understand --model limite-1b-violetto \
 opentryon understand --model beam \
   --prompt "Write a 3-sentence lookbook caption for a linen trench."
 
+# Poolside Laguna (POOLSIDE_API_KEY; text only)
+opentryon understand --model laguna-m.1 \
+  --prompt "Write a 3-sentence lookbook caption for a linen trench."
+
+# Arcee Trinity Large 400B (ARCEE_API_KEY; text only)
+opentryon understand --model trinity-large \
+  --prompt "Write a 3-sentence lookbook caption for a linen trench."
+
 # Tencent Hy4 preview (TokenHub LLM; optional --image)
 opentryon understand --model hy4-preview \
   --prompt "Write a 3-sentence lookbook caption for a linen trench."
@@ -229,6 +237,9 @@ opentryon video-generate --model cosmos3 --prompt "A model walks a concrete runw
 # Seedream / Ideogram / Grok Imagine Image / Pruna P-Image
 opentryon generate --model seedream --prompt "editorial sneaker still" --size 2K
 opentryon generate --model ideogram --prompt 'Poster "SUMMER 2026"' --rendering-speed QUALITY
+opentryon generate --model recraft-v3 --prompt "linen trench on a terrace" --style Photorealism --size 3:4
+opentryon edit --model recraft-v3 --image look.jpg --prompt "the same scene in winter" --strength 0.4
+opentryon bg-remove --model recraft-v3 --image product.jpg
 opentryon generate --model grok-imagine-image --prompt "street-art collage" --aspect-ratio 16:9
 opentryon generate --model p-image --prompt "luxury knitwear flatlay" --aspect-ratio 1:1
 opentryon generate --model p-image-ideogram --prompt 'Poster "ATELIER NOIR"' --thinking high --image-size 2K

@@ -54,6 +54,22 @@ MOONSHOT_API_KEY=your_moonshot_api_key
 REFLECTION_API_KEY=your_reflection_api_key
 # REFLECTION_BASE_URL=https://api.reflection.ai/openai/v1
 
+# Poolside Laguna (understand laguna-xs.2 / laguna-xs.2.1 / laguna-m.1 — text chat)
+POOLSIDE_API_KEY=your_poolside_api_key
+# POOLSIDE_BASE_URL=https://inference.poolside.ai/v1
+
+# Arcee Trinity (understand trinity-large / trinity-large-thinking / trinity-mini — text chat)
+ARCEE_API_KEY=your_arcee_api_key
+# ARCEEAI_API_KEY=  # alias
+# ARCEE_BASE_URL=https://api.arcee.ai/api/v1
+# trinity-nano (local vLLM/SGLang, not hosted):
+# TRINITY_BASE_URL=http://127.0.0.1:8000/v1
+
+# Recraft V3 (generate / edit / bg-remove recraft-v3)
+RECRAFT_API_TOKEN=your_recraft_api_token
+# RECRAFT_API_KEY=  # alias
+# RECRAFT_BASE_URL=https://external.api.recraft.ai/v1
+
 # Tencent TokenHub (Hy4 preview LLM) — not Moonshot / DashScope
 TOKENHUB_API_KEY=your_tokenhub_api_key
 # TOKENHUB_BASE_URL=https://tokenhub-intl.tencentcloudmaas.com/v1
