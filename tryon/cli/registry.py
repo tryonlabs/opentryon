@@ -96,6 +96,44 @@ def _hy4_understand_args(*, endpoint: str) -> List[Arg]:
     ]
 
 
+def _inkling_understand_args(*, endpoint: str) -> List[Arg]:
+    return [
+        Arg(("--image", "-i"), "image", help="Image to understand (path; Tinker needs data-URI, max 2 MiB)"),
+        Arg(("--prompt", "-p"), "prompt", help="Question or instruction"),
+        Arg(("--system",), "system", help="Optional system message"),
+        Arg(
+            ("--reasoning-effort",),
+            "reasoning_effort",
+            choices=["none", "minimal", "low", "medium", "high", "xhigh", "max"],
+            help="Inkling hybrid reasoning depth (Tinker default ~high)",
+        ),
+        Arg(("--max-tokens",), "max_tokens", type=int, help="Max completion tokens"),
+        Arg(("--temperature",), "temperature", type=float, help="Sampling temperature"),
+        Arg(("--top-p",), "top_p", type=float, help="Top-p nucleus sampling"),
+        Arg(
+            ("--inkling-model",),
+            "inkling_model",
+            target="init",
+            call_name="model",
+            default="thinkingmachines/Inkling-2-Mini",
+            choices=[
+                "thinkingmachines/Inkling-2-Mini",
+                "thinkingmachines/Inkling-2-Mini:peft:262144",
+            ],
+            help="OpenAI model field (256K train on Tinker: :peft:262144)",
+        ),
+        Arg(
+            ("--endpoint",),
+            "endpoint",
+            target="init",
+            default=endpoint,
+            choices=["tinker", "local"],
+            help="tinker = Thinking Machines Tinker API; local = self-hosted OpenAI server",
+        ),
+        Arg(("--base-url",), "base_url", target="init", help="Override TINKER_BASE_URL or INKLING_BASE_URL"),
+    ]
+
+
 _LAGUNA_MODELS = [
     "poolside/laguna-xs.2",
     "poolside/laguna-xs.2.1",
@@ -2784,6 +2822,36 @@ _UNDERSTAND = {
             "Default HY4_BASE_URL=http://127.0.0.1:8000/v1. Hosted twin: --model hy4-preview."
         ),
         args=_hy4_understand_args(endpoint="local"),
+    ),
+    "inkling-2-mini": ModelSpec(
+        id="inkling-2-mini",
+        label="Inkling 2 Mini (Thinking Machines Tinker)",
+        import_path="tryon.api.thinkingmachines",
+        class_name="Inkling2MiniAdapter",
+        method="understand",
+        output_kind="text",
+        env_hint="TINKER_API_KEY",
+        notes=(
+            "26B MoE hybrid VLM (~5.4B active, 1M sample context). Tinker OpenAI chat "
+            "(thinkingmachines/Inkling-2-Mini). Image input via data-URI only on Tinker; "
+            "≤2 MiB per image. Local weights: --model inkling-2-mini-local. "
+            "https://thinkingmachines.ai/model-card/inkling-2-mini/"
+        ),
+        args=_inkling_understand_args(endpoint="tinker"),
+    ),
+    "inkling-2-mini-local": ModelSpec(
+        id="inkling-2-mini-local",
+        label="Inkling 2 Mini (local vLLM/SGLang/Ollama)",
+        import_path="tryon.api.thinkingmachines",
+        class_name="Inkling2MiniAdapter",
+        method="understand",
+        output_kind="text",
+        notes=(
+            "Apache 2.0 weights thinkingmachines/Inkling-2-Mini (~20 GB NVFP4/MXFP8). "
+            "Serve with SGLang, vLLM, Ollama, or Exo; default INKLING_BASE_URL="
+            "http://127.0.0.1:8000/v1. Hosted twin: inkling-2-mini (TINKER_API_KEY)."
+        ),
+        args=_inkling_understand_args(endpoint="local"),
     ),
     "flint-local": ModelSpec(
         id="flint-local",

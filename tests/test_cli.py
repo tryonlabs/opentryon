@@ -1067,6 +1067,26 @@ def check_hy4_dry_runs():
     print("\u2713 understand hy4-preview / hy4-preview-local --dry-run resolve the expected calls")
 
 
+def check_inkling_dry_runs():
+    for model_id, expect_endpoint in [
+        ("inkling-2-mini", "'endpoint': 'tinker'"),
+        ("inkling-2-mini-local", "'endpoint': 'local'"),
+    ]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli_main([
+                "understand", "--model", model_id,
+                "--image", "look.jpg",
+                "--prompt", "Describe the outfit.",
+                "--dry-run",
+            ])
+        printed = buf.getvalue()
+        assert code == 0, printed
+        assert "Inkling2MiniAdapter" in printed and ".understand(" in printed, printed
+        assert expect_endpoint in printed, printed
+    print("\u2713 understand inkling-2-mini / inkling-2-mini-local --dry-run resolve the expected calls")
+
+
 def check_moondream_and_cosmos_nano_dry_runs():
     cases = [
         (["understand", "--model", "moondream-3.1", "--image", "look.jpg",
@@ -3227,6 +3247,7 @@ if __name__ == "__main__":
     check_beam_dry_run_and_requires_prompt()
     check_laguna_trinity_recraft_dry_runs()
     check_hy4_dry_runs()
+    check_inkling_dry_runs()
     check_moondream_and_cosmos_nano_dry_runs()
     check_mercury3_dry_run()
     check_nvidia_nim_dry_runs()

@@ -123,6 +123,8 @@ async def check_dry_run_calls() -> None:
         ("bg_remove_recraft_v3", {"image": "look.jpg", "dry_run": True}, False),
         ("understand_hy4_preview", {"prompt": "describe a linen trench", "dry_run": True}, False),
         ("understand_hy4_preview_local", {"prompt": "hello", "dry_run": True}, False),
+        ("understand_inkling_2_mini", {"image": "page.png", "prompt": "describe", "dry_run": True}, False),
+        ("understand_inkling_2_mini_local", {"image": "page.png", "prompt": "describe", "dry_run": True}, False),
         ("measure_clad_body_photo", {"photo": "p.jpg", "height_cm": 170, "dry_run": True}, False),
         (
             "measure_clad_body_questionnaire",
