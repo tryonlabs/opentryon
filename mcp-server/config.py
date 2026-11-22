@@ -41,6 +41,9 @@ _EXTRA_ENV_NAMES = (
     "SAGE_A15_BASE_URL",
     "NEMOTRON_EMBED_BASE_URL",
     "NEMOTRON_PARSE_BASE_URL",
+    "TINKER_API_KEY",
+    "TINKER_BASE_URL",
+    "INKLING_BASE_URL",
     "LIGHTONOCR_BASE_URL",
     "LIGHTONOCR_MODEL",
     "LIGHTONOCR_API_KEY",
@@ -385,6 +388,14 @@ _PROVIDER_CATALOG: Tuple[Tuple[str, str, str, Tuple[str, ...], str], ...] = (
         "https://console.byteplus.com/",
         ("ARK_API_KEY",),
         "",
+    ),
+    (
+        "tinker",
+        "Thinking Machines (Tinker / Inkling)",
+        "https://tinker-docs.thinkingmachines.ai/inference/openai/overview/",
+        ("TINKER_API_KEY",),
+        "Unlocks understand inkling-2-mini. Optional TINKER_BASE_URL. "
+        "Local weights: inkling-2-mini-local (INKLING_BASE_URL).",
     ),
     (
         "tokenhub",

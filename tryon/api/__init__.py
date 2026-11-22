@@ -69,6 +69,7 @@ _LAZY_ATTRS = {
     "AutoTrustJevAdapter": ".autotrust",
     "LightOnOCRServerAdapter": ".lighton",
     "SageA15Adapter": ".sage",
+    "Inkling2MiniAdapter": ".thinkingmachines",
     "Cosmos3ReasonerAdapter": ".nvidia",
     "Cosmos3VideoAdapter": ".nvidia",
     "QwenUnderstandAdapter": ".qwen",
