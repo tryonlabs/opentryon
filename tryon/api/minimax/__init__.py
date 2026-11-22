@@ -2,5 +2,6 @@
 
 from .adapter import HailuoVideoAdapter
 from .h3_adapter import MiniMaxH3Adapter
+from .h3_image import MiniMaxH3ImageAdapter
 
-__all__ = ["HailuoVideoAdapter", "MiniMaxH3Adapter"]
+__all__ = ["HailuoVideoAdapter", "MiniMaxH3Adapter", "MiniMaxH3ImageAdapter"]

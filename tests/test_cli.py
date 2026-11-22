@@ -1454,6 +1454,70 @@ def check_qwen_image_requires_prompt_and_tryon_inputs():
     print("\u2713 QwenImageAdapter rejects empty prompt and missing try-on garment")
 
 
+def check_minimax_h3_image_generation():
+    import warnings
+    from unittest.mock import Mock, patch
+
+    from PIL import Image
+
+    args = ["generate", "--model", "minimax-h3-image", "--prompt", "A linen jacket"]
+    with contextlib.redirect_stdout(io.StringIO()) as output:
+        assert cli_main([*args, "--dry-run"]) == 0
+    assert "MiniMaxH3ImageAdapter" in output.getvalue()
+    assert "MiniMax-H3-Image" in output.getvalue()
+
+    image_data = io.BytesIO()
+    Image.new("RGB", (3, 2), "red").save(image_data, format="PNG")
+    raw = image_data.getvalue()
+    generated = Mock(status_code=200)
+    generated.json.return_value = {
+        "data": [
+            {"url": "https://example.com/output.png", "size": "3x2"},
+            {"error": {"code": "1027", "message": "output image failed content safety check"}},
+        ],
+        "usage": {"generated_images": 1},
+    }
+    region = {"MINIMAX_API_KEY": "test", "MINIMAX_API_BASE_URL": "https://api.minimax.cn"}
+    with tempfile.TemporaryDirectory() as out_dir, patch.dict(os.environ, region), patch(
+        "requests.post", return_value=generated
+    ) as post, patch("requests.get", return_value=Mock(content=raw)) as download:
+        with warnings.catch_warnings(record=True) as reports:
+            warnings.simplefilter("always")
+            assert cli_main([*args, "--output-dir", out_dir, "--n", "2",
+                             "--model-version", "MiniMax-H3-Image-Highspeed"]) == 0
+        assert any("content safety" in str(w.message) for w in reports)
+        post.assert_called_once_with(
+            "https://api.minimax.cn/v1/images/generations",
+            headers={"Authorization": "Bearer test"},
+            json={"prompt": "A linen jacket", "model": "MiniMax-H3-Image-Highspeed",
+                  "size": "auto", "n": 2, "response_format": "url"},
+            timeout=600, allow_redirects=False,
+        )
+        download.assert_called_once_with("https://example.com/output.png", timeout=60)
+        saved = list(Path(out_dir).glob("*.png"))
+        assert len(saved) == 1
+        with Image.open(saved[0]) as image:
+            assert image.size == (3, 2) and image.getpixel((0, 0)) == (255, 0, 0)
+
+        generated.json.return_value = {"data": [{"b64_json": base64.b64encode(raw).decode()}]}
+        with patch.dict(os.environ, {"MINIMAX_API_BASE_URL": ""}):
+            assert cli_main([*args, "--output-dir", out_dir, "--response-format", "b64_json"]) == 0
+        assert post.call_args.args == ("https://api.minimax.io/v1/images/generations",)
+        assert post.call_args.kwargs["json"]["model"] == "MiniMax-H3-Image"
+        assert download.call_count == 1
+
+        post.reset_mock()
+        generated.status_code = 422
+        generated.json.return_value = {
+            "error": {"type": "unprocessable_entity_error", "message": "no image generated", "code": "422"}
+        }
+        with contextlib.redirect_stderr(io.StringIO()) as errors:
+            assert cli_main([*args, "--output-dir", out_dir]) == 1
+        assert "422" in errors.getvalue() and "no image generated" in errors.getvalue()
+        post.assert_called_once()
+    print("MiniMax H3 image CLI dry run, URL, base64 and error handling passed")
+
+
 def check_minimax_h3_requires_prompt():
     from tryon.api.minimax import MiniMaxH3Adapter
     from tryon.models.minimax_h3.adapter import snap_num_frames
@@ -3262,6 +3326,7 @@ if __name__ == "__main__":
     check_mercury3_requires_prompt()
     check_nvidia_understand_requires_media()
     check_qwen_image_requires_prompt_and_tryon_inputs()
+    check_minimax_h3_image_generation()
     check_minimax_h3_requires_prompt()
     check_fal_h3_max_requires_prompt()
     check_fal_h3_max_lipsync_requires_valid_resolution()
