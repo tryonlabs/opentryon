@@ -129,7 +129,7 @@ images = flex_adapter.generate_text_to_image(
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 
-# Text-to-image generation (constructor default is GPT-Image-1.5)
+# Text-to-image generation (native OpenAI default is GPT-Image-2.6 Flare)
 adapter = GPTImageAdapter()  # CLI --model gpt-image
 images = adapter.generate_text_to_image(
     prompt="A female model in a traditional green saree",
@@ -145,16 +145,15 @@ adapter_25 = GPTImageAdapter(model_version="gpt-image-2.5")
 with open("result.png", "wb") as f:
     f.write(images[0])
 
-# Use GPT-Image-1 specifically (previous version)
-adapter_v1 = GPTImageAdapter(model_version="gpt-image-1")
+# Use GPT-Image-2.6 Sunburst for a precision edit
+edit_adapter = GPTImageAdapter(model_version="gpt-image-2.6-sunburst")
 
-# Image editing with mask
-edited_images = adapter.generate_image_edit(
+# Image editing
+edited_images = edit_adapter.generate_image_edit(
     images="person.jpg",
     prompt="Make the hat red and stylish",
     size="1024x1024",
     quality="high",
-    input_fidelity="high"  # Preserve input image details
 )
 ```
 

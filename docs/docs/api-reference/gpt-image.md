@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: GPT-Image (OpenAI Image Generation)
-description: Generate and edit images with OpenAI GPT-Image-1 / 1.5 and ChatGPT Images 2.5 (Flare and Sunburst).
+description: Generate and edit images with OpenAI GPT-Image 2.6, 2.5, and compatible legacy endpoints.
 keywords:
   - GPT-Image-1
   - GPT-Image-1.5
@@ -19,20 +19,25 @@ keywords:
 
 # GPT-Image (OpenAI Image Generation)
 
-OpenAI's GPT Image models provide high-quality image generation. Use **ChatGPT Images 2.5** (Flare / Sunburst) for new work. `--model gpt-image` stays on GPT-Image-1.5 so existing scripts do not silently jump versions.
+OpenAI's GPT Image models provide high-quality image generation. The native OpenAI default for `GPTImageAdapter()` and `--model gpt-image` is **GPT-Image-2.6 Flare**. Use `--model-version` to select an explicit supported model, including `gpt-image-2.6-sunburst` for precision edits. When `OPENAI_BASE_URL` points to a compatible gateway, the implicit default remains GPT-Image-1.5.
+
+For native GPT-Image-2.6 edits, leave `input_fidelity` unset. The adapter preserves the existing fidelity option for prior models and compatible endpoints.
 
 ## Models Available
 
+- **GPT-Image-2.6 Flare** (`gpt-image-2.6-flare`): Native OpenAI default for generation and editing.
+- **GPT-Image-2.6 Sunburst** (`gpt-image-2.6-sunburst`): Explicit option for precision edits.
+
 - **ChatGPT Images 2.5 Flare** (`gpt-image-2.5-flare`): Fast everyday generation. CLI `--model gpt-image-2.5` (and `--model-version gpt-image-2.5` aliases to Flare).
 - **ChatGPT Images 2.5 Sunburst** (`gpt-image-2.5-sunburst`): Precision edits. CLI `--model gpt-image-2.5-sunburst`.
-- **GPT-Image-1.5**: Previous generation (CLI `--model gpt-image` default).
-- **GPT-Image-1**: Original high-quality model (`--model gpt-image --model-version gpt-image-1`).
+- **GPT-Image-1.5**: Legacy ID retained for explicit selection and compatible endpoints. OpenAI [retires it on December 1, 2026](https://developers.openai.com/api/docs/deprecations).
+- **GPT-Image-1**: Legacy ID retained for compatible endpoints; retired on native OpenAI.
 
 ## Overview
 
 The `tryon.api.openAI.image_adapter` module provides:
 
-- **GPTImageAdapter**: OpenAI Images API (GPT-Image-1 / 1.5 and ChatGPT Images 2.5 Flare / Sunburst)
+- **GPTImageAdapter**: OpenAI Images API and compatible endpoints
 - Strong prompt understanding
 - Consistent composition and visual accuracy
 - Multiple image conditioning
@@ -56,7 +61,7 @@ The `tryon.api.openAI.image_adapter` module provides:
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter
 
-# Using GPT-Image-1.5 (constructor default — same as CLI --model gpt-image)
+# Native OpenAI default (GPT-Image-2.6 Flare); same as CLI --model gpt-image
 adapter = GPTImageAdapter()
 
 # ChatGPT Images 2.5 Flare (everyday; gpt-image-2.5 aliases here)
@@ -65,10 +70,10 @@ adapter = GPTImageAdapter(model_version="gpt-image-2.5")
 # ChatGPT Images 2.5 Sunburst (precision edits)
 adapter = GPTImageAdapter(model_version="gpt-image-2.5-sunburst")
 
-# Explicitly specify GPT-Image-1.5
+# Pin a legacy model, if your compatible endpoint still serves it
 adapter = GPTImageAdapter(model_version="gpt-image-1.5")
 
-# Use GPT-Image-1 (previous version)
+# Pin the original legacy model for a compatible endpoint
 adapter = GPTImageAdapter(model_version="gpt-image-1")
 
 # With explicit API key
@@ -77,7 +82,7 @@ adapter = GPTImageAdapter(api_key="your_api_key", model_version="gpt-image-2.5-f
 
 **Parameters:**
 - `api_key` (str, optional): OpenAI API key. Defaults to `OPENAI_API_KEY` environment variable
-- `model_version` (str, optional): Images API id. `"gpt-image-1"`, `"gpt-image-1.5"` (constructor default), `"gpt-image-2.5-flare"` / `"gpt-image-2.5"` (Flare), `"gpt-image-2.5-sunburst"`, or dated snapshots `gpt-image-2.5-*-2026-09-08`.
+- `model_version` (str, optional): Explicit Images API ID. Omit it for `gpt-image-2.6-flare` on native OpenAI or `gpt-image-1.5` on a compatible gateway. The `gpt-image-2.6-sunburst`, 2.5 and legacy IDs can also be pinned.
 
 ## Text-to-Image Generation
 
@@ -117,7 +122,6 @@ images = adapter.generate_image_edit(
     prompt="Make the hat red and stylish",
     size="1024x1024",
     quality="high",
-    input_fidelity="low",
     n=1
 )
 
@@ -132,7 +136,7 @@ for idx, image_bytes in enumerate(images):
 - `prompt` (str): Text description of edits to make
 - `size` (str, optional): Output image size. Default: `"1024x1024"`
 - `quality` (str, optional): Quality level. Default: `"high"`
-- `input_fidelity` (str, optional): How closely to preserve input image. Options: `"low"`, `"high"`. Default: `"low"`
+- `input_fidelity` (str, optional): Legacy edit control (`"low"` or `"high"`; default `"low"` on legacy routes). Leave it unset on native GPT-Image-2.6.
 - `mask` (str, optional): Mask image path for selective editing
 - `n` (int, optional): Number of images to generate. Default: `1`
 
@@ -167,7 +171,6 @@ images = adapter.generate_image_edit(
     prompt="Create a fashion image combining elements from all reference images",
     size="1536x1024",
     quality="high",
-    input_fidelity="high"
 )
 ```
 
@@ -178,7 +181,7 @@ images = adapter.generate_image_edit(
 
 ## Command Line Usage
 
-Same `OPENAI_API_KEY` as `--model gpt-image`. `--model gpt-image` stays on 1.5.
+Same `OPENAI_API_KEY` as `--model gpt-image`. Explicit 2.5 aliases are unchanged.
 
 ```bash
 # ChatGPT Images 2.5 Flare (everyday)
@@ -189,7 +192,7 @@ opentryon generate --model gpt-image-2.5 \
 opentryon edit --model gpt-image-2.5-sunburst \
   --images person.jpg --prompt "Change the jacket to black leather"
 
-# Previous generation (GPT-Image-1.5)
+# Native OpenAI default (GPT-Image-2.6 Flare)
 opentryon generate --model gpt-image \
   --prompt "A fashion model wearing elegant evening wear"
 ```
@@ -369,7 +372,6 @@ refined_images = adapter.generate_image_edit(
     prompt="Change to formal evening wear with elegant accessories",
     size="1024x1024",
     quality="high",
-    input_fidelity="high"
 )
 
 # Save refined result
@@ -410,7 +412,7 @@ Check [OpenAI's pricing page](https://openai.com/pricing) for current rates and 
 
 ### ChatGPT Images 2.5 vs GPT-Image-1.5
 
-| Feature | Flare (`gpt-image-2.5`) | Sunburst | GPT-Image-1.5 (`gpt-image`) |
+| Feature | Flare (`gpt-image-2.5`) | Sunburst | GPT-Image-1.5 (legacy explicit ID) |
 |---------|-------------------------|----------|-----------------------------|
 | Role | Everyday generation | Precision edits | Previous generation |
 | Quality extras | `xhigh`, `max` | `xhigh`, `max` | `low`–`high` / `auto` |
@@ -445,6 +447,7 @@ Check [OpenAI's pricing page](https://openai.com/pricing) for current rates and 
 - [ChatGPT Images 2.5 announcement](https://openai.com/index/introducing-chatgpt-images-2-5/)
 - [GPT Image 2.5 Flare](https://developers.openai.com/api/docs/models/gpt-image-2.5-flare)
 - [GPT Image 2.5 Sunburst](https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst)
+- [GPT-Image-2.6 Flare Model Card](https://developers.openai.com/api/docs/models/gpt-image-2.6-flare)
 - [GPT-Image-1.5 Model Card](https://platform.openai.com/docs/models/gpt-image-1.5)
 - [OpenAI Platform](https://platform.openai.com/)
 - [API Keys](https://platform.openai.com/settings/organization/api-key)

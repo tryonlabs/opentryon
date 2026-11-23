@@ -1490,7 +1490,8 @@ _GENERATE = {
             Arg(("--quality",), "quality", default="auto"),
             Arg(("--background",), "background", default="auto"),
             Arg(("--n",), "n", type=int, default=1, help="Number of images"),
-            Arg(("--model-version",), "model_version", target="init", default="gpt-image-1.5"),
+            Arg(("--model-version",), "model_version", target="init",
+                help="Pin an Images API model ID (native default: gpt-image-2.6-flare)"),
         ],
     ),
     "gpt-image-2.5": ModelSpec(
@@ -1504,7 +1505,7 @@ _GENERATE = {
         notes=(
             "ChatGPT Images 2.5 Flare (everyday). Same OPENAI_API_KEY as --model gpt-image. "
             "Official API id gpt-image-2.5-flare; --model-version can pin Sunburst or dated snapshots. "
-            "CLI --model gpt-image stays on 1.5."
+            "CLI --model gpt-image uses the native OpenAI default."
         ),
         args=_gpt_image_25_generate_args("gpt-image-2.5-flare"),
     ),
@@ -1908,9 +1909,11 @@ _EDIT = {
             Arg(("--size",), "size", default="auto"),
             Arg(("--quality",), "quality", default="auto"),
             Arg(("--background",), "background", default="auto"),
-            Arg(("--input-fidelity",), "input_fidelity", default="low", choices=["low", "high"]),
+            Arg(("--input-fidelity",), "input_fidelity", choices=["low", "high"],
+                help="Input fidelity for legacy models; omit for native GPT-Image-2.6"),
             Arg(("--n",), "n", type=int, default=1),
-            Arg(("--model-version",), "model_version", target="init", default="gpt-image-1.5"),
+            Arg(("--model-version",), "model_version", target="init",
+                help="Pin an Images API model ID (native default: gpt-image-2.6-flare)"),
         ],
     ),
     "gpt-image-2.5": ModelSpec(
@@ -1923,7 +1926,7 @@ _EDIT = {
         env_hint="OPENAI_API_KEY",
         notes=(
             "ChatGPT Images 2.5 Flare edit. Same OPENAI_API_KEY as --model gpt-image. "
-            "Precision edits: --model gpt-image-2.5-sunburst. CLI --model gpt-image stays on 1.5."
+            "Precision edits: --model gpt-image-2.5-sunburst. CLI --model gpt-image uses the native OpenAI default."
         ),
         args=_gpt_image_25_edit_args("gpt-image-2.5-flare"),
     ),

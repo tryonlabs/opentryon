@@ -385,7 +385,7 @@ def gpt_image_text_to_image(
     prompt: str,
     size: Optional[str] = "1024x1024",
     quality: Optional[str] = "high",
-    model_version: Optional[str] = "gpt-image-1.5",
+    model_version: Optional[str] = None,
     **kwargs
 ) -> str:
     """
@@ -398,7 +398,7 @@ def gpt_image_text_to_image(
         prompt: Text description of the image to generate
         size: Image size ('1024x1024', '1536x1024', '1024x1536', 'auto')
         quality: Quality setting ('low', 'high', 'medium', 'auto')
-        model_version: Model version ('gpt-image-1' or 'gpt-image-1.5'). Default: 'gpt-image-1.5'
+        model_version: Explicit Images API model ID; omit to use the provider default
     
     Returns:
         JSON string containing status, provider, image_count, cache_key, and message
@@ -406,6 +406,7 @@ def gpt_image_text_to_image(
     try:
         print(f" Initializing GPT-Image ({model_version}) adapter...")
         adapter = GPTImageAdapter(model_version=model_version)
+        model_version = adapter.model_version
         print("Generating images...")
         images = adapter.generate_text_to_image(
             prompt=prompt,
