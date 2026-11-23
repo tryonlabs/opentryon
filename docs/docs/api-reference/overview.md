@@ -638,7 +638,7 @@ See [FLUX.2 API Documentation](flux2) for complete details.
 
 ### `GPTImageAdapter`
 
-OpenAI Images API. Constructor / `--model gpt-image` default is **GPT-Image-1.5**. ChatGPT Images 2.5 is `--model gpt-image-2.5` (Flare) and `--model gpt-image-2.5-sunburst`. Same `OPENAI_API_KEY`.
+OpenAI Images API. Constructor / `--model gpt-image` defaults to **GPT-Image-2.6 Flare** on native OpenAI; compatible gateways retain GPT-Image-1.5. ChatGPT Images 2.5 is `--model gpt-image-2.5` (Flare) and `--model gpt-image-2.5-sunburst`. Same `OPENAI_API_KEY`.
 
 ```python
 from tryon.api.openAI.image_adapter import GPTImageAdapter

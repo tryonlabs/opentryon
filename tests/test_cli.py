@@ -171,7 +171,7 @@ def check_gpt_image_25_dry_runs():
     assert flare.model_version == "gpt-image-2.5-flare"
     sun = GPTImageAdapter(api_key="sk-test", model_version="gpt-image-2.5-sunburst")
     assert sun.model_version == "gpt-image-2.5-sunburst"
-    legacy = GPTImageAdapter(api_key="sk-test")
+    legacy = GPTImageAdapter(api_key="sk-test", model_version="gpt-image-1.5")
     assert legacy.model_version == "gpt-image-1.5"
 
     cases = [
@@ -200,6 +200,18 @@ def check_gpt_image_25_dry_runs():
         (
             ["generate", "--model", "gpt-image", "--prompt", "editorial still"],
             "generate_text_to_image",
+            None,
+        ),
+        (
+            ["edit", "--model", "gpt-image",
+             "--images", "data/model-1.jpg", "--prompt", "make it blue"],
+            "generate_image_edit",
+            None,
+        ),
+        (
+            ["generate", "--model", "gpt-image", "--prompt", "editorial still",
+             "--model-version", "gpt-image-1.5"],
+            "generate_text_to_image",
             "gpt-image-1.5",
         ),
     ]
@@ -210,8 +222,12 @@ def check_gpt_image_25_dry_runs():
         printed = buf.getvalue()
         assert code == 0, printed
         assert "GPTImageAdapter" in printed and f".{expect_method}(" in printed, printed
-        assert f"'model_version': '{expect_version}'" in printed, printed
-    print("\u2713 generate/edit gpt-image-2.5 / sunburst --dry-run pin Flare vs 1.5")
+        if expect_version is None:
+            assert "'model_version'" not in printed, printed
+            assert "'input_fidelity'" not in printed, printed
+        else:
+            assert f"'model_version': '{expect_version}'" in printed, printed
+    print("\u2713 GPT Image dry runs preserve pins and leave the implicit default to the adapter")
 
 
 def check_fashn_dry_runs():

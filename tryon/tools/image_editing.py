@@ -32,8 +32,8 @@ class ImageEditToolInput(BaseModel):
         description="Quality setting ('low', 'high', 'medium', 'auto')"
     )
     model_version: Optional[str] = Field(
-        default="gpt-image-1.5",
-        description="Model version ('gpt-image-1' or 'gpt-image-1.5')"
+        default=None,
+        description="Explicit Images API model ID; omit to use the provider default"
     )
 
 
@@ -51,8 +51,8 @@ class MaskEditToolInput(BaseModel):
         description="Quality setting ('low', 'high', 'medium', 'auto')"
     )
     model_version: Optional[str] = Field(
-        default="gpt-image-1.5",
-        description="Model version ('gpt-image-1' or 'gpt-image-1.5')"
+        default=None,
+        description="Explicit Images API model ID; omit to use the provider default"
     )
 
 
@@ -69,8 +69,8 @@ class MultiImageEditToolInput(BaseModel):
         description="Quality setting ('low', 'high', 'medium', 'auto')"
     )
     model_version: Optional[str] = Field(
-        default="gpt-image-1.5",
-        description="Model version ('gpt-image-1' or 'gpt-image-1.5')"
+        default=None,
+        description="Explicit Images API model ID; omit to use the provider default"
     )
 
 
@@ -80,7 +80,7 @@ def gpt_image_edit(
     prompt: str,
     size: Optional[str] = None,
     quality: Optional[str] = None,
-    model_version: str = "gpt-image-1.5",
+    model_version: Optional[str] = None,
     **kwargs
 ) -> str:
     """
@@ -94,7 +94,7 @@ def gpt_image_edit(
         prompt: Text description of the edits to make
         size: Output size ('1024x1024', '1536x1024', '1024x1536', 'auto')
         quality: Quality setting ('low', 'high', 'medium', 'auto')
-        model_version: Model version ('gpt-image-1' or 'gpt-image-1.5'). Default: 'gpt-image-1.5'
+        model_version: Explicit Images API model ID; omit to use the provider default
     
     Returns:
         JSON string containing status, provider, image_count, cache_key, and message
@@ -102,6 +102,7 @@ def gpt_image_edit(
     try:
         print(f" Initializing GPT-Image ({model_version}) adapter...")
         adapter = GPTImageAdapter(model_version=model_version)
+        model_version = adapter.model_version
         print("Editing image...")
         images = adapter.generate_image_edit(
             images=image,
@@ -150,7 +151,7 @@ def gpt_image_mask_edit(
     prompt: str,
     size: Optional[str] = None,
     quality: Optional[str] = None,
-    model_version: str = "gpt-image-1.5",
+    model_version: Optional[str] = None,
     **kwargs
 ) -> str:
     """
@@ -165,7 +166,7 @@ def gpt_image_mask_edit(
         prompt: Text description of what to generate in the masked area
         size: Output size ('1024x1024', '1536x1024', '1024x1536', 'auto')
         quality: Quality setting ('low', 'high', 'medium', 'auto')
-        model_version: Model version ('gpt-image-1' or 'gpt-image-1.5'). Default: 'gpt-image-1.5'
+        model_version: Explicit Images API model ID; omit to use the provider default
     
     Returns:
         JSON string containing status, provider, image_count, cache_key, and message
@@ -173,6 +174,7 @@ def gpt_image_mask_edit(
     try:
         print(f" Initializing GPT-Image ({model_version}) adapter...")
         adapter = GPTImageAdapter(model_version=model_version)
+        model_version = adapter.model_version
         print("Editing masked regions...")
         images = adapter.generate_image_edit(
             images=image,
@@ -222,7 +224,7 @@ def gpt_image_multi_edit(
     prompt: str,
     size: Optional[str] = None,
     quality: Optional[str] = None,
-    model_version: str = "gpt-image-1.5",
+    model_version: Optional[str] = None,
     **kwargs
 ) -> str:
     """
@@ -237,7 +239,7 @@ def gpt_image_multi_edit(
         prompt: Text description of how to compose/edit the images
         size: Output size ('1024x1024', '1536x1024', '1024x1536', 'auto')
         quality: Quality setting ('low', 'high', 'medium', 'auto')
-        model_version: Model version ('gpt-image-1' or 'gpt-image-1.5'). Default: 'gpt-image-1.5'
+        model_version: Explicit Images API model ID; omit to use the provider default
     
     Returns:
         JSON string containing status, provider, image_count, cache_key, and message
@@ -248,6 +250,7 @@ def gpt_image_multi_edit(
         
         print(f" Initializing GPT-Image ({model_version}) adapter...")
         adapter = GPTImageAdapter(model_version=model_version)
+        model_version = adapter.model_version
         print(f"Composing {len(images)} images...")
         images_result = adapter.generate_image_edit(
             images=images,

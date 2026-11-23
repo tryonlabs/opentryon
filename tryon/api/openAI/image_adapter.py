@@ -22,14 +22,15 @@ https://platform.openai.com/docs/guides/image-generation
 
 Models:
 - GPT-Image-1 (gpt-image-1): High-quality image generation and editing
-- GPT-Image-1.5 (gpt-image-1.5): Enhanced quality (constructor default; CLI --model gpt-image)
+- GPT-Image-1.5 (gpt-image-1.5): Legacy model (retiring December 1, 2026)
+- GPT-Image-2.6 Flare / Sunburst: Current models; Flare is the native default
 - ChatGPT Images 2.5 Flare (gpt-image-2.5-flare): Fast everyday generation (CLI --model gpt-image-2.5)
 - ChatGPT Images 2.5 Sunburst (gpt-image-2.5-sunburst): Precision edits (CLI --model gpt-image-2.5-sunburst)
 
 Examples:
     Text-to-image with latest model:
         >>> from tryon.api.openAI.image_adapter import GPTImageAdapter
-        >>> adapter = GPTImageAdapter()  # Uses gpt-image-1.5 by default
+        >>> adapter = GPTImageAdapter()  # Uses gpt-image-2.6-flare on native OpenAI
         >>> images = adapter.generate_text_to_image(
         ...     prompt="A cinematic portrait of a person wearing a futuristic jacket",
         ...     size="1024x1024",
@@ -85,7 +86,10 @@ VALID_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
 VALID_QUALITY = {"low", "high", "medium", "auto"}
 VALID_QUALITY_2_5 = VALID_QUALITY | {"xhigh", "max"}
 INPUT_FIDELITY = {"low", "high"}
-VALID_MODELS = {
+DEFAULT_OPENAI_IMAGE_MODEL = "gpt-image-2.6-flare"
+_COMPATIBLE_IMAGE_MODEL = "gpt-image-1.5"
+_OPENAI_IMAGE_26_MODELS = {"gpt-image-2.6-flare", "gpt-image-2.6-sunburst"}
+VALID_MODELS = _OPENAI_IMAGE_26_MODELS | {
     "gpt-image-1",
     "gpt-image-1.5",
     "gpt-image-2.5-flare",
@@ -116,19 +120,19 @@ def _allowed_quality(model_version: str):
 
 class GPTImageAdapter:
     """
-    Adapter for OpenAI GPT Image API (GPT-Image-1 / 1.5 and ChatGPT Images 2.5).
+    Adapter for generation and editing through the OpenAI Images API.
 
-    Constructor default stays ``gpt-image-1.5`` so existing ``--model gpt-image``
-    callers do not silently jump to 2.5. ChatGPT Images 2.5 Flare/Sunburst are
-    separate registry ids.
+    When no model is supplied, use GPT-Image-2.6 Flare on OpenAI's first-party API.
+    A compatible endpoint selected through OPENAI_BASE_URL retains its legacy default;
+    the first-party shutdown does not necessarily apply to other endpoints.
 
     Args:
         api_key (str, optional): OpenAI API key. If not provided, reads from OPENAI_API_KEY environment variable.
-        model_version (str, optional): OpenAI Images API model id. Defaults to ``gpt-image-1.5``.
-            ``gpt-image-2.5`` aliases to Flare.
+        model_version (str, optional): Explicit Images API model ID.
+            ``gpt-image-2.5`` aliases to the 2.5 Flare model.
 
     Examples:
-        >>> # Use GPT-Image-1.5 (constructor / CLI --model gpt-image default)
+        >>> # Use the native OpenAI default (also CLI --model gpt-image)
         >>> adapter = GPTImageAdapter()
 
         >>> # ChatGPT Images 2.5 Flare (everyday)
@@ -138,7 +142,7 @@ class GPTImageAdapter:
         >>> adapter = GPTImageAdapter(model_version="gpt-image-2.5-sunburst")
     """
 
-    def __init__(self, api_key: Optional[str] = None, model_version: str = "gpt-image-1.5"):
+    def __init__(self, api_key: Optional[str] = None, model_version: Optional[str] = None):
         
         if not OPENAI_API_KEY:
             raise ImportError(
@@ -146,19 +150,25 @@ class GPTImageAdapter:
                 "Please install it with 'pip install openai'."
             )
 
-        resolved = _resolve_model_version(model_version)
-        if resolved not in VALID_MODELS:
-            raise ValueError(
-                f"Invalid model_version: {model_version}. "
-                f"Supported models: {sorted(VALID_MODELS | set(MODEL_ALIASES))}"
-            )
+        if model_version is not None:
+            resolved = _resolve_model_version(model_version)
+            if resolved not in VALID_MODELS:
+                raise ValueError(
+                    f"Invalid model_version: {model_version}. "
+                    f"Supported models: {sorted(VALID_MODELS | set(MODEL_ALIASES))}"
+                )
+
         
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OpenAI API key must be provided either as a parameter or through the OPENAI_API_KEY environment variable.")
         
-        self.model_version = resolved
         self.client = OpenAI(api_key=self.api_key)
+        endpoint = self.client.base_url
+        self._native_openai = endpoint.scheme == "https" and endpoint.host == "api.openai.com"
+        if model_version is None:
+            resolved = DEFAULT_OPENAI_IMAGE_MODEL if self._native_openai else _COMPATIBLE_IMAGE_MODEL
+        self.model_version = resolved
 
     
     def prepare_image(self, image: Union[str, io.BytesIO, Image.Image]):
@@ -191,7 +201,7 @@ class GPTImageAdapter:
     ) -> List[bytes]:
         
         """
-        Generate images from a text prompt using OpenAI's GPT Image 1 model.
+        Generate images from a text prompt using the selected GPT Image model.
 
         This method performs text-to-image generation and returns the generated
         images as raw byte data. The caller is responsible for saving or converting
@@ -285,12 +295,12 @@ class GPTImageAdapter:
         size: str = "auto",
         quality: str = "auto",
         background: str = "auto",
-        input_fidelity: str = "low",
+        input_fidelity: Optional[str] = None,
         n: int = 1,
     ) -> List[bytes]:
         
         """
-        Edit or transform existing images using OpenAI's GPT Image 1 model.
+        Edit or transform existing images using the selected GPT Image model.
 
         This method performs image-to-image generation by applying a text prompt
         to one or more input images. It supports multi-image editing, optional
@@ -329,9 +339,8 @@ class GPTImageAdapter:
                 Defaults to "auto".
 
             input_fidelity (str, optional):
-                Controls how strictly the model preserves the original image(s).
-                Allowed values are defined in INPUT_FIDELITY.
-                Defaults to "low".
+                Input fidelity for models that accept an explicit setting.
+                Defaults to "low" on the legacy models. Leave unset on native GPT-Image-2.6.
 
             n (int, optional):
                 Number of edited images to generate.
@@ -383,8 +392,11 @@ class GPTImageAdapter:
         if quality not in allowed_quality:
             raise ValueError(f"Invalid quality: {quality}, Available Options are: {allowed_quality}")
 
-        if input_fidelity not in INPUT_FIDELITY:
+        if input_fidelity is not None and input_fidelity not in INPUT_FIDELITY:
             raise ValueError(f"input_fidelity can only be {INPUT_FIDELITY}")
+        native_image_26 = self._native_openai and self.model_version in _OPENAI_IMAGE_26_MODELS
+        if native_image_26 and input_fidelity is not None:
+            raise ValueError("Omit input_fidelity when using native GPT-Image-2.6 models.")
 
 
         # Prepare base images
@@ -398,9 +410,11 @@ class GPTImageAdapter:
             "size": size,
             "quality": quality,
             "background": background,
-            "input_fidelity": input_fidelity,
             "n": n,
         }
+
+        if not native_image_26:
+            kwargs["input_fidelity"] = input_fidelity or "low"
 
         # Attach mask only if it exists
         if mask:
