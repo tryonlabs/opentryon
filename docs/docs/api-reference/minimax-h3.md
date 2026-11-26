@@ -25,6 +25,8 @@ Switch H3 vs **H3 Max** (fast variant) with the CLI model id. Same adapter class
 
 Local open weights: [MiniMax H3 (local Diffusers)](../local-models/minimax-h3.md) (`--model minimax-h3-local`). Local is 768p H3-Base only; this API path is the hosted 2K workflow. H3 Max is API-only.
 
+**H3-Image** (text-to-image / edit, not video): [official API](./minimax-h3-image.md) and [local Diffusers](../local-models/minimax-h3-image.md).
+
 H3 on the API is billed as [pay-as-you-go video](https://platform.minimax.io/docs/guides/pricing-paygo).
 
 ## Environment

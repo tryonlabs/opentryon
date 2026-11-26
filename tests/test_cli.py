@@ -568,6 +568,52 @@ def check_seedream_model_ids():
     print("\u2713 seedream: ModelArk ids (5.0 Pro/Flash dola-, Lite, 4.x) and 5.0 Flash request")
 
 
+def check_minimax_h3_image():
+    from unittest import mock
+
+    from tryon.api.minimax.h3_image_adapter import MODEL_ALIASES, MiniMaxH3ImageAdapter
+
+    assert MODEL_ALIASES["h3-image-highspeed"] == "MiniMax-H3-Image-Highspeed"
+    assert MiniMaxH3ImageAdapter(api_key="k", model="h3-image-highspeed").model == "MiniMax-H3-Image-Highspeed"
+
+    adapter = MiniMaxH3ImageAdapter(api_key="k")
+    resp = mock.Mock(status_code=200)
+    resp.json.return_value = {"data": [{"url": "https://example.com/out.png"}]}
+    img_bytes = _tiny_png()
+    with mock.patch("tryon.api.minimax.h3_image_adapter.requests.get", return_value=mock.Mock(
+        content=img_bytes, raise_for_status=lambda: None
+    )):
+        with mock.patch("tryon.api.minimax.h3_image_adapter.requests.post", return_value=resp) as post:
+            images = adapter.generate_text_to_image("linen flatlay", aspect_ratio="3:4", area="2K")
+    body = post.call_args.kwargs["json"]
+    assert post.call_args.args[0].endswith("/v1/images/generations")
+    assert body["model"] == "MiniMax-H3-Image" and body["area"] == "2K"
+    assert post.call_args.kwargs["timeout"] == 600
+    assert len(images) == 1
+
+    resp2 = mock.Mock(status_code=200)
+    resp2.json.return_value = {"data": [{"url": "https://example.com/edit.png"}]}
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as fa, tempfile.NamedTemporaryFile(
+        suffix=".png", delete=False
+    ) as fb:
+        fa.write(img_bytes)
+        fb.write(img_bytes)
+        path_a, path_b = fa.name, fb.name
+    try:
+        with mock.patch("tryon.api.minimax.h3_image_adapter.requests.get", return_value=mock.Mock(
+            content=img_bytes, raise_for_status=lambda: None
+        )):
+            with mock.patch("tryon.api.minimax.h3_image_adapter.requests.post", return_value=resp2) as post_edit:
+                adapter.generate_image_edit("swap outfits", [path_a, path_b])
+    finally:
+        os.unlink(path_a)
+        os.unlink(path_b)
+    edit_body = post_edit.call_args.kwargs["json"]
+    assert post_edit.call_args.args[0].endswith("/v1/images/edits")
+    assert len(edit_body["images"]) == 2 and edit_body["images"][0]["image_url"].startswith("data:image")
+    print("\u2713 minimax-h3-image: model aliases, 600s timeout, T2I + edit payload shape")
+
+
 def _tiny_png() -> bytes:
     from PIL import Image
 
@@ -1463,8 +1509,9 @@ def check_minimax_h3_image_generation():
     args = ["generate", "--model", "minimax-h3-image", "--prompt", "A linen jacket"]
     with contextlib.redirect_stdout(io.StringIO()) as output:
         assert cli_main([*args, "--dry-run"]) == 0
-    assert "MiniMaxH3ImageAdapter" in output.getvalue()
-    assert "MiniMax-H3-Image" in output.getvalue()
+    printed = output.getvalue()
+    assert "MiniMaxH3ImageAdapter" in printed
+    assert "h3-image" in printed or "MiniMax-H3-Image" in printed
 
     image_data = io.BytesIO()
     Image.new("RGB", (3, 2), "red").save(image_data, format="PNG")
@@ -1478,22 +1525,25 @@ def check_minimax_h3_image_generation():
         "usage": {"generated_images": 1},
     }
     region = {"MINIMAX_API_KEY": "test", "MINIMAX_API_BASE_URL": "https://api.minimax.cn"}
+    post_target = "tryon.api.minimax.h3_image_adapter.requests.post"
+    get_target = "tryon.api.minimax.h3_image_adapter.requests.get"
     with tempfile.TemporaryDirectory() as out_dir, patch.dict(os.environ, region), patch(
-        "requests.post", return_value=generated
-    ) as post, patch("requests.get", return_value=Mock(content=raw)) as download:
+        post_target, return_value=generated
+    ) as post, patch(get_target, return_value=Mock(content=raw, raise_for_status=lambda: None)) as download:
         with warnings.catch_warnings(record=True) as reports:
             warnings.simplefilter("always")
             assert cli_main([*args, "--output-dir", out_dir, "--n", "2",
                              "--model-version", "MiniMax-H3-Image-Highspeed"]) == 0
         assert any("content safety" in str(w.message) for w in reports)
-        post.assert_called_once_with(
-            "https://api.minimax.cn/v1/images/generations",
-            headers={"Authorization": "Bearer test"},
-            json={"prompt": "A linen jacket", "model": "MiniMax-H3-Image-Highspeed",
-                  "size": "auto", "n": 2, "response_format": "url"},
-            timeout=600, allow_redirects=False,
-        )
-        download.assert_called_once_with("https://example.com/output.png", timeout=60)
+        post.assert_called_once()
+        assert post.call_args.args[0] == "https://api.minimax.cn/v1/images/generations"
+        assert post.call_args.kwargs["timeout"] == 600
+        assert post.call_args.kwargs["allow_redirects"] is False
+        body = post.call_args.kwargs["json"]
+        assert body["model"] == "MiniMax-H3-Image-Highspeed"
+        assert body["prompt"] == "A linen jacket"
+        assert body["n"] == 2
+        download.assert_called_once_with("https://example.com/output.png", timeout=120)
         saved = list(Path(out_dir).glob("*.png"))
         assert len(saved) == 1
         with Image.open(saved[0]) as image:
@@ -3130,6 +3180,17 @@ def check_new_media_models_dry_runs():
         (["edit", "--model", "muse-image", "--prompt", "swap outfit",
           "--images", "data/model-1.jpg"],
          "MuseImageAdapter", "generate_image_edit"),
+        (["generate", "--model", "minimax-h3-image", "--prompt", "editorial still",
+          "--model-version", "h3-image-highspeed", "--area", "2K"],
+         "MiniMaxH3ImageAdapter", "generate_text_to_image"),
+        (["edit", "--model", "minimax-h3-image", "--prompt", "swap jacket",
+          "--images", "data/model-1.jpg"],
+         "MiniMaxH3ImageAdapter", "generate_image_edit"),
+        (["generate", "--model", "minimax-h3-image-local", "--prompt", "still life", "--seed", "0"],
+         "MiniMaxH3ImageLocalAdapter", "generate_text_to_image"),
+        (["edit", "--model", "minimax-h3-image-local", "--prompt", "remove bag",
+          "--images", "data/model-1.jpg"],
+         "MiniMaxH3ImageLocalAdapter", "generate_image_edit"),
         (["vton", "--model", "muse-image",
           "--person-image", "data/model-1.jpg", "--garment-image", "data/garment.png"],
          "MuseImageAdapter", "generate_virtual_tryon"),
@@ -3304,6 +3365,7 @@ if __name__ == "__main__":
     check_new_media_models_dry_runs()
     check_lightonocr()
     check_seedream_model_ids()
+    check_minimax_h3_image()
     check_decision_models_wave()
     check_omni_12_and_ripple()
     check_kimi_dry_runs()

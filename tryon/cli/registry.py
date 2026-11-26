@@ -216,6 +216,110 @@ def _trinity_understand_args(*, default_model: str, endpoint: str) -> List[Arg]:
     ]
 
 
+def _minimax_h3_image_api_args(*, for_edit: bool) -> List[Arg]:
+    args: List[Arg] = []
+    if for_edit:
+        args.extend(
+            [
+                Arg(
+                    ("--images",),
+                    "image",
+                    nargs="+",
+                    required=True,
+                    help="1–16 reference images (paths or URLs); refer as image 1, image 2 in prompt",
+                ),
+                Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
+            ]
+        )
+    else:
+        args.append(Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"))
+    args.extend(
+        [
+            Arg(
+                ("--size",),
+                "size",
+                default="auto",
+                help="auto, WIDTHxHEIGHT, or use aspect_ratio + area when size is auto",
+            ),
+            Arg(
+                ("--aspect-ratio",),
+                "aspect_ratio",
+                default="auto",
+                help="Used with size auto (e.g. 16:9); required when --disable-prompt-enhanced",
+            ),
+            Arg(("--area",), "area", default="4K", choices=["1K", "2K", "4K"],
+                help="Resolution tier with aspect_ratio when size is auto"),
+            Arg(("--n",), "n", type=int, default=1, help="Images to generate (1–10)"),
+            Arg(
+                ("--response-format",),
+                "response_format",
+                default="url",
+                choices=["url", "b64_json"],
+            ),
+            Arg(
+                ("--disable-prompt-enhanced",),
+                "disable_prompt_enhanced",
+                action="store_true",
+                help="Skip built-in prompt enhancement (text-to-image only)",
+            ),
+            Arg(
+                ("--model-version",),
+                "model_version",
+                target="init",
+                call_name="model",
+                default="h3-image",
+                choices=[
+                    "h3-image",
+                    "h3-image-highspeed",
+                    "MiniMax-H3-Image",
+                    "MiniMax-H3-Image-Highspeed",
+                ],
+                help="MiniMax-H3-Image (default) or Highspeed",
+            ),
+        ]
+    )
+    return args
+
+
+def _minimax_h3_image_local_args(*, for_edit: bool) -> List[Arg]:
+    args: List[Arg] = []
+    if for_edit:
+        args.append(
+            Arg(
+                ("--images",),
+                "image",
+                nargs="+",
+                required=True,
+                help="1+ reference images; use <Picture 1>, <Picture 2> in prompt",
+            )
+        )
+    args.extend(
+        [
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
+            Arg(("--width",), "width", type=int, help=f"Output width (default {2048} for T2I)"),
+            Arg(("--height",), "height", type=int, help=f"Output height (default {2048} for T2I)"),
+            Arg(("--seed",), "seed", type=int),
+            Arg(
+                ("--model-id",),
+                "model_id",
+                target="init",
+                default="MiniMaxAI/MiniMax-H3-Image",
+                help="Hugging Face repo id",
+            ),
+            Arg(("--device",), "device", target="init", help="cuda / mps / cpu"),
+            Arg(
+                ("--no-cpu-offload",),
+                "cpu_offload",
+                action="store_false",
+                default=True,
+                target="init",
+                help="Load full pipeline on GPU (needs very large VRAM)",
+            ),
+        ]
+    )
+    return args
+
+
 def _recraft_common_args(*, with_prompt: bool, with_style: bool) -> List[Arg]:
     args: List[Arg] = []
     if with_prompt:
@@ -1349,23 +1453,6 @@ def _flux2_generate_args(is_flex: bool) -> List[Arg]:
 
 
 _GENERATE = {
-    "minimax-h3-image": ModelSpec(
-        id="minimax-h3-image",
-        label="MiniMax H3 Image",
-        import_path="tryon.api.minimax",
-        class_name="MiniMaxH3ImageAdapter",
-        method="generate_text_to_image",
-        output_kind="images",
-        env_hint="MINIMAX_API_KEY",
-        args=[
-            Arg(("--prompt", "-p"), "prompt", required=True, help="Image description"),
-            Arg(("--model-version",), "model_version", call_name="model", default="MiniMax-H3-Image",
-                choices=["MiniMax-H3-Image", "MiniMax-H3-Image-Highspeed"]),
-            Arg(("--size",), "size", default="auto", help="auto or WIDTHxHEIGHT, e.g. 2720x1536"),
-            Arg(("--n",), "n", type=int, default=1, help="Number of images (1 to 10)"),
-            Arg(("--response-format",), "response_format", choices=["url", "b64_json"], default="url"),
-        ],
-    ),
     "nano-banana": ModelSpec(
         id="nano-banana", label="Nano Banana (Gemini 2.5 Flash Image)",
         import_path="tryon.api.nano_banana", class_name="NanoBananaAdapter",
@@ -1555,6 +1642,36 @@ _GENERATE = {
             Arg(("--prompt", "-p"), "prompt", required=True, help="Text prompt"),
             *_muse_image_common_args(),
         ],
+    ),
+    "minimax-h3-image": ModelSpec(
+        id="minimax-h3-image",
+        label="MiniMax H3-Image (official API)",
+        import_path="tryon.api.minimax",
+        class_name="MiniMaxH3ImageAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        env_hint="MINIMAX_API_KEY",
+        notes=(
+            "MiniMax H3-Image T2I up to 10 images/request. Same MINIMAX_API_KEY as hailuo-2.3 / "
+            "minimax-h3. Client timeout 600s; API is not idempotent. Fast tier: --model-version "
+            "h3-image-highspeed. Local twin: minimax-h3-image-local."
+        ),
+        args=_minimax_h3_image_api_args(for_edit=False),
+    ),
+    "minimax-h3-image-local": ModelSpec(
+        id="minimax-h3-image-local",
+        label="MiniMax H3-Image (local Diffusers)",
+        import_path="tryon.models.minimax_h3_image",
+        class_name="MiniMaxH3ImageLocalAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        extra="local",
+        notes=(
+            "HF MiniMaxAI/MiniMax-H3-Image via ModularPipeline (6-step distilled). "
+            "~62GB bf16 transformer + text encoder — enable CPU offload; ~75GB+ host RAM typical. "
+            "Hosted twin: minimax-h3-image."
+        ),
+        args=_minimax_h3_image_local_args(for_edit=False),
     ),
     "luma-image": ModelSpec(
         id="luma-image", label="Luma Photon",
@@ -1972,6 +2089,31 @@ _EDIT = {
             Arg(("--prompt", "-p"), "prompt", required=True, help="Editing / composition instruction"),
             *_muse_image_common_args(),
         ],
+    ),
+    "minimax-h3-image": ModelSpec(
+        id="minimax-h3-image",
+        label="MiniMax H3-Image (official API, edit / multi-ref)",
+        import_path="tryon.api.minimax",
+        class_name="MiniMaxH3ImageAdapter",
+        method="generate_image_edit",
+        output_kind="images",
+        env_hint="MINIMAX_API_KEY",
+        notes=(
+            "1–16 reference images + instruction. Prompt enhancement is always on for edits. "
+            "Same MINIMAX_API_KEY as generate --model minimax-h3-image."
+        ),
+        args=_minimax_h3_image_api_args(for_edit=True),
+    ),
+    "minimax-h3-image-local": ModelSpec(
+        id="minimax-h3-image-local",
+        label="MiniMax H3-Image (local Diffusers, edit)",
+        import_path="tryon.models.minimax_h3_image",
+        class_name="MiniMaxH3ImageLocalAdapter",
+        method="generate_image_edit",
+        output_kind="images",
+        extra="local",
+        notes="Multi-reference image_conditioned workflow; refer to refs as <Picture N> in prompt.",
+        args=_minimax_h3_image_local_args(for_edit=True),
     ),
     "seedream": ModelSpec(
         id="seedream", label="ByteDance Seedream 5.0 Pro / Flash (edit / multi-ref)",

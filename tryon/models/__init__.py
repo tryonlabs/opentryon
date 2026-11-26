@@ -34,6 +34,7 @@ Available Models:
     - Cosmos3LocalAdapter: NVIDIA Cosmos 3 Nano (16B) open-weight text/image-to-video
       (Diffusers, BF16/CUDA), the local counterpart to the hosted NIM `cosmos3`
     - MiniMaxH3LocalAdapter: MiniMax H3 open-weight text/image-to-video with stereo audio
+    - MiniMaxH3ImageLocalAdapter: MiniMax H3-Image open-weight T2I + multi-ref edit (Diffusers)
     - Wan22Adapter: Wan 2.2 open-weight text/image-to-video (Diffusers)
     - TernaryBonsaiAdapter: Ternary Bonsai 2 27B (PrismML) ternary-quantized
       multimodal understanding, a thin OpenAI-compatible client for a
@@ -92,6 +93,7 @@ from .cosmos3 import Cosmos3LocalAdapter
 from .moondream import MoondreamLocalAdapter
 from .d3 import D3LocalAdapter
 from .minimax_h3 import MiniMaxH3LocalAdapter
+from .minimax_h3_image import MiniMaxH3ImageLocalAdapter
 from .qwen38 import Qwen38Adapter
 from .qwen_image import QwenImageLocalAdapter
 from .qwen_image_21 import QwenImage21LocalAdapter
@@ -122,6 +124,7 @@ __all__ = [
     "MoondreamLocalAdapter",
     "D3LocalAdapter",
     "MiniMaxH3LocalAdapter",
+    "MiniMaxH3ImageLocalAdapter",
     "Qwen38Adapter",
     "QwenImageLocalAdapter",
     "QwenImage21LocalAdapter",

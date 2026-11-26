@@ -24,6 +24,7 @@ Adding a new local or API model? Start with
 | [LTX-2.5](./ltx-2.5) | Video Generation | 16GB+ (24GB+ preferred) | Distilled few-step | Local T2V / I2V with synced audio |
 | [Cosmos 3 Nano](./cosmos3) | Video Generation | Large (16B, BF16 only; offload optional) | Heavy | Local T2V / I2V; self-hosted twin of NIM `cosmos3` |
 | [MiniMax H3](./minimax-h3) | Video Generation | 80GB+ preferred (offload; ~75GB host RAM if int8) | Heavy | Local T2V / I2V with stereo audio (768p base) |
+| [MiniMax H3-Image](./minimax-h3-image) | Generate / Edit | 80GB+ GPU + ~75GB host RAM (offload default) | Heavy | Local T2I + multi-ref edit (6-step distilled) |
 | [Wan 2.2](./wan-2.2) | Video Generation | ~12GB+ (TI2V-5B) | Moderate | Local T2V / I2V open weights (Wan 3.0 is API-only) |
 | [Leffa](./leffa) | Virtual Try-On | 12GB+ recommended | ~6s on A100 | Dedicated local VTON (CVPR 2025; MIT code) |
 | [FASHN VTON v1.5](./fashn-vton) | Virtual Try-On | Consumer GPU (VRAM not published) | Moderate | Maskless pixel-space VTON, **Apache-2.0** code + weights; model-worn or flat-lay garments |

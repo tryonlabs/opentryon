@@ -92,6 +92,7 @@ _LAZY_ATTRS = {
     "HailuoVideoAdapter": ".minimax",
     "MiniMaxH3ImageAdapter": ".minimax",
     "MiniMaxH3Adapter": ".minimax",
+    "MiniMaxH3ImageAdapter": ".minimax",
     "FalH3MaxAdapter": ".fal",
     "MuseImageAdapter": ".muse",
     "WanVideoAdapter": ".wan",

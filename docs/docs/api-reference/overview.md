@@ -666,6 +666,7 @@ Also available via the CLI/MCP registry:
 | `LTXVideoAdapter` | `ltx-2.5-api` | [LTX-2.5 API](ltx-2.5) |
 | `HailuoVideoAdapter` | `hailuo-2.3` | [Hailuo](hailuo) |
 | `MiniMaxH3Adapter` | `minimax-h3` / `minimax-h3-max` | [MiniMax H3](minimax-h3) |
+| `MiniMaxH3ImageAdapter` | `minimax-h3-image` | [MiniMax H3-Image](minimax-h3-image) |
 | `FalH3MaxAdapter` | `fal-h3-max` / `fal-h3-max-lipsync` / `fal-h3-max-relight` | [MiniMax H3 Max (Fal)](fal-h3-max) |
 | `PVideo2ProAdapter` | `p-video-2-pro` | [Pruna AI](pruna) |
 | `WanVideoAdapter` | `wan-api` / `wan-3.0` | [Wan](wan) |
@@ -674,7 +675,7 @@ Also available via the CLI/MCP registry:
 | `VeoAdapter` | `veo` | [Veo 3.1](veo) |
 | `SoraVideoAdapter` (deprecated — API removed 2026-09-24) / `LumaAIVideoAdapter` | `sora` / `luma-video` | existing pages |
 
-Local twins: `Cosmos3LocalAdapter` (`cosmos3-local`), `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
+Local twins: `Cosmos3LocalAdapter` (`cosmos3-local`), `LTX25Adapter` (`ltx-2.5`), `MiniMaxH3LocalAdapter` (`minimax-h3-local`), `MiniMaxH3ImageLocalAdapter` (`minimax-h3-image-local`), `Wan22Adapter` (`wan-2.2`). Wan 3.0 is API-only.
 
 Image counterparts: `SeedreamAdapter` (`seedream`), `IdeogramAdapter` (`ideogram`), `RecraftAdapter` (`recraft-v3` generate/edit/bg-remove), `PImageIdeogramAdapter` (`p-image-ideogram`), `GrokImagineImageAdapter` (`grok-imagine-image`), `MuseImageAdapter` (`muse-image`). Muse Video has no API yet — see [Muse Video](muse-video). Dedicated page: [Recraft V3](recraft).
 
