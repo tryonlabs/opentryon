@@ -8,6 +8,8 @@ description: Measure (Clad) is shipped. Remaining queue is garment parsing and e
 
 These capabilities need a **new CLI service** (and usually a new `output_kind`) before model adapters land. Integrate **one category at a time**; start with platform plumbing (`segmentation` output), then the first model in that category.
 
+For how these fit next to image, video, VTON, and 3D work, see the [modality queue](../community/integrate-next.md#modality-queue--integration-priorities-nov-2026) on **Integrate next**.
+
 Status key: **next** = ready to implement after design sign-off · **watch** = licence, API maturity, or scope blocker · **skip** = defer · **shipped** = in the registry.
 
 ---
