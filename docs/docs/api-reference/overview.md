@@ -377,6 +377,8 @@ See [FASHN AI Virtual Try-On Documentation](fashn) for complete details.
 
 ## Image Generation API Adapters
 
+[MiniMax H3 Image](minimax-h3-image.md) supports first-party text-to-image generation with the standard and Highspeed models.
+
 ### `NanoBananaAdapter`
 
 Adapter for Gemini 2.5 Flash Image (Nano Banana) - fast and efficient image generation.

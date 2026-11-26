@@ -1349,6 +1349,23 @@ def _flux2_generate_args(is_flex: bool) -> List[Arg]:
 
 
 _GENERATE = {
+    "minimax-h3-image": ModelSpec(
+        id="minimax-h3-image",
+        label="MiniMax H3 Image",
+        import_path="tryon.api.minimax",
+        class_name="MiniMaxH3ImageAdapter",
+        method="generate_text_to_image",
+        output_kind="images",
+        env_hint="MINIMAX_API_KEY",
+        args=[
+            Arg(("--prompt", "-p"), "prompt", required=True, help="Image description"),
+            Arg(("--model-version",), "model_version", call_name="model", default="MiniMax-H3-Image",
+                choices=["MiniMax-H3-Image", "MiniMax-H3-Image-Highspeed"]),
+            Arg(("--size",), "size", default="auto", help="auto or WIDTHxHEIGHT, e.g. 2720x1536"),
+            Arg(("--n",), "n", type=int, default=1, help="Number of images (1 to 10)"),
+            Arg(("--response-format",), "response_format", choices=["url", "b64_json"], default="url"),
+        ],
+    ),
     "nano-banana": ModelSpec(
         id="nano-banana", label="Nano Banana (Gemini 2.5 Flash Image)",
         import_path="tryon.api.nano_banana", class_name="NanoBananaAdapter",

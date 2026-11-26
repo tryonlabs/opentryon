@@ -89,6 +89,7 @@ const sidebars: SidebarsConfig = {
         'api-reference/recraft',
         'api-reference/ltx-2.5',
         'api-reference/hailuo',
+        'api-reference/minimax-h3-image',
         'api-reference/minimax-h3',
         'api-reference/fal-h3-max',
         'api-reference/muse-image',
