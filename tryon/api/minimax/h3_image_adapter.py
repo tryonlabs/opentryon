@@ -124,6 +124,7 @@ class MiniMaxH3ImageAdapter:
 
     def _post(self, path: str, payload: Dict[str, Any]) -> List[Image.Image]:
         url = f"{self.base_url}{path}"
+        # Non-idempotent billing; redirects must not trigger a second POST.
         resp = requests.post(
             url,
             headers=self.headers,
