@@ -387,6 +387,20 @@ def check_named_model_fal_h3_max_lipsync_pin():
     print("\u2713 'h3 max lip sync' pins fal-h3-max-lipsync, not minimax-h3-max/fal-h3-max")
 
 
+def check_named_model_h3_image_pin():
+    from tryon.agents.planner.bind import match_named_model, slice_for_intent
+
+    gen = slice_for_intent("generate")
+    img = match_named_model("use minimax h3 image please", gen)
+    assert img is not None and img.model == "minimax-h3-image"
+    video = slice_for_intent("video")
+    h3_video = match_named_model("use minimax h3 please", video)
+    assert h3_video is not None and h3_video.model == "minimax-h3"
+    longer = match_named_model("minimax h3 image local", gen)
+    assert longer is not None and longer.model == "minimax-h3-image-local"
+    print("\u2713 'minimax h3 image' pins minimax-h3-image, not minimax-h3 video")
+
+
 def check_named_model_p_video_2_pro_pin():
     from tryon.agents.planner.bind import match_named_model, slice_for_intent
 
@@ -1010,6 +1024,7 @@ def main():
     check_named_model_minimax_h3_max_dry_run()
     check_named_model_fal_h3_max_dry_run()
     check_named_model_fal_h3_max_lipsync_pin()
+    check_named_model_h3_image_pin()
     check_named_model_p_video_2_pro_pin()
     check_named_model_qwen_omni_flash_and_glm_and_bonsai_pin()
     check_named_model_tts_dry_run()

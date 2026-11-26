@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added MiniMax H3 Image and H3 Image Highspeed to the `generate` service.
-
+- `generate` / `edit`: **`minimax-h3-image`**, **`minimax-h3-image-local`** — MiniMax H3-Image (`tryon.api.minimax.MiniMaxH3ImageAdapter`, `tryon.models.minimax_h3_image.MiniMaxH3ImageLocalAdapter`). Builds on #171 generate-only (`h3_image_adapter.py`): adds `edit` (1–16 refs), local Diffusers, planner needles, and full docs. Docs: `api-reference/minimax-h3-image.md`, `local-models/minimax-h3-image.md`.
 - `understand`: **`inkling-2-mini`**, **`inkling-2-mini-local`** — Thinking Machines Inkling 2 Mini (`tryon.api.thinkingmachines.Inkling2MiniAdapter`). Tinker OpenAI chat (`TINKER_API_KEY`, multimodal with data-URI images) or local vLLM/SGLang/Ollama (`INKLING_BASE_URL`). Docs: `api-reference/inkling-2-mini.md`.
 - `understand`: **`laguna-xs.2`**, **`laguna-xs.2.1`**, **`laguna-m.1`** — Poolside Laguna chat (`tryon.api.poolside.LagunaAdapter`, `POOLSIDE_API_KEY`). Text only; thinking on by default (`--no-thinking` sends `chat_template_kwargs.enable_thinking=false`). XS.2 is 33B-A3B; XS 2.1 is the successor; M.1 is 225B-A23B. Docs: `api-reference/laguna.md`.
 - `understand`: **`trinity-large`**, **`trinity-large-thinking`**, **`trinity-mini`**, **`trinity-nano`** — Arcee Trinity (`tryon.api.arcee.TrinityAdapter`). Hosted Large Preview is 400B / 13B-active (`ARCEE_API_KEY`); Nano is a local vLLM/SGLang client (`TRINITY_BASE_URL`) because Arcee does not host it. Docs: `api-reference/trinity.md`.
