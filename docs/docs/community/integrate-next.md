@@ -14,7 +14,7 @@ Living **candidate queue** for new adapters. This is not a commitment and it is 
 | [`ROADMAP.md`](https://github.com/tryonlabs/opentryon/blob/main/ROADMAP.md) | Product slices (train / eval / one local VTON / agents) |
 | [`.cursor/skills/integrate-model/`](https://github.com/tryonlabs/opentryon/tree/main/.cursor/skills/integrate-model) | How to integrate once you pick a row |
 
-**Surveyed:** 29 August 2026 · Sources: [build.nvidia.com/models](https://build.nvidia.com/models), [Google `virtual-try-on-001`](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001), [Alibaba OutfitAnyone-Plus](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api), [Photoroom Virtual Try-On](https://docs.photoroom.com/image-editing-api-plus-plan/virtual-try-on), [CatVTON](https://github.com/Zheng-Chong/CatVTON/), [Leffa](https://github.com/franciszzj/Leffa), [Nemotron](https://www.nvidia.com/en-us/ai-data-science/foundation-models/nemotron/), [Cosmos 3](https://docs.nvidia.com/cosmos/latest/cosmos3/index.html).
+**Surveyed:** 27 November 2026 (modality queue refresh; incremental on Aug–Nov 2026 waves) · Sources: [build.nvidia.com/models](https://build.nvidia.com/models), [Google `virtual-try-on-001`](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001), [Alibaba OutfitAnyone-Plus](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api), [Photoroom Virtual Try-On](https://docs.photoroom.com/image-editing-api-plus-plan/virtual-try-on), [CatVTON](https://github.com/Zheng-Chong/CatVTON/), [Leffa](https://github.com/franciszzj/Leffa), [Nemotron](https://www.nvidia.com/en-us/ai-data-science/foundation-models/nemotron/), [Cosmos 3](https://docs.nvidia.com/cosmos/latest/cosmos3/index.html), [Clad developers](https://clad.you/developers), [new-services backlog](../advanced/new-services-backlog.md).
 
 **How to use:** pick a `next` row → follow the [integrate-model skill](https://github.com/tryonlabs/opentryon/blob/main/.cursor/skills/integrate-model/SKILL.md) (Path A first-party API, Path B local). After ship, move the row to **Shipped** and bump the date.
 
@@ -27,7 +27,42 @@ Living **candidate queue** for new adapters. This is not a commitment and it is 
 
 NVIDIA access is usually **`NVIDIA_API_KEY`** on [build.nvidia.com](https://build.nvidia.com) (hosted NIM) and/or a self-hosted NIM container. Prefer the hosted NIM for Path A; HF weights + Diffusers/vLLM for Path B. Do **not** wrap FLUX / Qwen-Image / Ideogram a second time through NIM — we already have first-party adapters.
 
-OpenTryOn services today: `vton` · `generate` · `edit` · `understand` · `video-generate` · `bg-remove`. Rows marked **new service** need a new CLI/MCP category before an adapter.
+OpenTryOn services today: `vton` · `generate` · `edit` · `understand` · `video-generate` · `audio-to-video` · `generate-3d` · `bg-remove` · `tts` · `decide` · `embed` · `classify` · `measure` · `detect` · `parse` · `robot-act`. Rows marked **new service** (or **needs design**) need a new CLI/MCP category and usually `output_kind` before an adapter.
+
+---
+
+## Modality queue — integration priorities (Nov 2026)
+
+Use this section to pick **what kind of media** to integrate next. Detail and vendor rows stay in the waves below; [Fashion-domain survey](#fashion-domain-survey--13-oct-2026) and [new-services backlog](../advanced/new-services-backlog.md) hold segment/detect queues.
+
+| Modality | Service | Shipped (registry highlights) | `next` / queue | `watch` / blocked |
+|---|---|---|---|---|
+| **Image generate** | `generate` | FLUX family, Nano Banana, Seedream, Qwen-Image, Hy4, Recraft, SANA-Sprint, **MiniMax H3-Image** (`minimax-h3-image`, local twin) | **Seedream 5.5** — wait for BytePlus ModelArk id | Hy Image 3.5 Preview (TokenHub); Janus-Pro-7B; FLUX Klein NIM wrappers (we already have first-party FLUX) |
+| **Image edit** | `edit` | Same vendors + catalogue tools (FASHN edit, Qwen edit, H3-Image edits) | Same **Seedream 5.5** / Hy Image when APIs land | Inpaint-only research LoRAs on non-commercial bases |
+| **Video generate** | `video-generate` | Veo, Kling, Wan, Hailuo, Cosmos 3, MiniMax H3, Runway, FASHN I2V, Laguna, P-Video-2-Pro, Fal H3 relight | Optional: **Cosmos Predict 2.5**, **cosmos3-super** if a workflow needs them | **Muse Video** / video stacks blocked on Meta release; **CatV2TON** (video VTON, NC licence) |
+| **Audio / lip-sync** | `audio-to-video`, `tts` | Eleven v4, Gemini Flash TTS, Fal H3 Max lip-sync | — | **`music-generate`** + Lyria 3.5 (new service); local TTS (Tencent AuK, Voxtral, Breeze 2) |
+| **Virtual try-on** | `vton` | `google-vton`, OutfitAnyone+, Photoroom, FASHN, P-Image, `leffa`, `catvton`, `fashn-vton-1.5`, `klein-4b-tryon`, composition (`nano-banana-2-lite`, `qwen-image`, `muse-image`) | **`pixelcut-vton`** (Path A; [Wave 2 row](#path-a--dedicated-vton-apis-to-add)) | **IDM-VTON**, **FitDiT**, **OmniTry** (accessories), **Garments2Look**, Mobile-VTON — licence or API gaps (see [blocked table](#watch-licence-or-maturity-blockers)) |
+| **Catalogue / on-model (not VTON)** | `generate`, `edit`, `bg-remove` | FASHN product-to-model, model-create/swap, reframe; Photoroom virtual model | — | Claid / Uwear / Lalaland (vendor-only evidence) |
+| **Body measurement / sizing** | `measure` | Clad photo + questionnaire + **`clad-body-local`** (ISO 8559-1 JSON) | — | Garment-specific **grading** APIs (none picked); SMPL-X export pipelines as research |
+| **Garment measurement / tech packs** | `parse`, `understand`, `edit` | DeepSeek-OCR, LightOnOCR (`parse`), **fashion-florence** tags, **qie-2511-extract-outfit** (flat-lay) | — | Dedicated **garment dimension** from flat patterns; care-label → size via OCR already partly covered |
+| **Human / garment parsing** | `segment` (new) | Preprocess helpers only | **Platform `next`:** `segmentation` output_kind + CLI/MCP · **First adapter `next`:** **`aitryon-parsing-v1`** (Path A, same key as OutfitAnyone+) | `fashn-human-parser` (Path B, licence) — [new-services backlog](../advanced/new-services-backlog.md) |
+| **Product detection (PDP)** | `detect` | **moondream-detect** (open vocab) | — | Trendyol YOLOv9 (CC BY-SA); DINOv2 embedder pairing |
+| **3D object / product mesh** | `generate-3d` | **TRELLIS** NIM (`trellis`) | — | **TRELLIS.2 4B** local (Linux verify); mesh-from-catalogue workflows |
+| **3D body modelling** | `measure` (mesh path) | Clad local **Anny / MHR** parametric mesh output | — | Photo→SMPL-X tooling; no separate `body-3d` service yet |
+| **3D garment / sewing** | — (no service) | — | **Needs new service** — scope with product | **pygarment** / GarmentCode (MIT), DressWild, GarmentCrafter; **3D VTON** research |
+| **Embeddings / search** | `embed` | EmbeddingGemma, pplx-embed-v2, gemini-embedding-2, fashion encoders | **pplx-embed-v2-context-9b-preview** when GA | — |
+| **Safety / gating** | `classify` | **tryon-safety-classifier** | — | Nemotron 3.5 content safety (guardrail, not invoke tool) |
+| **Understanding / agents** | `understand`, `decide` | Nemotron Omni/Super VL, Cosmos Reasoner, Gemini/Claude/Qwen/Kimi, DeepSeek, Jev/d1/d3/VideoJev, parse agents | Optional **`nemotron-omni-local`** | Inkling 2 Small; Muse Spark Open; Ling-3.1-flash; Hima ASR (**`transcribe`** service design) |
+| **Document / layout parse** | `parse` | nemotron-parse, lightonocr-3 | — | Nemotron page-table OCR (`watch` for catalogue PDFs) |
+| **Robot / world actions** | `robot-act` | Dream Labs WAMs (niche; not fashion PDP) | — | NVIDIA VFlash (no weights) |
+
+**Suggested next picks by modality** (after shipped Nov 2026 batch):
+
+1. **Image:** Seedream 5.5 when ModelArk publishes an id; else Hy Image 3.5 if TokenHub stabilises.
+2. **VTON:** **`pixelcut-vton`** — confirm Pixelcut API terms during `/integrate-model` (listed `next` in Wave 2).
+3. **New services:** **`segment`** platform + **`aitryon-parsing-v1`**, then `detect` queue in [new-services-backlog](../advanced/new-services-backlog.md).
+4. **3D:** TRELLIS.2 local only if a Linux recipe exists; garment pattern code is **`watch`** until weights ship.
+5. **Measurement:** extend only when a **garment** or **fit** API is commercial-clean (Clad body path is complete).
 
 ---
 
@@ -98,7 +133,7 @@ Prefer first-party APIs. Related catalog jobs (product→model, model-swap, pars
 | **Google `virtual-try-on-001`** | Google Cloud (GA 20 Jan 2026; listed discontinue 20 Jan 2027) | Shopper / catalog image VTON | `google-vton` | Dedicated Vertex / Gemini Enterprise predict API. Person + product image, 1–4 samples, C2PA watermark. Auth is **ADC / GCP project**, not `GEMINI_API_KEY`. Distinct from Nano Banana compose. [Docs](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/imagen/virtual-try-on-001) | shipped |
 | **Alibaba OutfitAnyone-Plus (`aitryon-plus`)** | Alibaba Cloud Model Studio | Image VTON + combo top/bottom | `outfitanyone-plus` | Dedicated DashScope try-on (async). Top, bottoms, dress, face restore, parsing companion `aitryon-parsing-v1`. Same company as Qwen; **Beijing-region key**, not the Qwen-Image compose path. [Docs](https://www.alibabacloud.com/help/en/model-studio/aitryon-plus-api) | shipped |
 | **Photoroom Virtual Try-On / Virtual Model** | Photoroom (widely used e-comm photo API) | Fitting room **or** garment→lifestyle model | `photoroom-vton` / `photoroom-virtual-model` | API-first catalog/shopper flows. Virtual Model is “flat-lay in, on-model out” (no person photo). Complements dedicated person+SKU VTON. [API](https://docs.photoroom.com/image-editing-api-plus-plan/virtual-try-on) · [Product](https://www.photoroom.com/tools/virtual-model) | shipped |
-| Pixelcut Try-On | Pixelcut (e-comm photo; Shopify-heavy) | Image VTON + garment transfer | `pixelcut-vton` | REST `/v1/try-on`; upper/lower/full. Smaller than Google/Alibaba. [API](https://www.pixelcut.ai/api/try-on) | `watch` |
+| **Pixelcut Try-On** | Pixelcut (e-comm photo; Shopify-heavy) | Image VTON + garment transfer | `pixelcut-vton` | REST `/v1/try-on`; upper/lower/full. Smaller than Google/Alibaba; **confirm commercial/API terms on integrate.** [API](https://www.pixelcut.ai/api/try-on) | **`next`** |
 | Fitroom | Specialist startup | Combo top+bottom in one request | `fitroom` | Strong e-comm DX; weaker long-term vendor signal. | `watch` |
 | Claid | Specialist | Catalog try-on | — | Photo-API vendor; overlap with Photoroom. | `watch` |
 | BytePlus Effects / live AR try-on | ByteDance | Real-time AR, not still VTON | — | SDK/effects stack. Seedream image/edit is already in the registry (`seedream`). | `watch` |
@@ -270,7 +305,9 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 
 | Candidate | What it is | Notes | Status |
 |---|---|---|---|
-| **`segment` — garment / human parsing** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | Inherits the NVIDIA SegFormer licence (terms not confirmed — possibly non-commercial); `segformer_b2_clothes` is also "other". Find a commercial-clean parser first. Needs a mask output type. | `watch` — queue: [new-services-backlog](../advanced/new-services-backlog.md) |
+| **`segment` — platform (CLI/MCP + `segmentation` output)** | Runner + MCP contract; no vendor yet. | Spec: [new-services-backlog](../advanced/new-services-backlog.md). Blocks mask-native try-on QA and Klein mask inputs. | **`next`** |
+| **`aitryon-parsing-v1`** | Alibaba DashScope parsing companion to OutfitAnyone+; Path A. | Reuse `DASHSCOPE_API_KEY`; ship **after** `segmentation` output kind lands. | **`next`** (adapter; after platform) |
+| **`fashn-human-parser`** | `fashn-ai/fashn-human-parser` (SegFormer-B4, 18 classes, 244 MB). | SegFormer licence not confirmed for commercial use; prefer Path A parsing first. | `watch` — queue: [new-services-backlog](../advanced/new-services-backlog.md) |
 | **`measure` — body measurements / sizing** | Clad API (`clad-body-photo`, `clad-body-questionnaire`) + local `clad-body-local` on `datar-psa/clad-body`. | New `measure` service; ISO 8559-1 keys in JSON. `CLAD_API_KEY` at clad.you/developers. | **shipped** (Oct 2026) |
 | **`detect` — e-commerce detection** | Trendyol YOLOv9 (84 product classes) and a DINOv2 256-d embedder. | CC BY-SA 4.0 share-alike; paper in review. | `watch` |
 | **3D garments / sewing patterns** | `pygarment` / GarmentCode (MIT); DressWild and GarmentCrafter (2026). | Code / weights for the 2026 papers unverified. Large scope. | `watch` |
@@ -319,7 +356,7 @@ Fashion-specific models and APIs found on Hugging Face (model API, sorted by rec
 19b. ~~`gemini-4-argon`~~ **shipped** (Path A, `understand`, Oct 2026): multimodal parity with 3.8 Flash, `--video-processing agentic`, long decode (`max_tokens` > 64K + SDK continuation), `--background` Interactions for text-only jobs. Image/video **generation** stay on existing `nano-banana-*` / `gemini-omni`; video-to-image on Nano Banana 2 / 2.1 / 2 Lite via `generate --video`.
 19c. ~~`gemini-4-argon-cyber-permissive`~~ **shipped** (Path A, `understand`, allowlist): Fairwind defensive-cyber twin of Argon.
 
-Next candidates from the 8 Oct 2026 survey (not started): Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), local TTS (Tencent AuK, Voxtral, Breeze 2), Lyria 3.5 (needs a music service).
+Next candidates from the Oct–Nov 2026 surveys (see [modality queue](#modality-queue--integration-priorities-nov-2026)): **rows 35–37** (`segment` platform, `aitryon-parsing-v1`, `pixelcut-vton`); then **Seedream 5.5** (`watch`), Hy Image 3.5 Preview (TokenHub, `generate`/`edit`), local TTS, Lyria 3.5 (**`music-generate`**).
 
 Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nemotron-3.5-embed-1b`~~ + ~~`nemotron-parse`~~ **shipped** (NIM hosted + local NIM twins). ~~`flint-local`~~ / ~~`flint-openrouter`~~ and ~~`sage-a1.5-local`~~ **shipped** (text `understand`, local SGLang/vLLM or OpenRouter). **Laplace 3B** — `watch` only ([laplace-3b-watch](../advanced/laplace-3b-watch.md); no public weights/API). **GAIA-2** — `watch` only ([gaia-2-watch](../advanced/gaia-2-watch.md); Wayve latent-diffusion driving world model, no public weights/API). ~~Laguna XS.2 / M.1~~ **shipped** (`laguna-xs.2`, `laguna-xs.2.1`, `laguna-m.1`). ~~Arcee Trinity Large~~ **shipped** (`trinity-large` 400B Preview, `trinity-large-thinking`, `trinity-mini`, `trinity-nano` local). ~~Recraft V3~~ **shipped** (`recraft-v3` generate/edit/bg-remove). Ideogram 4.0 was already `ideogram`.
 
@@ -344,6 +381,11 @@ Oct 2026 batch: ~~`kling-v4`~~ **shipped** (Path A video, 2026 REST API). ~~`nem
 
 33. ~~`lightonocr-3-local` / `lightonocr-3-vllm`~~ **shipped** (11 Nov 2026, `parse`): LightOnOCR-3 0.8B / 4B, Apache-2.0, local only (no hosted API). The 1B sibling (LightOnOCR-2 architecture) is not wired.
 
+34. ~~`minimax-h3-image` / `minimax-h3-image-local`~~ **shipped** (27 Nov 2026, `generate` + `edit`): MiniMax first-party T2I + image edit (`MINIMAX_API_KEY`) and local Diffusers twin; highspeed variant on API.
+35. **`segment` service** (`segmentation` output_kind, CLI + MCP) — **`next`** (platform; no registry model until row 36).
+36. **`aitryon-parsing-v1`** on `segment` — **`next`** after row 35 (Path A, DashScope).
+37. **`pixelcut-vton`** on `vton` — **`next`** (Path A; verify Pixelcut terms during integrate).
+
 Follow-ups for the new services: Studio capability screens for `decide` (question builder + probability bars) and `embed` (upload + similarity), and a vector-store hand-off for `embed` output.
 
 ---
@@ -359,4 +401,5 @@ Invoke-layer highlights already in the registry: FLUX.2 (+ Turbo local), **FLUX 
 When adding a row: vendor, modality, Path A/B, proposed registry id, license/API URL, status.  
 When shipping: move to **Shipped**, delete the `next` row, note the registry id.  
 Re-survey NVIDIA: [build.nvidia.com/models](https://build.nvidia.com/models) + Cosmos / Nemotron blogs. Do not paste the entire NIM catalog.  
-Re-survey VTON: Vertex Imagen try-on, DashScope OutfitAnyone, Photoroom/Pixelcut, Hugging Face CatVTON / Leffa / IDM-VTON. Prefer first-party APIs over aggregators.
+Re-survey VTON: Vertex Imagen try-on, DashScope OutfitAnyone, Photoroom/Pixelcut, Hugging Face CatVTON / Leffa / IDM-VTON. Prefer first-party APIs over aggregators.  
+Re-survey **modality gaps**: Clad changelog (body), garment pattern repos (pygarment), video-VTON papers, BytePlus/ModelArk image ids — then refresh the [modality queue](#modality-queue--integration-priorities-nov-2026) table.

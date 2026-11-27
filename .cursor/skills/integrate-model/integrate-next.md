@@ -6,6 +6,6 @@ Skills hold **how**. The backlog holds **what**. Keep the queue in git-tracked d
 
 When the user asks what to integrate next, or you are choosing a model:
 
-1. Read the canonical page.
-2. Prefer `next` rows in Wave 1 (NVIDIA Nemotron Omni + Cosmos 3) unless they named something else.
-3. Then follow [SKILL.md](SKILL.md) Path A / Path B. Do not start a new CLI service (`audio-to-video`, `generate-3d`) unless the user asks.
+1. Read the canonical page — start with **Modality queue — integration priorities** (`integrate-next.md#modality-queue--integration-priorities-nov-2026`) for image / video / VTON / measurement / 3D picks.
+2. Unless the user named a vendor, prefer that table's **`next`** column, then `next` rows in Wave 1–2.
+3. Then follow [SKILL.md](SKILL.md) Path A / Path B. Do not start a new CLI service (`segment`, `music-generate`, `transcribe`, etc.) unless the user asks or the modality table marks **needs new service**.
