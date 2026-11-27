@@ -49,7 +49,7 @@ Docs: [Clad API](../api-reference/clad-body.md), [local](../local-models/clad-bo
 
 **Downstream:** `klein-4b-tryon` (`--mask-image`), inpainting edits, catalogue QA.
 
-**Blocker:** Product/legal must pick a **commercial-clean default parser** (survey note in [integrate-next](../community/integrate-next.md)).
+**Status (Nov 2026):** Platform work is **`next`** in [integrate-next](../community/integrate-next.md) (suggested order rows 35–36). Default Path A parser: **`aitryon-parsing-v1`**. Path B **`fashn-human-parser`** stays **`watch`** until licence is confirmed.
 
 ---
 
